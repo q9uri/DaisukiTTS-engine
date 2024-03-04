@@ -1,14 +1,14 @@
 {
     "manifest_version": "0.13.1",
-    "name": "DUMMY Engine",
-    "brand_name": "DUMMY",
-    "uuid": "c7b58856-bd56-4aa1-afb7-b8415f824b06",
-    "version": "999.999.999",
-    "url": "https://github.com/VOICEVOX/voicevox_engine",
+    "name": "AivisSpeech Engine",
+    "brand_name": "AivisSpeech",
+    "uuid": "1b4a5014-d9fd-11ee-b97d-83c170a68ed3",
+    "version": "0.1.0",
+    "url": "https://github.com/Aivis-Project/AivisSpeech-Engine",
     "command": "run",
-    "port": 50021,
+    "port": 10101,
     "icon": "engine_manifest_assets/icon.png",
-    "default_sampling_rate": 24000,
+    "default_sampling_rate": 44100,
     "frame_rate": 93.75,
     "terms_of_service": "engine_manifest_assets/terms_of_service.md",
     "update_infos": "engine_manifest_assets/update_infos.json",
@@ -16,12 +16,12 @@
     "supported_features": {
         "adjust_mora_pitch": {
             "type": "bool",
-            "value": true,
+            "value": false,
             "name": "モーラごとの音高の調整"
         },
         "adjust_phoneme_length": {
             "type": "bool",
-            "value": true,
+            "value": false,
             "name": "音素ごとの長さの調整"
         },
         "adjust_speed_scale": {
@@ -46,22 +46,22 @@
         },
         "interrogative_upspeak": {
             "type": "bool",
-            "value": true,
+            "value": false,
             "name": "疑問文の自動調整"
         },
         "synthesis_morphing" : {
             "type": "bool",
-            "value": true,
+            "value": false,
             "name": "2種類のスタイルでモーフィングした音声を合成"
         },
         "sing" : {
             "type": "bool",
-            "value": true,
+            "value": false,
             "name": "歌唱音声合成"
         },
         "manage_library": {
             "type": "bool",
-            "value": true,
+            "value": false,
             "name": "音声ライブラリのインストール・アンインストール"
         }
     }
