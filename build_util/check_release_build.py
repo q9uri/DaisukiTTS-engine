@@ -13,7 +13,7 @@ from urllib.request import Request, urlopen
 
 import soundfile
 
-base_url = "http://127.0.0.1:50021/"
+base_url = "http://127.0.0.1:10101/"
 
 
 def test_release_build(dist_dir: Path, skip_run_process: bool) -> None:

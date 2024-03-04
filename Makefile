@@ -21,7 +21,7 @@ build-linux-docker-ubuntu20.04:
 .PHONY: run-linux-docker-ubuntu20.04
 run-linux-docker-ubuntu20.04:
 	docker run --rm -it \
-		-p '127.0.0.1:50021:50021' $(ARGS) \
+		-p '127.0.0.1:10101:10101' $(ARGS) \
 		voicevox/voicevox_engine:cpu-ubuntu20.04-latest $(CMD)
 
 .PHONY: build-linux-docker-nvidia-ubuntu20.04
@@ -39,7 +39,7 @@ build-linux-docker-nvidia-ubuntu20.04:
 run-linux-docker-nvidia-ubuntu20.04:
 	docker run --rm -it \
 		--gpus all \
-		-p '127.0.0.1:50021:50021' $(ARGS) \
+		-p '127.0.0.1:10101:10101' $(ARGS) \
 		voicevox/voicevox_engine:nvidia-ubuntu20.04-latest $(CMD)
 
 
@@ -58,7 +58,7 @@ build-linux-docker-ubuntu18.04:
 .PHONY: run-linux-docker-ubuntu18.04
 run-linux-docker-ubuntu18.04:
 	docker run --rm -it \
-		-p '127.0.0.1:50021:50021' $(ARGS) \
+		-p '127.0.0.1:10101:10101' $(ARGS) \
 		voicevox/voicevox_engine:cpu-ubuntu18.04-latest $(CMD)
 
 .PHONY: build-linux-docker-nvidia-ubuntu18.04
@@ -76,7 +76,7 @@ build-linux-docker-nvidia-ubuntu18.04:
 run-linux-docker-nvidia-ubuntu18.04:
 	docker run --rm -it \
 		--gpus all \
-		-p '127.0.0.1:50021:50021' $(ARGS) \
+		-p '127.0.0.1:10101:10101' $(ARGS) \
 		voicevox/voicevox_engine:nvidia-ubuntu18.04-latest $(CMD)
 
 
