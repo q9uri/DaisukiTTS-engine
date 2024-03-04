@@ -63,31 +63,32 @@ class LibraryManager:
         #     return list(map(DownloadableLibrary.parse_obj, json.load(f)))
 
         # ダミーとして、speaker_infoのアセットを読み込む
-        with open(
-            "./engine_manifest_assets/downloadable_libraries.json",
-            encoding="utf-8",
-        ) as f:
-            libraries = json.load(f)
-            speaker_info = libraries[0]["speakers"][0]["speaker_info"]
-            mock_root_dir = Path("./speaker_info/7ffcb7ce-00ec-4bdc-82cd-45a8889e43ff")
-            speaker_info["policy"] = (mock_root_dir / "policy.md").read_text()
-            speaker_info["portrait"] = base64.b64encode(
-                (mock_root_dir / "portrait.png").read_bytes()
-            )
-            for style_info in speaker_info["style_infos"]:
-                style_id = style_info["id"]
-                style_info["icon"] = base64.b64encode(
-                    (mock_root_dir / "icons" / f"{style_id}.png").read_bytes()
-                )
-                style_info["voice_samples"] = [
-                    base64.b64encode(
-                        (
-                            mock_root_dir / "voice_samples" / f"{style_id}_{i:0>3}.wav"
-                        ).read_bytes()
-                    )
-                    for i in range(1, 4)
-                ]
-            return list(map(DownloadableLibraryInfo.parse_obj, libraries))
+        # with open(
+        #     "./engine_manifest_assets/downloadable_libraries.json",
+        #     encoding="utf-8",
+        # ) as f:
+        #     libraries = json.load(f)
+        #     speaker_info = libraries[0]["speakers"][0]["speaker_info"]
+        #     mock_root_dir = Path("./speaker_info/7ffcb7ce-00ec-4bdc-82cd-45a8889e43ff")
+        #     speaker_info["policy"] = (mock_root_dir / "policy.md").read_text()
+        #     speaker_info["portrait"] = base64.b64encode(
+        #         (mock_root_dir / "portrait.png").read_bytes()
+        #     )
+        #     for style_info in speaker_info["style_infos"]:
+        #         style_id = style_info["id"]
+        #         style_info["icon"] = base64.b64encode(
+        #             (mock_root_dir / "icons" / f"{style_id}.png").read_bytes()
+        #         )
+        #         style_info["voice_samples"] = [
+        #             base64.b64encode(
+        #                 (
+        #                     mock_root_dir / "voice_samples" / f"{style_id}_{i:0>3}.wav"
+        #                 ).read_bytes()
+        #             )
+        #             for i in range(1, 4)
+        #         ]
+        #     return list(map(DownloadableLibraryInfo.parse_obj, libraries))
+        return []
 
     def installed_libraries(self) -> dict[str, InstalledLibraryInfo]:
         """
