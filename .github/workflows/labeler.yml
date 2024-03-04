@@ -5,7 +5,7 @@ on:
 defaults:
   run:
     shell: bash
-    
+
 jobs:
   triage:
     runs-on: ubuntu-latest

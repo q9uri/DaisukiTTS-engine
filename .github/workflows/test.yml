@@ -44,7 +44,7 @@ jobs:
           poetry export --without-hashes --with dev -o requirements-dev.txt.check
           poetry export --without-hashes --with test -o requirements-test.txt.check
           poetry export --without-hashes --with license -o requirements-license.txt.check
-          
+
           diff -q requirements.txt requirements.txt.check || \
           diff -q requirements-dev.txt requirements-dev.txt.check || \
           diff -q requirements-test.txt requirements-test.txt.check || \

@@ -16,7 +16,7 @@ env:
 defaults:
   run:
     shell: bash
-  
+
 jobs:
   upload-doc:
     runs-on: ubuntu-20.04
