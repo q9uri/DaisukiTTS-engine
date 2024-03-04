@@ -1,3 +1,30 @@
+
+# AivisSpeech Engine
+
+💠 **AivisSpeech Engine:** **AI** **V**oice **I**mitation **S**ystem - Text to **Speech** **Engine**
+
+AivisSpeech Engine は、[VOICEVOX ENGINE](https://github.com/VOICEVOX/voicevox_engine) をベースにした、日本語音声合成エンジンです。  
+日本語音声合成ソフトウェアの [AivisSpeech](https://github.com/Aivis-Project/AivisSpeech-Engine) に組み込まれており、簡単にとても抑揚豊かな音声を生成できます。
+
+## 開発方針
+
+[VOICEVOX](https://github.com/VOICEVOX) は非常に巨大なソフトウェアであり、現在も活発に開発が続けられています。  
+そのため、AivisSpeech Engine では VOICEVOX ENGINE の最新版をベースに、以下の方針で開発を行っています。
+
+- VOICEVOX 最新版への追従を容易にするため、できるだけ改変を必要最小限に留める
+  - VOICEVOX ENGINE から AivisSpeech Engine へのリブランディングは必要な箇所のみ行う
+- リファクタリングを行わない
+  - VOICEVOX ENGINE とのコンフリクトが発生することが容易に予想される上、コード全体に精通しているわけではないため
+- AivisSpeech で利用しない機能 (歌声合成機能など) であっても、コードの削除は行わない
+  - これもコンフリクトを回避するため
+  - 利用しないコードの無効化は削除ではなく、コメントアウトで行う
+- 保守や追従が困難なため、ドキュメントの更新は行わない
+  - このため各ドキュメントは一切更新されておらず、AivisSpeech Engine での変更を反映していない
+
+以下はオリジナルの VOICEVOX ENGINE の README です。
+
+-----
+
 # VOICEVOX ENGINE
 
 [![build](https://github.com/VOICEVOX/voicevox_engine/actions/workflows/build.yml/badge.svg)](https://github.com/VOICEVOX/voicevox_engine/actions/workflows/build.yml)
