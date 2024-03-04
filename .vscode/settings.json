@@ -19,6 +19,5 @@
         "reportUnknownParameterType": "warning",
         "reportUnknownVariableType": "none",
         "reportUnusedFunction": "none",
-        "reportUnusedImport": "none",
     },
 }
