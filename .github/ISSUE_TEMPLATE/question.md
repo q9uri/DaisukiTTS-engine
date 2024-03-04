@@ -8,7 +8,7 @@ labels: 要議論
 
 <!-- ここに記載してください -->
 
-## VOICEVOXのバージョン
+## AivisSpeech のバージョン
 
 0.?.0
 

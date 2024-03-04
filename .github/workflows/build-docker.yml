@@ -13,7 +13,7 @@ on:
         required: true
 
 env:
-  IMAGE_NAME: ${{ vars.DOCKERHUB_USERNAME }}/voicevox_engine
+  IMAGE_NAME: ${{ vars.DOCKERHUB_USERNAME }}/aivisspeech-engine
   PYTHON_VERSION: "3.11.3"
   VOICEVOX_RESOURCE_VERSION: "0.16.0"
   VOICEVOX_CORE_VERSION: "0.15.0"
@@ -152,7 +152,7 @@ jobs:
             BASE_IMAGE=${{ matrix.base_image }}
             BASE_RUNTIME_IMAGE=${{ matrix.base_runtime_image }}
             PYTHON_VERSION=${{ env.PYTHON_VERSION }}
-            VOICEVOX_ENGINE_VERSION=${{ needs.config.outputs.version_or_latest }}
+            AIVISSPEECH_ENGINE_VERSION=${{ needs.config.outputs.version_or_latest }}
             VOICEVOX_CORE_VERSION=${{ env.VOICEVOX_CORE_VERSION }}
             VOICEVOX_RESOURCE_VERSION=${{ env.VOICEVOX_RESOURCE_VERSION }}
             USE_GPU=${{ matrix.target == 'runtime-nvidia-env' }}

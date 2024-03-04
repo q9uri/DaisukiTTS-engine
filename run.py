@@ -147,8 +147,8 @@ def generate_app(
         root_dir = engine_root()
 
     app = FastAPI(
-        title="VOICEVOX Engine",
-        description="VOICEVOXの音声合成エンジンです。",
+        title="AivisSpeech Engine",
+        description="AivisSpeech の音声合成エンジンです。",
         version=__version__,
     )
 
@@ -1428,7 +1428,7 @@ def main() -> None:
     if output_log_utf8:
         set_output_log_utf8()
 
-    parser = argparse.ArgumentParser(description="VOICEVOX のエンジンです。")
+    parser = argparse.ArgumentParser(description="AivisSpeech のエンジンです。")
     parser.add_argument(
         "--host",
         type=str,
@@ -1442,10 +1442,10 @@ def main() -> None:
         "--use_gpu", action="store_true", help="GPUを使って音声合成するようになります。"
     )
     parser.add_argument(
-        "--voicevox_dir",
+        "--aivisspeech_dir",
         type=Path,
         default=None,
-        help="VOICEVOXのディレクトリパスです。",
+        help="AivisSpeechのディレクトリパスです。",
     )
     parser.add_argument(
         "--voicelib_dir",
@@ -1540,7 +1540,7 @@ def main() -> None:
         default=None,
         help=(
             "プリセットファイルを指定できます。"
-            "指定がない場合、環境変数 VV_PRESET_FILE、--voicevox_dirのpresets.yaml、"
+            "指定がない場合、環境変数 VV_PRESET_FILE、--aivisspeech_dirのpresets.yaml、"
             "実行ファイルのディレクトリのpresets.yamlを順に探します。"
         ),
     )
@@ -1562,7 +1562,7 @@ def main() -> None:
 
     # Synthesis Engine
     use_gpu: bool = args.use_gpu
-    voicevox_dir: Path | None = args.voicevox_dir
+    voicevox_dir: Path | None = args.aivisspeech_dir
     voicelib_dirs: list[Path] | None = args.voicelib_dir
     runtime_dirs: list[Path] | None = args.runtime_dir
     enable_mock: bool = args.enable_mock

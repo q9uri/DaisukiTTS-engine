@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 
 <!-- 
-  VOICEVOXエンジンの設定ページです。
+  AivisSpeechエンジンの設定ページです。
   VueとBootstrapを使っています。
   ライブラリを読み込んだあと、Vueコンポーネントの初期化が完了してからUIを表示します。
 -->
@@ -9,11 +9,7 @@
 <html lang="ja">
   <head>
     <meta charset="utf-8" />
-    <title>VOICEVOX Engine 設定</title>
-    <link
-      rel="shortcut icon"
-      href="https://voicevox.hiroshiba.jp/favicon-32x32.png"
-    />
+    <title>AivisSpeech Engine 設定</title>
 
     <style>
       .before-init-fadein {
@@ -100,7 +96,7 @@
         <label class="form-label">ユーザー辞書のエクスポート</label>
         <div class="col-12">
           <a
-            download="VOICEVOXユーザー辞書.json"
+            download="AivisSpeechユーザー辞書.json"
             class="btn btn-primary mb-3"
             href="/user_dict"
             @click="showToastWithMessage('辞書をエクスポートしました。');"

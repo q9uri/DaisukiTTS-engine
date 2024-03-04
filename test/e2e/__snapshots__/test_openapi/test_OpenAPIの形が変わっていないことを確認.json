@@ -1087,8 +1087,8 @@
     }
   },
   "info": {
-    "description": "VOICEVOXの音声合成エンジンです。",
-    "title": "VOICEVOX Engine",
+    "description": "AivisSpeech の音声合成エンジンです。",
+    "title": "AivisSpeech Engine",
     "version": "latest"
   },
   "openapi": "3.1.0",

@@ -181,7 +181,7 @@ EOF
 FROM ${BASE_RUNTIME_IMAGE} AS runtime-env
 ARG DEBIAN_FRONTEND=noninteractive
 
-WORKDIR /opt/voicevox_engine
+WORKDIR /opt/aivisspeech-engine
 
 # ca-certificates: pyopenjtalk dictionary download
 # build-essential: pyopenjtalk local build
@@ -225,33 +225,33 @@ COPY --from=download-core-env /opt/voicevox_core /opt/voicevox_core
 COPY --from=download-onnxruntime-env /opt/onnxruntime /opt/onnxruntime
 
 # Add local files
-ADD ./voicevox_engine /opt/voicevox_engine/voicevox_engine
-ADD ./docs /opt/voicevox_engine/docs
-ADD ./run.py ./presets.yaml ./default.csv ./engine_manifest.json /opt/voicevox_engine/
-ADD ./build_util/generate_licenses.py /opt/voicevox_engine/build_util/
-ADD ./speaker_info /opt/voicevox_engine/speaker_info
-ADD ./ui_template /opt/voicevox_engine/ui_template
-ADD ./engine_manifest_assets /opt/voicevox_engine/engine_manifest_assets
+ADD ./voicevox_engine /opt/aivisspeech-engine/voicevox_engine
+ADD ./docs /opt/aivisspeech-engine/docs
+ADD ./run.py ./presets.yaml ./default.csv ./engine_manifest.json /opt/aivisspeech-engine/
+ADD ./build_util/generate_licenses.py /opt/aivisspeech-engine/build_util/
+ADD ./speaker_info /opt/aivisspeech-engine/speaker_info
+ADD ./ui_template /opt/aivisspeech-engine/ui_template
+ADD ./engine_manifest_assets /opt/aivisspeech-engine/engine_manifest_assets
 
 # Replace version
-ARG VOICEVOX_ENGINE_VERSION=latest
-RUN sed -i "s/__version__ = \"latest\"/__version__ = \"${VOICEVOX_ENGINE_VERSION}\"/" /opt/voicevox_engine/voicevox_engine/__init__.py
-RUN sed -i "s/\"version\": \"999\\.999\\.999\"/\"version\": \"${VOICEVOX_ENGINE_VERSION}\"/" /opt/voicevox_engine/engine_manifest.json
+ARG AIVISSPEECH_ENGINE_VERSION=latest
+RUN sed -i "s/__version__ = \"latest\"/__version__ = \"${AIVISSPEECH_ENGINE_VERSION}\"/" /opt/aivisspeech-engine/voicevox_engine/__init__.py
+RUN sed -i "s/\"version\": \"999\\.999\\.999\"/\"version\": \"${AIVISSPEECH_ENGINE_VERSION}\"/" /opt/aivisspeech-engine/engine_manifest.json
 
 # Generate licenses.json
 ADD ./requirements-license.txt /tmp/
 RUN <<EOF
     set -eux
 
-    cd /opt/voicevox_engine
+    cd /opt/aivisspeech-engine
 
     # Define temporary env vars
     # /home/user/.local/bin is required to use the commands installed by pip
     export PATH="/home/user/.local/bin:${PATH:-}"
 
     gosu user /opt/python/bin/pip3 install -r /tmp/requirements-license.txt
-    gosu user /opt/python/bin/python3 build_util/generate_licenses.py > /opt/voicevox_engine/engine_manifest_assets/dependency_licenses.json
-    cp /opt/voicevox_engine/engine_manifest_assets/dependency_licenses.json /opt/voicevox_engine/licenses.json
+    gosu user /opt/python/bin/python3 build_util/generate_licenses.py > /opt/aivisspeech-engine/engine_manifest_assets/dependency_licenses.json
+    cp /opt/aivisspeech-engine/engine_manifest_assets/dependency_licenses.json /opt/aivisspeech-engine/licenses.json
 EOF
 
 # Keep this layer separated to use layer cache on download failed in local build
@@ -280,7 +280,7 @@ RUN <<EOF
     set -eux
 
     # README
-    wget -nv --show-progress -c -O "/opt/voicevox_engine/README.md" "https://raw.githubusercontent.com/VOICEVOX/voicevox_resource/${VOICEVOX_RESOURCE_VERSION}/engine/README.md"
+    wget -nv --show-progress -c -O "/opt/aivisspeech-engine/README.md" "https://raw.githubusercontent.com/VOICEVOX/voicevox_resource/${VOICEVOX_RESOURCE_VERSION}/engine/README.md"
 EOF
 
 # Create container start shell
@@ -289,7 +289,7 @@ COPY --chmod=775 <<EOF /entrypoint.sh
 set -eux
 
 # Display README for engine
-cat /opt/voicevox_engine/README.md > /dev/stderr
+cat /opt/aivisspeech-engine/README.md > /dev/stderr
 
 exec "\$@"
 EOF

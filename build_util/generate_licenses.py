@@ -57,17 +57,17 @@ def generate_licenses() -> List[License]:
         )
 
     # VOICEVOX CORE
-    with urllib.request.urlopen(
-        "https://raw.githubusercontent.com/VOICEVOX/voicevox_core/main/LICENSE"
-    ) as res:
-        licenses.append(
-            License(
-                name="VOICEVOX CORE",
-                version=None,
-                license="MIT license",
-                text=res.read().decode(),
-            )
-        )
+    # with urllib.request.urlopen(
+    #     "https://raw.githubusercontent.com/VOICEVOX/voicevox_core/main/LICENSE"
+    # ) as res:
+    #     licenses.append(
+    #         License(
+    #             name="VOICEVOX CORE",
+    #             version=None,
+    #             license="MIT license",
+    #             text=res.read().decode(),
+    #         )
+    #     )
 
     # VOICEVOX ENGINE
     with urllib.request.urlopen(

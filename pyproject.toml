@@ -37,7 +37,7 @@ multi_line_output = 3
 use_parentheses = true
 
 [tool.poetry]
-name = "voicevox_engine"
+name = "AivisSpeech-Engine"
 version = "0.0.0"
 description = ""
 authors = ["Hiroshiba <hihokaruta@gmail.com>"]
