@@ -1447,36 +1447,36 @@ def main() -> None:
         default=None,
         help="AivisSpeechのディレクトリパスです。",
     )
-    parser.add_argument(
-        "--voicelib_dir",
-        type=Path,
-        default=None,
-        action="append",
-        help="VOICEVOX COREのディレクトリパスです。",
-    )
-    parser.add_argument(
-        "--runtime_dir",
-        type=Path,
-        default=None,
-        action="append",
-        help="VOICEVOX COREで使用するライブラリのディレクトリパスです。",
-    )
-    parser.add_argument(
-        "--enable_mock",
-        action="store_true",
-        help="VOICEVOX COREを使わずモックで音声合成を行います。",
-    )
-    parser.add_argument(
-        "--enable_cancellable_synthesis",
-        action="store_true",
-        help="音声合成を途中でキャンセルできるようになります。",
-    )
-    parser.add_argument(
-        "--init_processes",
-        type=int,
-        default=2,
-        help="cancellable_synthesis機能の初期化時に生成するプロセス数です。",
-    )
+    # parser.add_argument(
+    #     "--voicelib_dir",
+    #     type=Path,
+    #     default=None,
+    #     action="append",
+    #     help="VOICEVOX COREのディレクトリパスです。",
+    # )
+    # parser.add_argument(
+    #     "--runtime_dir",
+    #     type=Path,
+    #     default=None,
+    #     action="append",
+    #     help="VOICEVOX COREで使用するライブラリのディレクトリパスです。",
+    # )
+    # parser.add_argument(
+    #     "--enable_mock",
+    #     action="store_true",
+    #     help="VOICEVOX COREを使わずモックで音声合成を行います。",
+    # )
+    # parser.add_argument(
+    #     "--enable_cancellable_synthesis",
+    #     action="store_true",
+    #     help="音声合成を途中でキャンセルできるようになります。",
+    # )
+    # parser.add_argument(
+    #     "--init_processes",
+    #     type=int,
+    #     default=2,
+    #     help="cancellable_synthesis機能の初期化時に生成するプロセス数です。",
+    # )
     parser.add_argument(
         "--load_all_models",
         action="store_true",
@@ -1486,15 +1486,15 @@ def main() -> None:
     # 引数へcpu_num_threadsの指定がなければ、環境変数をロールします。
     # 環境変数にもない場合は、Noneのままとします。
     # VV_CPU_NUM_THREADSが空文字列でなく数値でもない場合、エラー終了します。
-    parser.add_argument(
-        "--cpu_num_threads",
-        type=int,
-        default=os.getenv("VV_CPU_NUM_THREADS") or None,
-        help=(
-            "音声合成を行うスレッド数です。指定しない場合、代わりに環境変数 VV_CPU_NUM_THREADS の値が使われます。"
-            "VV_CPU_NUM_THREADS が空文字列でなく数値でもない場合はエラー終了します。"
-        ),
-    )
+    # parser.add_argument(
+    #     "--cpu_num_threads",
+    #     type=int,
+    #     default=os.getenv("VV_CPU_NUM_THREADS") or None,
+    #     help=(
+    #         "音声合成を行うスレッド数です。指定しない場合、代わりに環境変数 VV_CPU_NUM_THREADS の値が使われます。"
+    #         "VV_CPU_NUM_THREADS が空文字列でなく数値でもない場合はエラー終了します。"
+    #     ),
+    # )
 
     parser.add_argument(
         "--output_log_utf8",
@@ -1563,10 +1563,14 @@ def main() -> None:
     # Synthesis Engine
     use_gpu: bool = args.use_gpu
     voicevox_dir: Path | None = args.aivisspeech_dir
-    voicelib_dirs: list[Path] | None = args.voicelib_dir
-    runtime_dirs: list[Path] | None = args.runtime_dir
-    enable_mock: bool = args.enable_mock
-    cpu_num_threads: int | None = args.cpu_num_threads
+    # voicelib_dirs: list[Path] | None = args.voicelib_dir
+    voicelib_dirs: list[Path] | None = None  # 常に None
+    # runtime_dirs: list[Path] | None = args.runtime_dir
+    runtime_dirs: list[Path] | None = None  # 常に None
+    # enable_mock: bool = args.enable_mock
+    enable_mock: bool = False  # 常に無効化
+    # cpu_num_threads: int | None = args.cpu_num_threads
+    cpu_num_threads: int | None = None  # 常に None
     load_all_models: bool = args.load_all_models
 
     cores = initialize_cores(
@@ -1583,8 +1587,10 @@ def main() -> None:
     latest_core_version = get_latest_core_version(versions=list(tts_engines.keys()))
 
     # Cancellable Engine
-    enable_cancellable_synthesis: bool = args.enable_cancellable_synthesis
-    init_processes: int = args.init_processes
+    # enable_cancellable_synthesis: bool = args.enable_cancellable_synthesis
+    enable_cancellable_synthesis: bool = False  # 常に無効化
+    # init_processes: int = args.init_processes
+    init_processes: int = 2  # 常に2
 
     cancellable_engine: CancellableEngine | None = None
     if enable_cancellable_synthesis:
