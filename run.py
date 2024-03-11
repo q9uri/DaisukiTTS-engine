@@ -30,7 +30,7 @@ from starlette.responses import FileResponse
 from voicevox_engine import __version__
 from voicevox_engine.cancellable_engine import CancellableEngine
 from voicevox_engine.core.core_adapter import CoreAdapter
-from voicevox_engine.core.core_initializer import initialize_cores
+from voicevox_engine.core.core_initializer import initialize_cores, MOCK_VER
 from voicevox_engine.engine_manifest.EngineManifest import EngineManifest
 from voicevox_engine.engine_manifest.EngineManifestLoader import EngineManifestLoader
 from voicevox_engine.library_manager import LibraryManager
@@ -73,9 +73,10 @@ from voicevox_engine.preset.PresetManager import PresetManager
 from voicevox_engine.setting.Setting import CorsPolicyMode, Setting
 from voicevox_engine.setting.SettingLoader import USER_SETTING_PATH, SettingHandler
 from voicevox_engine.tts_pipeline.kana_converter import create_kana, parse_kana
+from voicevox_engine.tts_pipeline.style_bert_vits2_tts_engine import StyleBertVITS2TTSEngine
 from voicevox_engine.tts_pipeline.tts_engine import (
     TTSEngine,
-    make_tts_engines_from_cores,
+    # make_tts_engines_from_cores,
 )
 from voicevox_engine.user_dict.part_of_speech_data import MAX_PRIORITY, MIN_PRIORITY
 from voicevox_engine.user_dict.user_dict import (
@@ -90,7 +91,7 @@ from voicevox_engine.utility.connect_base64_waves import (
     ConnectBase64WavesException,
     connect_base64_waves,
 )
-from voicevox_engine.utility.core_version_utility import get_latest_core_version
+# from voicevox_engine.utility.core_version_utility import get_latest_core_version
 from voicevox_engine.utility.path_utility import delete_file, engine_root, get_save_dir
 from voicevox_engine.utility.run_utility import decide_boolean_from_env
 
@@ -1568,11 +1569,12 @@ def main() -> None:
     # runtime_dirs: list[Path] | None = args.runtime_dir
     runtime_dirs: list[Path] | None = None  # 常に None
     # enable_mock: bool = args.enable_mock
-    enable_mock: bool = False  # 常に無効化
+    enable_mock: bool = True  # 常に有効化
     # cpu_num_threads: int | None = args.cpu_num_threads
-    cpu_num_threads: int | None = None  # 常に None
+    cpu_num_threads: int | None = 4  # 常に 4
     load_all_models: bool = args.load_all_models
 
+    # 常にモックの Core を利用する
     cores = initialize_cores(
         use_gpu=use_gpu,
         voicelib_dirs=voicelib_dirs,
@@ -1582,9 +1584,13 @@ def main() -> None:
         enable_mock=enable_mock,
         load_all_models=load_all_models,
     )
-    tts_engines = make_tts_engines_from_cores(cores)
-    assert len(tts_engines) != 0, "音声合成エンジンがありません。"
-    latest_core_version = get_latest_core_version(versions=list(tts_engines.keys()))
+    # tts_engines = make_tts_engines_from_cores(cores)
+    # assert len(tts_engines) != 0, "音声合成エンジンがありません。"
+    # latest_core_version = get_latest_core_version(versions=list(tts_engines.keys()))
+
+    # StyleBertVITS2TTSEngine を利用する
+    tts_engines = {MOCK_VER: StyleBertVITS2TTSEngine(use_gpu, load_all_models)}
+    latest_core_version = MOCK_VER
 
     # Cancellable Engine
     # enable_cancellable_synthesis: bool = args.enable_cancellable_synthesis
