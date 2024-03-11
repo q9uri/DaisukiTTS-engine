@@ -470,7 +470,8 @@ def generate_app(
             }
         },
         tags=["音声合成"],
-        summary="音声合成する（キャンセル可能）",
+        # summary="音声合成する（キャンセル可能）",
+        summary="AivisSpeech Engine ではサポートされていない API です (常に 501 Not Implemented を返します)",
     )
     def cancellable_synthesis(
         query: AudioQuery,
@@ -478,6 +479,11 @@ def generate_app(
         style_id: StyleId = Query(alias="speaker"),  # noqa: B008
         core_version: str | None = None,
     ) -> FileResponse:
+        raise HTTPException(
+            status_code=501,
+            detail="Cancelable synthesis is not supported in AivisSpeech Engine.",
+        )
+
         if cancellable_engine is None:
             raise HTTPException(
                 status_code=404,
@@ -655,16 +661,22 @@ def generate_app(
         "/sing_frame_audio_query",
         response_model=FrameAudioQuery,
         tags=["クエリ作成"],
-        summary="歌唱音声合成用のクエリを作成する",
+        # summary="歌唱音声合成用のクエリを作成する",
+        summary="AivisSpeech Engine ではサポートされていない API です (常に 501 Not Implemented を返します)",
     )
     def sing_frame_audio_query(
         score: Score,
         style_id: StyleId = Query(alias="speaker"),  # noqa: B008
         core_version: str | None = None,
     ) -> FrameAudioQuery:
-        """
-        歌唱音声合成用のクエリの初期値を得ます。ここで得られたクエリはそのまま歌唱音声合成に利用できます。各値の意味は`Schemas`を参照してください。
-        """
+        # """
+        # 歌唱音声合成用のクエリの初期値を得ます。ここで得られたクエリはそのまま歌唱音声合成に利用できます。各値の意味は`Schemas`を参照してください。
+        # """
+        raise HTTPException(
+            status_code=501,
+            detail="Sing frame audio query is not supported in AivisSpeech Engine.",
+        )
+
         engine = get_engine(core_version)
         core = get_core(core_version)
         phonemes, f0, volume = engine.create_sing_phoneme_and_f0_and_volume(
@@ -691,15 +703,21 @@ def generate_app(
             }
         },
         tags=["音声合成"],
+        summary="AivisSpeech Engine ではサポートされていない API です (常に 501 Not Implemented を返します)",
     )
     def frame_synthesis(
         query: FrameAudioQuery,
         style_id: StyleId = Query(alias="speaker"),  # noqa: B008
         core_version: str | None = None,
     ) -> FileResponse:
-        """
-        歌唱音声合成を行います。
-        """
+        # """
+        # 歌唱音声合成を行います。
+        # """
+        raise HTTPException(
+            status_code=501,
+            detail="Frame synthesis is not supported in AivisSpeech Engine.",
+        )
+
         engine = get_engine(core_version)
         wave = engine.frame_synthsize_wave(query, style_id)
 
@@ -970,22 +988,42 @@ def generate_app(
         )
         return ret_data
 
-    @app.get("/singers", response_model=list[Speaker], tags=["その他"])
+    @app.get(
+        "/singers",
+        response_model=list[Speaker],
+        tags=["その他"],
+        summary="AivisSpeech Engine ではサポートされていない API です (常に 501 Not Implemented を返します)",
+    )
     def singers(
         core_version: str | None = None,
     ) -> list[Speaker]:
+        raise HTTPException(
+            status_code=501,
+            detail="Singers is not supported in AivisSpeech Engine.",
+        )
+
         singers = metas_store.load_combined_metas(get_core(core_version))
         return filter_speakers_and_styles(singers, "singer")
 
-    @app.get("/singer_info", response_model=SpeakerInfo, tags=["その他"])
+    @app.get(
+        "/singer_info",
+        response_model=SpeakerInfo,
+        tags=["その他"],
+        summary="AivisSpeech Engine ではサポートされていない API です (常に 501 Not Implemented を返します)",
+    )
     def singer_info(
         speaker_uuid: str,
         core_version: str | None = None,
     ) -> SpeakerInfo:
-        """
-        指定されたspeaker_uuidに関する情報をjson形式で返します。
-        画像や音声はbase64エンコードされたものが返されます。
-        """
+        # """
+        # 指定されたspeaker_uuidに関する情報をjson形式で返します。
+        # 画像や音声はbase64エンコードされたものが返されます。
+        # """
+        raise HTTPException(
+            status_code=501,
+            detail="Singer info is not supported in AivisSpeech Engine.",
+        )
+
         return _speaker_info(
             speaker_uuid=speaker_uuid,
             speaker_or_singer="singer",
