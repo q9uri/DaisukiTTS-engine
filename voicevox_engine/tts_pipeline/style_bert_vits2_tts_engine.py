@@ -5,8 +5,8 @@ from typing import Any
 import numpy as np
 from numpy.typing import NDArray
 from pyopenjtalk import tts
-from soxr import resample
 
+from ..dev.core.mock import MockCoreWrapper
 from ..metas.Metas import StyleId
 from ..model import AudioQuery
 from ..tts_pipeline.tts_engine import TTSEngine, to_flatten_moras
@@ -18,6 +18,10 @@ class StyleBertVITS2TTSEngine(TTSEngine):
     def __init__(self, use_gpu: bool = False, load_all_models: bool = False) -> None:
         self.use_gpu = use_gpu
         self.load_all_models = load_all_models
+
+        # 継承元の TTSEngine の __init__ を呼び出す
+        # VOICEVOX CORE の通常の CoreWrapper の代わりに MockCoreWrapper を利用する
+        super().__init__(MockCoreWrapper())
 
     def synthesize_wave(
         self,
@@ -61,13 +65,9 @@ class StyleBertVITS2TTSEngine(TTSEngine):
 
         # pyopenjtalk.tts()の出力仕様
         dtype=np.float64, 16 bit, mono 48000 Hz
-
-        # resampleの説明
-        非モック実装（decode_forward）と合わせるために、出力を24kHz、32bit浮動小数に変換した。
         """
         logger = getLogger("uvicorn")  # FastAPI / Uvicorn 内からの利用のため
         logger.info("[Mock] input text: %s" % text)
         wave, _ = tts(text)
         wave /= 2**15
-        wave = resample(wave, 48000, 24000)
         return wave.astype(np.float32)
