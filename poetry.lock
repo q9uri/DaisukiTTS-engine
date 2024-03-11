@@ -1822,21 +1822,53 @@ files = [
 ]
 
 [[package]]
-name = "pyworld"
-version = "0.3.4"
+name = "pyworld-prebuilt"
+version = "0.3.4.1"
 description = "PyWorld: a Python wrapper for WORLD vocoder"
 optional = false
 python-versions = "*"
 files = [
-    {file = "pyworld-0.3.4-cp310-cp310-win_amd64.whl", hash = "sha256:699d2478b31215893152f67bb3eef244ed77fd3b8ac6757428fbcf7f8e1a057c"},
-    {file = "pyworld-0.3.4-cp311-cp311-win_amd64.whl", hash = "sha256:61292a4dced5f4a0677aa7afdd5c601df79e70771aa63bbdd8279e6a1d0f5d7a"},
-    {file = "pyworld-0.3.4-cp36-cp36m-win32.whl", hash = "sha256:ebd9f918f54fb5dd6a16059635d904b56a5165e7e5207ab1b4fa0fb839b4efa7"},
-    {file = "pyworld-0.3.4-cp36-cp36m-win_amd64.whl", hash = "sha256:34db25abde77cc231605d0f3748742cf9535156ee239fd861241a66d43c5134c"},
-    {file = "pyworld-0.3.4-cp37-cp37m-win32.whl", hash = "sha256:8c0a4c6ef1d3ba7742b4cf773c2733743392ce525d75efda4b832abb623d8689"},
-    {file = "pyworld-0.3.4-cp37-cp37m-win_amd64.whl", hash = "sha256:235ce1c9b97986897cf60544c6d46a5eef814688b1aa0ea9d88e9877e6df015f"},
-    {file = "pyworld-0.3.4-cp38-cp38-win_amd64.whl", hash = "sha256:a1aa7ec78e4575c231bc374c825a3c5c1fefdff5c83932dcf90b7d333c156c2e"},
-    {file = "pyworld-0.3.4-cp39-cp39-win_amd64.whl", hash = "sha256:fddbbb9aec3f2341279237a907b8b625fa099086205b24aa740008becbd7e3d4"},
-    {file = "pyworld-0.3.4.tar.gz", hash = "sha256:106c70ee7a7d8c9ba488d8022f2033706929a40f0264256b8e87da5aab98303a"},
+    {file = "pyworld-prebuilt-0.3.4.1.tar.gz", hash = "sha256:787fd68b1607ccebd972e0fe442b86af7757c52bf184da97d64f9cb689349c1a"},
+    {file = "pyworld_prebuilt-0.3.4.1-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:f2cc54d6f7026152b86dfa2b8289b544051c0e6ada9f379c8f197d851e2aa140"},
+    {file = "pyworld_prebuilt-0.3.4.1-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:2e592bc145b37ac79a3892dd250ecd202fe370a6a14267fdaf2d8f0df595d7a7"},
+    {file = "pyworld_prebuilt-0.3.4.1-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:428ea03bcee5c4f205feed166440fbe8c95e61fedd5b906e82dbb2c3293e5008"},
+    {file = "pyworld_prebuilt-0.3.4.1-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:71913e80a5ecb342491a2c75be3cb379f1d3d3f8d2e7b3a5aa1b3cf7c66d8ad5"},
+    {file = "pyworld_prebuilt-0.3.4.1-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:84faff450d22b39b4e27bf2953b9229753dfa6a1facf38f631e6b20900125266"},
+    {file = "pyworld_prebuilt-0.3.4.1-cp310-cp310-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:0f27f6bcfebe1bc14b6865df4e80615e5dfef49005ef898230758fcda7ca123e"},
+    {file = "pyworld_prebuilt-0.3.4.1-cp310-cp310-win32.whl", hash = "sha256:1cf58c1d48b3545fa9c5b14583bb121680078aa2d8187a6d7389b067d3f08932"},
+    {file = "pyworld_prebuilt-0.3.4.1-cp310-cp310-win_amd64.whl", hash = "sha256:7125a61c1b3d398963e367a653d7a9775f93b847e79dd670581446c35dccb714"},
+    {file = "pyworld_prebuilt-0.3.4.1-cp311-cp311-macosx_10_9_universal2.whl", hash = "sha256:5e8c7652aaae2f85f75964fcfb5a43536de249a15f213e65d7360f6a2cdd4ff0"},
+    {file = "pyworld_prebuilt-0.3.4.1-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:7166cee4f42a88edf4dbbff31b37292b0ea22b4e3154b676a34de326144b7a6a"},
+    {file = "pyworld_prebuilt-0.3.4.1-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:78b3ee1aac6ce00af7165fd7db1ad901926d0052e230506c8b394683c711ba46"},
+    {file = "pyworld_prebuilt-0.3.4.1-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:0a7e5e0e7cc1bb10c7eb71c530dbfec737a48cf4ab116ab0827092288c68ee56"},
+    {file = "pyworld_prebuilt-0.3.4.1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:bdd181f950c8fef34160f79f1cd3fc496ef4701700dd91cc8b1a593d6a9bb053"},
+    {file = "pyworld_prebuilt-0.3.4.1-cp311-cp311-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:fbd1da6dc8baf0bb740f265ce3d0ed56e00cb85745e0883fd0b959b690d7e90c"},
+    {file = "pyworld_prebuilt-0.3.4.1-cp311-cp311-win32.whl", hash = "sha256:830b74bf696ba7e9bda0df031338562cbf4948e4070643da846c138187ff6aec"},
+    {file = "pyworld_prebuilt-0.3.4.1-cp311-cp311-win_amd64.whl", hash = "sha256:0b8e4c66d753d64872f9bff0c344b771d352f8ea3883d6d0da9944feaf8c817a"},
+    {file = "pyworld_prebuilt-0.3.4.1-cp312-cp312-macosx_10_9_universal2.whl", hash = "sha256:ab382459fa22520f3dc55a87f6e41ca2fde551fd00cea8575c20a94320103091"},
+    {file = "pyworld_prebuilt-0.3.4.1-cp312-cp312-macosx_10_9_x86_64.whl", hash = "sha256:ff752196fc77b02c58c53bd35ac3713796517ed472e1e35bc7f8fc65ac2d41e9"},
+    {file = "pyworld_prebuilt-0.3.4.1-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:9e9592a40072f69db381c8c44e47510abde837d5e0313d7ad519a2dd2947aacd"},
+    {file = "pyworld_prebuilt-0.3.4.1-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:af0cdb0c372ee83079af5cb75c8983bd0ca990fb9ecfc9bd116433695a624a9d"},
+    {file = "pyworld_prebuilt-0.3.4.1-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:79b70620fb19ecb6f5c942ea8b674bbac8078ccb91e2d903a012a8b6831c6186"},
+    {file = "pyworld_prebuilt-0.3.4.1-cp312-cp312-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:42cfd514c50eed9d66e0370dfe9434ca361c70125399f8f2766a9c9f361dec92"},
+    {file = "pyworld_prebuilt-0.3.4.1-cp312-cp312-win32.whl", hash = "sha256:372aec758db16ae8667f368842e39e659b9ea0559ad1153886aeae003303e323"},
+    {file = "pyworld_prebuilt-0.3.4.1-cp312-cp312-win_amd64.whl", hash = "sha256:6fcde22de3454ce6a625ffe5013948b98cc524a5e56ff94315efbb9ec01d0401"},
+    {file = "pyworld_prebuilt-0.3.4.1-cp38-cp38-macosx_10_9_universal2.whl", hash = "sha256:31bb634fb1a75b6ec9085c4b6c7246e4f35a9360d579719ce22506588bf6063d"},
+    {file = "pyworld_prebuilt-0.3.4.1-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:efbb914a403aa6cc34bb6b30e7633b9ca609468d459c54e201b90836c3e1761f"},
+    {file = "pyworld_prebuilt-0.3.4.1-cp38-cp38-macosx_11_0_arm64.whl", hash = "sha256:8a15e23fea27b7326cc989754cd8f9655ab1e26b601956d93086fcd221f3f7e1"},
+    {file = "pyworld_prebuilt-0.3.4.1-cp38-cp38-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:de08e9de5aea39fe1fc42344558473aa6d4c3ff43f6c970253f7b824b6a2cd0f"},
+    {file = "pyworld_prebuilt-0.3.4.1-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:06305b6ce183315bf9ccfab96fa2f1ac6d87e7f5ead4272a0a29b3846722b364"},
+    {file = "pyworld_prebuilt-0.3.4.1-cp38-cp38-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:fe4431b08be6436827932813fba9a5d561e2b047a043a9c27c8c75b92748e2e0"},
+    {file = "pyworld_prebuilt-0.3.4.1-cp38-cp38-win32.whl", hash = "sha256:f4bef84652c85408647a1fa2aed310ebd9cb5d2c02ad5628eb39454309141ba0"},
+    {file = "pyworld_prebuilt-0.3.4.1-cp38-cp38-win_amd64.whl", hash = "sha256:34fd08888a3584d527907afc12ccc645270f98f289b03cf6c532c9aee191d812"},
+    {file = "pyworld_prebuilt-0.3.4.1-cp39-cp39-macosx_10_9_universal2.whl", hash = "sha256:df58e4efcd44d6a6e1ae1804695fae158e4427962c065f3e6bb802c2602b7363"},
+    {file = "pyworld_prebuilt-0.3.4.1-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:2f30e568a543b02fcf2b922f95c391b93b540fc4b213a7ed7edbbd9e02c9ff7d"},
+    {file = "pyworld_prebuilt-0.3.4.1-cp39-cp39-macosx_11_0_arm64.whl", hash = "sha256:4b0c019cd362b7f7feb014a1b784952d41fff962c6cc4586ff22b7f332139eca"},
+    {file = "pyworld_prebuilt-0.3.4.1-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:96aae7a4a42e1586dd6c17964aec3ab34b69ed4e545940f6a1a368b4b4879a90"},
+    {file = "pyworld_prebuilt-0.3.4.1-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:4d5e4b402bf15cff135ed3d97fa2c1bfe9cc567baf67368a575dd501e33a7080"},
+    {file = "pyworld_prebuilt-0.3.4.1-cp39-cp39-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:3d8e5a2299f4a9857bf3164a067e6b38d59e1f2bedfc8b982594946d59028ca4"},
+    {file = "pyworld_prebuilt-0.3.4.1-cp39-cp39-win32.whl", hash = "sha256:732ab7bd33c7364a07857d734798ff482ba6a12493baa119327490ee435ac396"},
+    {file = "pyworld_prebuilt-0.3.4.1-cp39-cp39-win_amd64.whl", hash = "sha256:579c972ed12b50331ffc9c6ca9f8967c67cad820876c8f0d264bd8c5a225f194"},
 ]
 
 [package.dependencies]
@@ -2463,4 +2495,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "~3.11"
-content-hash = "a1d83fdb87697b47aef55beeeca80b16eb2ca3c91d05adb6abea277494ba656a"
+content-hash = "8ce5a011ce7bad0d17372e13013dd0ab70850b8fb140225c910a6d3991aa6a53"
