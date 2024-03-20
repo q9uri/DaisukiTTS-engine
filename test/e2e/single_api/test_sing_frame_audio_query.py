@@ -21,5 +21,7 @@ def test_post_sing_frame_audio_query_200(
         ]
     }
     response = client.post("/sing_frame_audio_query", params={"speaker": 0}, json=score)
+    assert response.status_code == 501  # AivisSpeech Engine では未実装 (501 Not Implemented を返す)
+    return
     assert response.status_code == 200
     assert snapshot_json == round_floats(response.json(), 2)

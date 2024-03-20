@@ -80,4 +80,6 @@ def test_post_frame_synthesis_200(client: TestClient) -> None:
         "outputStereo": False,
     }
     response = client.post("/frame_synthesis", params={"speaker": 0}, json=query)
+    assert response.status_code == 501  # AivisSpeech Engine では未実装 (501 Not Implemented を返す)
+    return
     assert response.status_code == 200
