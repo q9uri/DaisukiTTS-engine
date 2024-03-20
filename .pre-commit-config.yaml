@@ -5,7 +5,7 @@ repos:
     hooks:
       - id: pysen-lint
         name: pysen-lint
-        entry: pysen run lint
+        entry: poetry run pysen run lint
         language: python
         types: [file, python]
         stages: [push]

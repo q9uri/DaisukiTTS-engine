@@ -21,9 +21,49 @@ AivisSpeech Engine は、[VOICEVOX ENGINE](https://github.com/VOICEVOX/voicevox_
 - 保守や追従が困難なため、ドキュメントの更新は行わない
   - このため各ドキュメントは一切更新されておらず、AivisSpeech Engine での変更を反映していない
 
-以下はオリジナルの VOICEVOX ENGINE の README です。
+## 開発環境の構築
+
+手順は一部オリジナルの VOICEVOX ENGINE と異なります。  
+事前に Python 3.11 がインストールされている必要があります。
+
+```bash
+# Poetry と pre-commit をインストール
+pip install poetry poetry-plugin-export pre-commit
+
+# pre-commit を有効化
+pre-commit install
+
+# 依存関係をすべてインストール
+poetry install --no-root
+```
+
+## 開発
+
+```bash
+# 開発環境で AivisSpeech Engine を起動
+poetry run python run.py
+
+# AivisSpeech Engine のヘルプを表示
+poetry run python run.py --help
+
+# コードフォーマットを実行
+poetry run pysen run format
+
+# コードフォーマットをチェック
+poetry run pysen run lint
+
+# テストを実行
+poetry run pytest
+
+# テストのスナップショットを更新
+poetry run pytest --snapshot-update
+```
 
 -----
+
+<br>
+以下はオリジナルの VOICEVOX ENGINE の README です。<br>
+<br>
 
 # VOICEVOX ENGINE
 
