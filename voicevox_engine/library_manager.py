@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import BinaryIO
 
 from fastapi import HTTPException
-from pydantic import ValidationError
+from pydantic.v1 import ValidationError
 from semver.version import Version
 
 from voicevox_engine.model import (

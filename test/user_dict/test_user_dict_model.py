@@ -1,7 +1,7 @@
 from typing import TypedDict
 from unittest import TestCase
 
-from pydantic import ValidationError
+from pydantic.v1 import ValidationError
 
 from voicevox_engine.model import UserDictWord
 from voicevox_engine.tts_pipeline.kana_converter import parse_kana

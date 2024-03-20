@@ -56,7 +56,7 @@ pyopenjtalk-dict = "^0.3.4.dev2"
 semver = "^3.0.0"
 platformdirs = "^3.10.0"
 soxr = "^0.3.6"
-pydantic = "<2"
+pydantic = "^2.6.4"
 starlette = "^0.27.0"
 
 [tool.poetry.group.dev.dependencies]

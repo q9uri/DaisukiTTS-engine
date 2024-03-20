@@ -2,7 +2,7 @@ from enum import Enum
 from re import findall, fullmatch
 from typing import Any, Dict, List, Optional
 
-from pydantic import BaseModel, Field, StrictStr, validator
+from pydantic.v1 import BaseModel, Field, StrictStr, validator
 
 from .metas.Metas import Speaker, SpeakerInfo
 

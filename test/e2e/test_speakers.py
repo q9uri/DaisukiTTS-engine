@@ -6,7 +6,7 @@ TODO: 話者と歌手の両ドメイン共通のドメイン用語を定め、�
 from test.utility import hash_long_string
 
 from fastapi.testclient import TestClient
-from pydantic import parse_obj_as
+from pydantic.v1 import parse_obj_as
 from syrupy.assertion import SnapshotAssertion
 
 from voicevox_engine.metas.Metas import Speaker
