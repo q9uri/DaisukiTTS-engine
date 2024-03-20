@@ -1452,7 +1452,8 @@ def generate_app(
             ref_template="#/components/schemas/{model}"
         )
         # definitionsは既存のモデルを重複して定義するため、不要なので削除
-        del base_library_info["definitions"]
+        # del base_library_info["definitions"]
+        del base_library_info["$defs"]  # Pydantic V2 で definitions -> $defs に変更された
         openapi_schema["components"]["schemas"]["BaseLibraryInfo"] = base_library_info
         app.openapi_schema = openapi_schema
         return openapi_schema
