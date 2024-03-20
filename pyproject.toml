@@ -36,6 +36,9 @@ line_length = 88
 multi_line_output = 3
 use_parentheses = true
 
+[tool.pytest.ini_options]
+filterwarnings = ["ignore::pydantic.warnings.PydanticDeprecatedSince20"]
+
 [tool.poetry]
 name = "AivisSpeech-Engine"
 version = "0.0.0"

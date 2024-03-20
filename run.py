@@ -17,12 +17,14 @@ from typing import Annotated, Any, Literal, Optional
 
 import soundfile
 import uvicorn
+import warnings
 from fastapi import Depends, FastAPI, Form, HTTPException, Query, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
 from fastapi.responses import JSONResponse
 from fastapi.templating import Jinja2Templates
 from pydantic import ValidationError, parse_obj_as
+from pydantic.warnings import PydanticDeprecatedSince20
 from starlette.background import BackgroundTask
 from starlette.middleware.errors import ServerErrorMiddleware
 from starlette.responses import FileResponse
@@ -96,6 +98,13 @@ from voicevox_engine.utility.connect_base64_waves import (
 # from voicevox_engine.utility.core_version_utility import get_latest_core_version
 from voicevox_engine.utility.path_utility import delete_file, engine_root, get_save_dir
 from voicevox_engine.utility.run_utility import decide_boolean_from_env
+
+
+# PydanticDeprecatedSince20 警告を抑制
+warnings.filterwarnings(
+    action="ignore",
+    category=PydanticDeprecatedSince20,
+)
 
 
 def b64encode_str(s):

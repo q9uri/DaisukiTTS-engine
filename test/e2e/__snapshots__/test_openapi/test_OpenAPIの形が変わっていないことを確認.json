@@ -34,8 +34,7 @@
         },
         "required": [
           "moras",
-          "accent",
-          "pause_mora"
+          "accent"
         ],
         "title": "AccentPhrase",
         "type": "object"
@@ -103,8 +102,7 @@
           "prePhonemeLength",
           "postPhonemeLength",
           "outputSamplingRate",
-          "outputStereo",
-          "kana"
+          "outputStereo"
         ],
         "title": "AudioQuery",
         "type": "object"
@@ -172,8 +170,7 @@
           "prePhonemeLength",
           "postPhonemeLength",
           "outputSamplingRate",
-          "outputStereo",
-          "kana"
+          "outputStereo"
         ],
         "title": "AudioQuery",
         "type": "object"
@@ -626,8 +623,6 @@
         },
         "required": [
           "text",
-          "consonant",
-          "consonant_length",
           "vowel",
           "vowel_length",
           "pitch"
@@ -1171,7 +1166,6 @@
           "yomi",
           "pronunciation",
           "accent_type",
-          "mora_count",
           "accent_associative_rule"
         ],
         "title": "UserDictWord",
