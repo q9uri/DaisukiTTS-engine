@@ -13,8 +13,8 @@ class Mora(BaseModel):
     """
 
     text: str = Field(title="文字")
-    consonant: Optional[str] = Field(title="子音の音素")
-    consonant_length: Optional[float] = Field(title="子音の音長")
+    consonant: Optional[str] = Field(default=None, title="子音の音素")
+    consonant_length: Optional[float] = Field(default=None, title="子音の音長")
     vowel: str = Field(title="母音の音素")
     vowel_length: float = Field(title="母音の音長")
     pitch: float = Field(
@@ -39,7 +39,7 @@ class AccentPhrase(BaseModel):
 
     moras: List[Mora] = Field(title="モーラのリスト")
     accent: int = Field(title="アクセント箇所")
-    pause_mora: Optional[Mora] = Field(title="後ろに無音を付けるかどうか")
+    pause_mora: Optional[Mora] = Field(default=None, title="後ろに無音を付けるかどうか")
     is_interrogative: bool = Field(default=False, title="疑問系かどうか")
 
     def __hash__(self) -> int:
@@ -65,7 +65,8 @@ class AudioQuery(BaseModel):
     outputSamplingRate: int = Field(title="音声データの出力サンプリングレート")
     outputStereo: bool = Field(title="音声データをステレオ出力するか否か")
     kana: Optional[str] = Field(
-        title="[読み取り専用]AquesTalk 風記法によるテキスト。音声合成用のクエリとしては無視される"
+        default=None,
+        title="[読み取り専用]AquesTalk 風記法によるテキスト。音声合成用のクエリとしては無視される",
     )
 
     def __hash__(self) -> int:
@@ -156,7 +157,7 @@ class ParseKanaBadRequest(BaseModel):
 class MorphableTargetInfo(BaseModel):
     is_morphable: bool = Field(title="指定した話者に対してモーフィングの可否")
     # FIXME: add reason property
-    # reason: Optional[str] = Field(title="is_morphableがfalseである場合、その理由")
+    # reason: Optional[str] = Field(default=None, title="is_morphableがfalseである場合、その理由")
 
 
 class StyleIdNotFoundError(LookupError):
@@ -228,7 +229,7 @@ class UserDictWord(BaseModel):
     yomi: str = Field(title="読み")
     pronunciation: str = Field(title="発音")
     accent_type: int = Field(title="アクセント型")
-    mora_count: Optional[int] = Field(title="モーラ数")
+    mora_count: Optional[int] = Field(default=None, title="モーラ数")
     accent_associative_rule: str = Field(title="アクセント結合規則")
 
     class Config:

@@ -39,6 +39,12 @@ class TestLibraryManager(TestCase):
             zf.writestr(vvlib_manifest_name, json.dumps(self.vvlib_manifest))
         self.library_file = open(self.library_filename, "br")
 
+        # 以下は Unused import エラーにしないための暫定的なもの
+        assert copy
+        assert os
+        assert BytesIO
+        assert HTTPException
+
     def tearDown(self) -> None:
         self.tmp_dir.cleanup()
         self.library_file.close()

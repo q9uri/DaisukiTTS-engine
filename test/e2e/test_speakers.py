@@ -37,7 +37,9 @@ def test_歌手一覧が取得できる(
     client: TestClient, snapshot_json: SnapshotAssertion
 ) -> None:
     response = client.get("/singers")
-    assert response.status_code == 501  # AivisSpeech Engine では未実装 (501 Not Implemented を返す)
+    assert (
+        response.status_code == 501
+    )  # AivisSpeech Engine では未実装 (501 Not Implemented を返す)
     return
     assert response.status_code == 200
     assert snapshot_json == response.json()
@@ -47,7 +49,8 @@ def test_歌手の情報を取得できる(
     client: TestClient, snapshot_json: SnapshotAssertion
 ) -> None:
     response = client.get("/singers")
-    assert response.status_code == 501  # AivisSpeech Engine では未実装 (501 Not Implemented を返す)
+    # AivisSpeech Engine では未実装 (501 Not Implemented を返す)
+    assert response.status_code == 501
     return
     singers = parse_obj_as(list[Speaker], client.get("/singers").json())
     for singer in singers:
