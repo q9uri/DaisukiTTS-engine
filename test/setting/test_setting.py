@@ -2,7 +2,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 from unittest import TestCase
 
-from pydantic.v1 import ValidationError
+from pydantic import ValidationError
 
 from voicevox_engine.setting.Setting import CorsPolicyMode, Setting
 from voicevox_engine.setting.SettingLoader import SettingHandler

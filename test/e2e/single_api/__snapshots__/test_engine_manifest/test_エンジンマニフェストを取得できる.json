@@ -1,0 +1,43 @@
+{
+  "brand_name": "AivisSpeech",
+  "default_sampling_rate": 44100,
+  "dependency_licenses": [
+    {
+      "license": "dummy license",
+      "name": "dummy library",
+      "text": "dummy license text",
+      "version": "0.0.1"
+    }
+  ],
+  "frame_rate": 93.75,
+  "icon": "MD5:f957eb4f5daedccb4eb6a5170f384bf4",
+  "manifest_version": "0.13.1",
+  "name": "AivisSpeech Engine",
+  "supported_features": {
+    "adjust_intonation_scale": true,
+    "adjust_mora_pitch": false,
+    "adjust_phoneme_length": false,
+    "adjust_pitch_scale": true,
+    "adjust_speed_scale": true,
+    "adjust_volume_scale": true,
+    "interrogative_upspeak": false,
+    "manage_library": true,
+    "sing": false,
+    "synthesis_morphing": false
+  },
+  "supported_vvlib_manifest_version": null,
+  "terms_of_service": "dummy teams of service",
+  "update_infos": [
+    {
+      "contributors": [
+        "tsukumi"
+      ],
+      "descriptions": [
+        "初回リリース。"
+      ],
+      "version": "1.0.0"
+    }
+  ],
+  "url": "https://github.com/Aivis-Project/AivisSpeech-Engine",
+  "uuid": "1b4a5014-d9fd-11ee-b97d-83c170a68ed3"
+}

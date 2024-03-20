@@ -2,7 +2,7 @@ from pathlib import Path
 from typing import List
 
 import yaml
-from pydantic.v1 import ValidationError, parse_obj_as
+from pydantic import ValidationError, parse_obj_as
 
 from .Preset import Preset
 from .PresetError import PresetError

@@ -22,7 +22,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
 from fastapi.responses import JSONResponse
 from fastapi.templating import Jinja2Templates
-from pydantic.v1 import ValidationError, parse_obj_as
+from pydantic import ValidationError, parse_obj_as
 from starlette.background import BackgroundTask
 from starlette.middleware.errors import ServerErrorMiddleware
 from starlette.responses import FileResponse

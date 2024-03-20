@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import List, Literal, NewType, Optional
 
-from pydantic.v1 import BaseModel, Field
+from pydantic import BaseModel, Field
 
 # NOTE: 循環importを防ぐためにとりあえずここに書いている
 # FIXME: 他のmodelに依存せず、全modelから参照できる場所に配置する
