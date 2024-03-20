@@ -30,7 +30,7 @@ from starlette.responses import FileResponse
 from voicevox_engine import __version__
 from voicevox_engine.cancellable_engine import CancellableEngine
 from voicevox_engine.core.core_adapter import CoreAdapter
-from voicevox_engine.core.core_initializer import initialize_cores, MOCK_VER
+from voicevox_engine.core.core_initializer import MOCK_VER, initialize_cores
 from voicevox_engine.engine_manifest.EngineManifest import EngineManifest
 from voicevox_engine.engine_manifest.EngineManifestLoader import EngineManifestLoader
 from voicevox_engine.library_manager import LibraryManager
@@ -73,10 +73,11 @@ from voicevox_engine.preset.PresetManager import PresetManager
 from voicevox_engine.setting.Setting import CorsPolicyMode, Setting
 from voicevox_engine.setting.SettingLoader import USER_SETTING_PATH, SettingHandler
 from voicevox_engine.tts_pipeline.kana_converter import create_kana, parse_kana
-from voicevox_engine.tts_pipeline.style_bert_vits2_tts_engine import StyleBertVITS2TTSEngine
-from voicevox_engine.tts_pipeline.tts_engine import (
+from voicevox_engine.tts_pipeline.style_bert_vits2_tts_engine import (
+    StyleBertVITS2TTSEngine,
+)
+from voicevox_engine.tts_pipeline.tts_engine import (  # make_tts_engines_from_cores,
     TTSEngine,
-    # make_tts_engines_from_cores,
 )
 from voicevox_engine.user_dict.part_of_speech_data import MAX_PRIORITY, MIN_PRIORITY
 from voicevox_engine.user_dict.user_dict import (
@@ -91,6 +92,7 @@ from voicevox_engine.utility.connect_base64_waves import (
     ConnectBase64WavesException,
     connect_base64_waves,
 )
+
 # from voicevox_engine.utility.core_version_utility import get_latest_core_version
 from voicevox_engine.utility.path_utility import delete_file, engine_root, get_save_dir
 from voicevox_engine.utility.run_utility import decide_boolean_from_env

@@ -134,7 +134,9 @@ def update_dict(
         pyopenjtalk.unset_user_dict()
         tmp_compiled_path.replace(compiled_dict_path)
         if compiled_dict_path.is_file():
-            pyopenjtalk.update_global_jtalk_with_user_dict(str(compiled_dict_path.resolve(strict=True)))
+            pyopenjtalk.update_global_jtalk_with_user_dict(
+                str(compiled_dict_path.resolve(strict=True))
+            )
 
     except Exception as e:
         print("Error: Failed to update dictionary.", file=sys.stderr)

@@ -13,7 +13,7 @@ from ..tts_pipeline.tts_engine import TTSEngine, to_flatten_moras
 
 
 class StyleBertVITS2TTSEngine(TTSEngine):
-    """ Style-Bert-VITS2 TTS Engine """
+    """Style-Bert-VITS2 TTS Engine"""
 
     def __init__(self, use_gpu: bool = False, load_all_models: bool = False) -> None:
         self.use_gpu = use_gpu
