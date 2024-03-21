@@ -6,7 +6,7 @@ repos:
       - id: pysen-lint
         name: pysen-lint
         entry: poetry run pysen run lint
-        language: python
+        language: system
         types: [file, python]
         stages: [push]
         pass_filenames: false
