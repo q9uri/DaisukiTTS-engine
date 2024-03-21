@@ -78,9 +78,7 @@ from voicevox_engine.tts_pipeline.kana_converter import create_kana, parse_kana
 from voicevox_engine.tts_pipeline.style_bert_vits2_tts_engine import (
     StyleBertVITS2TTSEngine,
 )
-from voicevox_engine.tts_pipeline.tts_engine import (  # make_tts_engines_from_cores,
-    TTSEngine,
-)
+from voicevox_engine.tts_pipeline.tts_engine import TTSEngine
 from voicevox_engine.user_dict.part_of_speech_data import MAX_PRIORITY, MIN_PRIORITY
 from voicevox_engine.user_dict.user_dict import (
     apply_word,
@@ -94,8 +92,6 @@ from voicevox_engine.utility.connect_base64_waves import (
     ConnectBase64WavesException,
     connect_base64_waves,
 )
-
-# from voicevox_engine.utility.core_version_utility import get_latest_core_version
 from voicevox_engine.utility.path_utility import delete_file, engine_root, get_save_dir
 from voicevox_engine.utility.run_utility import decide_boolean_from_env
 

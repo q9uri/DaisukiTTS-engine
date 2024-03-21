@@ -2,7 +2,7 @@ import hashlib
 import json
 from typing import Any
 
-from pydantic.v1.json import pydantic_encoder
+from pydantic.deprecated.json import pydantic_encoder
 
 
 def round_floats(value: Any, round_value: int) -> Any:
