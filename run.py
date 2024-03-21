@@ -7,6 +7,7 @@ import os
 import re
 import sys
 import traceback
+import warnings
 import zipfile
 from collections.abc import Awaitable, Callable
 from functools import lru_cache
@@ -17,7 +18,6 @@ from typing import Annotated, Any, Literal, Optional
 
 import soundfile
 import uvicorn
-import warnings
 from fastapi import Depends, FastAPI, Form, HTTPException, Query, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
@@ -98,7 +98,6 @@ from voicevox_engine.utility.connect_base64_waves import (
 # from voicevox_engine.utility.core_version_utility import get_latest_core_version
 from voicevox_engine.utility.path_utility import delete_file, engine_root, get_save_dir
 from voicevox_engine.utility.run_utility import decide_boolean_from_env
-
 
 # PydanticDeprecatedSince20 警告を抑制
 warnings.filterwarnings(

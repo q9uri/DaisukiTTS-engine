@@ -40,10 +40,10 @@ class TestLibraryManager(TestCase):
         self.library_file = open(self.library_filename, "br")
 
         # 以下は Unused import エラーにしないための暫定的なもの
-        assert copy
-        assert os
-        assert BytesIO
-        assert HTTPException
+        assert copy  # type: ignore
+        assert os  # type: ignore
+        assert BytesIO  # type: ignore
+        assert HTTPException  # type: ignore
 
     def tearDown(self) -> None:
         self.tmp_dir.cleanup()
