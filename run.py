@@ -157,6 +157,9 @@ def generate_app(
         title="AivisSpeech Engine",
         description="AivisSpeech の音声合成エンジンです。",
         version=__version__,
+        # OpenAPI Generator が自動生成するコードとの互換性が壊れるため、リクエストとレスポンスで Pydantic スキーマを分離しないようにする
+        # ref: https://fastapi.tiangolo.com/how-to/separate-openapi-schemas/
+        separate_input_output_schemas=False,
     )
 
     # 未処理の例外が発生するとCORSMiddlewareが適用されない問題に対するワークアラウンド
@@ -1447,6 +1450,9 @@ def generate_app(
             terms_of_service=app.terms_of_service,
             contact=app.contact,
             license_info=app.license_info,
+            # OpenAPI Generator が自動生成するコードとの互換性が壊れるため、リクエストとレスポンスで Pydantic スキーマを分離しないようにする
+            # ref: https://fastapi.tiangolo.com/how-to/separate-openapi-schemas/
+            separate_input_output_schemas=False,
         )
         openapi_schema["components"]["schemas"][
             "VvlibManifest"
