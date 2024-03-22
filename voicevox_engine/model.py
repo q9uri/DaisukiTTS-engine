@@ -354,9 +354,9 @@ class SupportedFeaturesInfo(BaseModel):
     support_switching_device: bool = Field(title="CPU/GPUの切り替えが可能かどうか")
 
 
-class VvlibManifest(BaseModel):
+class AivmManifest(BaseModel):
     """
-    vvlib(VOICEVOX Library)に関する情報
+    AIVM (Aivis Voice Model) ライブラリに関する情報
     """
 
     manifest_version: StrictStr = Field(title="マニフェストバージョン")

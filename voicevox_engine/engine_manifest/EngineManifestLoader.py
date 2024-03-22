@@ -33,10 +33,10 @@ class EngineManifestLoader:
                     (self.root_dir / manifest["update_infos"]).read_text("utf-8")
                 )
             ],
-            # supported_vvlib_manifest_versionを持たないengine_manifestのために
+            # supported_aivm_manifest_versionを持たないengine_manifestのために
             # キーが存在しない場合はNoneを返すgetを使う
-            supported_vvlib_manifest_version=manifest.get(
-                "supported_vvlib_manifest_version"
+            supported_aivm_manifest_version=manifest.get(
+                "supported_aivm_manifest_version"
             ),
             dependency_licenses=[
                 LicenseInfo(**license_info)

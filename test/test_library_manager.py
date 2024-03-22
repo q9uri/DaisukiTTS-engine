@@ -12,7 +12,7 @@ from fastapi import HTTPException
 
 from voicevox_engine.library_manager import LibraryManager
 
-vvlib_manifest_name = "vvlib_manifest.json"
+aivm_manifest_name = "aivm_manifest.json"
 
 
 class TestLibraryManager(TestCase):
@@ -28,15 +28,15 @@ class TestLibraryManager(TestCase):
             self.engine_name,
             "1b4a5014-d9fd-11ee-b97d-83c170a68ed3",
         )
-        self.library_filename = Path("test/test.vvlib")
-        with open("test/vvlib_manifest.json") as f:
-            self.vvlib_manifest = json.loads(f.read())
-            self.library_uuid = self.vvlib_manifest["uuid"]
+        self.library_filename = Path("test/test.aivm")
+        with open("test/aivm_manifest.json") as f:
+            self.aivm_manifest = json.loads(f.read())
+            self.library_uuid = self.aivm_manifest["uuid"]
         with ZipFile(self.library_filename, "w") as zf:
             speaker_infos = glob.glob("speaker_info/**", recursive=True)
             for info in speaker_infos:
                 zf.write(info)
-            zf.writestr(vvlib_manifest_name, json.dumps(self.vvlib_manifest))
+            zf.writestr(aivm_manifest_name, json.dumps(self.aivm_manifest))
         self.library_file = open(self.library_filename, "br")
 
         # 以下は Unused import エラーにしないための暫定的なもの
@@ -50,19 +50,19 @@ class TestLibraryManager(TestCase):
         self.library_file.close()
         self.library_filename.unlink()
 
-    # def create_vvlib_without_manifest(self, filename: str) -> None:
+    # def create_aivm_without_manifest(self, filename: str) -> None:
     #     with (
     #         ZipFile(filename, "w") as zf_out,
     #         ZipFile(self.library_filename, "r") as zf_in,
     #     ):
     #         for file in zf_in.infolist():
     #             buffer = zf_in.read(file.filename)
-    #             if file.filename != vvlib_manifest_name:
+    #             if file.filename != aivm_manifest_name:
     #                 zf_out.writestr(file, buffer)
 
-    # def create_vvlib_manifest(self, **kwargs):
-    #     vvlib_manifest = copy.deepcopy(self.vvlib_manifest)
-    #     return {**vvlib_manifest, **kwargs}
+    # def create_aivm_manifest(self, **kwargs):
+    #     aivm_manifest = copy.deepcopy(self.aivm_manifest)
+    #     return {**aivm_manifest, **kwargs}
 
     # def test_installed_libraries(self) -> None:
     #     self.assertEqual(self.library_manger.installed_libraries(), {})
@@ -97,92 +97,92 @@ class TestLibraryManager(TestCase):
     #         f"音声ライブラリ {self.library_uuid} は不正なファイルです。",
     #     )
 
-    #     # vvlib_manifestの存在確認のテスト
-    #     invalid_vvlib_name = "test/invalid.vvlib"
-    #     self.create_vvlib_without_manifest(invalid_vvlib_name)
-    #     with open(invalid_vvlib_name, "br") as f, self.assertRaises(HTTPException) as e:
+    #     # aivm_manifestの存在確認のテスト
+    #     invalid_aivm_name = "test/invalid.aivm"
+    #     self.create_aivm_without_manifest(invalid_aivm_name)
+    #     with open(invalid_aivm_name, "br") as f, self.assertRaises(HTTPException) as e:
     #         self.library_manger.install_library(self.library_uuid, f)
     #     self.assertEqual(
     #         e.exception.detail,
-    #         f"指定された音声ライブラリ {self.library_uuid} にvvlib_manifest.jsonが存在しません。",
+    #         f"指定された音声ライブラリ {self.library_uuid} にaivm_manifest.jsonが存在しません。",
     #     )
 
-    #     # vvlib_manifestのパースのテスト
-    #     # Duplicate name: 'vvlib_manifest.json'とWarningを吐かれるので、毎回作り直す
-    #     self.create_vvlib_without_manifest(invalid_vvlib_name)
-    #     with ZipFile(invalid_vvlib_name, "a") as zf:
-    #         zf.writestr(vvlib_manifest_name, "test")
+    #     # aivm_manifestのパースのテスト
+    #     # Duplicate name: 'aivm_manifest.json'とWarningを吐かれるので、毎回作り直す
+    #     self.create_aivm_without_manifest(invalid_aivm_name)
+    #     with ZipFile(invalid_aivm_name, "a") as zf:
+    #         zf.writestr(aivm_manifest_name, "test")
 
-    #     with open(invalid_vvlib_name, "br") as f, self.assertRaises(HTTPException) as e:
+    #     with open(invalid_aivm_name, "br") as f, self.assertRaises(HTTPException) as e:
     #         self.library_manger.install_library(self.library_uuid, f)
     #     self.assertEqual(
     #         e.exception.detail,
-    #         f"指定された音声ライブラリ {self.library_uuid} のvvlib_manifest.jsonは不正です。",
+    #         f"指定された音声ライブラリ {self.library_uuid} のaivm_manifest.jsonは不正です。",
     #     )
 
-    #     # vvlib_manifestのパースのテスト
-    #     invalid_vvlib_manifest = self.create_vvlib_manifest(version=10)
-    #     self.create_vvlib_without_manifest(invalid_vvlib_name)
-    #     with ZipFile(invalid_vvlib_name, "a") as zf:
-    #         zf.writestr(vvlib_manifest_name, json.dumps(invalid_vvlib_manifest))
+    #     # aivm_manifestのパースのテスト
+    #     invalid_aivm_manifest = self.create_aivm_manifest(version=10)
+    #     self.create_aivm_without_manifest(invalid_aivm_name)
+    #     with ZipFile(invalid_aivm_name, "a") as zf:
+    #         zf.writestr(aivm_manifest_name, json.dumps(invalid_aivm_manifest))
 
-    #     with open(invalid_vvlib_name, "br") as f, self.assertRaises(HTTPException) as e:
+    #     with open(invalid_aivm_name, "br") as f, self.assertRaises(HTTPException) as e:
     #         self.library_manger.install_library(self.library_uuid, f)
     #     self.assertEqual(
     #         e.exception.detail,
-    #         f"指定された音声ライブラリ {self.library_uuid} のvvlib_manifest.jsonに不正なデータが含まれています。",
+    #         f"指定された音声ライブラリ {self.library_uuid} のaivm_manifest.jsonに不正なデータが含まれています。",
     #     )
 
-    #     # vvlib_manifestの不正なversionのテスト
-    #     invalid_vvlib_manifest = self.create_vvlib_manifest(version="10")
-    #     self.create_vvlib_without_manifest(invalid_vvlib_name)
-    #     with ZipFile(invalid_vvlib_name, "a") as zf:
-    #         zf.writestr(vvlib_manifest_name, json.dumps(invalid_vvlib_manifest))
+    #     # aivm_manifestの不正なversionのテスト
+    #     invalid_aivm_manifest = self.create_aivm_manifest(version="10")
+    #     self.create_aivm_without_manifest(invalid_aivm_name)
+    #     with ZipFile(invalid_aivm_name, "a") as zf:
+    #         zf.writestr(aivm_manifest_name, json.dumps(invalid_aivm_manifest))
 
-    #     with open(invalid_vvlib_name, "br") as f, self.assertRaises(HTTPException) as e:
+    #     with open(invalid_aivm_name, "br") as f, self.assertRaises(HTTPException) as e:
     #         self.library_manger.install_library(self.library_uuid, f)
     #     self.assertEqual(
     #         e.exception.detail,
     #         f"指定された音声ライブラリ {self.library_uuid} のversionが不正です。",
     #     )
 
-    #     # vvlib_manifestの不正なmanifest_versionのテスト
-    #     invalid_vvlib_manifest = self.create_vvlib_manifest(manifest_version="10")
-    #     self.create_vvlib_without_manifest(invalid_vvlib_name)
-    #     with ZipFile(invalid_vvlib_name, "a") as zf:
-    #         zf.writestr(vvlib_manifest_name, json.dumps(invalid_vvlib_manifest))
+    #     # aivm_manifestの不正なmanifest_versionのテスト
+    #     invalid_aivm_manifest = self.create_aivm_manifest(manifest_version="10")
+    #     self.create_aivm_without_manifest(invalid_aivm_name)
+    #     with ZipFile(invalid_aivm_name, "a") as zf:
+    #         zf.writestr(aivm_manifest_name, json.dumps(invalid_aivm_manifest))
 
-    #     with open(invalid_vvlib_name, "br") as f, self.assertRaises(HTTPException) as e:
+    #     with open(invalid_aivm_name, "br") as f, self.assertRaises(HTTPException) as e:
     #         self.library_manger.install_library(self.library_uuid, f)
     #     self.assertEqual(
     #         e.exception.detail,
     #         f"指定された音声ライブラリ {self.library_uuid} のmanifest_versionが不正です。",
     #     )
 
-    #     # vvlib_manifestの未対応のmanifest_versionのテスト
-    #     invalid_vvlib_manifest = self.create_vvlib_manifest(
+    #     # aivm_manifestの未対応のmanifest_versionのテスト
+    #     invalid_aivm_manifest = self.create_aivm_manifest(
     #         manifest_version="999.999.999"
     #     )
-    #     self.create_vvlib_without_manifest(invalid_vvlib_name)
-    #     with ZipFile(invalid_vvlib_name, "a") as zf:
-    #         zf.writestr(vvlib_manifest_name, json.dumps(invalid_vvlib_manifest))
+    #     self.create_aivm_without_manifest(invalid_aivm_name)
+    #     with ZipFile(invalid_aivm_name, "a") as zf:
+    #         zf.writestr(aivm_manifest_name, json.dumps(invalid_aivm_manifest))
 
-    #     with open(invalid_vvlib_name, "br") as f, self.assertRaises(HTTPException) as e:
+    #     with open(invalid_aivm_name, "br") as f, self.assertRaises(HTTPException) as e:
     #         self.library_manger.install_library(self.library_uuid, f)
     #     self.assertEqual(
     #         e.exception.detail,
     #         f"指定された音声ライブラリ {self.library_uuid} は未対応です。",
     #     )
 
-    #     # vvlib_manifestのインストール先エンジンの検証のテスト
-    #     invalid_vvlib_manifest = self.create_vvlib_manifest(
+    #     # aivm_manifestのインストール先エンジンの検証のテスト
+    #     invalid_aivm_manifest = self.create_aivm_manifest(
     #         engine_uuid="26f7823b-20c6-40c5-bf86-6dd5d9d45c18"
     #     )
-    #     self.create_vvlib_without_manifest(invalid_vvlib_name)
-    #     with ZipFile(invalid_vvlib_name, "a") as zf:
-    #         zf.writestr(vvlib_manifest_name, json.dumps(invalid_vvlib_manifest))
+    #     self.create_aivm_without_manifest(invalid_aivm_name)
+    #     with ZipFile(invalid_aivm_name, "a") as zf:
+    #         zf.writestr(aivm_manifest_name, json.dumps(invalid_aivm_manifest))
 
-    #     with open(invalid_vvlib_name, "br") as f, self.assertRaises(HTTPException) as e:
+    #     with open(invalid_aivm_name, "br") as f, self.assertRaises(HTTPException) as e:
     #         self.library_manger.install_library(self.library_uuid, f)
     #     self.assertEqual(
     #         e.exception.detail,
@@ -197,7 +197,7 @@ class TestLibraryManager(TestCase):
 
     #     self.library_manger.uninstall_library(self.library_uuid)
 
-    #     os.remove(invalid_vvlib_name)
+    #     os.remove(invalid_aivm_name)
 
     # def test_uninstall_library(self) -> None:
     #     # TODO: アンインストール出来ないライブラリをテストできるようにしたい

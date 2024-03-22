@@ -39,75 +39,51 @@
         "title": "AccentPhrase",
         "type": "object"
       },
-      "AudioQuery-Input": {
-        "description": "音声合成用のクエリ",
+      "AivmManifest": {
+        "description": "AIVM (Aivis Voice Model) ライブラリに関する情報",
         "properties": {
-          "accent_phrases": {
-            "items": {
-              "$ref": "#/components/schemas/AccentPhrase"
-            },
-            "title": "アクセント句のリスト",
-            "type": "array"
+          "brand_name": {
+            "title": "エンジンのブランド名",
+            "type": "string"
           },
-          "intonationScale": {
-            "title": "全体の抑揚",
-            "type": "number"
+          "engine_name": {
+            "title": "エンジン名",
+            "type": "string"
           },
-          "kana": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "[読み取り専用]AquesTalk 風記法によるテキスト。音声合成用のクエリとしては無視される"
+          "engine_uuid": {
+            "title": "エンジンのUUID",
+            "type": "string"
           },
-          "outputSamplingRate": {
-            "title": "音声データの出力サンプリングレート",
-            "type": "integer"
+          "manifest_version": {
+            "title": "マニフェストバージョン",
+            "type": "string"
           },
-          "outputStereo": {
-            "title": "音声データをステレオ出力するか否か",
-            "type": "boolean"
+          "name": {
+            "title": "音声ライブラリ名",
+            "type": "string"
           },
-          "pitchScale": {
-            "title": "全体の音高",
-            "type": "number"
+          "uuid": {
+            "title": "音声ライブラリのUUID",
+            "type": "string"
           },
-          "postPhonemeLength": {
-            "title": "音声の後の無音時間",
-            "type": "number"
-          },
-          "prePhonemeLength": {
-            "title": "音声の前の無音時間",
-            "type": "number"
-          },
-          "speedScale": {
-            "title": "全体の話速",
-            "type": "number"
-          },
-          "volumeScale": {
-            "title": "全体の音量",
-            "type": "number"
+          "version": {
+            "title": "音声ライブラリバージョン",
+            "type": "string"
           }
         },
         "required": [
-          "accent_phrases",
-          "speedScale",
-          "pitchScale",
-          "intonationScale",
-          "volumeScale",
-          "prePhonemeLength",
-          "postPhonemeLength",
-          "outputSamplingRate",
-          "outputStereo"
+          "manifest_version",
+          "name",
+          "version",
+          "uuid",
+          "brand_name",
+          "engine_name",
+          "engine_uuid"
         ],
-        "title": "AudioQuery",
+        "title": "AivmManifest",
         "type": "object"
       },
-      "AudioQuery-Output": {
+      "AudioQuery": {
         "description": "音声合成用のクエリ",
         "properties": {
           "accent_phrases": {
@@ -325,15 +301,7 @@
             "title": "エンジン名",
             "type": "string"
           },
-          "supported_features": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/SupportedFeatures"
-              }
-            ],
-            "title": "エンジンが持つ機能"
-          },
-          "supported_vvlib_manifest_version": {
+          "supported_aivm_manifest_version": {
             "anyOf": [
               {
                 "type": "string"
@@ -342,7 +310,15 @@
                 "type": "null"
               }
             ],
-            "title": "エンジンが対応するvvlibのバージョン"
+            "title": "エンジンが対応する AIVM (Aivis Voice Model) のバージョン"
+          },
+          "supported_features": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SupportedFeatures"
+              }
+            ],
+            "title": "エンジンが持つ機能"
           },
           "terms_of_service": {
             "title": "エンジンの利用規約",
@@ -376,7 +352,6 @@
           "terms_of_service",
           "update_infos",
           "dependency_licenses",
-          "supported_vvlib_manifest_version",
           "supported_features"
         ],
         "title": "EngineManifest",
@@ -572,8 +547,6 @@
         },
         "required": [
           "name",
-          "version",
-          "license",
           "text"
         ],
         "title": "LicenseInfo",
@@ -667,7 +640,6 @@
           }
         },
         "required": [
-          "key",
           "frame_length",
           "lyric"
         ],
@@ -939,7 +911,6 @@
         "required": [
           "id",
           "icon",
-          "portrait",
           "voice_samples"
         ],
         "title": "StyleInfo",
@@ -1035,9 +1006,7 @@
           "adjust_intonation_scale",
           "adjust_volume_scale",
           "interrogative_upspeak",
-          "synthesis_morphing",
-          "sing",
-          "manage_library"
+          "synthesis_morphing"
         ],
         "title": "SupportedFeatures",
         "type": "object"
@@ -1046,18 +1015,12 @@
         "description": "エンジンのアップデート情報",
         "properties": {
           "contributors": {
-            "anyOf": [
-              {
-                "items": {
-                  "type": "string"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "貢献者名"
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "貢献者名",
+            "type": "array"
           },
           "descriptions": {
             "items": {
@@ -1073,8 +1036,7 @@
         },
         "required": [
           "version",
-          "descriptions",
-          "contributors"
+          "descriptions"
         ],
         "title": "UpdateInfo",
         "type": "object"
@@ -1202,50 +1164,6 @@
           "type"
         ],
         "title": "ValidationError",
-        "type": "object"
-      },
-      "VvlibManifest": {
-        "description": "vvlib(VOICEVOX Library)に関する情報",
-        "properties": {
-          "brand_name": {
-            "title": "エンジンのブランド名",
-            "type": "string"
-          },
-          "engine_name": {
-            "title": "エンジン名",
-            "type": "string"
-          },
-          "engine_uuid": {
-            "title": "エンジンのUUID",
-            "type": "string"
-          },
-          "manifest_version": {
-            "title": "マニフェストバージョン",
-            "type": "string"
-          },
-          "name": {
-            "title": "音声ライブラリ名",
-            "type": "string"
-          },
-          "uuid": {
-            "title": "音声ライブラリのUUID",
-            "type": "string"
-          },
-          "version": {
-            "title": "音声ライブラリバージョン",
-            "type": "string"
-          }
-        },
-        "required": [
-          "manifest_version",
-          "name",
-          "version",
-          "uuid",
-          "brand_name",
-          "engine_name",
-          "engine_uuid"
-        ],
-        "title": "VvlibManifest",
         "type": "object"
       },
       "WordTypes": {
@@ -1449,7 +1367,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/AudioQuery-Output"
+                  "$ref": "#/components/schemas/AudioQuery"
                 }
               }
             },
@@ -1517,7 +1435,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/AudioQuery-Output"
+                  "$ref": "#/components/schemas/AudioQuery"
                 }
               }
             },
@@ -1574,7 +1492,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/AudioQuery-Input"
+                "$ref": "#/components/schemas/AudioQuery"
               }
             }
           },
@@ -2403,7 +2321,7 @@
             "application/json": {
               "schema": {
                 "items": {
-                  "$ref": "#/components/schemas/AudioQuery-Input"
+                  "$ref": "#/components/schemas/AudioQuery"
                 },
                 "title": "Queries",
                 "type": "array"
@@ -2901,7 +2819,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/AudioQuery-Input"
+                "$ref": "#/components/schemas/AudioQuery"
               }
             }
           },
@@ -2991,7 +2909,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/AudioQuery-Input"
+                "$ref": "#/components/schemas/AudioQuery"
               }
             }
           },

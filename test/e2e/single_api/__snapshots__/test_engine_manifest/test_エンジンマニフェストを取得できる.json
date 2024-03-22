@@ -13,6 +13,7 @@
   "icon": "MD5:f957eb4f5daedccb4eb6a5170f384bf4",
   "manifest_version": "0.13.1",
   "name": "AivisSpeech Engine",
+  "supported_aivm_manifest_version": "1.0.0",
   "supported_features": {
     "adjust_intonation_scale": true,
     "adjust_mora_pitch": false,
@@ -25,7 +26,6 @@
     "sing": false,
     "synthesis_morphing": true
   },
-  "supported_vvlib_manifest_version": null,
   "terms_of_service": "dummy teams of service",
   "update_infos": [
     {

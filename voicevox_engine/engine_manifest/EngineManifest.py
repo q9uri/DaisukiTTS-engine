@@ -67,8 +67,8 @@ class EngineManifest(BaseModel):
     terms_of_service: str = Field(title="エンジンの利用規約")
     update_infos: List[UpdateInfo] = Field(title="エンジンのアップデート情報")
     dependency_licenses: List[LicenseInfo] = Field(title="依存関係のライセンス情報")
-    supported_vvlib_manifest_version: Optional[str] = Field(
+    supported_aivm_manifest_version: Optional[str] = Field(
         default=None,
-        title="エンジンが対応するvvlibのバージョン",
+        title="エンジンが対応する AIVM (Aivis Voice Model) のバージョン",
     )
     supported_features: SupportedFeatures = Field(title="エンジンが持つ機能")

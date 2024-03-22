@@ -44,6 +44,7 @@ from voicevox_engine.metas.MetasStore import (
 )
 from voicevox_engine.model import (
     AccentPhrase,
+    AivmManifest,
     AudioQuery,
     BaseLibraryInfo,
     DownloadableLibraryInfo,
@@ -58,7 +59,6 @@ from voicevox_engine.model import (
     StyleIdNotFoundError,
     SupportedDevicesInfo,
     UserDictWord,
-    VvlibManifest,
     WordTypes,
 )
 from voicevox_engine.morphing import (
@@ -233,7 +233,7 @@ def generate_app(
     ).load_manifest()
     library_manager = LibraryManager(
         get_save_dir() / "installed_libraries",
-        engine_manifest_data.supported_vvlib_manifest_version,
+        engine_manifest_data.supported_aivm_manifest_version,
         engine_manifest_data.brand_name,
         engine_manifest_data.name,
         engine_manifest_data.uuid,
@@ -1435,7 +1435,7 @@ def generate_app(
 
         return Response(status_code=204)
 
-    # BaseLibraryInfo/VvlibManifestモデルはAPIとして表には出ないが、エディタ側で利用したいので、手動で追加する
+    # BaseLibraryInfo/AivmManifestモデルはAPIとして表には出ないが、エディタ側で利用したいので、手動で追加する
     # ref: https://fastapi.tiangolo.com/advanced/extending-openapi/#modify-the-openapi-schema
     def custom_openapi() -> Any:
         if app.openapi_schema:
@@ -1454,9 +1454,7 @@ def generate_app(
             # ref: https://fastapi.tiangolo.com/how-to/separate-openapi-schemas/
             separate_input_output_schemas=False,
         )
-        openapi_schema["components"]["schemas"][
-            "VvlibManifest"
-        ] = VvlibManifest.schema()
+        openapi_schema["components"]["schemas"]["AivmManifest"] = AivmManifest.schema()
         # ref_templateを指定しない場合、definitionsを参照してしまうので、手動で指定する
         base_library_info = BaseLibraryInfo.schema(
             ref_template="#/components/schemas/{model}"
