@@ -46,7 +46,7 @@ poetry run python run.py
 # AivisSpeech Engine のヘルプを表示
 poetry run python run.py --help
 
-# コードフォーマットを実行
+# コードフォーマットを自動修正
 poetry run pysen run format
 
 # コードフォーマットをチェック
@@ -61,8 +61,7 @@ poetry run pytest --snapshot-update
 
 -----
 
-<br>
-以下はオリジナルの VOICEVOX ENGINE の README です。<br>
+以下はオリジナルの VOICEVOX ENGINE の README です。
 <br>
 
 # VOICEVOX ENGINE
