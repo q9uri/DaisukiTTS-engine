@@ -233,7 +233,8 @@ class MockCoreWrapper(CoreWrapper):
         return json.dumps(
             {
                 "cpu": True,
-                "cuda": False,
+                "cuda": True,
+                "dml": False,
             }
         )
 
