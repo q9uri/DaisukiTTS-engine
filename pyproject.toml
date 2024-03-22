@@ -1,3 +1,11 @@
+[tool.taskipy.tasks]
+serve = "python run.py"
+format = "pysen run format"
+lint = "pysen run lint"
+test = "pytest"
+update-test = "pytest --update-snapshots"
+update-requirements = "poetry export --without-hashes -o requirements.txt && poetry export --without-hashes --with dev -o requirements-dev.txt && poetry export --without-hashes --with test -o requirements-test.txt && poetry export --without-hashes --with license -o requirements-license.txt"
+
 [tool.pysen]
 version = "0.10.5"
 
@@ -69,6 +77,7 @@ pyinstaller = "^5.13"
 pre-commit = "^2.16.0"
 poetry = "1.8.1"
 poetry-plugin-export = "^1.6.0"
+taskipy = "^1.12.2"
 
 [tool.poetry.group.test.dependencies]
 pysen = "~0.10.5"

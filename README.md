@@ -41,22 +41,25 @@ poetry install --no-root
 
 ```bash
 # 開発環境で AivisSpeech Engine を起動
-poetry run python run.py
+poetry run task serve
 
 # AivisSpeech Engine のヘルプを表示
-poetry run python run.py --help
+poetry run task serve --help
 
 # コードフォーマットを自動修正
-poetry run pysen run format
+poetry run task format
 
 # コードフォーマットをチェック
-poetry run pysen run lint
+poetry run task lint
 
 # テストを実行
-poetry run pytest
+poetry run task test
 
 # テストのスナップショットを更新
-poetry run pytest --snapshot-update
+poetry run task update-test
+
+# Poetry で管理している依存関係を requirements.txt に反映
+poetry run task update-requirements
 ```
 
 -----
