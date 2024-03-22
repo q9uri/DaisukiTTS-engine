@@ -151,7 +151,7 @@ def count_frame_per_unit(
 
 
 def _to_frame(sec: float) -> int:
-    FRAMERATE = 93.75  # 24000 / 256 [frame/sec]
+    FRAMERATE = 172.265625  # 44100 / 256 [frame/sec]
     # NOTE: `round` は偶数丸め。移植時に取扱い注意。詳細は voicevox_engine#552
     return np.round(sec * FRAMERATE).astype(np.int32).item()
 

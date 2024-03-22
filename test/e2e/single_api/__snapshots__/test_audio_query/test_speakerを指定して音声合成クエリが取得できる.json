@@ -50,7 +50,7 @@
   ],
   "intonationScale": 1.0,
   "kana": "テ'_ストデ_ス",
-  "outputSamplingRate": 24000,
+  "outputSamplingRate": 44100,
   "outputStereo": false,
   "pitchScale": 0.0,
   "postPhonemeLength": 0.1,

@@ -1638,7 +1638,7 @@ def main() -> None:
     # latest_core_version = get_latest_core_version(versions=list(tts_engines.keys()))
 
     # StyleBertVITS2TTSEngine を利用する
-    tts_engines = {MOCK_VER: StyleBertVITS2TTSEngine(use_gpu, load_all_models)}
+    tts_engines: dict[str, TTSEngine] = {MOCK_VER: StyleBertVITS2TTSEngine(use_gpu, load_all_models)}
     latest_core_version = MOCK_VER
 
     # Cancellable Engine

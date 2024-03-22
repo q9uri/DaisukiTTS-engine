@@ -9,7 +9,7 @@
       "version": "0.0.1"
     }
   ],
-  "frame_rate": 93.75,
+  "frame_rate": 172.265625,
   "icon": "MD5:f957eb4f5daedccb4eb6a5170f384bf4",
   "manifest_version": "0.13.1",
   "name": "AivisSpeech Engine",
@@ -23,7 +23,7 @@
     "interrogative_upspeak": false,
     "manage_library": true,
     "sing": false,
-    "synthesis_morphing": false
+    "synthesis_morphing": true
   },
   "supported_vvlib_manifest_version": null,
   "terms_of_service": "dummy teams of service",

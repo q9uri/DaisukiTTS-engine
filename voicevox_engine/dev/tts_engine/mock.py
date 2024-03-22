@@ -67,7 +67,7 @@ class MockTTSEngine(TTSEngine):
         """
         logger = getLogger("uvicorn")  # FastAPI / Uvicorn 内からの利用のため
         logger.info("[Mock] input text: %s" % text)
-        wave, sr = tts(text)
+        wave, _ = tts(text)
         wave /= 2**15
-        wave = resample(wave, 48000, 24000)
+        wave = resample(wave, 48000, 44100)
         return wave.astype(np.float32)

@@ -17,7 +17,8 @@ class MockCoreWrapper(CoreWrapper):
         cpu_num_threads: int = 0,
         load_all_models: bool = False,
     ) -> None:
-        self.default_sampling_rate = 24000
+        # Style-Bert-VITS2 の出力サンプリング周波数に合わせる
+        self.default_sampling_rate = 44100
 
     def metas(self) -> str:
         return json.dumps(
