@@ -82,7 +82,7 @@ class Note(BaseModel):
     音符ごとの情報
     """
 
-    key: int | None = Field(title="音階")
+    key: int | None = Field(default=None, title="音階")
     frame_length: int = Field(title="音符のフレーム長")
     lyric: str = Field(title="音符の歌詞")
 
