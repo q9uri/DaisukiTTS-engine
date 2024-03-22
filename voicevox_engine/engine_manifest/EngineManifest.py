@@ -15,7 +15,7 @@ class UpdateInfo(BaseModel):
 
     version: str = Field(title="エンジンのバージョン名")
     descriptions: List[str] = Field(title="アップデートの詳細についての説明")
-    contributors: Optional[List[str]] = Field(title="貢献者名")
+    contributors: List[str] = Field(default=[], title="貢献者名")
 
 
 class LicenseInfo(BaseModel):
@@ -24,8 +24,8 @@ class LicenseInfo(BaseModel):
     """
 
     name: str = Field(title="依存ライブラリ名")
-    version: Optional[str] = Field(title="依存ライブラリのバージョン")
-    license: Optional[str] = Field(title="依存ライブラリのライセンス名")
+    version: Optional[str] = Field(default=None, title="依存ライブラリのバージョン")
+    license: Optional[str] = Field(default=None, title="依存ライブラリのライセンス名")
     text: str = Field(title="依存ライブラリのライセンス本文")
 
 
@@ -44,9 +44,10 @@ class SupportedFeatures(BaseModel):
     synthesis_morphing: bool = Field(
         title="2種類のスタイルでモーフィングした音声を合成"
     )
-    sing: Optional[bool] = Field(title="歌唱音声合成")
+    sing: Optional[bool] = Field(default=None, title="歌唱音声合成")
     manage_library: Optional[bool] = Field(
-        title="音声ライブラリのインストール・アンインストール"
+        default=None,
+        title="音声ライブラリのインストール・アンインストール",
     )
 
 
@@ -67,6 +68,7 @@ class EngineManifest(BaseModel):
     update_infos: List[UpdateInfo] = Field(title="エンジンのアップデート情報")
     dependency_licenses: List[LicenseInfo] = Field(title="依存関係のライセンス情報")
     supported_vvlib_manifest_version: Optional[str] = Field(
-        title="エンジンが対応するvvlibのバージョン"
+        default=None,
+        title="エンジンが対応するvvlibのバージョン",
     )
     supported_features: SupportedFeatures = Field(title="エンジンが持つ機能")
