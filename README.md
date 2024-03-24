@@ -56,7 +56,7 @@ poetry run task lint
 poetry run task test
 
 # テストのスナップショットを更新
-poetry run task update-test
+poetry run task update-snapshots
 
 # Poetry で管理している依存関係を requirements.txt に反映
 poetry run task update-requirements

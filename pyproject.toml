@@ -3,7 +3,7 @@ serve = "python run.py"
 format = "pysen run format"
 lint = "pysen run lint"
 test = "pytest"
-update-test = "pytest --update-snapshots"
+update-snapshots = "pytest --snapshot-update"
 update-requirements = "poetry export --without-hashes -o requirements.txt && poetry export --without-hashes --with dev -o requirements-dev.txt && poetry export --without-hashes --with test -o requirements-test.txt && poetry export --without-hashes --with license -o requirements-license.txt"
 
 [tool.pysen]
