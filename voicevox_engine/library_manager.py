@@ -9,11 +9,7 @@ from fastapi import HTTPException
 from pydantic import ValidationError
 from semver.version import Version
 
-from voicevox_engine.model import (
-    AivmManifest,
-    DownloadableLibraryInfo,
-    InstalledLibraryInfo,
-)
+from voicevox_engine.model import AivmManifest, InstalledLibraryInfo
 
 __all__ = ["LibraryManager"]
 
@@ -21,18 +17,21 @@ INFO_FILE = "metas.json"
 
 
 class LibraryManager:
-    """AIVM (Aivis Voice Model) ライブラリの管理"""
+    """
+    AIVM (Aivis Voice Model) 音声合成モデルの管理
+    「ライブラリ」という名称のままなのは VOICEVOX ENGINE からの大幅な改変を避けるため
+    """
 
     def __init__(
         self,
-        library_root_dir: Path,
+        installed_models_dir: Path,
         supported_aivm_version: str | None,
         brand_name: str,
         engine_name: str,
         engine_uuid: str,
     ):
-        self.library_root_dir = library_root_dir
-        self.library_root_dir.mkdir(exist_ok=True)
+        self.installed_models_dir = installed_models_dir
+        self.installed_models_dir.mkdir(exist_ok=True)
         if supported_aivm_version is not None:
             self.supported_aivm_version = Version.parse(supported_aivm_version)
         else:
@@ -42,141 +41,121 @@ class LibraryManager:
         self.engine_name = engine_name
         self.engine_uuid = engine_uuid
 
-    def downloadable_libraries(self) -> list[DownloadableLibraryInfo]:
+    def installed_models(self) -> dict[str, InstalledLibraryInfo]:
         """
-        ダウンロード可能ライブラリの一覧を取得する
-
-        Returns
-        -------
-        - : list[DownloadableLibraryInfo]
-        """
-
-        # AivisSpeech Engine では実装しない
-        return []
-
-    def installed_libraries(self) -> dict[str, InstalledLibraryInfo]:
-        """
-        インストール済み AIVM ライブラリの情報を取得する
+        インストール済み音声合成モデルの情報を取得する
 
         Returns
         -------
         library : Dict[str, InstalledLibraryInfo]
-            インストール済み AIVM ライブラリの情報
+            インストール済み音声合成モデルの情報
         """
 
         library: dict[str, InstalledLibraryInfo] = {}
-        for library_dir in self.library_root_dir.iterdir():
+        for library_dir in self.installed_models_dir.iterdir():
             if library_dir.is_dir():
-                # ライブラリ情報の取得 from `library_root_dir / f"{library_uuid}" / "metas.json"`
+                # 音声合成モデル情報の取得 from `library_root_dir / f"{library_uuid}" / "metas.json"`
                 library_uuid = os.path.basename(library_dir)
                 with open(library_dir / INFO_FILE, encoding="utf-8") as f:
                     info = json.load(f)
-                # アンインストール出来ないライブラリを作る場合、何かしらの条件でFalseを設定する
                 library[library_uuid] = InstalledLibraryInfo(**info, uninstallable=True)
 
         return library
 
-    def install_library(self, library_id: str, file: BinaryIO) -> Path:
+    def install_models(self, model_uuid: str, file: BinaryIO) -> Path:
         """
-        AIVM ライブラリファイル (`.aivm`) をインストールする
+        音声合成モデルパッケージファイル (`.aivm`) をインストールする
 
         Parameters
         ----------
-        library_id : str
-            インストール対象のライブラリ ID
+        model_uuid : str
+            AIVM ファイルに紐づくモデル UUID (aivm_manifest.json に記載されているものと同一)
         file : BytesIO
-            ライブラリファイルの Blob
+            AIVM ファイルのバイナリ
 
         Returns
         -------
-        library_dir : Path
-            インストール済みライブラリの情報
+        model_dir : Path
+            インストール済みライブラリのディレクトリパス
         """
 
-        for downloadable_library in self.downloadable_libraries():
-            if downloadable_library.uuid == library_id:
-                library_info = downloadable_library.model_dump()
-                break
-        else:
-            raise HTTPException(
-                status_code=404,
-                detail=f"指定された音声ライブラリ {library_id} が見つかりません。",
-            )
-
         # ライブラリディレクトリの生成
-        library_dir = self.library_root_dir / library_id
+        library_dir = self.installed_models_dir / model_uuid
         library_dir.mkdir(exist_ok=True)
-
-        # metas.jsonの生成
-        with open(library_dir / INFO_FILE, "w", encoding="utf-8") as f:
-            json.dump(library_info, f, indent=4, ensure_ascii=False)
 
         # zipファイル形式のバリデーション
         if not zipfile.is_zipfile(file):
             raise HTTPException(
                 status_code=422,
-                detail=f"音声ライブラリ {library_id} は不正なファイルです。",
+                detail=f"音声ライブラリ {model_uuid} は不正なファイルです。",
             )
 
         with zipfile.ZipFile(file) as zf:
             if zf.testzip() is not None:
                 raise HTTPException(
                     status_code=422,
-                    detail=f"音声ライブラリ {library_id} は不正なファイルです。",
+                    detail=f"音声ライブラリ {model_uuid} は不正なファイルです。",
                 )
 
             # マニフェストファイルの存在とファイル形式をバリデーション
-            aivm_manifest = None
+            raw_aivm_manifest = None
             try:
-                aivm_manifest = json.loads(
+                raw_aivm_manifest = json.loads(
                     zf.read("aivm_manifest.json").decode("utf-8")
                 )
             except KeyError:
                 raise HTTPException(
                     status_code=422,
-                    detail=f"指定された音声ライブラリ {library_id} に aivm_manifest.json が存在しません。",
+                    detail=f"指定された音声ライブラリ {model_uuid} に aivm_manifest.json が存在しません。",
                 )
             except Exception:
                 raise HTTPException(
                     status_code=422,
-                    detail=f"指定された音声ライブラリ {library_id} の aivm_manifest.json は不正です。",
+                    detail=f"指定された音声ライブラリ {model_uuid} の aivm_manifest.json は不正です。",
                 )
 
             # マニフェスト形式のバリデーション
             try:
-                AivmManifest.model_validate(aivm_manifest)
+                aivm_manifest = AivmManifest.model_validate(raw_aivm_manifest)
             except ValidationError:
                 raise HTTPException(
                     status_code=422,
-                    detail=f"指定された音声ライブラリ {library_id} の aivm_manifest.json に不正なデータが含まれています。",
+                    detail=f"指定された音声ライブラリ {model_uuid} の aivm_manifest.json に不正なデータが含まれています。",
                 )
 
             # ライブラリバージョンのバリデーション
-            if not Version.is_valid(aivm_manifest["version"]):
+            if not Version.is_valid(aivm_manifest.version):
                 raise HTTPException(
                     status_code=422,
-                    detail=f"指定された音声ライブラリ {library_id} の version が不正です。",
+                    detail=f"指定された音声ライブラリ {model_uuid} の version が不正です。",
                 )
 
             # マニフェストバージョンのバリデーション
             try:
-                aivm_manifest_version = Version.parse(aivm_manifest["manifest_version"])
+                aivm_manifest_version = Version.parse(aivm_manifest.manifest_version)
             except ValueError:
                 raise HTTPException(
                     status_code=422,
-                    detail=f"指定された音声ライブラリ {library_id} の manifest_version が不正です。",
+                    detail=f"指定された音声ライブラリ {model_uuid} の manifest_version が不正です。",
                 )
             if aivm_manifest_version > self.supported_aivm_version:
                 raise HTTPException(
                     status_code=422,
-                    detail=f"指定された音声ライブラリ {library_id} は未対応です。",
+                    detail=f"指定された音声ライブラリ {model_uuid} は未対応です。",
                 )
 
             # ライブラリ-エンジン対応のバリデーション
-            if aivm_manifest["engine_uuid"] != self.engine_uuid:
+            if aivm_manifest.engine_uuid != self.engine_uuid:
                 raise HTTPException(
                     status_code=422,
-                    detail=f"指定された音声ライブラリ {library_id} は {self.engine_name} 向けではありません。",
+                    detail=f"指定された音声ライブラリ {model_uuid} は {self.engine_name} 向けではありません。",
+                )
+
+            # モデル UUID が一致するかのバリデーション
+            if aivm_manifest.uuid != model_uuid:
+                raise HTTPException(
+                    status_code=422,
+                    detail=f"指定された音声ライブラリの UUID {model_uuid} が aivm_manifest.json の記述と一致しません。",
                 )
 
             # 展開によるインストール
@@ -184,7 +163,7 @@ class LibraryManager:
 
         return library_dir
 
-    def uninstall_library(self, library_id: str) -> None:
+    def uninstall_models(self, library_id: str) -> None:
         """
         インストール済み AIVM ライブラリをアンインストールする
 
@@ -195,7 +174,7 @@ class LibraryManager:
         """
 
         # 対象ライブラリがインストール済みであることの確認
-        installed_libraries = self.installed_libraries()
+        installed_libraries = self.installed_models()
         if library_id not in installed_libraries.keys():
             raise HTTPException(
                 status_code=404,
@@ -211,7 +190,7 @@ class LibraryManager:
 
         # ディレクトリ削除によるアンインストール
         try:
-            shutil.rmtree(self.library_root_dir / library_id)
+            shutil.rmtree(self.installed_models_dir / library_id)
         except Exception:
             raise HTTPException(
                 status_code=500,

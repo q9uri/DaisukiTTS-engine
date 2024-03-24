@@ -1,9 +1,9 @@
 {
     "manifest_version": "1.0.0",
     "name": "Test AIVM",
-    "version": "0.0.1",
+    "version": "1.0.0",
     "uuid": "2bb8bccf-1c3f-4bc9-959a-f388e37af3ad",
-    "engine_name": "AivisSpeech Engine",
     "brand_name": "AivisSpeech",
+    "engine_name": "AivisSpeech Engine",
     "engine_uuid": "1b4a5014-d9fd-11ee-b97d-83c170a68ed3"
 }

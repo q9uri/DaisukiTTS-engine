@@ -241,7 +241,7 @@ def generate_app(
         engine_root() / "engine_manifest.json", engine_root()
     ).load_manifest()
     library_manager = LibraryManager(
-        get_save_dir() / "installed_libraries",
+        get_save_dir() / "installed_models",
         engine_manifest_data.supported_aivm_manifest_version,
         engine_manifest_data.brand_name,
         engine_manifest_data.name,
@@ -1039,48 +1039,48 @@ def generate_app(
         @app.get(
             "/downloadable_libraries",
             response_model=list[DownloadableLibraryInfo],
-            response_description="ダウンロード可能な音声ライブラリの情報リスト",
-            tags=["音声ライブラリ管理"],
+            response_description="ダウンロード可能な音声合成モデルの情報リスト",
+            tags=["音声合成モデル管理"],
+            summary="AivisSpeech Engine ではサポートされていない API です (常に 501 Not Implemented を返します)",
         )
         def downloadable_libraries() -> list[DownloadableLibraryInfo]:
             """
-            ダウンロード可能な音声ライブラリの情報を返します。
+            ダウンロード可能な音声合成モデルの情報を返します。
             """
-            if not engine_manifest_data.supported_features.manage_library:
-                raise HTTPException(
-                    status_code=404, detail="この機能は実装されていません"
-                )
-            return library_manager.downloadable_libraries()
+            raise HTTPException(
+                status_code=501,
+                detail="Downloadable libraries is not supported in AivisSpeech Engine.",
+            )
 
         @app.get(
             "/installed_libraries",
             response_model=dict[str, InstalledLibraryInfo],
-            response_description="インストールした音声ライブラリの情報",
-            tags=["音声ライブラリ管理"],
+            response_description="インストールした音声合成モデルの情報",
+            tags=["音声合成モデル管理"],
         )
         def installed_libraries() -> dict[str, InstalledLibraryInfo]:
             """
-            インストールした音声ライブラリの情報を返します。
+            インストールした音声合成モデルの情報を返します。
             """
             if not engine_manifest_data.supported_features.manage_library:
                 raise HTTPException(
                     status_code=404, detail="この機能は実装されていません"
                 )
-            return library_manager.installed_libraries()
+            return library_manager.installed_models()
 
         @app.post(
             "/install_library/{library_uuid}",
             status_code=204,
-            tags=["音声ライブラリ管理"],
+            tags=["音声合成モデル管理"],
             dependencies=[Depends(check_disabled_mutable_api)],
         )
         async def install_library(
-            library_uuid: Annotated[str, FAPath(description="音声ライブラリのID")],
+            library_uuid: Annotated[str, FAPath(description="音声合成モデルの UUID")],
             request: Request,
         ) -> Response:
             """
-            音声ライブラリをインストールします。
-            音声ライブラリのZIPファイルをリクエストボディとして送信してください。
+            音声合成モデルをインストールします。
+            音声合成モデルパッケージファイル (`.aivm`) をリクエストボディとして送信してください。
             """
             if not engine_manifest_data.supported_features.manage_library:
                 raise HTTPException(
@@ -1089,27 +1089,27 @@ def generate_app(
             archive = BytesIO(await request.body())
             loop = asyncio.get_event_loop()
             await loop.run_in_executor(
-                None, library_manager.install_library, library_uuid, archive
+                None, library_manager.install_models, library_uuid, archive
             )
             return Response(status_code=204)
 
         @app.post(
             "/uninstall_library/{library_uuid}",
             status_code=204,
-            tags=["音声ライブラリ管理"],
+            tags=["音声合成モデル管理"],
             dependencies=[Depends(check_disabled_mutable_api)],
         )
         def uninstall_library(
-            library_uuid: Annotated[str, FAPath(description="音声ライブラリのID")]
+            library_uuid: Annotated[str, FAPath(description="音声合成モデルの UUID")]
         ) -> Response:
             """
-            音声ライブラリをアンインストールします。
+            音声合成モデルをアンインストールします。
             """
             if not engine_manifest_data.supported_features.manage_library:
                 raise HTTPException(
                     status_code=404, detail="この機能は実装されていません"
                 )
-            library_manager.uninstall_library(library_uuid)
+            library_manager.uninstall_models(library_uuid)
             return Response(status_code=204)
 
     @app.post("/initialize_speaker", status_code=204, tags=["その他"])

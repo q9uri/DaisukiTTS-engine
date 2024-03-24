@@ -360,9 +360,9 @@ class AivmManifest(BaseModel):
     """
 
     manifest_version: StrictStr = Field(title="マニフェストバージョン")
-    name: StrictStr = Field(title="音声ライブラリ名")
-    version: StrictStr = Field(title="音声ライブラリバージョン")
-    uuid: StrictStr = Field(title="音声ライブラリのUUID")
+    name: StrictStr = Field(title="音声合成モデル名")
+    version: StrictStr = Field(title="音声合成モデルのバージョン")
+    uuid: StrictStr = Field(title="音声合成モデルの UUID")
     brand_name: StrictStr = Field(title="エンジンのブランド名")
     engine_name: StrictStr = Field(title="エンジン名")
-    engine_uuid: StrictStr = Field(title="エンジンのUUID")
+    engine_uuid: StrictStr = Field(title="エンジンの UUID")
