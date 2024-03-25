@@ -168,7 +168,7 @@ class StyleIdNotFoundError(LookupError):
 
 class LibrarySpeaker(BaseModel):
     """
-    音声ライブラリに含まれる話者の情報
+    音声合成モデルに含まれる話者の情報
     """
 
     speaker: Speaker = Field(title="話者情報")
@@ -177,21 +177,21 @@ class LibrarySpeaker(BaseModel):
 
 class BaseLibraryInfo(BaseModel):
     """
-    音声ライブラリの情報
+    音声合成モデルの情報
     """
 
-    name: str = Field(title="音声ライブラリの名前")
-    uuid: str = Field(title="音声ライブラリのUUID")
-    version: str = Field(title="音声ライブラリのバージョン")
-    download_url: str = Field(title="音声ライブラリのダウンロードURL")
-    bytes: int = Field(title="音声ライブラリのバイト数")
-    speakers: List[LibrarySpeaker] = Field(title="音声ライブラリに含まれる話者のリスト")
+    name: str = Field(title="音声合成モデルの名前")
+    uuid: str = Field(title="音声合成モデルの UUID")
+    version: str = Field(title="音声合成モデルのバージョン")
+    download_url: str = Field(title="音声合成モデルのダウンロード URL")
+    bytes: int = Field(title="音声合成モデルのバイト数")
+    speakers: List[LibrarySpeaker] = Field(title="音声合成モデルに含まれる話者のリスト")
 
 
 # 今後InstalledLibraryInfo同様に拡張する可能性を考え、モデルを分けている
 class DownloadableLibraryInfo(BaseLibraryInfo):
     """
-    ダウンロード可能な音声ライブラリの情報
+    ダウンロード可能な音声合成モデルの情報
     """
 
     pass
@@ -199,7 +199,7 @@ class DownloadableLibraryInfo(BaseLibraryInfo):
 
 class InstalledLibraryInfo(BaseLibraryInfo):
     """
-    インストール済み音声ライブラリの情報
+    インストール済み音声合成モデルの情報
     """
 
     uninstallable: bool = Field(title="アンインストール可能かどうか")

@@ -1062,11 +1062,7 @@ def generate_app(
             """
             インストールした音声合成モデルの情報を返します。
             """
-            if not engine_manifest_data.supported_features.manage_library:
-                raise HTTPException(
-                    status_code=404, detail="この機能は実装されていません"
-                )
-            return library_manager.installed_models()
+            return library_manager.get_installed_models()
 
         @app.post(
             "/install_library/{library_uuid}",
@@ -1082,14 +1078,10 @@ def generate_app(
             音声合成モデルをインストールします。
             音声合成モデルパッケージファイル (`.aivm`) をリクエストボディとして送信してください。
             """
-            if not engine_manifest_data.supported_features.manage_library:
-                raise HTTPException(
-                    status_code=404, detail="この機能は実装されていません"
-                )
             archive = BytesIO(await request.body())
             loop = asyncio.get_event_loop()
             await loop.run_in_executor(
-                None, library_manager.install_models, library_uuid, archive
+                None, library_manager.install_model, library_uuid, archive
             )
             return Response(status_code=204)
 
@@ -1105,11 +1097,7 @@ def generate_app(
             """
             音声合成モデルをアンインストールします。
             """
-            if not engine_manifest_data.supported_features.manage_library:
-                raise HTTPException(
-                    status_code=404, detail="この機能は実装されていません"
-                )
-            library_manager.uninstall_models(library_uuid)
+            library_manager.uninstall_model(library_uuid)
             return Response(status_code=204)
 
     @app.post("/initialize_speaker", status_code=204, tags=["その他"])
