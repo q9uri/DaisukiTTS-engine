@@ -33,12 +33,12 @@ from starlette.middleware.errors import ServerErrorMiddleware
 from starlette.responses import FileResponse
 
 from voicevox_engine import __version__
+from voicevox_engine.aivm_manager import AivmManager
 from voicevox_engine.cancellable_engine import CancellableEngine
 from voicevox_engine.core.core_adapter import CoreAdapter
 from voicevox_engine.core.core_initializer import MOCK_VER, initialize_cores
 from voicevox_engine.engine_manifest.EngineManifest import EngineManifest
 from voicevox_engine.engine_manifest.EngineManifestLoader import EngineManifestLoader
-from voicevox_engine.library_manager import LibraryManager
 from voicevox_engine.metas.Metas import StyleId
 from voicevox_engine.metas.MetasStore import (
     MetasStore,
@@ -47,12 +47,10 @@ from voicevox_engine.metas.MetasStore import (
 )
 from voicevox_engine.model import (
     AccentPhrase,
+    AivmInfo,
     AivmManifest,
     AudioQuery,
-    BaseLibraryInfo,
-    DownloadableLibraryInfo,
     FrameAudioQuery,
-    InstalledLibraryInfo,
     MorphableTargetInfo,
     ParseKanaBadRequest,
     ParseKanaError,
@@ -105,7 +103,7 @@ warnings.filterwarnings(
 )
 
 
-def b64encode_str(s):
+def b64encode_str(s: bytes) -> str:
     return base64.b64encode(s).decode("utf-8")
 
 
@@ -240,10 +238,9 @@ def generate_app(
     engine_manifest_data = EngineManifestLoader(
         engine_root() / "engine_manifest.json", engine_root()
     ).load_manifest()
-    library_manager = LibraryManager(
-        get_save_dir() / "installed_models",
+    aivm_manager = AivmManager(
+        get_save_dir() / "installed_aivm",
         engine_manifest_data.supported_aivm_manifest_version,
-        engine_manifest_data.brand_name,
         engine_manifest_data.name,
         engine_manifest_data.uuid,
     )
@@ -388,7 +385,7 @@ def generate_app(
                 return engine.create_accent_phrases_from_kana(text, style_id)
             except ParseKanaError as err:
                 raise HTTPException(
-                    status_code=400, detail=ParseKanaBadRequest(err).dict()
+                    status_code=400, detail=ParseKanaBadRequest(err).model_dump()
                 )
         else:
             return engine.create_accent_phrases(text, style_id)
@@ -1037,41 +1034,25 @@ def generate_app(
     if engine_manifest_data.supported_features.manage_library:
 
         @app.get(
-            "/downloadable_libraries",
-            response_model=list[DownloadableLibraryInfo],
-            response_description="ダウンロード可能な音声合成モデルの情報リスト",
-            tags=["音声合成モデル管理"],
-            summary="AivisSpeech Engine ではサポートされていない API です (常に 501 Not Implemented を返します)",
-        )
-        def downloadable_libraries() -> list[DownloadableLibraryInfo]:
-            """
-            ダウンロード可能な音声合成モデルの情報を返します。
-            """
-            raise HTTPException(
-                status_code=501,
-                detail="Downloadable libraries is not supported in AivisSpeech Engine.",
-            )
-
-        @app.get(
-            "/installed_libraries",
-            response_model=dict[str, InstalledLibraryInfo],
+            "/aivm_models",
+            response_model=dict[str, AivmInfo],
             response_description="インストールした音声合成モデルの情報",
-            tags=["音声合成モデル管理"],
+            tags=["AIVM 音声合成モデル管理"],
         )
-        def installed_libraries() -> dict[str, InstalledLibraryInfo]:
+        def get_installed_aivm_infos() -> dict[str, AivmInfo]:
             """
             インストールした音声合成モデルの情報を返します。
             """
-            return library_manager.get_installed_models()
+            return aivm_manager.get_installed_aivm_infos()
 
         @app.post(
-            "/install_library/{library_uuid}",
+            "/aivm_models/{aivm_uuid}",
             status_code=204,
-            tags=["音声合成モデル管理"],
+            tags=["AIVM 音声合成モデル管理"],
             dependencies=[Depends(check_disabled_mutable_api)],
         )
-        async def install_library(
-            library_uuid: Annotated[str, FAPath(description="音声合成モデルの UUID")],
+        async def install_aivm(
+            aivm_uuid: Annotated[str, FAPath(description="音声合成モデルの UUID")],
             request: Request,
         ) -> Response:
             """
@@ -1079,25 +1060,22 @@ def generate_app(
             音声合成モデルパッケージファイル (`.aivm`) をリクエストボディとして送信してください。
             """
             archive = BytesIO(await request.body())
-            loop = asyncio.get_event_loop()
-            await loop.run_in_executor(
-                None, library_manager.install_model, library_uuid, archive
-            )
+            await asyncio.to_thread(aivm_manager.install_aivm, aivm_uuid, archive)
             return Response(status_code=204)
 
-        @app.post(
-            "/uninstall_library/{library_uuid}",
+        @app.delete(
+            "/aivm_models/{aivm_uuid}",
             status_code=204,
-            tags=["音声合成モデル管理"],
+            tags=["AIVM 音声合成モデル管理"],
             dependencies=[Depends(check_disabled_mutable_api)],
         )
-        def uninstall_library(
-            library_uuid: Annotated[str, FAPath(description="音声合成モデルの UUID")]
+        def uninstall_aivm(
+            aivm_uuid: Annotated[str, FAPath(description="音声合成モデルの UUID")]
         ) -> Response:
             """
             音声合成モデルをアンインストールします。
             """
-            library_manager.uninstall_model(library_uuid)
+            aivm_manager.uninstall_aivm(aivm_uuid)
             return Response(status_code=204)
 
     @app.post("/initialize_speaker", status_code=204, tags=["その他"])
@@ -1319,7 +1297,7 @@ def generate_app(
         "/validate_kana",
         response_model=bool,
         tags=["その他"],
-        summary="テキストがAquesTalk 風記法に従っているか判定する",
+        summary="テキストが AquesTalk 風記法に従っているか判定する",
         responses={
             400: {
                 "description": "テキストが不正です",
@@ -1331,7 +1309,7 @@ def generate_app(
         text: Annotated[str, Query(description="判定する対象の文字列")]
     ) -> bool:
         """
-        テキストがAquesTalk 風記法に従っているかどうかを判定します。
+        テキストが AquesTalk 風記法に従っているかどうかを判定します。
         従っていない場合はエラーが返ります。
         """
         try:
@@ -1340,7 +1318,7 @@ def generate_app(
         except ParseKanaError as err:
             raise HTTPException(
                 status_code=400,
-                detail=ParseKanaBadRequest(err).dict(),
+                detail=ParseKanaBadRequest(err).model_dump(),
             )
 
     @app.get("/setting", response_class=Response, tags=["設定"])
@@ -1390,7 +1368,7 @@ def generate_app(
 
         return Response(status_code=204)
 
-    # BaseLibraryInfo/AivmManifestモデルはAPIとして表には出ないが、エディタ側で利用したいので、手動で追加する
+    # AivmManifest モデルは API として表には出ないが、エディタ側で利用したいので、手動で追加する
     # ref: https://fastapi.tiangolo.com/advanced/extending-openapi/#modify-the-openapi-schema
     def custom_openapi() -> Any:
         if app.openapi_schema:
@@ -1409,16 +1387,9 @@ def generate_app(
             # ref: https://fastapi.tiangolo.com/how-to/separate-openapi-schemas/
             separate_input_output_schemas=False,
         )
-        openapi_schema["components"]["schemas"]["AivmManifest"] = AivmManifest.schema()
-        # ref_templateを指定しない場合、definitionsを参照してしまうので、手動で指定する
-        base_library_info = BaseLibraryInfo.schema(
-            ref_template="#/components/schemas/{model}"
-        )
-        # definitionsは既存のモデルを重複して定義するため、不要なので削除
-        # del base_library_info["definitions"]
-        # Pydantic V2 で definitions -> $defs に変更された
-        del base_library_info["$defs"]
-        openapi_schema["components"]["schemas"]["BaseLibraryInfo"] = base_library_info
+        openapi_schema["components"]["schemas"][
+            "AivmManifest"
+        ] = AivmManifest.model_json_schema()
         app.openapi_schema = openapi_schema
         return openapi_schema
 
@@ -1672,7 +1643,7 @@ def main() -> None:
             cors_policy_mode=cors_policy_mode,
             allow_origin=allow_origin,
             disable_mutable_api=disable_mutable_api,
-        ),
+        ),  # type: ignore
         host=args.host,
         port=args.port,
     )

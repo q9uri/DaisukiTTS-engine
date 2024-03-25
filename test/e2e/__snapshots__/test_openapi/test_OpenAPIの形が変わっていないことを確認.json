@@ -39,6 +39,38 @@
         "title": "AccentPhrase",
         "type": "object"
       },
+      "AivmInfo": {
+        "description": "音声合成モデルの情報",
+        "properties": {
+          "name": {
+            "title": "音声合成モデルの名前",
+            "type": "string"
+          },
+          "speakers": {
+            "items": {
+              "$ref": "#/components/schemas/AivmSpeaker"
+            },
+            "title": "音声合成モデルに含まれる話者のリスト",
+            "type": "array"
+          },
+          "uuid": {
+            "title": "音声合成モデルの UUID",
+            "type": "string"
+          },
+          "version": {
+            "title": "音声合成モデルのバージョン",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "version",
+          "uuid",
+          "speakers"
+        ],
+        "title": "AivmInfo",
+        "type": "object"
+      },
       "AivmManifest": {
         "description": "AIVM (Aivis Voice Model) ライブラリに関する情報",
         "properties": {
@@ -51,7 +83,7 @@
             "type": "string"
           },
           "engine_uuid": {
-            "title": "エンジンのUUID",
+            "title": "エンジンの UUID",
             "type": "string"
           },
           "manifest_version": {
@@ -59,28 +91,55 @@
             "type": "string"
           },
           "name": {
-            "title": "音声ライブラリ名",
+            "title": "音声合成モデル名",
             "type": "string"
           },
           "uuid": {
-            "title": "音声ライブラリのUUID",
+            "title": "音声合成モデルの UUID",
             "type": "string"
           },
           "version": {
-            "title": "音声ライブラリバージョン",
+            "title": "音声合成モデルのバージョン",
             "type": "string"
           }
         },
         "required": [
           "manifest_version",
+          "uuid",
           "name",
           "version",
-          "uuid",
           "brand_name",
           "engine_name",
           "engine_uuid"
         ],
         "title": "AivmManifest",
+        "type": "object"
+      },
+      "AivmSpeaker": {
+        "description": "音声合成モデルに含まれる話者の情報",
+        "properties": {
+          "speaker": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Speaker"
+              }
+            ],
+            "title": "話者情報"
+          },
+          "speaker_info": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SpeakerInfo"
+              }
+            ],
+            "title": "話者の追加情報"
+          }
+        },
+        "required": [
+          "speaker",
+          "speaker_info"
+        ],
+        "title": "AivmSpeaker",
         "type": "object"
       },
       "AudioQuery": {
@@ -151,48 +210,6 @@
         "title": "AudioQuery",
         "type": "object"
       },
-      "BaseLibraryInfo": {
-        "description": "音声ライブラリの情報",
-        "properties": {
-          "bytes": {
-            "title": "音声ライブラリのバイト数",
-            "type": "integer"
-          },
-          "download_url": {
-            "title": "音声ライブラリのダウンロードURL",
-            "type": "string"
-          },
-          "name": {
-            "title": "音声ライブラリの名前",
-            "type": "string"
-          },
-          "speakers": {
-            "items": {
-              "$ref": "#/components/schemas/LibrarySpeaker"
-            },
-            "title": "音声ライブラリに含まれる話者のリスト",
-            "type": "array"
-          },
-          "uuid": {
-            "title": "音声ライブラリのUUID",
-            "type": "string"
-          },
-          "version": {
-            "title": "音声ライブラリのバージョン",
-            "type": "string"
-          }
-        },
-        "required": [
-          "name",
-          "uuid",
-          "version",
-          "download_url",
-          "bytes",
-          "speakers"
-        ],
-        "title": "BaseLibraryInfo",
-        "type": "object"
-      },
       "Body_setting_post_setting_post": {
         "properties": {
           "allow_origin": {
@@ -224,48 +241,6 @@
         ],
         "title": "CorsPolicyMode",
         "type": "string"
-      },
-      "DownloadableLibraryInfo": {
-        "description": "ダウンロード可能な音声ライブラリの情報",
-        "properties": {
-          "bytes": {
-            "title": "音声ライブラリのバイト数",
-            "type": "integer"
-          },
-          "download_url": {
-            "title": "音声ライブラリのダウンロードURL",
-            "type": "string"
-          },
-          "name": {
-            "title": "音声ライブラリの名前",
-            "type": "string"
-          },
-          "speakers": {
-            "items": {
-              "$ref": "#/components/schemas/LibrarySpeaker"
-            },
-            "title": "音声ライブラリに含まれる話者のリスト",
-            "type": "array"
-          },
-          "uuid": {
-            "title": "音声ライブラリのUUID",
-            "type": "string"
-          },
-          "version": {
-            "title": "音声ライブラリのバージョン",
-            "type": "string"
-          }
-        },
-        "required": [
-          "name",
-          "uuid",
-          "version",
-          "download_url",
-          "bytes",
-          "speakers"
-        ],
-        "title": "DownloadableLibraryInfo",
-        "type": "object"
       },
       "EngineManifest": {
         "description": "エンジン自体に関する情報",
@@ -435,80 +410,6 @@
           }
         },
         "title": "HTTPValidationError",
-        "type": "object"
-      },
-      "InstalledLibraryInfo": {
-        "description": "インストール済み音声ライブラリの情報",
-        "properties": {
-          "bytes": {
-            "title": "音声ライブラリのバイト数",
-            "type": "integer"
-          },
-          "download_url": {
-            "title": "音声ライブラリのダウンロードURL",
-            "type": "string"
-          },
-          "name": {
-            "title": "音声ライブラリの名前",
-            "type": "string"
-          },
-          "speakers": {
-            "items": {
-              "$ref": "#/components/schemas/LibrarySpeaker"
-            },
-            "title": "音声ライブラリに含まれる話者のリスト",
-            "type": "array"
-          },
-          "uninstallable": {
-            "title": "アンインストール可能かどうか",
-            "type": "boolean"
-          },
-          "uuid": {
-            "title": "音声ライブラリのUUID",
-            "type": "string"
-          },
-          "version": {
-            "title": "音声ライブラリのバージョン",
-            "type": "string"
-          }
-        },
-        "required": [
-          "name",
-          "uuid",
-          "version",
-          "download_url",
-          "bytes",
-          "speakers",
-          "uninstallable"
-        ],
-        "title": "InstalledLibraryInfo",
-        "type": "object"
-      },
-      "LibrarySpeaker": {
-        "description": "音声ライブラリに含まれる話者の情報",
-        "properties": {
-          "speaker": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Speaker"
-              }
-            ],
-            "title": "話者情報"
-          },
-          "speaker_info": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/SpeakerInfo"
-              }
-            ],
-            "title": "話者の追加情報"
-          }
-        },
-        "required": [
-          "speaker",
-          "speaker_info"
-        ],
-        "title": "LibrarySpeaker",
         "type": "object"
       },
       "LicenseInfo": {
@@ -1328,6 +1229,106 @@
         ]
       }
     },
+    "/aivm_models": {
+      "get": {
+        "description": "インストールした音声合成モデルの情報を返します。",
+        "operationId": "get_installed_aivm_infos_aivm_models_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "$ref": "#/components/schemas/AivmInfo"
+                  },
+                  "title": "Response Get Installed Aivm Infos Aivm Models Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "インストールした音声合成モデルの情報"
+          }
+        },
+        "summary": "Get Installed Aivm Infos",
+        "tags": [
+          "AIVM 音声合成モデル管理"
+        ]
+      }
+    },
+    "/aivm_models/{aivm_uuid}": {
+      "delete": {
+        "description": "音声合成モデルをアンインストールします。",
+        "operationId": "uninstall_aivm_aivm_models__aivm_uuid__delete",
+        "parameters": [
+          {
+            "description": "音声合成モデルの UUID",
+            "in": "path",
+            "name": "aivm_uuid",
+            "required": true,
+            "schema": {
+              "description": "音声合成モデルの UUID",
+              "title": "Aivm Uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Uninstall Aivm",
+        "tags": [
+          "AIVM 音声合成モデル管理"
+        ]
+      },
+      "post": {
+        "description": "音声合成モデルをインストールします。\n音声合成モデルパッケージファイル (`.aivm`) をリクエストボディとして送信してください。",
+        "operationId": "install_aivm_aivm_models__aivm_uuid__post",
+        "parameters": [
+          {
+            "description": "音声合成モデルの UUID",
+            "in": "path",
+            "name": "aivm_uuid",
+            "required": true,
+            "schema": {
+              "description": "音声合成モデルの UUID",
+              "title": "Aivm Uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Install Aivm",
+        "tags": [
+          "AIVM 音声合成モデル管理"
+        ]
+      }
+    },
     "/audio_query": {
       "post": {
         "description": "音声合成用のクエリの初期値を得ます。ここで得られたクエリはそのまま音声合成に利用できます。各値の意味は`Schemas`を参照してください。",
@@ -1643,32 +1644,6 @@
         ]
       }
     },
-    "/downloadable_libraries": {
-      "get": {
-        "description": "ダウンロード可能な音声ライブラリの情報を返します。",
-        "operationId": "downloadable_libraries_downloadable_libraries_get",
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "items": {
-                    "$ref": "#/components/schemas/DownloadableLibraryInfo"
-                  },
-                  "title": "Response Downloadable Libraries Downloadable Libraries Get",
-                  "type": "array"
-                }
-              }
-            },
-            "description": "ダウンロード可能な音声ライブラリの情報リスト"
-          }
-        },
-        "summary": "Downloadable Libraries",
-        "tags": [
-          "音声ライブラリ管理"
-        ]
-      }
-    },
     "/engine_manifest": {
       "get": {
         "operationId": "engine_manifest_engine_manifest_get",
@@ -1873,70 +1848,6 @@
         "summary": "Initialize Speaker",
         "tags": [
           "その他"
-        ]
-      }
-    },
-    "/install_library/{library_uuid}": {
-      "post": {
-        "description": "音声ライブラリをインストールします。\n音声ライブラリのZIPファイルをリクエストボディとして送信してください。",
-        "operationId": "install_library_install_library__library_uuid__post",
-        "parameters": [
-          {
-            "description": "音声ライブラリのID",
-            "in": "path",
-            "name": "library_uuid",
-            "required": true,
-            "schema": {
-              "description": "音声ライブラリのID",
-              "title": "Library Uuid",
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "Successful Response"
-          },
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            },
-            "description": "Validation Error"
-          }
-        },
-        "summary": "Install Library",
-        "tags": [
-          "音声ライブラリ管理"
-        ]
-      }
-    },
-    "/installed_libraries": {
-      "get": {
-        "description": "インストールした音声ライブラリの情報を返します。",
-        "operationId": "installed_libraries_installed_libraries_get",
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "additionalProperties": {
-                    "$ref": "#/components/schemas/InstalledLibraryInfo"
-                  },
-                  "title": "Response Installed Libraries Installed Libraries Get",
-                  "type": "object"
-                }
-              }
-            },
-            "description": "インストールした音声ライブラリの情報"
-          }
-        },
-        "summary": "Installed Libraries",
-        "tags": [
-          "音声ライブラリ管理"
         ]
       }
     },
@@ -2957,44 +2868,6 @@
         ]
       }
     },
-    "/uninstall_library/{library_uuid}": {
-      "post": {
-        "description": "音声ライブラリをアンインストールします。",
-        "operationId": "uninstall_library_uninstall_library__library_uuid__post",
-        "parameters": [
-          {
-            "description": "音声ライブラリのID",
-            "in": "path",
-            "name": "library_uuid",
-            "required": true,
-            "schema": {
-              "description": "音声ライブラリのID",
-              "title": "Library Uuid",
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "Successful Response"
-          },
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            },
-            "description": "Validation Error"
-          }
-        },
-        "summary": "Uninstall Library",
-        "tags": [
-          "音声ライブラリ管理"
-        ]
-      }
-    },
     "/update_preset": {
       "post": {
         "description": "既存のプリセットを更新します",
@@ -3323,7 +3196,7 @@
     },
     "/validate_kana": {
       "post": {
-        "description": "テキストがAquesTalk 風記法に従っているかどうかを判定します。\n従っていない場合はエラーが返ります。",
+        "description": "テキストが AquesTalk 風記法に従っているかどうかを判定します。\n従っていない場合はエラーが返ります。",
         "operationId": "validate_kana_validate_kana_post",
         "parameters": [
           {
@@ -3371,7 +3244,7 @@
             "description": "Validation Error"
           }
         },
-        "summary": "テキストがAquesTalk 風記法に従っているか判定する",
+        "summary": "テキストが AquesTalk 風記法に従っているか判定する",
         "tags": [
           "その他"
         ]

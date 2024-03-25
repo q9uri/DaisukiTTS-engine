@@ -166,45 +166,6 @@ class StyleIdNotFoundError(LookupError):
         super().__init__(f"style_id {style_id} is not found.", *args, **kywrds)
 
 
-class LibrarySpeaker(BaseModel):
-    """
-    音声合成モデルに含まれる話者の情報
-    """
-
-    speaker: Speaker = Field(title="話者情報")
-    speaker_info: SpeakerInfo = Field(title="話者の追加情報")
-
-
-class BaseLibraryInfo(BaseModel):
-    """
-    音声合成モデルの情報
-    """
-
-    name: str = Field(title="音声合成モデルの名前")
-    uuid: str = Field(title="音声合成モデルの UUID")
-    version: str = Field(title="音声合成モデルのバージョン")
-    download_url: str = Field(title="音声合成モデルのダウンロード URL")
-    bytes: int = Field(title="音声合成モデルのバイト数")
-    speakers: List[LibrarySpeaker] = Field(title="音声合成モデルに含まれる話者のリスト")
-
-
-# 今後InstalledLibraryInfo同様に拡張する可能性を考え、モデルを分けている
-class DownloadableLibraryInfo(BaseLibraryInfo):
-    """
-    ダウンロード可能な音声合成モデルの情報
-    """
-
-    pass
-
-
-class InstalledLibraryInfo(BaseLibraryInfo):
-    """
-    インストール済み音声合成モデルの情報
-    """
-
-    uninstallable: bool = Field(title="アンインストール可能かどうか")
-
-
 USER_DICT_MIN_PRIORITY = 0
 USER_DICT_MAX_PRIORITY = 10
 
@@ -360,9 +321,29 @@ class AivmManifest(BaseModel):
     """
 
     manifest_version: StrictStr = Field(title="マニフェストバージョン")
+    uuid: StrictStr = Field(title="音声合成モデルの UUID")
     name: StrictStr = Field(title="音声合成モデル名")
     version: StrictStr = Field(title="音声合成モデルのバージョン")
-    uuid: StrictStr = Field(title="音声合成モデルの UUID")
     brand_name: StrictStr = Field(title="エンジンのブランド名")
     engine_name: StrictStr = Field(title="エンジン名")
     engine_uuid: StrictStr = Field(title="エンジンの UUID")
+
+
+class AivmSpeaker(BaseModel):
+    """
+    音声合成モデルに含まれる話者の情報
+    """
+
+    speaker: Speaker = Field(title="話者情報")
+    speaker_info: SpeakerInfo = Field(title="話者の追加情報")
+
+
+class AivmInfo(BaseModel):
+    """
+    音声合成モデルの情報
+    """
+
+    name: str = Field(title="音声合成モデルの名前")
+    version: str = Field(title="音声合成モデルのバージョン")
+    uuid: str = Field(title="音声合成モデルの UUID")
+    speakers: List[AivmSpeaker] = Field(title="音声合成モデルに含まれる話者のリスト")
