@@ -871,20 +871,26 @@ def generate_app(
 
     @app.get("/speakers", response_model=list[Speaker], tags=["その他"])
     def speakers(
-        core_version: str | None = None,
+        core_version: str | None = Query(None, description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。"),  # noqa # fmt: skip
     ) -> list[Speaker]:
+        # AivisSpeech Engine では常に AivmManager から Speaker を取得する
+        return aivm_manager.get_speakers()
+
         speakers = metas_store.load_combined_metas(get_core(core_version))
         return filter_speakers_and_styles(speakers, "speaker")
 
     @app.get("/speaker_info", response_model=SpeakerInfo, tags=["その他"])
     def speaker_info(
-        speaker_uuid: str,
-        core_version: str | None = None,
+        speaker_uuid: str = Query(..., description="話者の UUID 。"),  # noqa
+        core_version: str | None = Query(None, description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。"),  # noqa # fmt: skip
     ) -> SpeakerInfo:
         """
         指定されたspeaker_uuidに関する情報をjson形式で返します。
         画像や音声はbase64エンコードされたものが返されます。
         """
+        # AivisSpeech Engine では常に AivmManager から SpeakerInfo を取得する
+        return aivm_manager.get_speaker_info(speaker_uuid)
+
         return _speaker_info(
             speaker_uuid=speaker_uuid,
             speaker_or_singer="speaker",

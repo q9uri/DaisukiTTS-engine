@@ -55,9 +55,53 @@ class AivmManager:
         self.installed_aivm_dir.mkdir(exist_ok=True)
         self.logger = logging.getLogger("uvicorn")
 
+    def get_speakers(self) -> list[Speaker]:
+        """
+        すべてのインストール済み音声合成モデル内の話者の一覧を取得する
+
+        Returns
+        -------
+        speakers : list[Speaker]
+            インストール済み音声合成モデル内の話者の一覧
+        """
+
+        aivm_infos = self.get_installed_aivm_infos()
+        speakers: list[Speaker] = []
+        for aivm_info in aivm_infos.values():
+            for aivm_info_speaker in aivm_info.speakers:
+                speakers.append(aivm_info_speaker.speaker)
+
+        return speakers
+
+    def get_speaker_info(self, speaker_uuid: str) -> SpeakerInfo:
+        """
+        インストール済み音声合成モデル内の話者の追加情報を取得する
+
+        Parameters
+        ----------
+        speaker_uuid : str
+            話者の UUID (aivm_manifest.json に記載されているものと同一)
+
+        Returns
+        -------
+        speaker_info : SpeakerInfo
+            話者の追加情報
+        """
+
+        aivm_infos = self.get_installed_aivm_infos()
+        for aivm_info in aivm_infos.values():
+            for aivm_info_speaker in aivm_info.speakers:
+                if aivm_info_speaker.speaker.speaker_uuid == speaker_uuid:
+                    return aivm_info_speaker.speaker_info
+
+        raise HTTPException(
+            status_code=404,
+            detail=f"話者 {speaker_uuid} はインストールされていません。",
+        )
+
     def get_installed_aivm_infos(self) -> dict[str, AivmInfo]:
         """
-        インストール済み音声合成モデルの情報を取得する
+        すべてのインストール済み音声合成モデルの情報を取得する
 
         Returns
         -------
