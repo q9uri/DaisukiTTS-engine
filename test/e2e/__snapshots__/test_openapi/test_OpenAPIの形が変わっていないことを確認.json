@@ -109,72 +109,6 @@
         "type": "object"
       },
       "AivmManifest": {
-        "$defs": {
-          "AivisManifestSpeaker": {
-            "description": "AIVM (Aivis Voice Model) マニフェストの話者の定義\n画像や音声サンプルは容量が大きいためマニフェストには含まれず、 別途ファイルとして AIVM に格納される",
-            "properties": {
-              "id": {
-                "title": "話者の ID (この AIVM ファイル内で一意な 0 から始まる連番で、speaker_uuid とは異なる)",
-                "type": "integer"
-              },
-              "name": {
-                "title": "話者の名前",
-                "type": "string"
-              },
-              "styles": {
-                "items": {
-                  "$ref": "#/$defs/AivisManifestSpeakerStyle"
-                },
-                "title": "話者スタイルのリスト",
-                "type": "array"
-              },
-              "supported_languages": {
-                "items": {
-                  "type": "string"
-                },
-                "title": "話者の対応言語のリスト (ja, en, zh のような ISO 639-1 言語コード)",
-                "type": "array"
-              },
-              "uuid": {
-                "title": "話者の UUID (speaker_uuid と一致する)",
-                "type": "string"
-              },
-              "version": {
-                "title": "話者のバージョン",
-                "type": "string"
-              }
-            },
-            "required": [
-              "name",
-              "supported_languages",
-              "id",
-              "uuid",
-              "version",
-              "styles"
-            ],
-            "title": "AivisManifestSpeaker",
-            "type": "object"
-          },
-          "AivisManifestSpeakerStyle": {
-            "description": "AIVM (Aivis Voice Model) マニフェストの話者スタイルの定義",
-            "properties": {
-              "id": {
-                "title": "スタイルの ID (この AIVM ファイル内で一意な 0 から始まる連番で、style_id とは異なる)",
-                "type": "integer"
-              },
-              "name": {
-                "title": "スタイルの名前",
-                "type": "string"
-              }
-            },
-            "required": [
-              "name",
-              "id"
-            ],
-            "title": "AivisManifestSpeakerStyle",
-            "type": "object"
-          }
-        },
         "description": "AIVM (Aivis Voice Model) マニフェストの定義",
         "properties": {
           "description": {
@@ -195,7 +129,7 @@
           },
           "speakers": {
             "items": {
-              "$ref": "#/$defs/AivisManifestSpeaker"
+              "$ref": "#/components/schemas/AivmManifestSpeaker"
             },
             "title": "音声合成モデルに含まれる話者のリスト",
             "type": "array"
@@ -219,6 +153,70 @@
           "speakers"
         ],
         "title": "AivmManifest",
+        "type": "object"
+      },
+      "AivmManifestSpeaker": {
+        "description": "AIVM (Aivis Voice Model) マニフェストの話者の定義\n画像や音声サンプルは容量が大きいためマニフェストには含まれず、 別途ファイルとして AIVM に格納される",
+        "properties": {
+          "id": {
+            "title": "話者の ID (この AIVM ファイル内で一意な 0 から始まる連番で、speaker_uuid とは異なる)",
+            "type": "integer"
+          },
+          "name": {
+            "title": "話者の名前",
+            "type": "string"
+          },
+          "styles": {
+            "items": {
+              "$ref": "#/components/schemas/AivmManifestSpeakerStyle"
+            },
+            "title": "話者スタイルのリスト",
+            "type": "array"
+          },
+          "supported_languages": {
+            "items": {
+              "type": "string"
+            },
+            "title": "話者の対応言語のリスト (ja, en, zh のような ISO 639-1 言語コード)",
+            "type": "array"
+          },
+          "uuid": {
+            "title": "話者の UUID (speaker_uuid と一致する)",
+            "type": "string"
+          },
+          "version": {
+            "title": "話者のバージョン",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "supported_languages",
+          "id",
+          "uuid",
+          "version",
+          "styles"
+        ],
+        "title": "AivmManifestSpeaker",
+        "type": "object"
+      },
+      "AivmManifestSpeakerStyle": {
+        "description": "AIVM (Aivis Voice Model) マニフェストの話者スタイルの定義",
+        "properties": {
+          "id": {
+            "title": "スタイルの ID (この AIVM ファイル内で一意な 0 から始まる連番で、style_id とは異なる)",
+            "type": "integer"
+          },
+          "name": {
+            "title": "スタイルの名前",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "id"
+        ],
+        "title": "AivmManifestSpeakerStyle",
         "type": "object"
       },
       "AudioQuery": {
@@ -1403,6 +1401,51 @@
           }
         },
         "summary": "Install Aivm",
+        "tags": [
+          "AIVM 音声合成モデル管理"
+        ]
+      }
+    },
+    "/aivm_models/{aivm_uuid}/manifest": {
+      "get": {
+        "description": "音声合成モデルの AIVM マニフェストを返します。",
+        "operationId": "get_aivm_manifest_aivm_models__aivm_uuid__manifest_get",
+        "parameters": [
+          {
+            "description": "音声合成モデルの UUID",
+            "in": "path",
+            "name": "aivm_uuid",
+            "required": true,
+            "schema": {
+              "description": "音声合成モデルの UUID",
+              "title": "Aivm Uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AivmManifest"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Aivm Manifest",
         "tags": [
           "AIVM 音声合成モデル管理"
         ]

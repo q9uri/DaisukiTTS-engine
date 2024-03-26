@@ -344,7 +344,7 @@ class AivmInfo(BaseModel):
     )
 
 
-class AivisManifestSpeakerStyle(BaseModel):
+class AivmManifestSpeakerStyle(BaseModel):
     """
     AIVM (Aivis Voice Model) マニフェストの話者スタイルの定義
     """
@@ -355,7 +355,7 @@ class AivisManifestSpeakerStyle(BaseModel):
     )
 
 
-class AivisManifestSpeaker(BaseModel):
+class AivmManifestSpeaker(BaseModel):
     """
     AIVM (Aivis Voice Model) マニフェストの話者の定義
     画像や音声サンプルは容量が大きいためマニフェストには含まれず、 別途ファイルとして AIVM に格納される
@@ -370,7 +370,7 @@ class AivisManifestSpeaker(BaseModel):
     )
     uuid: StrictStr = Field(title="話者の UUID (speaker_uuid と一致する)")
     version: StrictStr = Field(title="話者のバージョン")
-    styles: list[AivisManifestSpeakerStyle] = Field(title="話者スタイルのリスト")
+    styles: list[AivmManifestSpeakerStyle] = Field(title="話者スタイルのリスト")
 
 
 class AivmManifest(BaseModel):
@@ -391,6 +391,6 @@ class AivmManifest(BaseModel):
     )
     uuid: StrictStr = Field(title="音声合成モデルの UUID")
     version: StrictStr = Field(title="音声合成モデルのバージョン")
-    speakers: list[AivisManifestSpeaker] = Field(
+    speakers: list[AivmManifestSpeaker] = Field(
         title="音声合成モデルに含まれる話者のリスト"
     )

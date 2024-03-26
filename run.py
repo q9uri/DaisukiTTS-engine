@@ -15,7 +15,7 @@ from functools import lru_cache
 from io import BytesIO, TextIOWrapper
 from pathlib import Path
 from tempfile import NamedTemporaryFile, TemporaryFile
-from typing import Annotated, Any, Optional
+from typing import Annotated, Optional
 
 import soundfile
 import uvicorn
@@ -23,7 +23,6 @@ from fastapi import Body, Depends, FastAPI, Form, HTTPException
 from fastapi import Path as FAPath
 from fastapi import Query, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.openapi.utils import get_openapi
 from fastapi.responses import JSONResponse
 from fastapi.templating import Jinja2Templates
 from pydantic import ValidationError
@@ -1075,6 +1074,19 @@ def generate_app(
         aivm_manager.uninstall_aivm(aivm_uuid)
         return Response(status_code=204)
 
+    @app.get(
+        "/aivm_models/{aivm_uuid}/manifest",
+        response_model=AivmManifest,
+        tags=["AIVM 音声合成モデル管理"],
+    )
+    def get_aivm_manifest(
+        aivm_uuid: Annotated[str, FAPath(description="音声合成モデルの UUID")]
+    ) -> AivmManifest:
+        """
+        音声合成モデルの AIVM マニフェストを返します。
+        """
+        return aivm_manager.get_aivm_manifest(aivm_uuid)
+
     @app.post("/initialize_speaker", status_code=204, tags=["その他"])
     def initialize_speaker(
         style_id: StyleId = Query(alias="speaker"),  # noqa: B008
@@ -1364,33 +1376,6 @@ def generate_app(
         setting_loader.save(settings)
 
         return Response(status_code=204)
-
-    # AivmManifest モデルは API として表には出ないが、エディタ側で利用したいので、手動で追加する
-    # ref: https://fastapi.tiangolo.com/advanced/extending-openapi/#modify-the-openapi-schema
-    def custom_openapi() -> Any:
-        if app.openapi_schema:
-            return app.openapi_schema
-        openapi_schema = get_openapi(
-            title=app.title,
-            version=app.version,
-            description=app.description,
-            routes=app.routes,
-            tags=app.openapi_tags,
-            servers=app.servers,
-            terms_of_service=app.terms_of_service,
-            contact=app.contact,
-            license_info=app.license_info,
-            # OpenAPI Generator が自動生成するコードとの互換性が壊れるため、リクエストとレスポンスで Pydantic スキーマを分離しないようにする
-            # ref: https://fastapi.tiangolo.com/how-to/separate-openapi-schemas/
-            separate_input_output_schemas=False,
-        )
-        openapi_schema["components"]["schemas"][
-            "AivmManifest"
-        ] = AivmManifest.model_json_schema()
-        app.openapi_schema = openapi_schema
-        return openapi_schema
-
-    app.openapi = custom_openapi  # type: ignore[method-assign]
 
     return app
 
