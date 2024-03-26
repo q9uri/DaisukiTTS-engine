@@ -73,7 +73,7 @@ class AivmManager:
                 ## 話者情報は後で追加するため、空リストを渡す
                 aivm_manifest = self.get_aivm_manifest(aivm_uuid)
                 aivm_info = AivmInfo(
-                    architecture=aivm_manifest.architecture,
+                    model_architecture=aivm_manifest.model_architecture,
                     uuid=aivm_manifest.uuid,
                     name=aivm_manifest.name,
                     description=aivm_manifest.description,
@@ -318,10 +318,10 @@ class AivmManager:
                 )
 
             # 音声合成モデルのアーキテクチャのバリデーション
-            if aivm_manifest.architecture not in self.SUPPORTED_ARCHITECTURES:
+            if aivm_manifest.model_architecture not in self.SUPPORTED_ARCHITECTURES:
                 raise HTTPException(
                     status_code=422,
-                    detail=f"音声合成モデル {aivm_uuid} の architecture ({aivm_manifest.architecture}) は未対応です。",
+                    detail=f"音声合成モデル {aivm_uuid} の architecture ({aivm_manifest.model_architecture}) は未対応です。",
                 )
 
             # 音声合成モデルの UUID のバリデーション

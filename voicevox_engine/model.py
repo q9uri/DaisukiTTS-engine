@@ -329,7 +329,9 @@ class AivmInfo(BaseModel):
     音声合成モデルの情報
     """
 
-    architecture: str = Field(title="この音声合成モデルが対応する音声合成技術の種類")
+    model_architecture: str = Field(
+        title="音声合成モデルのアーキテクチャ (音声合成技術の種類)"
+    )
     uuid: str = Field(title="音声合成モデルの UUID")
     name: str = Field(title="音声合成モデルの名前")
     description: str = Field(title="音声合成モデルの説明 (省略時は空文字列になる)")
@@ -371,8 +373,8 @@ class AivmManifest(BaseModel):
     """
 
     manifest_version: StrictStr = Field(title="AIVM マニフェストのバージョン")
-    architecture: StrictStr = Field(
-        title="この音声合成モデルが対応する音声合成技術の種類"
+    model_architecture: StrictStr = Field(
+        title="音声合成モデルのアーキテクチャ (音声合成技術の種類)"
     )
     uuid: StrictStr = Field(title="音声合成モデルの UUID")
     name: StrictStr = Field(title="音声合成モデルの名前")
