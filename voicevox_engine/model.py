@@ -2,7 +2,7 @@ from enum import Enum
 from re import findall, fullmatch
 from typing import Any, Dict, List, Optional
 
-from pydantic import BaseModel, Field, StrictStr, validator
+from pydantic import BaseModel, ConfigDict, Field, StrictStr, validator
 
 from .metas.Metas import Speaker, SpeakerInfo
 
@@ -329,6 +329,9 @@ class AivmInfo(BaseModel):
     音声合成モデルの情報
     """
 
+    # model_ 以下を Pydantic の保護対象から除外する
+    model_config = ConfigDict(protected_namespaces=())
+
     name: str = Field(title="音声合成モデルの名前")
     description: str = Field(title="音声合成モデルの説明 (省略時は空文字列になる)")
     model_architecture: str = Field(
@@ -374,6 +377,9 @@ class AivmManifest(BaseModel):
     """
     AIVM (Aivis Voice Model) マニフェストの定義
     """
+
+    # model_ 以下を Pydantic の保護対象から除外する
+    model_config = ConfigDict(protected_namespaces=())
 
     manifest_version: StrictStr = Field(title="AIVM マニフェストのバージョン")
     name: StrictStr = Field(title="音声合成モデルの名前")

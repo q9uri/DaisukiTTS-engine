@@ -2,6 +2,7 @@
 
 import base64
 import json
+import logging
 import shutil
 import zipfile
 from pathlib import Path
@@ -36,14 +37,13 @@ class AivmManager:
     - config.json : Style-Bert-VITS2 のハイパーパラメータを記述した JSON ファイル
     - model.safetensors : Style-Bert-VITS2 のモデルファイル
     - style_vectors.npy : Style-Bert-VITS2 のスタイルベクトルファイル
-    - assets/
-        - (speaker_uuid: aivm_manifest.json に記載の UUID)/: 話者ごとのアセット
-            - icon.png : 話者 (デフォルトスタイル) のアイコン画像 (正方形)
-            - voice_sample_(01~99).wav : 話者 (デフォルトスタイル) の音声サンプル
-            - terms.md : 話者の利用規約
-            - style-(style_id: aivm_manifest.json に記載の 0 から始まる連番 ID)/: スタイルごとのアセット (省略時はデフォルトスタイルのものが使われる)
-                - icon.png : デフォルト以外の各スタイルごとのアイコン画像 (正方形)
-                - voice_sample_(01~99).wav : デフォルト以外の各スタイルごとの音声サンプル
+    - (speaker_uuid: aivm_manifest.json に記載の UUID)/: 話者ごとのアセット
+        - icon.png : 話者 (デフォルトスタイル) のアイコン画像 (正方形)
+        - voice_sample_(01~99).wav : 話者 (デフォルトスタイル) の音声サンプル
+        - terms.md : 話者の利用規約
+        - style-(style_id: aivm_manifest.json に記載の 0 から始まる連番 ID)/: スタイルごとのアセット (省略時はデフォルトスタイルのものが使われる)
+            - icon.png : デフォルト以外の各スタイルごとのアイコン画像 (正方形)
+            - voice_sample_(01~99).wav : デフォルト以外の各スタイルごとの音声サンプル
     """
 
     MANIFEST_FILE: str = "aivm_manifest.json"
@@ -53,6 +53,7 @@ class AivmManager:
     def __init__(self, installed_aivm_dir: Path):
         self.installed_aivm_dir = installed_aivm_dir
         self.installed_aivm_dir.mkdir(exist_ok=True)
+        self.logger = logging.getLogger("uvicorn")
 
     def get_installed_aivm_infos(self) -> dict[str, AivmInfo]:
         """
@@ -83,6 +84,7 @@ class AivmManager:
 
                 # 万が一対応していないアーキテクチャの音声合成モデルの場合は除外
                 if aivm_manifest.model_architecture not in self.SUPPORTED_MODEL_ARCHITECTURES:  # fmt: skip
+                    self.logger.warning(f"TTS model {aivm_uuid} has unsupported model architecture {aivm_manifest.model_architecture}. Skipping.")  # fmt: skip
                     continue
 
                 # 話者情報を AivmInfoSpeaker に変換し、AivmInfo.speakers に追加
@@ -92,8 +94,16 @@ class AivmManager:
 
                     # AivisSpeech Engine は日本語のみをサポートするため、日本語をサポートしない話者は除外
                     ## supported_languages に大文字が設定されている可能性もあるため、小文字に変換して比較
-                    if "ja" not in [lang.upper() for lang in speaker_manifest.supported_languages]:  # fmt: skip
+                    if "ja" not in [lang.lower() for lang in speaker_manifest.supported_languages]:  # fmt: skip
+                        self.logger.warning(f"Speaker {speaker_uuid} of TTS model {aivm_uuid} does not support Japanese. Skipping.")  # fmt: skip
                         continue
+
+                    # 話者のディレクトリが存在しない場合
+                    if not speaker_dir.exists():
+                        raise HTTPException(
+                            status_code=500,
+                            detail=f"音声合成モデル {aivm_uuid} の話者 {speaker_uuid} のディレクトリが存在しません。",
+                        )
 
                     # デフォルトスタイルのアセットと利用規約 (Markdown) のパスを取得
                     default_style_icon_path = speaker_dir / "icon.png"
@@ -108,7 +118,7 @@ class AivmManager:
                             status_code=500,
                             detail=f"音声合成モデル {aivm_uuid} の話者 {speaker_uuid} に terms.md が存在しません。",
                         )
-                    default_style_voice_sample_paths = list(speaker_dir.glob("voice_sample_*.wav"))  # fmt: skip
+                    default_style_voice_sample_paths = sorted(list(speaker_dir.glob("voice_sample_*.wav")))  # fmt: skip
 
                     # スタイルごとにアセットを取得
                     speaker_styles: list[SpeakerStyle] = []
@@ -121,7 +131,8 @@ class AivmManager:
                         ## スタイル ID がグローバルに一意になっていなければならない
                         ## そこで、話者 UUID にスタイル ID を組み合わせて数値化することで、一意なスタイル ID を生成する
                         ## 2**53 - 1 は JavaScript の Number.MAX_SAFE_INTEGER に合わせた値
-                        style_id = StyleId((int(speaker_uuid, 16) % (2**53 - 1)) + style_manifest.id)  # fmt: skip
+                        uuid_int = int(speaker_uuid.replace("-", ""), 16)
+                        style_id = StyleId((uuid_int % (2**53 - 1)) + style_manifest.id)  # fmt: skip
 
                         # スタイルごとのディレクトリが存在する場合はアセットのパスを取得
                         style_dir = speaker_dir / f"style-{style_id}"
@@ -132,7 +143,7 @@ class AivmManager:
                                     status_code=500,
                                     detail=f"音声合成モデル {aivm_uuid} の話者 {speaker_uuid} のスタイル {style_id} に icon.png が存在しません。",
                                 )
-                            style_voice_sample_paths = list(style_dir.glob("voice_sample_*.wav"))  # fmt: skip
+                            style_voice_sample_paths = sorted(list(style_dir.glob("voice_sample_*.wav")))  # fmt: skip
 
                         # スタイルディレクトリが存在しない場合はデフォルトスタイルのアセットのパスを使う
                         ## デフォルトスタイル (ID: 0) はスタイルごとのディレクトリが作成されないため、常にこの分岐に入る
