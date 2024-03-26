@@ -48,7 +48,7 @@ class AivmManager:
 
     MANIFEST_FILE: str = "aivm_manifest.json"
     SUPPORTED_MANIFEST_VERSION: Version = Version.parse("1.0.0")
-    SUPPORTED_ARCHITECTURES: list[str] = ["Style-Bert-VITS2"]
+    SUPPORTED_MODEL_ARCHITECTURES: list[str] = ["Style-Bert-VITS2"]
 
     def __init__(self, installed_aivm_dir: Path):
         self.installed_aivm_dir = installed_aivm_dir
@@ -73,18 +73,27 @@ class AivmManager:
                 ## 話者情報は後で追加するため、空リストを渡す
                 aivm_manifest = self.get_aivm_manifest(aivm_uuid)
                 aivm_info = AivmInfo(
-                    model_architecture=aivm_manifest.model_architecture,
-                    uuid=aivm_manifest.uuid,
                     name=aivm_manifest.name,
                     description=aivm_manifest.description,
-                    speakers=[],
+                    model_architecture=aivm_manifest.model_architecture,
+                    uuid=aivm_manifest.uuid,
                     version=aivm_manifest.version,
+                    speakers=[],
                 )
+
+                # 万が一対応していないアーキテクチャの音声合成モデルの場合は除外
+                if aivm_manifest.model_architecture not in self.SUPPORTED_MODEL_ARCHITECTURES:  # fmt: skip
+                    continue
 
                 # 話者情報を AivmInfoSpeaker に変換し、AivmInfo.speakers に追加
                 for speaker_manifest in aivm_manifest.speakers:
                     speaker_uuid = speaker_manifest.uuid
                     speaker_dir = aivm_dir / speaker_uuid
+
+                    # AivisSpeech Engine は日本語のみをサポートするため、日本語をサポートしない話者は除外
+                    ## supported_languages に大文字が設定されている可能性もあるため、小文字に変換して比較
+                    if "ja" not in [lang.upper() for lang in speaker_manifest.supported_languages]:  # fmt: skip
+                        continue
 
                     # デフォルトスタイルのアセットと利用規約 (Markdown) のパスを取得
                     default_style_icon_path = speaker_dir / "icon.png"
@@ -318,7 +327,7 @@ class AivmManager:
                 )
 
             # 音声合成モデルのアーキテクチャのバリデーション
-            if aivm_manifest.model_architecture not in self.SUPPORTED_ARCHITECTURES:
+            if aivm_manifest.model_architecture not in self.SUPPORTED_MODEL_ARCHITECTURES:  # fmt: skip
                 raise HTTPException(
                     status_code=422,
                     detail=f"音声合成モデル {aivm_uuid} の architecture ({aivm_manifest.model_architecture}) は未対応です。",

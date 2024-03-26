@@ -329,16 +329,16 @@ class AivmInfo(BaseModel):
     音声合成モデルの情報
     """
 
+    name: str = Field(title="音声合成モデルの名前")
+    description: str = Field(title="音声合成モデルの説明 (省略時は空文字列になる)")
     model_architecture: str = Field(
         title="音声合成モデルのアーキテクチャ (音声合成技術の種類)"
     )
     uuid: str = Field(title="音声合成モデルの UUID")
-    name: str = Field(title="音声合成モデルの名前")
-    description: str = Field(title="音声合成モデルの説明 (省略時は空文字列になる)")
+    version: str = Field(title="音声合成モデルのバージョン")
     speakers: list[AivmInfoSpeaker] = Field(
         title="音声合成モデルに含まれる話者のリスト"
     )
-    version: str = Field(title="音声合成モデルのバージョン")
 
 
 class AivisManifestSpeakerStyle(BaseModel):
@@ -346,10 +346,10 @@ class AivisManifestSpeakerStyle(BaseModel):
     AIVM (Aivis Voice Model) マニフェストの話者スタイルの定義
     """
 
+    name: StrictStr = Field(title="スタイルの名前")
     id: int = Field(
         title="スタイルの ID (この AIVM ファイル内で一意な 0 から始まる連番で、style_id とは異なる)"
     )
-    name: StrictStr = Field(title="スタイルの名前")
 
 
 class AivisManifestSpeaker(BaseModel):
@@ -358,13 +358,16 @@ class AivisManifestSpeaker(BaseModel):
     画像や音声サンプルは容量が大きいためマニフェストには含まれず、 別途ファイルとして AIVM に格納される
     """
 
-    uuid: StrictStr = Field(title="話者の UUID (speaker_uuid と一致する)")
+    name: StrictStr = Field(title="話者の名前")
+    supported_languages: list[StrictStr] = Field(
+        title="話者の対応言語のリスト (ja, en, zh のような ISO 639-1 言語コード)"
+    )
     id: int = Field(
         title="話者の ID (この AIVM ファイル内で一意な 0 から始まる連番で、speaker_uuid とは異なる)"
     )
-    name: StrictStr = Field(title="話者の名前")
-    styles: list[AivisManifestSpeakerStyle] = Field(title="話者スタイルのリスト")
+    uuid: StrictStr = Field(title="話者の UUID (speaker_uuid と一致する)")
     version: StrictStr = Field(title="話者のバージョン")
+    styles: list[AivisManifestSpeakerStyle] = Field(title="話者スタイルのリスト")
 
 
 class AivmManifest(BaseModel):
@@ -373,15 +376,15 @@ class AivmManifest(BaseModel):
     """
 
     manifest_version: StrictStr = Field(title="AIVM マニフェストのバージョン")
-    model_architecture: StrictStr = Field(
-        title="音声合成モデルのアーキテクチャ (音声合成技術の種類)"
-    )
-    uuid: StrictStr = Field(title="音声合成モデルの UUID")
     name: StrictStr = Field(title="音声合成モデルの名前")
     description: StrictStr = Field(
         title="音声合成モデルの説明 (省略時は空文字列になる)"
     )
+    model_architecture: StrictStr = Field(
+        title="音声合成モデルのアーキテクチャ (音声合成技術の種類)"
+    )
+    uuid: StrictStr = Field(title="音声合成モデルの UUID")
+    version: StrictStr = Field(title="音声合成モデルのバージョン")
     speakers: list[AivisManifestSpeaker] = Field(
         title="音声合成モデルに含まれる話者のリスト"
     )
-    version: StrictStr = Field(title="音声合成モデルのバージョン")
