@@ -315,21 +315,7 @@ class SupportedFeaturesInfo(BaseModel):
     support_switching_device: bool = Field(title="CPU/GPUの切り替えが可能かどうか")
 
 
-class AivmManifest(BaseModel):
-    """
-    AIVM (Aivis Voice Model) ライブラリに関する情報
-    """
-
-    manifest_version: StrictStr = Field(title="マニフェストバージョン")
-    uuid: StrictStr = Field(title="音声合成モデルの UUID")
-    name: StrictStr = Field(title="音声合成モデル名")
-    version: StrictStr = Field(title="音声合成モデルのバージョン")
-    brand_name: StrictStr = Field(title="エンジンのブランド名")
-    engine_name: StrictStr = Field(title="エンジン名")
-    engine_uuid: StrictStr = Field(title="エンジンの UUID")
-
-
-class AivmSpeaker(BaseModel):
+class AivmInfoSpeaker(BaseModel):
     """
     音声合成モデルに含まれる話者の情報
     """
@@ -343,7 +329,51 @@ class AivmInfo(BaseModel):
     音声合成モデルの情報
     """
 
+    architecture: str = Field(title="この音声合成モデルが対応する音声合成技術の種類")
+    uuid: str = Field(title="音声合成モデルの UUID")
     name: str = Field(title="音声合成モデルの名前")
     version: str = Field(title="音声合成モデルのバージョン")
-    uuid: str = Field(title="音声合成モデルの UUID")
-    speakers: List[AivmSpeaker] = Field(title="音声合成モデルに含まれる話者のリスト")
+    speakers: List[AivmInfoSpeaker] = Field(
+        title="音声合成モデルに含まれる話者のリスト"
+    )
+
+
+class AivisManifestSpeakerStyle(BaseModel):
+    """
+    AIVM (Aivis Voice Model) マニフェストの話者スタイルの定義
+    """
+
+    id: int = Field(
+        title="スタイルの ID (この AIVM ファイル内で一意な 0 から始まる連番で、style_id とは異なる)"
+    )
+    name: StrictStr = Field(title="スタイルの名前")
+
+
+class AivisManifestSpeaker(BaseModel):
+    """
+    AIVM (Aivis Voice Model) マニフェストの話者の定義
+    画像や音声サンプルは容量が大きいためマニフェストには含まれず、 別途ファイルとして AIVM に格納される
+    """
+
+    uuid: StrictStr = Field(title="話者の UUID (speaker_uuid と一致する)")
+    id: int = Field(
+        title="話者の ID (この AIVM ファイル内で一意な 0 から始まる連番で、speaker_uuid とは異なる)"
+    )
+    name: StrictStr = Field(title="話者の名前")
+    version: StrictStr = Field(title="話者のバージョン")
+    styles: List[AivisManifestSpeakerStyle] = Field(title="話者スタイルのリスト")
+
+
+class AivmManifest(BaseModel):
+    """
+    AIVM (Aivis Voice Model) マニフェストの定義
+    """
+
+    manifest_version: StrictStr = Field(title="AIVM マニフェストのバージョン")
+    architecture: StrictStr = Field(
+        title="この音声合成モデルが対応する音声合成技術の種類"
+    )
+    uuid: StrictStr = Field(title="音声合成モデルの UUID")
+    name: StrictStr = Field(title="音声合成モデルの名前")
+    version: StrictStr = Field(title="音声合成モデルのバージョン")
+    speakers: List[AivisManifestSpeaker] = Field(title="話者のリスト")

@@ -236,14 +236,11 @@ def generate_app(
             )
 
     engine_manifest_data = EngineManifestLoader(
-        engine_root() / "engine_manifest.json", engine_root()
+        engine_root() / "engine_manifest.json",
+        engine_root(),
     ).load_manifest()
-    aivm_manager = AivmManager(
-        get_save_dir() / "installed_aivm",
-        engine_manifest_data.supported_aivm_manifest_version,
-        engine_manifest_data.name,
-        engine_manifest_data.uuid,
-    )
+
+    aivm_manager = AivmManager(get_save_dir() / "installed_aivm")
 
     metas_store = MetasStore(root_dir / "speaker_info")
 
@@ -1031,52 +1028,50 @@ def generate_app(
             core_version=core_version,
         )
 
-    if engine_manifest_data.supported_features.manage_library:
+    @app.get(
+        "/aivm_models",
+        response_model=dict[str, AivmInfo],
+        response_description="インストールした音声合成モデルの情報",
+        tags=["AIVM 音声合成モデル管理"],
+    )
+    def get_installed_aivm_infos() -> dict[str, AivmInfo]:
+        """
+        インストールした音声合成モデルの情報を返します。
+        """
+        return aivm_manager.get_installed_aivm_infos()
 
-        @app.get(
-            "/aivm_models",
-            response_model=dict[str, AivmInfo],
-            response_description="インストールした音声合成モデルの情報",
-            tags=["AIVM 音声合成モデル管理"],
-        )
-        def get_installed_aivm_infos() -> dict[str, AivmInfo]:
-            """
-            インストールした音声合成モデルの情報を返します。
-            """
-            return aivm_manager.get_installed_aivm_infos()
+    @app.post(
+        "/aivm_models/{aivm_uuid}",
+        status_code=204,
+        tags=["AIVM 音声合成モデル管理"],
+        dependencies=[Depends(check_disabled_mutable_api)],
+    )
+    async def install_aivm(
+        aivm_uuid: Annotated[str, FAPath(description="音声合成モデルの UUID")],
+        request: Request,
+    ) -> Response:
+        """
+        音声合成モデルをインストールします。
+        音声合成モデルパッケージファイル (`.aivm`) をリクエストボディとして送信してください。
+        """
+        archive = BytesIO(await request.body())
+        await asyncio.to_thread(aivm_manager.install_aivm, aivm_uuid, archive)
+        return Response(status_code=204)
 
-        @app.post(
-            "/aivm_models/{aivm_uuid}",
-            status_code=204,
-            tags=["AIVM 音声合成モデル管理"],
-            dependencies=[Depends(check_disabled_mutable_api)],
-        )
-        async def install_aivm(
-            aivm_uuid: Annotated[str, FAPath(description="音声合成モデルの UUID")],
-            request: Request,
-        ) -> Response:
-            """
-            音声合成モデルをインストールします。
-            音声合成モデルパッケージファイル (`.aivm`) をリクエストボディとして送信してください。
-            """
-            archive = BytesIO(await request.body())
-            await asyncio.to_thread(aivm_manager.install_aivm, aivm_uuid, archive)
-            return Response(status_code=204)
-
-        @app.delete(
-            "/aivm_models/{aivm_uuid}",
-            status_code=204,
-            tags=["AIVM 音声合成モデル管理"],
-            dependencies=[Depends(check_disabled_mutable_api)],
-        )
-        def uninstall_aivm(
-            aivm_uuid: Annotated[str, FAPath(description="音声合成モデルの UUID")]
-        ) -> Response:
-            """
-            音声合成モデルをアンインストールします。
-            """
-            aivm_manager.uninstall_aivm(aivm_uuid)
-            return Response(status_code=204)
+    @app.delete(
+        "/aivm_models/{aivm_uuid}",
+        status_code=204,
+        tags=["AIVM 音声合成モデル管理"],
+        dependencies=[Depends(check_disabled_mutable_api)],
+    )
+    def uninstall_aivm(
+        aivm_uuid: Annotated[str, FAPath(description="音声合成モデルの UUID")]
+    ) -> Response:
+        """
+        音声合成モデルをアンインストールします。
+        """
+        aivm_manager.uninstall_aivm(aivm_uuid)
+        return Response(status_code=204)
 
     @app.post("/initialize_speaker", status_code=204, tags=["その他"])
     def initialize_speaker(
