@@ -41,7 +41,6 @@ from voicevox_engine.engine_manifest.EngineManifest import EngineManifest
 from voicevox_engine.engine_manifest.EngineManifestLoader import EngineManifestLoader
 from voicevox_engine.metas.Metas import StyleId
 from voicevox_engine.metas.MetasStore import (
-    MetasStore,
     construct_lookup,
     filter_speakers_and_styles,
 )
@@ -242,7 +241,7 @@ def generate_app(
 
     aivm_manager = AivmManager(get_save_dir() / "installed_aivm")
 
-    metas_store = MetasStore(root_dir / "speaker_info")
+    # metas_store = MetasStore(root_dir / "speaker_info")
 
     setting_ui_template = Jinja2Templates(
         directory=engine_root() / "ui_template",
@@ -573,10 +572,11 @@ def generate_app(
         プロパティが存在しない場合は、モーフィングが許可されているとみなします。
         返り値のスタイルIDはstring型なので注意。
         """
-        core = get_core(core_version)
+        # core = get_core(core_version)
 
         try:
-            speakers = metas_store.load_combined_metas(core=core)
+            # speakers = metas_store.load_combined_metas(core=core)
+            speakers = aivm_manager.get_speakers()
             morphable_targets = get_morphable_targets(
                 speakers=speakers, base_style_ids=base_style_ids
             )
@@ -619,7 +619,8 @@ def generate_app(
         core = get_core(core_version)
 
         try:
-            speakers = metas_store.load_combined_metas(core=core)
+            # speakers = metas_store.load_combined_metas(core=core)
+            speakers = aivm_manager.get_speakers()
             speaker_lookup = construct_lookup(speakers=speakers)
             is_permitted = is_synthesis_morphing_permitted(
                 speaker_lookup, base_style_id, target_style_id
@@ -875,9 +876,8 @@ def generate_app(
     ) -> list[Speaker]:
         # AivisSpeech Engine では常に AivmManager から Speaker を取得する
         return aivm_manager.get_speakers()
-
-        speakers = metas_store.load_combined_metas(get_core(core_version))
-        return filter_speakers_and_styles(speakers, "speaker")
+        # speakers = metas_store.load_combined_metas(get_core(core_version))
+        # return filter_speakers_and_styles(speakers, "speaker")
 
     @app.get("/speaker_info", response_model=SpeakerInfo, tags=["その他"])
     def speaker_info(
@@ -890,12 +890,11 @@ def generate_app(
         """
         # AivisSpeech Engine では常に AivmManager から SpeakerInfo を取得する
         return aivm_manager.get_speaker_info(speaker_uuid)
-
-        return _speaker_info(
-            speaker_uuid=speaker_uuid,
-            speaker_or_singer="speaker",
-            core_version=core_version,
-        )
+        # return _speaker_info(
+        #     speaker_uuid=speaker_uuid,
+        #     speaker_or_singer="speaker",
+        #     core_version=core_version,
+        # )
 
     # FIXME: この関数をどこかに切り出す
     def _speaker_info(
@@ -1006,8 +1005,8 @@ def generate_app(
             detail="Singers is not supported in AivisSpeech Engine.",
         )
 
-        singers = metas_store.load_combined_metas(get_core(core_version))
-        return filter_speakers_and_styles(singers, "singer")
+        # singers = metas_store.load_combined_metas(get_core(core_version))
+        # return filter_speakers_and_styles(singers, "singer")
 
     @app.get(
         "/singer_info",
