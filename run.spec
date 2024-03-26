@@ -5,7 +5,6 @@ import os
 
 datas = [
     ('engine_manifest_assets', 'engine_manifest_assets'),
-    ('speaker_info', 'speaker_info'),
     ('engine_manifest.json', '.'),
     ('default.csv', '.'),
     ('licenses.json', '.'),

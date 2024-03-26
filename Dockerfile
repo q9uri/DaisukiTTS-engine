@@ -229,7 +229,6 @@ ADD ./voicevox_engine /opt/aivisspeech-engine/voicevox_engine
 ADD ./docs /opt/aivisspeech-engine/docs
 ADD ./run.py ./presets.yaml ./default.csv ./engine_manifest.json /opt/aivisspeech-engine/
 ADD ./build_util/generate_licenses.py /opt/aivisspeech-engine/build_util/
-ADD ./speaker_info /opt/aivisspeech-engine/speaker_info
 ADD ./ui_template /opt/aivisspeech-engine/ui_template
 ADD ./engine_manifest_assets /opt/aivisspeech-engine/engine_manifest_assets
 

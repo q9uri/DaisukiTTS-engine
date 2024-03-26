@@ -15,7 +15,7 @@ from functools import lru_cache
 from io import BytesIO, TextIOWrapper
 from pathlib import Path
 from tempfile import NamedTemporaryFile, TemporaryFile
-from typing import Annotated, Any, Literal, Optional
+from typing import Annotated, Any, Optional
 
 import soundfile
 import uvicorn
@@ -26,7 +26,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
 from fastapi.responses import JSONResponse
 from fastapi.templating import Jinja2Templates
-from pydantic import ValidationError, parse_obj_as
+from pydantic import ValidationError
 from pydantic.warnings import PydanticDeprecatedSince20
 from starlette.background import BackgroundTask
 from starlette.middleware.errors import ServerErrorMiddleware
@@ -42,7 +42,6 @@ from voicevox_engine.engine_manifest.EngineManifestLoader import EngineManifestL
 from voicevox_engine.metas.Metas import StyleId
 from voicevox_engine.metas.MetasStore import (
     construct_lookup,
-    filter_speakers_and_styles,
 )
 from voicevox_engine.model import (
     AccentPhrase,
@@ -897,99 +896,99 @@ def generate_app(
         # )
 
     # FIXME: この関数をどこかに切り出す
-    def _speaker_info(
-        speaker_uuid: str,
-        speaker_or_singer: Literal["speaker", "singer"],
-        core_version: str | None,
-    ) -> SpeakerInfo:
-        # エンジンに含まれる話者メタ情報は、次のディレクトリ構造に従わなければならない：
-        # {root_dir}/
-        #   speaker_info/
-        #       {speaker_uuid_0}/
-        #           policy.md
-        #           portrait.png
-        #           icons/
-        #               {id_0}.png
-        #               {id_1}.png
-        #               ...
-        #           portraits/
-        #               {id_0}.png
-        #               {id_1}.png
-        #               ...
-        #           voice_samples/
-        #               {id_0}_001.wav
-        #               {id_0}_002.wav
-        #               {id_0}_003.wav
-        #               {id_1}_001.wav
-        #               ...
-        #       {speaker_uuid_1}/
-        #           ...
+    # def _speaker_info(
+    #     speaker_uuid: str,
+    #     speaker_or_singer: Literal["speaker", "singer"],
+    #     core_version: str | None,
+    # ) -> SpeakerInfo:
+    #     # エンジンに含まれる話者メタ情報は、次のディレクトリ構造に従わなければならない：
+    #     # {root_dir}/
+    #     #   speaker_info/
+    #     #       {speaker_uuid_0}/
+    #     #           policy.md
+    #     #           portrait.png
+    #     #           icons/
+    #     #               {id_0}.png
+    #     #               {id_1}.png
+    #     #               ...
+    #     #           portraits/
+    #     #               {id_0}.png
+    #     #               {id_1}.png
+    #     #               ...
+    #     #           voice_samples/
+    #     #               {id_0}_001.wav
+    #     #               {id_0}_002.wav
+    #     #               {id_0}_003.wav
+    #     #               {id_1}_001.wav
+    #     #               ...
+    #     #       {speaker_uuid_1}/
+    #     #           ...
 
-        # 該当話者の検索
-        speakers = parse_obj_as(
-            list[Speaker], json.loads(get_core(core_version).speakers)
-        )
-        speakers = filter_speakers_and_styles(speakers, speaker_or_singer)
-        for i in range(len(speakers)):
-            if speakers[i].speaker_uuid == speaker_uuid:
-                speaker = speakers[i]
-                break
-        else:
-            raise HTTPException(status_code=404, detail="該当する話者が見つかりません")
+    #     # 該当話者の検索
+    #     speakers = parse_obj_as(
+    #         list[Speaker], json.loads(get_core(core_version).speakers)
+    #     )
+    #     speakers = filter_speakers_and_styles(speakers, speaker_or_singer)
+    #     for i in range(len(speakers)):
+    #         if speakers[i].speaker_uuid == speaker_uuid:
+    #             speaker = speakers[i]
+    #             break
+    #     else:
+    #         raise HTTPException(status_code=404, detail="該当する話者が見つかりません")
 
-        try:
-            speaker_path = root_dir / "speaker_info" / speaker_uuid
-            # 話者情報の取得
-            # speaker policy
-            policy_path = speaker_path / "policy.md"
-            policy = policy_path.read_text("utf-8")
-            # speaker portrait
-            portrait_path = speaker_path / "portrait.png"
-            portrait = b64encode_str(portrait_path.read_bytes())
-            # スタイル情報の取得
-            style_infos = []
-            for style in speaker.styles:
-                id = style.id
-                # style icon
-                style_icon_path = speaker_path / "icons" / f"{id}.png"
-                icon = b64encode_str(style_icon_path.read_bytes())
-                # style portrait
-                style_portrait_path = speaker_path / "portraits" / f"{id}.png"
-                style_portrait = None
-                if style_portrait_path.exists():
-                    style_portrait = b64encode_str(style_portrait_path.read_bytes())
-                # voice samples
-                voice_samples = [
-                    b64encode_str(
-                        (
-                            speaker_path
-                            / "voice_samples/{}_{}.wav".format(id, str(j + 1).zfill(3))
-                        ).read_bytes()
-                    )
-                    for j in range(3)
-                ]
-                style_infos.append(
-                    {
-                        "id": id,
-                        "icon": icon,
-                        "portrait": style_portrait,
-                        "voice_samples": voice_samples,
-                    }
-                )
-        except FileNotFoundError:
-            import traceback
+    #     try:
+    #         speaker_path = root_dir / "speaker_info" / speaker_uuid
+    #         # 話者情報の取得
+    #         # speaker policy
+    #         policy_path = speaker_path / "policy.md"
+    #         policy = policy_path.read_text("utf-8")
+    #         # speaker portrait
+    #         portrait_path = speaker_path / "portrait.png"
+    #         portrait = b64encode_str(portrait_path.read_bytes())
+    #         # スタイル情報の取得
+    #         style_infos = []
+    #         for style in speaker.styles:
+    #             id = style.id
+    #             # style icon
+    #             style_icon_path = speaker_path / "icons" / f"{id}.png"
+    #             icon = b64encode_str(style_icon_path.read_bytes())
+    #             # style portrait
+    #             style_portrait_path = speaker_path / "portraits" / f"{id}.png"
+    #             style_portrait = None
+    #             if style_portrait_path.exists():
+    #                 style_portrait = b64encode_str(style_portrait_path.read_bytes())
+    #             # voice samples
+    #             voice_samples = [
+    #                 b64encode_str(
+    #                     (
+    #                         speaker_path
+    #                         / "voice_samples/{}_{}.wav".format(id, str(j + 1).zfill(3))
+    #                     ).read_bytes()
+    #                 )
+    #                 for j in range(3)
+    #             ]
+    #             style_infos.append(
+    #                 {
+    #                     "id": id,
+    #                     "icon": icon,
+    #                     "portrait": style_portrait,
+    #                     "voice_samples": voice_samples,
+    #                 }
+    #             )
+    #     except FileNotFoundError:
+    #         import traceback
 
-            traceback.print_exc()
-            raise HTTPException(
-                status_code=500, detail="追加情報が見つかりませんでした"
-            )
+    #         traceback.print_exc()
+    #         raise HTTPException(
+    #             status_code=500, detail="追加情報が見つかりませんでした"
+    #         )
 
-        ret_data = SpeakerInfo(
-            policy=policy,
-            portrait=portrait,
-            style_infos=style_infos,
-        )
-        return ret_data
+    #     ret_data = SpeakerInfo(
+    #         policy=policy,
+    #         portrait=portrait,
+    #         style_infos=style_infos,
+    #     )
+    #     return ret_data
 
     @app.get(
         "/singers",
