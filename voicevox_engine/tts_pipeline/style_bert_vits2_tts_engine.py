@@ -1,3 +1,5 @@
+# flake8: noqa
+
 import copy
 from logging import getLogger
 from typing import Any
@@ -5,15 +7,21 @@ from typing import Any
 import numpy as np
 from numpy.typing import NDArray
 from pyopenjtalk import tts
+from style_bert_vits2.constants import Languages
+from style_bert_vits2.nlp import bert_models
 
 from ..dev.core.mock import MockCoreWrapper
 from ..metas.Metas import StyleId
 from ..model import AudioQuery
 from ..tts_pipeline.tts_engine import TTSEngine, to_flatten_moras
+from ..utility.path_utility import get_save_dir
 
 
 class StyleBertVITS2TTSEngine(TTSEngine):
     """Style-Bert-VITS2 TTS Engine"""
+
+    # BERT モデルのキャッシュディレクトリ
+    BERT_MODEL_CACHE_DIR = get_save_dir() / "bert_model_caches"
 
     def __init__(self, use_gpu: bool = False, load_all_models: bool = False) -> None:
         self.use_gpu = use_gpu
@@ -22,6 +30,19 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         # 継承元の TTSEngine の __init__ を呼び出す
         # VOICEVOX CORE の通常の CoreWrapper の代わりに MockCoreWrapper を利用する
         super().__init__(MockCoreWrapper())
+
+        # 音声合成に必要な BERT モデル・トークナイザーを読み込む
+        ## 一度ロードすればプロセス内でグローバルに保持される
+        bert_models.load_model(
+            language=Languages.JP,
+            pretrained_model_name_or_path="ku-nlp/deberta-v2-large-japanese-char-wwm",
+            cache_dir=str(self.BERT_MODEL_CACHE_DIR),
+        )
+        bert_models.load_tokenizer(
+            language=Languages.JP,
+            pretrained_model_name_or_path="ku-nlp/deberta-v2-large-japanese-char-wwm",
+            cache_dir=str(self.BERT_MODEL_CACHE_DIR),
+        )
 
     def synthesize_wave(
         self,
