@@ -64,6 +64,57 @@ class AivmManager:
 
         return aivm_infos
 
+    def get_aivm_manifest(self, aivm_uuid: str) -> AivmManifest:
+        """
+        AIVM (Aivis Voice Model) マニフェストを取得する
+
+        Parameters
+        ----------
+        aivm_uuid : str
+            音声合成モデルの UUID (aivm_manifest.json に記載されているものと同一)
+
+        Returns
+        -------
+        aivm_manifest : AivmManifest
+            AIVM (Aivis Voice Model) マニフェスト
+        """
+
+        # 対象の音声合成モデルがインストール済みであることの確認
+        if (self.installed_aivm_dir / aivm_uuid).is_dir() is False:
+            raise HTTPException(
+                status_code=404,
+                detail=f"指定された音声合成モデル {aivm_uuid} はインストールされていません。",
+            )
+
+        # マニフェストファイルの存在確認
+        aivm_manifest_path = self.installed_aivm_dir / aivm_uuid / self.MANIFEST_FILE
+        if aivm_manifest_path.is_file() is False:
+            raise HTTPException(
+                status_code=500,
+                detail=f"指定された音声合成モデル {aivm_uuid} に aivm_manifest.json が存在しません。",
+            )
+
+        # マニフェストファイルの読み込み
+        try:
+            with open(aivm_manifest_path, mode="r", encoding="utf-8") as f:
+                raw_aivm_manifest = json.load(f)
+        except Exception:
+            raise HTTPException(
+                status_code=500,
+                detail=f"指定された音声合成モデル {aivm_uuid} の aivm_manifest.json の読み込みに失敗しました。",
+            )
+
+        # マニフェスト形式のバリデーション
+        try:
+            aivm_manifest = AivmManifest.model_validate(raw_aivm_manifest)
+        except ValidationError:
+            raise HTTPException(
+                status_code=500,
+                detail=f"指定された音声合成モデル {aivm_uuid} の aivm_manifest.json に不正なデータが含まれています。",
+            )
+
+        return aivm_manifest
+
     def install_aivm(self, aivm_uuid: str, file: BinaryIO) -> Path:
         """
         音声合成モデルパッケージファイル (`.aivm`) をインストールする
