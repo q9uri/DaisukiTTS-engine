@@ -40,9 +40,7 @@ from voicevox_engine.core.core_initializer import MOCK_VER, initialize_cores
 from voicevox_engine.engine_manifest.EngineManifest import EngineManifest
 from voicevox_engine.engine_manifest.EngineManifestLoader import EngineManifestLoader
 from voicevox_engine.metas.Metas import StyleId
-from voicevox_engine.metas.MetasStore import (
-    construct_lookup,
-)
+from voicevox_engine.metas.MetasStore import construct_lookup
 from voicevox_engine.model import (
     AccentPhrase,
     AivmInfo,
@@ -1026,11 +1024,11 @@ def generate_app(
             detail="Singer info is not supported in AivisSpeech Engine.",
         )
 
-        return _speaker_info(
-            speaker_uuid=speaker_uuid,
-            speaker_or_singer="singer",
-            core_version=core_version,
-        )
+        # return _speaker_info(
+        #     speaker_uuid=speaker_uuid,
+        #     speaker_or_singer="singer",
+        #     core_version=core_version,
+        # )
 
     @app.get(
         "/aivm_models",

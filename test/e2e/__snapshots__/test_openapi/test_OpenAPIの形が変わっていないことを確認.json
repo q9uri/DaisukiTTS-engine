@@ -42,13 +42,21 @@
       "AivmInfo": {
         "description": "音声合成モデルの情報",
         "properties": {
+          "description": {
+            "title": "音声合成モデルの説明 (省略時は空文字列になる)",
+            "type": "string"
+          },
+          "model_architecture": {
+            "title": "音声合成モデルのアーキテクチャ (音声合成技術の種類)",
+            "type": "string"
+          },
           "name": {
             "title": "音声合成モデルの名前",
             "type": "string"
           },
           "speakers": {
             "items": {
-              "$ref": "#/components/schemas/AivmSpeaker"
+              "$ref": "#/components/schemas/AivmInfoSpeaker"
             },
             "title": "音声合成モデルに含まれる話者のリスト",
             "type": "array"
@@ -64,58 +72,16 @@
         },
         "required": [
           "name",
-          "version",
+          "description",
+          "model_architecture",
           "uuid",
+          "version",
           "speakers"
         ],
         "title": "AivmInfo",
         "type": "object"
       },
-      "AivmManifest": {
-        "description": "AIVM (Aivis Voice Model) ライブラリに関する情報",
-        "properties": {
-          "brand_name": {
-            "title": "エンジンのブランド名",
-            "type": "string"
-          },
-          "engine_name": {
-            "title": "エンジン名",
-            "type": "string"
-          },
-          "engine_uuid": {
-            "title": "エンジンの UUID",
-            "type": "string"
-          },
-          "manifest_version": {
-            "title": "マニフェストバージョン",
-            "type": "string"
-          },
-          "name": {
-            "title": "音声合成モデル名",
-            "type": "string"
-          },
-          "uuid": {
-            "title": "音声合成モデルの UUID",
-            "type": "string"
-          },
-          "version": {
-            "title": "音声合成モデルのバージョン",
-            "type": "string"
-          }
-        },
-        "required": [
-          "manifest_version",
-          "uuid",
-          "name",
-          "version",
-          "brand_name",
-          "engine_name",
-          "engine_uuid"
-        ],
-        "title": "AivmManifest",
-        "type": "object"
-      },
-      "AivmSpeaker": {
+      "AivmInfoSpeaker": {
         "description": "音声合成モデルに含まれる話者の情報",
         "properties": {
           "speaker": {
@@ -139,7 +105,120 @@
           "speaker",
           "speaker_info"
         ],
-        "title": "AivmSpeaker",
+        "title": "AivmInfoSpeaker",
+        "type": "object"
+      },
+      "AivmManifest": {
+        "$defs": {
+          "AivisManifestSpeaker": {
+            "description": "AIVM (Aivis Voice Model) マニフェストの話者の定義\n画像や音声サンプルは容量が大きいためマニフェストには含まれず、 別途ファイルとして AIVM に格納される",
+            "properties": {
+              "id": {
+                "title": "話者の ID (この AIVM ファイル内で一意な 0 から始まる連番で、speaker_uuid とは異なる)",
+                "type": "integer"
+              },
+              "name": {
+                "title": "話者の名前",
+                "type": "string"
+              },
+              "styles": {
+                "items": {
+                  "$ref": "#/$defs/AivisManifestSpeakerStyle"
+                },
+                "title": "話者スタイルのリスト",
+                "type": "array"
+              },
+              "supported_languages": {
+                "items": {
+                  "type": "string"
+                },
+                "title": "話者の対応言語のリスト (ja, en, zh のような ISO 639-1 言語コード)",
+                "type": "array"
+              },
+              "uuid": {
+                "title": "話者の UUID (speaker_uuid と一致する)",
+                "type": "string"
+              },
+              "version": {
+                "title": "話者のバージョン",
+                "type": "string"
+              }
+            },
+            "required": [
+              "name",
+              "supported_languages",
+              "id",
+              "uuid",
+              "version",
+              "styles"
+            ],
+            "title": "AivisManifestSpeaker",
+            "type": "object"
+          },
+          "AivisManifestSpeakerStyle": {
+            "description": "AIVM (Aivis Voice Model) マニフェストの話者スタイルの定義",
+            "properties": {
+              "id": {
+                "title": "スタイルの ID (この AIVM ファイル内で一意な 0 から始まる連番で、style_id とは異なる)",
+                "type": "integer"
+              },
+              "name": {
+                "title": "スタイルの名前",
+                "type": "string"
+              }
+            },
+            "required": [
+              "name",
+              "id"
+            ],
+            "title": "AivisManifestSpeakerStyle",
+            "type": "object"
+          }
+        },
+        "description": "AIVM (Aivis Voice Model) マニフェストの定義",
+        "properties": {
+          "description": {
+            "title": "音声合成モデルの説明 (省略時は空文字列になる)",
+            "type": "string"
+          },
+          "manifest_version": {
+            "title": "AIVM マニフェストのバージョン",
+            "type": "string"
+          },
+          "model_architecture": {
+            "title": "音声合成モデルのアーキテクチャ (音声合成技術の種類)",
+            "type": "string"
+          },
+          "name": {
+            "title": "音声合成モデルの名前",
+            "type": "string"
+          },
+          "speakers": {
+            "items": {
+              "$ref": "#/$defs/AivisManifestSpeaker"
+            },
+            "title": "音声合成モデルに含まれる話者のリスト",
+            "type": "array"
+          },
+          "uuid": {
+            "title": "音声合成モデルの UUID",
+            "type": "string"
+          },
+          "version": {
+            "title": "音声合成モデルのバージョン",
+            "type": "string"
+          }
+        },
+        "required": [
+          "manifest_version",
+          "name",
+          "description",
+          "model_architecture",
+          "uuid",
+          "version",
+          "speakers"
+        ],
+        "title": "AivmManifest",
         "type": "object"
       },
       "AudioQuery": {
@@ -2542,15 +2621,18 @@
         "operationId": "speaker_info_speaker_info_get",
         "parameters": [
           {
+            "description": "話者の UUID 。",
             "in": "query",
             "name": "speaker_uuid",
             "required": true,
             "schema": {
+              "description": "話者の UUID 。",
               "title": "Speaker Uuid",
               "type": "string"
             }
           },
           {
+            "description": "AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。",
             "in": "query",
             "name": "core_version",
             "required": false,
@@ -2563,6 +2645,7 @@
                   "type": "null"
                 }
               ],
+              "description": "AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。",
               "title": "Core Version"
             }
           }
@@ -2600,6 +2683,7 @@
         "operationId": "speakers_speakers_get",
         "parameters": [
           {
+            "description": "AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。",
             "in": "query",
             "name": "core_version",
             "required": false,
@@ -2612,6 +2696,7 @@
                   "type": "null"
                 }
               ],
+              "description": "AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。",
               "title": "Core Version"
             }
           }

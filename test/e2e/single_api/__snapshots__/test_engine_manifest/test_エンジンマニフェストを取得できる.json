@@ -22,7 +22,7 @@
     "adjust_speed_scale": true,
     "adjust_volume_scale": true,
     "interrogative_upspeak": false,
-    "manage_library": true,
+    "manage_library": false,
     "sing": false,
     "synthesis_morphing": true
   },
