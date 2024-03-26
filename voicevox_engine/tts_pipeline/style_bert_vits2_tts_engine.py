@@ -2,9 +2,10 @@
 
 import copy
 
+import jaconv
 import numpy as np
 from numpy.typing import NDArray
-from style_bert_vits2.constants import Languages
+from style_bert_vits2.constants import DEFAULT_SDP_RATIO, Languages
 from style_bert_vits2.nlp import bert_models
 from style_bert_vits2.nlp.japanese.normalizer import normalize_text
 from style_bert_vits2.tts_model import TTSModel
@@ -13,7 +14,11 @@ from ..aivm_manager import AivmManager
 from ..dev.core.mock import MockCoreWrapper
 from ..metas.Metas import StyleId
 from ..model import AudioQuery
-from ..tts_pipeline.tts_engine import TTSEngine, to_flatten_moras
+from ..tts_pipeline.tts_engine import (
+    TTSEngine,
+    raw_wave_to_output_wave,
+    to_flatten_moras,
+)
 from ..utility.path_utility import get_save_dir
 
 
@@ -110,12 +115,21 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         query = copy.deepcopy(query)
 
         # 読み仮名 (カタカナのみ) のテキストを取得
+        ## ひらがなの方がまだ抑揚の棒読み度がマシになるため、カタカナをひらがなに変換している
         flatten_moras = to_flatten_moras(query.accent_phrases)
         text = "".join([mora.text for mora in flatten_moras]) + "。"
+        text = jaconv.kata2hira(text)
+
+        # もし AudioQuery.kana に漢字混じりの通常の文章が指定されている場合はそれを使う (AivisSpeech 独自仕様)
+        ## VOICEVOX ENGINE では AudioQuery.kana は読み取り専用パラメータだが、AivisSpeech Engine では
+        ## 音声合成 API にアクセント句だけでなく通常の読み上げテキストを直接渡すためのパラメータとして利用している
+        ## 通常の読み上げテキストの方が遥かに抑揚が自然になるため、読み仮名のみの読み上げテキストよりも優先される
+        ## VOICEVOX ENGINE との互換性維持のための苦肉の策で、基本可能な限り AudioQuery.kana に読み上げテキストを指定すべき
+        if query.kana is not None and query.kana != "":
+            text = query.kana
 
         # 読み上げテキストを正規化
         text = normalize_text(text)
-        print(f"Normalized text: {text}")
 
         # スタイル ID に基づく AivmManifest を取得
         aivm_manifest = self.aivm_manager.get_aivm_manifest_from_style_id(style_id)
@@ -125,22 +139,43 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         model = self.load_model(aivm_manifest.uuid)
         print(f"TTS model loaded for AIVM {aivm_manifest.uuid} .")
 
+        # 話速を指定
+        ## ref: https://github.com/litagin02/Style-Bert-VITS2/blob/2.4.1/server_editor.py#L314
+        length = 1 / query.speedScale
+        # ピッチを指定 (0.0 以外を指定すると音質が劣化する)
+        ## pitchScale の基準は 0.0 (-1 ~ 1) なので、1.0 を基準とした 0 ~ 2 の範囲に変換する
+        pitch_scale = 1.0 + query.pitchScale
+        # SDP Ratio を「テンポの緩急」の比率として指定
+        ## VOICEVOX では「抑揚」の比率だが、AivisSpeech では声のテンポの緩急を指定する値としている
+        ## Style-Bert-VITS2 にも一応「抑揚」パラメータはあるが、pyworld で変換している関係で音質が明確に劣化する上、あまり効果がない
+        ## intonationScale の基準は 1.0 (0 ~ 2) なので、DEFAULT_SDP_RATIO を基準とした 0 ~ 1 の範囲に変換する
+        sdp_ratio = max(0.0, min(1.0, query.intonationScale - (1.0 - DEFAULT_SDP_RATIO)))  # fmt: skip
+
         # 音声合成を実行
         ## infer() に渡されない AudioQuery のパラメータは無視される (volumeScale のみ合成後に適用される)
+        ## 出力音声は int16 型の numpy 配列で返される
         print("Running inference...")
-        _, wave = model.infer(
+        print(f"Text: {text}")
+        print(f"Speed: {length} (Query: {query.speedScale})")
+        print(f"Pitch: {pitch_scale} (Query: {query.pitchScale})")
+        print(f"SDP Ratio: {sdp_ratio:.2f} (Query: {query.intonationScale})")
+        sample_rate, raw_wave = model.infer(
             text=text,
             language=Languages.JP,
             speaker_id=0,
             style="ノーマル",
-            length=(1 / query.speedScale),
-            pitch_scale=query.pitchScale,
-            sdp_ratio=query.intonationScale,
+            length=length,
+            pitch_scale=pitch_scale,
+            sdp_ratio=sdp_ratio,
+            # AivisSpeech Engine ではテキストの改行ごとの分割生成を行わない (エディタ側の機能と競合するため)
+            line_split=False,
         )
         print("Inference done.")
 
-        # 生成した音声の音量を調整
-        # wave = wave.astype(np.float32) / np.iinfo(wave.dtype).max
-        # wave = wave * query.volumeScale
+        # VOICEVOX CORE は float32 型の音声波形を返すため、int16 から float32 に変換して VOICEVOX CORE に合わせる
+        ## float32 に変換する際に -1.0 ~ 1.0 の範囲に正規化する
+        raw_wave = raw_wave.astype(np.float32) / 32768.0
 
+        # 生成した音声の音量・サンプルレート・ステレオ化を調整して返す
+        wave = raw_wave_to_output_wave(query, raw_wave, sample_rate)
         return wave

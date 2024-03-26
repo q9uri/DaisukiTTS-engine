@@ -1761,6 +1761,16 @@ files = [
 colors = ["colorama (>=0.4.6)"]
 
 [[package]]
+name = "jaconv"
+version = "0.3.4"
+description = "Pure-Python Japanese character interconverter for Hiragana, Katakana, Hankaku, Zenkaku and more"
+optional = false
+python-versions = "*"
+files = [
+    {file = "jaconv-0.3.4.tar.gz", hash = "sha256:9e7c55f3f0b0e2dbad62f6c9fa0c30fc6fffdbb78297955509d90856b3a31d6d"},
+]
+
+[[package]]
 name = "jaraco-classes"
 version = "3.3.1"
 description = "Utility functions for Python class constructs"
@@ -6260,4 +6270,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "~3.11"
-content-hash = "cf6f70f66596f258a7fcc02a104201a10dbf2bf6c9792e66ad9e7761f02572c9"
+content-hash = "99787b3c3114e44c47ec2d06f7eeb9d0927b554c4dc07dff9da4ce749957d6ec"

@@ -70,6 +70,7 @@ platformdirs = "^4.2.0"
 soxr = "^0.3.6"
 pydantic = "^2.6.4"
 starlette = "^0.36.3"
+jaconv = "^0.3.4"
 style-bert-vits2 = "^2.4.1"
 
 [tool.poetry.group.dev.dependencies]
