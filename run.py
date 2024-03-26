@@ -1033,7 +1033,7 @@ def generate_app(
         "/aivm_models",
         response_model=dict[str, AivmInfo],
         response_description="インストールした音声合成モデルの情報",
-        tags=["AIVM 音声合成モデル管理"],
+        tags=["音声合成モデル管理"],
     )
     def get_installed_aivm_infos() -> dict[str, AivmInfo]:
         """
@@ -1044,7 +1044,7 @@ def generate_app(
     @app.post(
         "/aivm_models/{aivm_uuid}",
         status_code=204,
-        tags=["AIVM 音声合成モデル管理"],
+        tags=["音声合成モデル管理"],
         dependencies=[Depends(check_disabled_mutable_api)],
     )
     async def install_aivm(
@@ -1062,7 +1062,7 @@ def generate_app(
     @app.delete(
         "/aivm_models/{aivm_uuid}",
         status_code=204,
-        tags=["AIVM 音声合成モデル管理"],
+        tags=["音声合成モデル管理"],
         dependencies=[Depends(check_disabled_mutable_api)],
     )
     def uninstall_aivm(
@@ -1077,7 +1077,7 @@ def generate_app(
     @app.get(
         "/aivm_models/{aivm_uuid}/manifest",
         response_model=AivmManifest,
-        tags=["AIVM 音声合成モデル管理"],
+        tags=["音声合成モデル管理"],
     )
     def get_aivm_manifest(
         aivm_uuid: Annotated[str, FAPath(description="音声合成モデルの UUID")]
