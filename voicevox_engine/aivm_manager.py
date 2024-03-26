@@ -1,5 +1,6 @@
 # flake8: noqa
 
+import base64
 import json
 import shutil
 import zipfile
@@ -10,7 +11,16 @@ from fastapi import HTTPException
 from pydantic import ValidationError
 from semver.version import Version
 
-from voicevox_engine.model import AivmInfo, AivmManifest
+from voicevox_engine.metas.Metas import (
+    Speaker,
+    SpeakerInfo,
+    SpeakerStyle,
+    SpeakerSupportedFeatures,
+    SpeakerSupportPermittedSynthesisMorphing,
+    StyleId,
+    StyleInfo,
+)
+from voicevox_engine.model import AivmInfo, AivmInfoSpeaker, AivmManifest
 
 __all__ = ["AivmManager"]
 
@@ -21,7 +31,7 @@ class AivmManager:
     VOICEVOX ENGINE の LibraryManager がベースだが、AivisSpeech Engine 向けに大幅に改変されている
     -----
     AIVM ファイルは音声合成モデルのパッケージファイルであり、以下の構成を持つ
-    VOICEVOX の UI には立ち絵が表示されるが、立ち絵は見栄えが悪い上にユーザー側での用意が難しいため、AivisSpeech ではアイコンのみの表示に変更されている
+    VOICEVOX 本家では話者の立ち絵が表示されるが、立ち絵は見栄えが悪い上にユーザー側での用意が難しいため、AivisSpeech ではアイコンのみの表示に変更されている
     - aivm_manifest.json : 音声合成モデルのメタデータを記述した JSON マニフェストファイル
     - config.json : Style-Bert-VITS2 のハイパーパラメータを記述した JSON ファイル
     - model.safetensors : Style-Bert-VITS2 のモデルファイル
@@ -55,12 +65,122 @@ class AivmManager:
         """
 
         aivm_infos: dict[str, AivmInfo] = {}
-        # for aivm_dir in self.installed_aivm_dir.iterdir():
-        #     if aivm_dir.is_dir():
-        #         aivm_uuid = aivm_dir.name
-        #         with open(aivm_dir / INFO_FILE, encoding="utf-8") as f:
-        #             info = json.load(f)
-        #         aivm_infos[aivm_uuid] = AivmInfo(**info)
+        for aivm_dir in self.installed_aivm_dir.iterdir():
+            if aivm_dir.is_dir():
+                aivm_uuid = aivm_dir.name
+
+                # AIVM マニフェストを取得し、仮で AivmInfo に変換
+                ## 話者情報は後で追加するため、空リストを渡す
+                aivm_manifest = self.get_aivm_manifest(aivm_uuid)
+                aivm_info = AivmInfo(
+                    architecture=aivm_manifest.architecture,
+                    uuid=aivm_manifest.uuid,
+                    name=aivm_manifest.name,
+                    description=aivm_manifest.description,
+                    speakers=[],
+                    version=aivm_manifest.version,
+                )
+
+                # 話者情報を AivmInfoSpeaker に変換し、AivmInfo.speakers に追加
+                for speaker_manifest in aivm_manifest.speakers:
+                    speaker_uuid = speaker_manifest.uuid
+                    speaker_dir = aivm_dir / speaker_uuid
+
+                    # デフォルトスタイルのアセットと利用規約 (Markdown) のパスを取得
+                    default_style_icon_path = speaker_dir / "icon.png"
+                    if not default_style_icon_path.exists():
+                        raise HTTPException(
+                            status_code=500,
+                            detail=f"指定された音声合成モデル {aivm_uuid} の話者 {speaker_uuid} に icon.png が存在しません。",
+                        )
+                    terms_path = speaker_dir / "terms.md"
+                    if not terms_path.exists():
+                        raise HTTPException(
+                            status_code=500,
+                            detail=f"指定された音声合成モデル {aivm_uuid} の話者 {speaker_uuid} に terms.md が存在しません。",
+                        )
+                    default_style_voice_sample_paths = list(speaker_dir.glob("voice_sample_*.wav"))  # fmt: skip
+
+                    # スタイルごとにアセットを取得
+                    speaker_styles: list[SpeakerStyle] = []
+                    style_infos: list[StyleInfo] = []
+                    for style_manifest in speaker_manifest.styles:
+
+                        # スタイル ID の取得
+                        ## AIVM ファイルのスタイル ID は、話者ごとにローカルな 0 から始まる連番になっている
+                        ## 一方 VOICEVOX は互換性問題？による歴史的事情でスタイル ID を音声合成 API に渡す形となっており、
+                        ## スタイル ID がグローバルに一意になっていなければならない
+                        ## そこで、話者 UUID にスタイル ID を組み合わせて数値化することで、一意なスタイル ID を生成する
+                        ## 2**53 - 1 は JavaScript の Number.MAX_SAFE_INTEGER に合わせた値
+                        style_id = StyleId((int(speaker_uuid, 16) % (2**53 - 1)) + style_manifest.id)  # fmt: skip
+
+                        # スタイルごとのディレクトリが存在する場合はアセットのパスを取得
+                        style_dir = speaker_dir / f"style-{style_id}"
+                        if style_dir.exists() and style_dir.is_dir():
+                            style_icon_path = style_dir / "icon.png"
+                            if not style_icon_path.exists():
+                                raise HTTPException(
+                                    status_code=500,
+                                    detail=f"指定された音声合成モデル {aivm_uuid} の話者 {speaker_uuid} のスタイル {style_id} に icon.png が存在しません。",
+                                )
+                            style_voice_sample_paths = list(style_dir.glob("voice_sample_*.wav"))  # fmt: skip
+
+                        # スタイルディレクトリが存在しない場合はデフォルトスタイルのアセットのパスを使う
+                        ## デフォルトスタイル (ID: 0) はスタイルごとのディレクトリが作成されないため、常にこの分岐に入る
+                        else:
+                            style_icon_path = default_style_icon_path
+                            style_voice_sample_paths = default_style_voice_sample_paths
+
+                        # SpeakerStyle の作成
+                        speaker_style = SpeakerStyle(
+                            id=style_id,
+                            name=style_manifest.name,
+                            # AivisSpeech は仮称音声合成に対応しないので talk で固定
+                            type="talk",
+                        )
+                        speaker_styles.append(speaker_style)
+
+                        # StyleInfo の作成
+                        style_info = StyleInfo(
+                            id=style_id,
+                            # アイコン画像を Base64 エンコードして文字列化
+                            icon=base64.b64encode(style_icon_path.read_bytes()).decode("utf-8"),
+                            # 立ち絵を省略
+                            ## VOICEVOX 本家では portrait に立ち絵が入るが、AivisSpeech では敢えてアイコン画像のみを設定する
+                            portrait=None,
+                            # 音声サンプルを Base64 エンコードして文字列化
+                            voice_samples=[
+                                base64.b64encode(sample_path.read_bytes()).decode("utf-8")
+                                for sample_path in style_voice_sample_paths
+                            ],
+                        )  # fmt: skip
+                        style_infos.append(style_info)
+
+                    # AivmInfoSpeaker の作成
+                    aivm_info_speaker = AivmInfoSpeaker(
+                        speaker=Speaker(
+                            speaker_uuid=speaker_uuid,
+                            name=speaker_manifest.name,
+                            styles=speaker_styles,
+                            version=speaker_manifest.version,
+                            # AivisSpeech では全話者に対し常にモーフィング機能を有効化する
+                            supported_features=SpeakerSupportedFeatures(
+                                permitted_synthesis_morphing=SpeakerSupportPermittedSynthesisMorphing.ALL,
+                            ),
+                        ),
+                        speaker_info=SpeakerInfo(
+                            # 利用規約をそのまま読み取って文字列に格納
+                            policy=terms_path.read_text(encoding="utf-8"),
+                            # アイコン画像を Base64 エンコードして文字列化
+                            ## VOICEVOX 本家では portrait に立ち絵が入るが、AivisSpeech では敢えてアイコン画像を設定する
+                            portrait=base64.b64encode(default_style_icon_path.read_bytes()).decode("utf-8"),
+                            style_infos=style_infos,
+                        ),
+                    )  # fmt: skip
+                    aivm_info.speakers.append(aivm_info_speaker)
+
+                # 完成した AivmInfo を UUID をキーとして追加
+                aivm_infos[aivm_uuid] = aivm_info
 
         return aivm_infos
 

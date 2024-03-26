@@ -332,10 +332,11 @@ class AivmInfo(BaseModel):
     architecture: str = Field(title="この音声合成モデルが対応する音声合成技術の種類")
     uuid: str = Field(title="音声合成モデルの UUID")
     name: str = Field(title="音声合成モデルの名前")
-    version: str = Field(title="音声合成モデルのバージョン")
-    speakers: List[AivmInfoSpeaker] = Field(
+    description: str = Field(title="音声合成モデルの説明 (省略時は空文字列になる)")
+    speakers: list[AivmInfoSpeaker] = Field(
         title="音声合成モデルに含まれる話者のリスト"
     )
+    version: str = Field(title="音声合成モデルのバージョン")
 
 
 class AivisManifestSpeakerStyle(BaseModel):
@@ -360,8 +361,8 @@ class AivisManifestSpeaker(BaseModel):
         title="話者の ID (この AIVM ファイル内で一意な 0 から始まる連番で、speaker_uuid とは異なる)"
     )
     name: StrictStr = Field(title="話者の名前")
+    styles: list[AivisManifestSpeakerStyle] = Field(title="話者スタイルのリスト")
     version: StrictStr = Field(title="話者のバージョン")
-    styles: List[AivisManifestSpeakerStyle] = Field(title="話者スタイルのリスト")
 
 
 class AivmManifest(BaseModel):
@@ -375,5 +376,10 @@ class AivmManifest(BaseModel):
     )
     uuid: StrictStr = Field(title="音声合成モデルの UUID")
     name: StrictStr = Field(title="音声合成モデルの名前")
+    description: StrictStr = Field(
+        title="音声合成モデルの説明 (省略時は空文字列になる)"
+    )
+    speakers: list[AivisManifestSpeaker] = Field(
+        title="音声合成モデルに含まれる話者のリスト"
+    )
     version: StrictStr = Field(title="音声合成モデルのバージョン")
-    speakers: List[AivisManifestSpeaker] = Field(title="話者のリスト")
