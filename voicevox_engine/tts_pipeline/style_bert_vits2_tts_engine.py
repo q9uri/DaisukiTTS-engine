@@ -9,7 +9,6 @@ from numpy.typing import NDArray
 from style_bert_vits2.constants import DEFAULT_SDP_RATIO, Languages
 from style_bert_vits2.logging import logger
 from style_bert_vits2.nlp import bert_models
-from style_bert_vits2.nlp.japanese.normalizer import normalize_text
 from style_bert_vits2.tts_model import TTSModel
 
 from ..aivm_manager import AivmManager
