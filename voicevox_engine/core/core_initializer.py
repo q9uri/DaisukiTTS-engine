@@ -44,7 +44,7 @@ def initialize_cores(
     """
     if cpu_num_threads == 0 or cpu_num_threads is None:
         print(
-            "Warning: cpu_num_threads is set to 0. "
+            "WARNING: cpu_num_threads is set to 0. "
             + "Setting it to half of the logical cores.",
             file=sys.stderr,
         )
@@ -97,10 +97,10 @@ def initialize_cores(
                 # コアを登録する
                 metas = json.loads(core.metas())
                 core_version = metas[0]["version"]
-                print(f"Info: Loading core {core_version}.")
+                print(f"INFO: Loading core {core_version}.")
                 if core_version in cores:
                     print(
-                        "Warning: Core loading is skipped because of version duplication.",
+                        "WARNING: Core loading is skipped because of version duplication.",
                         file=sys.stderr,
                     )
                 else:
@@ -133,7 +133,7 @@ def initialize_cores(
         from ..dev.core.mock import MockCoreWrapper
 
         if MOCK_VER not in cores:
-            print("Info: Loading mock.")
+            print("INFO: Loading mock.")
             core = MockCoreWrapper()
             cores[MOCK_VER] = CoreAdapter(core)
 

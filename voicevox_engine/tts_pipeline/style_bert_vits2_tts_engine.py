@@ -1,11 +1,13 @@
 # flake8: noqa
 
 import copy
+import logging
 
 import jaconv
 import numpy as np
 from numpy.typing import NDArray
 from style_bert_vits2.constants import DEFAULT_SDP_RATIO, Languages
+from style_bert_vits2.logging import logger
 from style_bert_vits2.nlp import bert_models
 from style_bert_vits2.nlp.japanese.normalizer import normalize_text
 from style_bert_vits2.tts_model import TTSModel
@@ -44,9 +46,12 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         # PyTorch に渡すデバイス名
         self.device = "cuda" if use_gpu else "cpu"
 
+        # Style-Bert-VITS2 本体のロガーを抑制
+        logger.remove()
+
         # 音声合成に必要な BERT モデル・トークナイザーを読み込む
         ## 一度ロードすればプロセス内でグローバルに保持される
-        print("Loading BERT model and tokenizer...")
+        print("INFO: Loading BERT model and tokenizer...")
         bert_models.load_model(
             language=Languages.JP,
             pretrained_model_name_or_path="ku-nlp/deberta-v2-large-japanese-char-wwm",
@@ -57,7 +62,7 @@ class StyleBertVITS2TTSEngine(TTSEngine):
             pretrained_model_name_or_path="ku-nlp/deberta-v2-large-japanese-char-wwm",
             cache_dir=str(self.BERT_MODEL_CACHE_DIR),
         )
-        print("BERT model and tokenizer loaded.")
+        print("INFO: BERT model and tokenizer loaded.")
 
         # 継承元の TTSEngine の __init__ を呼び出す
         # VOICEVOX CORE の通常の CoreWrapper の代わりに MockCoreWrapper を利用する
@@ -111,6 +116,8 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         音声合成用のクエリに含まれる読み仮名に基づいて Style-Bert-VITS2 で音声波形を生成する
         """
 
+        logger = logging.getLogger("uvicorn")
+
         # モーフィング時などに同一参照の AudioQuery で複数回呼ばれる可能性があるので、元の引数の AudioQuery に破壊的変更を行わない
         query = copy.deepcopy(query)
 
@@ -128,16 +135,13 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         if query.kana is not None and query.kana != "":
             text = query.kana
 
-        # 読み上げテキストを正規化
-        text = normalize_text(text)
-
         # スタイル ID に基づく AivmManifest を取得
         aivm_manifest = self.aivm_manager.get_aivm_manifest_from_style_id(style_id)
 
         # 音声合成モデルをロード (初回のみ)
-        print(f"Loading TTS model for AIVM {aivm_manifest.uuid} ...")
         model = self.load_model(aivm_manifest.uuid)
-        print(f"TTS model loaded for AIVM {aivm_manifest.uuid} .")
+        logger.info(f"Model loaded.")
+        logger.info(f"Speaker: {aivm_manifest.name} ({aivm_manifest.uuid})")
 
         # 話速を指定
         ## ref: https://github.com/litagin02/Style-Bert-VITS2/blob/2.4.1/server_editor.py#L314
@@ -149,16 +153,16 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         ## VOICEVOX では「抑揚」の比率だが、AivisSpeech では声のテンポの緩急を指定する値としている
         ## Style-Bert-VITS2 にも一応「抑揚」パラメータはあるが、pyworld で変換している関係で音質が明確に劣化する上、あまり効果がない
         ## intonationScale の基準は 1.0 (0 ~ 2) なので、DEFAULT_SDP_RATIO を基準とした 0 ~ 1 の範囲に変換する
-        sdp_ratio = max(0.0, min(1.0, query.intonationScale - (1.0 - DEFAULT_SDP_RATIO)))  # fmt: skip
+        sdp_ratio = max(0, min(1000, int(query.intonationScale * 1000) - (1000 - int(DEFAULT_SDP_RATIO * 1000)))) / 1000.0  # fmt: skip
 
         # 音声合成を実行
         ## infer() に渡されない AudioQuery のパラメータは無視される (volumeScale のみ合成後に適用される)
         ## 出力音声は int16 型の numpy 配列で返される
-        print("Running inference...")
-        print(f"Text: {text}")
-        print(f"Speed: {length} (Query: {query.speedScale})")
-        print(f"Pitch: {pitch_scale} (Query: {query.pitchScale})")
-        print(f"SDP Ratio: {sdp_ratio:.2f} (Query: {query.intonationScale})")
+        logger.info("Running inference...")
+        logger.info(f"Text: {text}")
+        logger.info(f"Speed: {length} (Query: {query.speedScale})")
+        logger.info(f"Pitch: {pitch_scale} (Query: {query.pitchScale})")
+        logger.info(f"SDP Ratio: {sdp_ratio} (Query: {query.intonationScale})")
         sample_rate, raw_wave = model.infer(
             text=text,
             language=Languages.JP,
@@ -170,7 +174,7 @@ class StyleBertVITS2TTSEngine(TTSEngine):
             # AivisSpeech Engine ではテキストの改行ごとの分割生成を行わない (エディタ側の機能と競合するため)
             line_split=False,
         )
-        print("Inference done.")
+        logger.info("Inference done.")
 
         # VOICEVOX CORE は float32 型の音声波形を返すため、int16 から float32 に変換して VOICEVOX CORE に合わせる
         ## float32 に変換する際に -1.0 ~ 1.0 の範囲に正規化する

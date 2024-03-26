@@ -88,7 +88,7 @@ def update_dict(
 
         # デフォルト辞書データの追加
         if not default_dict_path.is_file():
-            print("Warning: Cannot find default dictionary.", file=sys.stderr)
+            print("WARNING: Cannot find default dictionary.", file=sys.stderr)
             return
         default_dict = default_dict_path.read_text(encoding="utf-8")
         if default_dict == default_dict.rstrip():
@@ -139,7 +139,7 @@ def update_dict(
             )
 
     except Exception as e:
-        print("Error: Failed to update dictionary.", file=sys.stderr)
+        print("ERROR: Failed to update dictionary.", file=sys.stderr)
         traceback.print_exc(file=sys.stderr)
         raise e
 

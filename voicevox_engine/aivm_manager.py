@@ -2,6 +2,7 @@
 
 import base64
 import json
+import logging
 import shutil
 import zipfile
 from pathlib import Path
@@ -134,6 +135,8 @@ class AivmManager:
             インストール済み音声合成モデルの情報
         """
 
+        logger = logging.getLogger("uvicorn")
+
         aivm_infos: dict[str, AivmInfo] = {}
         for aivm_dir in self.installed_aivm_dir.iterdir():
             if aivm_dir.is_dir():
@@ -153,7 +156,7 @@ class AivmManager:
 
                 # 万が一対応していないアーキテクチャの音声合成モデルの場合は除外
                 if aivm_manifest.model_architecture not in self.SUPPORTED_MODEL_ARCHITECTURES:  # fmt: skip
-                    print(f"TTS model {aivm_uuid} has unsupported model architecture {aivm_manifest.model_architecture}. Skipping.")  # fmt: skip
+                    logger.warning(f"TTS model {aivm_uuid} has unsupported model architecture {aivm_manifest.model_architecture}. Skipping.")  # fmt: skip
                     continue
 
                 # 話者情報を AivmInfoSpeaker に変換し、AivmInfo.speakers に追加
@@ -164,7 +167,7 @@ class AivmManager:
                     # AivisSpeech Engine は日本語のみをサポートするため、日本語をサポートしない話者は除外
                     ## supported_languages に大文字が設定されている可能性もあるため、小文字に変換して比較
                     if "ja" not in [lang.lower() for lang in speaker_manifest.supported_languages]:  # fmt: skip
-                        print(f"Speaker {speaker_uuid} of TTS model {aivm_uuid} does not support Japanese. Skipping.")  # fmt: skip
+                        logger.warning(f"Speaker {speaker_uuid} of TTS model {aivm_uuid} does not support Japanese. Skipping.")  # fmt: skip
                         continue
 
                     # 話者のディレクトリが存在しない場合
