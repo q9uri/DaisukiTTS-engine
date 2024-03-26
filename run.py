@@ -136,6 +136,7 @@ def set_output_log_utf8() -> None:
 
 def generate_app(
     tts_engines: dict[str, TTSEngine],
+    aivm_manager: AivmManager,
     cores: dict[str, CoreAdapter],
     latest_core_version: str,
     setting_loader: SettingHandler,
@@ -167,6 +168,7 @@ def generate_app(
     # 未処理の例外が発生するとCORSMiddlewareが適用されない問題に対するワークアラウンド
     # ref: https://github.com/VOICEVOX/voicevox_engine/issues/91
     async def global_execution_handler(request: Request, exc: Exception) -> Response:
+        traceback.print_exc()
         return JSONResponse(
             status_code=500,
             content="Internal Server Error",
@@ -234,8 +236,6 @@ def generate_app(
         engine_root() / "engine_manifest.json",
         engine_root(),
     ).load_manifest()
-
-    aivm_manager = AivmManager(get_save_dir() / "installed_aivm")
 
     # metas_store = MetasStore(root_dir / "speaker_info")
 
@@ -1549,9 +1549,12 @@ def main() -> None:
     # assert len(tts_engines) != 0, "音声合成エンジンがありません。"
     # latest_core_version = get_latest_core_version(versions=list(tts_engines.keys()))
 
-    # StyleBertVITS2TTSEngine を利用する
+    # AivmManager を初期化
+    aivm_manager = AivmManager(get_save_dir() / "installed_aivm")
+
+    # StyleBertVITS2TTSEngine を TTSEngine の代わりに利用
     tts_engines: dict[str, TTSEngine] = {
-        MOCK_VER: StyleBertVITS2TTSEngine(use_gpu, load_all_models)
+        MOCK_VER: StyleBertVITS2TTSEngine(aivm_manager, use_gpu, load_all_models)
     }
     latest_core_version = MOCK_VER
 
@@ -1616,6 +1619,7 @@ def main() -> None:
     uvicorn.run(
         generate_app(
             tts_engines,
+            aivm_manager,
             cores,
             latest_core_version,
             setting_loader,

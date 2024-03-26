@@ -2,7 +2,6 @@
 
 import base64
 import json
-import logging
 import shutil
 import zipfile
 from pathlib import Path
@@ -53,7 +52,33 @@ class AivmManager:
     def __init__(self, installed_aivm_dir: Path):
         self.installed_aivm_dir = installed_aivm_dir
         self.installed_aivm_dir.mkdir(exist_ok=True)
-        self.logger = logging.getLogger("uvicorn")
+
+    def get_aivm_manifest_from_style_id(self, style_id: StyleId) -> AivmManifest:
+        """
+        スタイル ID から AivmManifest を取得する
+
+        Parameters
+        ----------
+        style_id : StyleId
+            スタイル ID
+
+        Returns
+        -------
+        aivm_manifest : AivmManifest
+            AIVM (Aivis Voice Model) マニフェスト
+        """
+
+        aivm_infos = self.get_installed_aivm_infos()
+        for aivm_info in aivm_infos.values():
+            for aivm_info_speaker in aivm_info.speakers:
+                for style in aivm_info_speaker.speaker.styles:
+                    if style.id == style_id:
+                        return self.get_aivm_manifest(aivm_info.uuid)
+
+        raise HTTPException(
+            status_code=404,
+            detail=f"スタイル {style_id} は存在しません。",
+        )
 
     def get_speakers(self) -> list[Speaker]:
         """
@@ -128,7 +153,7 @@ class AivmManager:
 
                 # 万が一対応していないアーキテクチャの音声合成モデルの場合は除外
                 if aivm_manifest.model_architecture not in self.SUPPORTED_MODEL_ARCHITECTURES:  # fmt: skip
-                    self.logger.warning(f"TTS model {aivm_uuid} has unsupported model architecture {aivm_manifest.model_architecture}. Skipping.")  # fmt: skip
+                    print(f"TTS model {aivm_uuid} has unsupported model architecture {aivm_manifest.model_architecture}. Skipping.")  # fmt: skip
                     continue
 
                 # 話者情報を AivmInfoSpeaker に変換し、AivmInfo.speakers に追加
@@ -139,7 +164,7 @@ class AivmManager:
                     # AivisSpeech Engine は日本語のみをサポートするため、日本語をサポートしない話者は除外
                     ## supported_languages に大文字が設定されている可能性もあるため、小文字に変換して比較
                     if "ja" not in [lang.lower() for lang in speaker_manifest.supported_languages]:  # fmt: skip
-                        self.logger.warning(f"Speaker {speaker_uuid} of TTS model {aivm_uuid} does not support Japanese. Skipping.")  # fmt: skip
+                        print(f"Speaker {speaker_uuid} of TTS model {aivm_uuid} does not support Japanese. Skipping.")  # fmt: skip
                         continue
 
                     # 話者のディレクトリが存在しない場合
