@@ -91,13 +91,13 @@ class AivmManager:
                     if not default_style_icon_path.exists():
                         raise HTTPException(
                             status_code=500,
-                            detail=f"指定された音声合成モデル {aivm_uuid} の話者 {speaker_uuid} に icon.png が存在しません。",
+                            detail=f"音声合成モデル {aivm_uuid} の話者 {speaker_uuid} に icon.png が存在しません。",
                         )
                     terms_path = speaker_dir / "terms.md"
                     if not terms_path.exists():
                         raise HTTPException(
                             status_code=500,
-                            detail=f"指定された音声合成モデル {aivm_uuid} の話者 {speaker_uuid} に terms.md が存在しません。",
+                            detail=f"音声合成モデル {aivm_uuid} の話者 {speaker_uuid} に terms.md が存在しません。",
                         )
                     default_style_voice_sample_paths = list(speaker_dir.glob("voice_sample_*.wav"))  # fmt: skip
 
@@ -121,7 +121,7 @@ class AivmManager:
                             if not style_icon_path.exists():
                                 raise HTTPException(
                                     status_code=500,
-                                    detail=f"指定された音声合成モデル {aivm_uuid} の話者 {speaker_uuid} のスタイル {style_id} に icon.png が存在しません。",
+                                    detail=f"音声合成モデル {aivm_uuid} の話者 {speaker_uuid} のスタイル {style_id} に icon.png が存在しません。",
                                 )
                             style_voice_sample_paths = list(style_dir.glob("voice_sample_*.wav"))  # fmt: skip
 
@@ -203,7 +203,7 @@ class AivmManager:
         if (self.installed_aivm_dir / aivm_uuid).is_dir() is False:
             raise HTTPException(
                 status_code=404,
-                detail=f"指定された音声合成モデル {aivm_uuid} はインストールされていません。",
+                detail=f"音声合成モデル {aivm_uuid} はインストールされていません。",
             )
 
         # マニフェストファイルの存在確認
@@ -211,7 +211,7 @@ class AivmManager:
         if aivm_manifest_path.is_file() is False:
             raise HTTPException(
                 status_code=500,
-                detail=f"指定された音声合成モデル {aivm_uuid} に aivm_manifest.json が存在しません。",
+                detail=f"音声合成モデル {aivm_uuid} に aivm_manifest.json が存在しません。",
             )
 
         # マニフェストファイルの読み込み
@@ -221,7 +221,7 @@ class AivmManager:
         except Exception:
             raise HTTPException(
                 status_code=500,
-                detail=f"指定された音声合成モデル {aivm_uuid} の aivm_manifest.json の読み込みに失敗しました。",
+                detail=f"音声合成モデル {aivm_uuid} の aivm_manifest.json の読み込みに失敗しました。",
             )
 
         # マニフェスト形式のバリデーション
@@ -230,7 +230,7 @@ class AivmManager:
         except ValidationError:
             raise HTTPException(
                 status_code=500,
-                detail=f"指定された音声合成モデル {aivm_uuid} の aivm_manifest.json に不正なデータが含まれています。",
+                detail=f"音声合成モデル {aivm_uuid} の aivm_manifest.json に不正なデータが含まれています。",
             )
 
         return aivm_manifest
@@ -279,12 +279,12 @@ class AivmManager:
             except KeyError:
                 raise HTTPException(
                     status_code=422,
-                    detail=f"指定された音声合成モデル {aivm_uuid} に aivm_manifest.json が存在しません。",
+                    detail=f"音声合成モデル {aivm_uuid} に aivm_manifest.json が存在しません。",
                 )
             except Exception:
                 raise HTTPException(
                     status_code=422,
-                    detail=f"指定された音声合成モデル {aivm_uuid} の aivm_manifest.json は不正です。",
+                    detail=f"音声合成モデル {aivm_uuid} の aivm_manifest.json は不正です。",
                 )
 
             # マニフェスト形式のバリデーション
@@ -293,7 +293,7 @@ class AivmManager:
             except ValidationError:
                 raise HTTPException(
                     status_code=422,
-                    detail=f"指定された音声合成モデル {aivm_uuid} の aivm_manifest.json に不正なデータが含まれています。",
+                    detail=f"音声合成モデル {aivm_uuid} の aivm_manifest.json に不正なデータが含まれています。",
                 )
 
             # マニフェストバージョンのバリデーション
@@ -302,33 +302,33 @@ class AivmManager:
             except ValueError:
                 raise HTTPException(
                     status_code=422,
-                    detail=f"指定された音声合成モデル {aivm_uuid} の manifest_version ({aivm_manifest.manifest_version}) は不正です。",
+                    detail=f"音声合成モデル {aivm_uuid} の manifest_version ({aivm_manifest.manifest_version}) は不正です。",
                 )
             if aivm_manifest_version > self.SUPPORTED_MANIFEST_VERSION:
                 raise HTTPException(
                     status_code=422,
-                    detail=f"指定された音声合成モデル {aivm_uuid} は未対応です。",
+                    detail=f"音声合成モデル {aivm_uuid} は未対応です。",
                 )
 
             # 音声合成モデルのバージョンのバリデーション
             if not Version.is_valid(aivm_manifest.version):
                 raise HTTPException(
                     status_code=422,
-                    detail=f"指定された音声合成モデル {aivm_uuid} の version ({aivm_manifest.version}) は不正です。",
+                    detail=f"音声合成モデル {aivm_uuid} の version ({aivm_manifest.version}) は不正です。",
                 )
 
             # 音声合成モデルのアーキテクチャのバリデーション
             if aivm_manifest.architecture not in self.SUPPORTED_ARCHITECTURES:
                 raise HTTPException(
                     status_code=422,
-                    detail=f"指定された音声合成モデル {aivm_uuid} の architecture ({aivm_manifest.architecture}) は未対応です。",
+                    detail=f"音声合成モデル {aivm_uuid} の architecture ({aivm_manifest.architecture}) は未対応です。",
                 )
 
             # 音声合成モデルの UUID のバリデーション
             if aivm_manifest.uuid != aivm_uuid:
                 raise HTTPException(
                     status_code=422,
-                    detail=f"指定された音声合成モデルの UUID {aivm_uuid} が aivm_manifest.json の uuid ({aivm_manifest.uuid}) と一致しません。",
+                    detail=f"音声合成モデルの UUID {aivm_uuid} が aivm_manifest.json の uuid ({aivm_manifest.uuid}) と一致しません。",
                 )
 
             # 展開によるインストール
@@ -351,7 +351,7 @@ class AivmManager:
         if aivm_uuid not in installed_aivm_infos.keys():
             raise HTTPException(
                 status_code=404,
-                detail=f"指定された音声合成モデル {aivm_uuid} はインストールされていません。",
+                detail=f"音声合成モデル {aivm_uuid} はインストールされていません。",
             )
 
         # ディレクトリ削除によるアンインストール
@@ -360,5 +360,5 @@ class AivmManager:
         except Exception:
             raise HTTPException(
                 status_code=500,
-                detail=f"指定された音声合成モデル {aivm_uuid} の削除に失敗しました。",
+                detail=f"音声合成モデル {aivm_uuid} の削除に失敗しました。",
             )
