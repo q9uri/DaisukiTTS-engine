@@ -124,6 +124,21 @@ class StyleBertVITS2TTSEngine(TTSEngine):
     ) -> NDArray[np.float32]:
         """
         音声合成用のクエリに含まれる読み仮名に基づいて Style-Bert-VITS2 で音声波形を生成する
+        継承元の TTSEngine.synthesize_wave() をオーバーライドし、Style-Bert-VITS2 用の音声合成処理に差し替えている
+
+        Parameters
+        ----------
+        query : AudioQuery
+            音声合成用のクエリ
+        style_id : StyleId
+            スタイル ID
+        enable_interrogative_upspeak : bool, optional
+            疑問文の場合に抑揚を上げるかどうか (VOICEVOX ENGINE との互換性維持のためのパラメータ)
+
+        Returns
+        -------
+        NDArray[np.float32]
+            生成された音声波形 (float32 型)
         """
 
         # モーフィング時などに同一参照の AudioQuery で複数回呼ばれる可能性があるので、元の引数の AudioQuery に破壊的変更を行わない
@@ -143,12 +158,31 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         if query.kana is not None and query.kana != "":
             text = query.kana
 
-        # スタイル ID に基づく AivmManifest を取得
-        aivm_manifest = self.aivm_manager.get_aivm_manifest_from_style_id(style_id)
+        # スタイル ID と一致する AivmManifest, AivmManifestSpeaker, AivmManifestSpeakerStyle を取得
+        result = self.aivm_manager.get_aivm_manifest_from_style_id(style_id)
+        aivm_manifest = result[0]
+        aivm_manifest_speaker = result[1]
+        aivm_manifest_speaker_style = result[2]
 
         # 音声合成モデルをロード (初回のみ)
         model = self.load_model(aivm_manifest.uuid)
-        logger.info(f"Model name: {aivm_manifest.name} Version: {aivm_manifest.version}")  # fmt: skip
+        logger.info(f"Model: {aivm_manifest.name} / Version {aivm_manifest.version}")  # fmt: skip
+        logger.info(f"Speaker: {aivm_manifest_speaker.name} / Style: {aivm_manifest_speaker_style.name} / Version {aivm_manifest_speaker.version}")  # fmt: skip
+
+        # ローカルな話者 ID・スタイル ID を取得
+        ## 現在の Style-Bert-VITS2 の API ではスタイル ID ではなくスタイル名を指定する必要があるため、
+        ## 別途 local_style_id に対応するスタイル名をハイパーパラメータから取得している
+        ## AIVM マニフェスト記載のスタイル名とハイパーパラメータのスタイル名は一致していない可能性があり
+        ## そのまま指定できないため、AIVM マニフェストとハイパーパラメータで共通のスタイル ID からスタイル名を取得する
+        local_speaker_id: int = aivm_manifest_speaker.id
+        local_style_id: int = aivm_manifest_speaker_style.id
+        local_style_name: str | None = None
+        for hps_style_name, hps_style_id in model.hyper_parameters.data.style2id.items():  # fmt: skip
+            if hps_style_id == local_style_id:
+                local_style_name = hps_style_name
+                break
+        if local_style_name is None:
+            raise ValueError(f"Style ID {local_style_id} not found in hyper parameters.")  # fmt: skip
 
         # 話速を指定
         ## ref: https://github.com/litagin02/Style-Bert-VITS2/blob/2.4.1/server_editor.py#L314
@@ -171,15 +205,15 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         ## infer() に渡されない AudioQuery のパラメータは無視される (volumeScale のみ合成後に適用される)
         ## 出力音声は int16 型の NDArray で返される
         logger.info("Running inference...")
-        logger.info(f"  Text: {text}")
-        logger.info(f"  Speed: {length:.3f} (Query: {query.speedScale})")
-        logger.info(f"  Pitch: {pitch_scale:.3f} (Query: {query.pitchScale})")
-        logger.info(f"  SDP Ratio: {sdp_ratio:.3f} (Query: {query.intonationScale})")
+        logger.info(f"Text: {text}")
+        logger.info(f"Speed:     {length:.3f} (Query: {query.speedScale})")
+        logger.info(f"Pitch:     {pitch_scale:.3f} (Query: {query.pitchScale})")
+        logger.info(f"SDP Ratio: {sdp_ratio:.3f} (Query: {query.intonationScale})")
         sample_rate, raw_wave = model.infer(
             text=text,
             language=Languages.JP,
-            speaker_id=0,
-            style="ノーマル",
+            speaker_id=local_speaker_id,
+            style=local_style_name,
             length=length,
             pitch_scale=pitch_scale,
             sdp_ratio=sdp_ratio,
