@@ -12,7 +12,7 @@ from fastapi import HTTPException
 from pydantic import ValidationError
 from semver.version import Version
 
-from voicevox_engine.metas.Metas import (
+from .metas.Metas import (
     Speaker,
     SpeakerInfo,
     SpeakerStyle,
@@ -21,7 +21,7 @@ from voicevox_engine.metas.Metas import (
     StyleId,
     StyleInfo,
 )
-from voicevox_engine.model import AivmInfo, AivmInfoSpeaker, AivmManifest
+from .model import AivmInfo, AivmInfoSpeaker, AivmManifest
 
 __all__ = ["AivmManager"]
 

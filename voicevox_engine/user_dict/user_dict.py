@@ -1,7 +1,5 @@
 import json
-import sys
 import threading
-import traceback
 from pathlib import Path
 from typing import Dict, List, Optional
 from uuid import UUID, uuid4
@@ -10,6 +8,7 @@ import numpy as np
 import pyopenjtalk
 from fastapi import HTTPException
 
+from ..logging import logger
 from ..model import UserDictWord, WordTypes
 from ..utility.mutex_utility import mutex_wrapper
 from ..utility.path_utility import engine_root, get_save_dir
@@ -88,7 +87,7 @@ def update_dict(
 
         # デフォルト辞書データの追加
         if not default_dict_path.is_file():
-            print("WARNING: Cannot find default dictionary.", file=sys.stderr)
+            logger.warning("Cannot find default dictionary.")
             return
         default_dict = default_dict_path.read_text(encoding="utf-8")
         if default_dict == default_dict.rstrip():
@@ -139,8 +138,7 @@ def update_dict(
             )
 
     except Exception as e:
-        print("ERROR: Failed to update dictionary.", file=sys.stderr)
-        traceback.print_exc(file=sys.stderr)
+        logger.error("Failed to update dictionary.", exc_info=e)
         raise e
 
     finally:

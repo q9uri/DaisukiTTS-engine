@@ -6,8 +6,6 @@ import multiprocessing
 import os
 import re
 import sys
-import traceback
-import warnings
 import zipfile
 from collections.abc import AsyncIterator, Awaitable, Callable
 from contextlib import asynccontextmanager
@@ -26,7 +24,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.templating import Jinja2Templates
 from pydantic import ValidationError
-from pydantic.warnings import PydanticDeprecatedSince20
 from starlette.background import BackgroundTask
 from starlette.middleware.errors import ServerErrorMiddleware
 from starlette.responses import FileResponse
@@ -38,6 +35,7 @@ from voicevox_engine.core.core_adapter import CoreAdapter
 from voicevox_engine.core.core_initializer import MOCK_VER, initialize_cores
 from voicevox_engine.engine_manifest.EngineManifest import EngineManifest
 from voicevox_engine.engine_manifest.EngineManifestLoader import EngineManifestLoader
+from voicevox_engine.logging import LOGGING_CONFIG, logger
 from voicevox_engine.metas.Metas import StyleId
 from voicevox_engine.metas.MetasStore import construct_lookup
 from voicevox_engine.model import (
@@ -90,12 +88,6 @@ from voicevox_engine.utility.connect_base64_waves import (
 )
 from voicevox_engine.utility.path_utility import delete_file, engine_root, get_save_dir
 from voicevox_engine.utility.run_utility import decide_boolean_from_env
-
-# PydanticDeprecatedSince20 警告を抑制
-warnings.filterwarnings(
-    action="ignore",
-    category=PydanticDeprecatedSince20,
-)
 
 
 def b64encode_str(s: bytes) -> str:
@@ -168,7 +160,7 @@ def generate_app(
     # 未処理の例外が発生するとCORSMiddlewareが適用されない問題に対するワークアラウンド
     # ref: https://github.com/VOICEVOX/voicevox_engine/issues/91
     async def global_execution_handler(request: Request, exc: Exception) -> Response:
-        traceback.print_exc()
+        logger.error("Internal Server Error occurred.", exc_info=exc)
         return JSONResponse(
             status_code=500,
             content="Internal Server Error",
@@ -185,10 +177,9 @@ def generate_app(
         if allow_origin is not None:
             allowed_origins += allow_origin
             if "*" in allow_origin:
-                print(
-                    'WARNING: Deprecated use of argument "*" in allow_origin. '
-                    'Use option "--cors_policy_mod all" instead. See "--help" for more.',
-                    file=sys.stderr,
+                logger.warning(
+                    'Deprecated use of argument "*" in allow_origin. '
+                    'Use option "--cors_policy_mod all" instead. See "--help" for more.'
                 )
 
     app.add_middleware(
@@ -1128,8 +1119,8 @@ def generate_app(
         """
         try:
             return read_dict()
-        except Exception:
-            traceback.print_exc()
+        except Exception as ex:
+            logger.error("Failed to read user dictionary.", exc_info=ex)
             raise HTTPException(
                 status_code=422, detail="辞書の読み込みに失敗しました。"
             )
@@ -1177,8 +1168,8 @@ def generate_app(
             raise HTTPException(
                 status_code=422, detail="パラメータに誤りがあります。\n" + str(e)
             )
-        except Exception:
-            traceback.print_exc()
+        except Exception as ex:
+            logger.error("Failed to add a word to the user dictionary.", exc_info=ex)
             raise HTTPException(
                 status_code=422, detail="ユーザー辞書への追加に失敗しました。"
             )
@@ -1230,8 +1221,10 @@ def generate_app(
             raise HTTPException(
                 status_code=422, detail="パラメータに誤りがあります。\n" + str(e)
             )
-        except Exception:
-            traceback.print_exc()
+        except Exception as ex:
+            logger.error(
+                "Failed to rewrite a word in the user dictionary.", exc_info=ex
+            )
             raise HTTPException(
                 status_code=422, detail="ユーザー辞書の更新に失敗しました。"
             )
@@ -1253,8 +1246,10 @@ def generate_app(
             return Response(status_code=204)
         except HTTPException:
             raise
-        except Exception:
-            traceback.print_exc()
+        except Exception as ex:
+            logger.error(
+                "Failed to delete a word from the user dictionary.", exc_info=ex
+            )
             raise HTTPException(
                 status_code=422, detail="ユーザー辞書の更新に失敗しました。"
             )
@@ -1280,8 +1275,8 @@ def generate_app(
         try:
             import_user_dict(dict_data=import_dict_data, override=override)
             return Response(status_code=204)
-        except Exception:
-            traceback.print_exc()
+        except Exception as ex:
+            logger.error("Failed to import a user dictionary.", exc_info=ex)
             raise HTTPException(
                 status_code=422, detail="ユーザー辞書のインポートに失敗しました。"
             )
@@ -1387,7 +1382,9 @@ def main() -> None:
     if output_log_utf8:
         set_output_log_utf8()
 
-    parser = argparse.ArgumentParser(description="AivisSpeech のエンジンです。")
+    parser = argparse.ArgumentParser(
+        description="AivisSpeech Engine: AI Voice Imitation System - Text to Speech Engine"
+    )
     # Uvicorn でバインドするアドレスを "localhost" にすることで IPv4 (127.0.0.1) と IPv6 ([::1]) の両方でリッスンできます.
     # これは Uvicorn のドキュメントに記載されていない挙動です; 将来のアップデートにより動作しなくなる可能性があります.
     # ref: https://github.com/VOICEVOX/voicevox_engine/pull/647#issuecomment-1540204653
@@ -1522,6 +1519,8 @@ def main() -> None:
     if args.output_log_utf8:
         set_output_log_utf8()
 
+    logger.info(f"AivisSpeech Engine version {__version__}")
+
     # Synthesis Engine
     use_gpu: bool = args.use_gpu
     voicevox_dir: Path | None = args.aivisspeech_dir
@@ -1548,6 +1547,7 @@ def main() -> None:
     # tts_engines = make_tts_engines_from_cores(cores)
     # assert len(tts_engines) != 0, "音声合成エンジンがありません。"
     # latest_core_version = get_latest_core_version(versions=list(tts_engines.keys()))
+    latest_core_version = MOCK_VER
 
     # AivmManager を初期化
     aivm_manager = AivmManager(get_save_dir() / "installed_aivm")
@@ -1556,7 +1556,6 @@ def main() -> None:
     tts_engines: dict[str, TTSEngine] = {
         MOCK_VER: StyleBertVITS2TTSEngine(aivm_manager, use_gpu, load_all_models)
     }
-    latest_core_version = MOCK_VER
 
     # Cancellable Engine
     # enable_cancellable_synthesis: bool = args.enable_cancellable_synthesis
@@ -1632,6 +1631,7 @@ def main() -> None:
         ),  # type: ignore
         host=args.host,
         port=args.port,
+        log_config=LOGGING_CONFIG,
     )
 
 

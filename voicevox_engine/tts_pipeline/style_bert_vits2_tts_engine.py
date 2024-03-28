@@ -1,18 +1,19 @@
 # flake8: noqa
 
 import copy
-import logging
 
 import jaconv
 import numpy as np
+import torch
 from numpy.typing import NDArray
 from style_bert_vits2.constants import DEFAULT_SDP_RATIO, Languages
-from style_bert_vits2.logging import logger
+from style_bert_vits2.logging import logger as style_bert_vits2_logger
 from style_bert_vits2.nlp import bert_models
 from style_bert_vits2.tts_model import TTSModel
 
 from ..aivm_manager import AivmManager
 from ..dev.core.mock import MockCoreWrapper
+from ..logging import logger
 from ..metas.Metas import StyleId
 from ..model import AudioQuery
 from ..tts_pipeline.tts_engine import (
@@ -42,15 +43,29 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         # ロード済みモデルのキャッシュ
         self.tts_models: dict[str, TTSModel] = {}
 
-        # PyTorch に渡すデバイス名
-        self.device = "cuda" if use_gpu else "cpu"
+        # PyTorch での推論に利用するデバイスを選択
+        if use_gpu is True:
+            if torch.backends.cuda.is_built() and torch.cuda.is_available():
+                self.device = "cuda"
+                logger.info("Using GPU (NVIDIA CUDA) for inference.")
+            # Mac であれば基本 Apple MPS (Metal Performance Shaders) が利用できる
+            elif torch.backends.mps.is_built() and torch.backends.mps.is_available():
+                self.device = "mps"
+                logger.info("Using GPU (Apple MPS) for inference.")
+            # それ以外の環境では CPU にフォールバック
+            else:
+                logger.warning("GPU is not available. Using CPU instead.")
+                self.device = "cpu"
+        else:
+            self.device = "cpu"
+            logger.info("Using CPU for inference.")
 
         # Style-Bert-VITS2 本体のロガーを抑制
-        logger.remove()
+        style_bert_vits2_logger.remove()
 
         # 音声合成に必要な BERT モデル・トークナイザーを読み込む
         ## 一度ロードすればプロセス内でグローバルに保持される
-        print("INFO: Loading BERT model and tokenizer...")
+        logger.info("Loading BERT model and tokenizer...")
         bert_models.load_model(
             language=Languages.JP,
             pretrained_model_name_or_path="ku-nlp/deberta-v2-large-japanese-char-wwm",
@@ -61,7 +76,7 @@ class StyleBertVITS2TTSEngine(TTSEngine):
             pretrained_model_name_or_path="ku-nlp/deberta-v2-large-japanese-char-wwm",
             cache_dir=str(self.BERT_MODEL_CACHE_DIR),
         )
-        print("INFO: BERT model and tokenizer loaded.")
+        logger.info("BERT model and tokenizer loaded.")
 
         # 継承元の TTSEngine の __init__ を呼び出す
         # VOICEVOX CORE の通常の CoreWrapper の代わりに MockCoreWrapper を利用する
@@ -89,20 +104,16 @@ class StyleBertVITS2TTSEngine(TTSEngine):
 
         # モデルをロードする
         tts_model = TTSModel(
-            model_path=self.aivm_manager.installed_aivm_dir
-            / aivm_uuid
-            / "model.safetensors",
-            config_path=self.aivm_manager.installed_aivm_dir
-            / aivm_uuid
-            / "config.json",
-            style_vec_path=self.aivm_manager.installed_aivm_dir
-            / aivm_uuid
-            / "style_vectors.npy",
+            model_path=self.aivm_manager.installed_aivm_dir / aivm_uuid / "model.safetensors",
+            config_path=self.aivm_manager.installed_aivm_dir / aivm_uuid / "config.json",
+            style_vec_path=self.aivm_manager.installed_aivm_dir / aivm_uuid / "style_vectors.npy",
             device=self.device,
-        )
+        )  # fmt: skip
+        logger.info("Loading model...")
         tts_model.load()
-        self.tts_models[aivm_uuid] = tts_model
+        logger.info(f"Model loaded. UUID: {aivm_uuid}")
 
+        self.tts_models[aivm_uuid] = tts_model
         return tts_model
 
     def synthesize_wave(
@@ -114,8 +125,6 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         """
         音声合成用のクエリに含まれる読み仮名に基づいて Style-Bert-VITS2 で音声波形を生成する
         """
-
-        logger = logging.getLogger("uvicorn")
 
         # モーフィング時などに同一参照の AudioQuery で複数回呼ばれる可能性があるので、元の引数の AudioQuery に破壊的変更を行わない
         query = copy.deepcopy(query)
@@ -139,8 +148,7 @@ class StyleBertVITS2TTSEngine(TTSEngine):
 
         # 音声合成モデルをロード (初回のみ)
         model = self.load_model(aivm_manifest.uuid)
-        logger.info(f"Model loaded.")
-        logger.info(f"Speaker: {aivm_manifest.name} ({aivm_manifest.uuid})")
+        logger.info(f"Model name: {aivm_manifest.name} Version: {aivm_manifest.version}")  # fmt: skip
 
         # 話速を指定
         ## ref: https://github.com/litagin02/Style-Bert-VITS2/blob/2.4.1/server_editor.py#L314
@@ -161,12 +169,12 @@ class StyleBertVITS2TTSEngine(TTSEngine):
 
         # 音声合成を実行
         ## infer() に渡されない AudioQuery のパラメータは無視される (volumeScale のみ合成後に適用される)
-        ## 出力音声は int16 型の numpy 配列で返される
+        ## 出力音声は int16 型の NDArray で返される
         logger.info("Running inference...")
-        logger.info(f"Text: {text}")
-        logger.info(f"Speed: {length} (Query: {query.speedScale})")
-        logger.info(f"Pitch: {pitch_scale} (Query: {query.pitchScale})")
-        logger.info(f"SDP Ratio: {sdp_ratio} (Query: {query.intonationScale})")
+        logger.info(f"  Text: {text}")
+        logger.info(f"  Speed: {length:.3f} (Query: {query.speedScale})")
+        logger.info(f"  Pitch: {pitch_scale:.3f} (Query: {query.pitchScale})")
+        logger.info(f"  SDP Ratio: {sdp_ratio:.3f} (Query: {query.intonationScale})")
         sample_rate, raw_wave = model.infer(
             text=text,
             language=Languages.JP,
@@ -184,6 +192,6 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         ## float32 に変換する際に -1.0 ~ 1.0 の範囲に正規化する
         raw_wave = raw_wave.astype(np.float32) / 32768.0
 
-        # 生成した音声の音量・サンプルレート・ステレオ化を調整して返す
+        # 生成した音声の音量調整/サンプルレート変更/ステレオ化を行ってから返す
         wave = raw_wave_to_output_wave(query, raw_wave, sample_rate)
         return wave

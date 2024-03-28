@@ -1,6 +1,5 @@
 import os
 import sys
-import traceback
 from pathlib import Path
 
 from platformdirs import user_data_dir
@@ -46,4 +45,6 @@ def delete_file(file_path: str) -> None:
     try:
         os.remove(file_path)
     except OSError:
-        traceback.print_exc()
+        from ..logging import logger
+
+        logger.error(f"Failed to delete file: {file_path}")

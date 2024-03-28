@@ -1,8 +1,8 @@
 import json
-import sys
 from pathlib import Path
 from typing import List, Optional
 
+from ..logging import logger
 from ..tts_pipeline.tts_engine import CoreAdapter
 from ..utility.core_utility import get_half_logical_cores
 from ..utility.path_utility import engine_root, get_save_dir
@@ -43,10 +43,8 @@ def initialize_cores(
         起動時に全てのモデルを読み込むかどうか
     """
     if cpu_num_threads == 0 or cpu_num_threads is None:
-        print(
-            "WARNING: cpu_num_threads is set to 0. "
-            + "Setting it to half of the logical cores.",
-            file=sys.stderr,
+        logger.warning(
+            "cpu_num_threads is set to 0. Setting it to half of the logical cores."
         )
         cpu_num_threads = get_half_logical_cores()
 
@@ -97,11 +95,10 @@ def initialize_cores(
                 # コアを登録する
                 metas = json.loads(core.metas())
                 core_version = metas[0]["version"]
-                print(f"INFO: Loading core {core_version}.")
+                logger.info(f"Loading core {core_version}.")
                 if core_version in cores:
-                    print(
-                        "WARNING: Core loading is skipped because of version duplication.",
-                        file=sys.stderr,
+                    logger.warning(
+                        "Core loading is skipped because of version duplication."
                     )
                 else:
                     cores[core_version] = CoreAdapter(core)
@@ -133,7 +130,6 @@ def initialize_cores(
         from ..dev.core.mock import MockCoreWrapper
 
         if MOCK_VER not in cores:
-            print("INFO: Loading mock.")
             core = MockCoreWrapper()
             cores[MOCK_VER] = CoreAdapter(core)
 
