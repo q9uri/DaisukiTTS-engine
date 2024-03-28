@@ -152,7 +152,12 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         ## VOICEVOX では「抑揚」の比率だが、AivisSpeech では声のテンポの緩急を指定する値としている
         ## Style-Bert-VITS2 にも一応「抑揚」パラメータはあるが、pyworld で変換している関係で音質が明確に劣化する上、あまり効果がない
         ## intonationScale の基準は 1.0 (0 ~ 2) なので、DEFAULT_SDP_RATIO を基準とした 0 ~ 1 の範囲に変換する
-        sdp_ratio = max(0, min(1000, int(query.intonationScale * 1000) - (1000 - int(DEFAULT_SDP_RATIO * 1000)))) / 1000.0  # fmt: skip
+        if 0.0 <= query.intonationScale <= 1.0:
+            sdp_ratio = query.intonationScale * DEFAULT_SDP_RATIO
+        elif 1.0 < query.intonationScale <= 2.0:
+            sdp_ratio = DEFAULT_SDP_RATIO + (query.intonationScale - 1.0) * 0.8 / 1.0
+        else:
+            sdp_ratio = DEFAULT_SDP_RATIO
 
         # 音声合成を実行
         ## infer() に渡されない AudioQuery のパラメータは無視される (volumeScale のみ合成後に適用される)
