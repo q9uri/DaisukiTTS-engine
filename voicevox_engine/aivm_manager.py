@@ -43,11 +43,11 @@ class AivmManager:
     - config.json : Style-Bert-VITS2 のハイパーパラメータを記述した JSON ファイル
     - model.safetensors : Style-Bert-VITS2 のモデルファイル
     - style_vectors.npy : Style-Bert-VITS2 のスタイルベクトルファイル
-    - (speaker_uuid: aivm_manifest.json に記載の UUID)/: 話者ごとのアセット
+    - speaker_(speaker_uuid: aivm_manifest.json に記載の UUID)/: 話者ごとのアセット
         - icon.png : 話者 (デフォルトスタイル) のアイコン画像 (正方形)
         - voice_sample_(01~99).wav : 話者 (デフォルトスタイル) の音声サンプル
         - terms.md : 話者の利用規約
-        - style-(style_id: aivm_manifest.json に記載の 0 から始まる連番 ID)/: スタイルごとのアセット (省略時はデフォルトスタイルのものが使われる)
+        - style_(style_id: aivm_manifest.json に記載の 0 から始まる連番 ID)/: スタイルごとのアセット (省略時はデフォルトスタイルのものが使われる)
             - icon.png : デフォルト以外の各スタイルごとのアイコン画像 (正方形)
             - voice_sample_(01~99).wav : デフォルト以外の各スタイルごとの音声サンプル
     """
@@ -141,7 +141,7 @@ class AivmManager:
                 # 話者情報を AivmInfoSpeaker に変換し、AivmInfo.speakers に追加
                 for speaker_manifest in aivm_manifest.speakers:
                     speaker_uuid = speaker_manifest.uuid
-                    speaker_dir = aivm_dir / speaker_uuid
+                    speaker_dir = aivm_dir / f"speaker_{speaker_uuid}"
 
                     # AivisSpeech Engine は日本語のみをサポートするため、日本語をサポートしない話者は除外
                     ## supported_languages に大文字が設定されている可能性もあるため、小文字に変換して比較
@@ -180,7 +180,7 @@ class AivmManager:
                         style_id = self.local_style_id_to_style_id(style_manifest.id, speaker_uuid)  # fmt: skip
 
                         # スタイルごとのディレクトリが存在する場合はアセットのパスを取得
-                        style_dir = speaker_dir / f"style-{style_id}"
+                        style_dir = speaker_dir / f"style_{style_id}"
                         if style_dir.exists() and style_dir.is_dir():
                             style_icon_path = style_dir / "icon.png"
                             if not style_icon_path.exists():
@@ -362,7 +362,7 @@ class AivmManager:
         """
 
         # インストール先ディレクトリの生成
-        install_dir = self.installed_aivm_dir / aivm_uuid
+        install_dir = self.installed_aivm_dir / f'aivm_{aivm_uuid}'
         install_dir.mkdir(exist_ok=True)
 
         # zipファイル形式のバリデーション
