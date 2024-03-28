@@ -49,7 +49,7 @@
     }
   ],
   "intonationScale": 1.0,
-  "kana": "テ'_ストデ_ス",
+  "kana": "テストです",
   "outputSamplingRate": 44100,
   "outputStereo": false,
   "pitchScale": 0.0,

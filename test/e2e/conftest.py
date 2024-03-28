@@ -6,17 +6,20 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from run import generate_app
 
+from voicevox_engine.aivm_manager import AivmManager
 from voicevox_engine.core.core_initializer import initialize_cores
 from voicevox_engine.preset.PresetManager import PresetManager
 from voicevox_engine.setting.SettingLoader import SettingHandler
 from voicevox_engine.tts_pipeline.tts_engine import make_tts_engines_from_cores
 from voicevox_engine.utility.core_version_utility import get_latest_core_version
+from voicevox_engine.utility.path_utility import get_save_dir
 
 
 @pytest.fixture(scope="session")
 def app_params() -> dict[str, Any]:
     cores = initialize_cores(use_gpu=False, enable_mock=True)
     tts_engines = make_tts_engines_from_cores(cores)
+    aivm_manager = AivmManager(get_save_dir() / "installed_aivm")
     latest_core_version = get_latest_core_version(versions=list(tts_engines.keys()))
     setting_loader = SettingHandler(Path("./not_exist.yaml"))
     preset_manager = PresetManager(  # FIXME: impl MockPresetManager
@@ -24,6 +27,7 @@ def app_params() -> dict[str, Any]:
     )
     return {
         "tts_engines": tts_engines,
+        "aivm_manager": aivm_manager,
         "cores": cores,
         "latest_core_version": latest_core_version,
         "setting_loader": setting_loader,
