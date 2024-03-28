@@ -60,99 +60,6 @@ class AivmManager:
         self.installed_aivm_dir = installed_aivm_dir
         self.installed_aivm_dir.mkdir(exist_ok=True)
 
-    @staticmethod
-    def local_style_id_to_style_id(local_style_id: int, speaker_uuid: str) -> StyleId:
-        """
-        AIVM マニフェスト内のローカルなスタイル ID を VOICEVOX ENGINE 互換のグローバルに一意な StyleId に変換する
-
-        Parameters
-        ----------
-        manifest_style_id : int
-            AIVM マニフェスト内のローカルなスタイル ID
-        speaker_uuid : str
-            話者の UUID (aivm_manifest.json に記載されているものと同一)
-
-        Returns
-        -------
-        style_id : StyleId
-            VOICEVOX ENGINE 互換のグローバルに一意なスタイル ID
-        """
-
-        # AIVM マニフェスト内のスタイル ID は、話者ごとにローカルな 0 から始まる連番になっている
-        # この値は config.json に記述されているハイパーパラメータの data.style2id の値と一致する
-        # 一方 VOICEVOX ENGINE は互換性問題？による歴史的事情でスタイル ID を音声合成 API に渡す形となっており、
-        # スタイル ID がグローバルに一意になっていなければならない
-        # そこで、数値化した話者 UUID にスタイル ID を組み合わせることで、一意なスタイル ID を生成する
-        # 2**53 - 1 は JavaScript の Number.MAX_SAFE_INTEGER に合わせた値
-        uuid_int = int(speaker_uuid.replace("-", ""), 16)
-        return StyleId((uuid_int % (2**53 - 1)) + local_style_id)
-
-    @staticmethod
-    def style_id_to_local_style_id(style_id: StyleId, speaker_uuid: str) -> int:
-        """
-        VOICEVOX ENGINE 互換のグローバルに一意な StyleId を AIVM マニフェスト内のローカルなスタイル ID に変換する
-
-        Parameters
-        ----------
-        style_id : StyleId
-            VOICEVOX ENGINE 互換のグローバルに一意なスタイル ID
-        speaker_uuid : str
-            話者の UUID (aivm_manifest.json に記載されているものと同一)
-
-        Returns
-        -------
-        local_style_id : int
-            AIVM マニフェスト内のローカルなスタイル ID
-        """
-
-        # local_style_id_to_style_id() の逆変換
-        uuid_int = int(speaker_uuid.replace("-", ""), 16)
-        return (style_id - (uuid_int % (2**53 - 1))) % (2**53 - 1)
-
-    def get_aivm_manifest_from_style_id(
-        self, style_id: StyleId
-    ) -> tuple[AivmManifest, AivmManifestSpeaker, AivmManifestSpeakerStyle]:
-        """
-        スタイル ID と一致する AivmManifest, AivmManifestSpeaker, AivmManifestSpeakerStyle を取得する
-
-        Parameters
-        ----------
-        style_id : StyleId
-            スタイル ID
-
-        Returns
-        -------
-        aivm_manifest : AivmManifest
-            AIVM (Aivis Voice Model) マニフェスト
-        aivm_manifest_speaker : AivmManifestSpeaker
-            AIVM (Aivis Voice Model) マニフェスト内の話者
-        aivm_manifest_style : AivmManifestSpeakerStyle
-            AIVM (Aivis Voice Model) マニフェスト内のスタイル
-        """
-
-        # fmt: off
-        aivm_infos = self.get_installed_aivm_infos()
-        for aivm_info in aivm_infos.values():
-            for aivm_info_speaker in aivm_info.speakers:
-                for aivm_info_speaker_style in aivm_info_speaker.speaker.styles:
-                    if aivm_info_speaker_style.id == style_id:
-                        # ここでスタイル ID が示す音声合成モデルに対応する AivmManifest を特定
-                        aivm_manifest = self.get_aivm_manifest(aivm_info.uuid)
-                        for aivm_manifest_speaker in aivm_manifest.speakers:
-                            # ここでスタイル ID が示す話者に対応する AivmManifestSpeaker を特定
-                            if aivm_manifest_speaker.uuid == aivm_info_speaker.speaker.speaker_uuid:
-                                for aivm_manifest_style in aivm_manifest_speaker.styles:
-                                    # ここでスタイル ID が示すスタイルに対応する AivmManifestSpeakerStyle を特定
-                                    local_style_id = self.style_id_to_local_style_id(style_id, aivm_manifest_speaker.uuid)
-                                    if aivm_manifest_style.id == local_style_id:
-                                        # すべて取得できたので値を返す
-                                        return aivm_manifest, aivm_manifest_speaker, aivm_manifest_style
-
-        raise HTTPException(
-            status_code=404,
-            detail=f"スタイル {style_id} は存在しません。",
-        )
-
     def get_speakers(self) -> list[Speaker]:
         """
         すべてのインストール済み音声合成モデル内の話者の一覧を取得する
@@ -204,7 +111,7 @@ class AivmManager:
         Returns
         -------
         aivm_infos : dict[str, AivmInfo]
-            インストール済み音声合成モデルの情報
+            インストール済み音声合成モデルの情報 (キー: AIVM UUID, 値: AivmInfo)
         """
 
         logger = logging.getLogger("uvicorn")
@@ -393,6 +300,50 @@ class AivmManager:
 
         return aivm_manifest
 
+    def get_aivm_manifest_from_style_id(
+        self, style_id: StyleId
+    ) -> tuple[AivmManifest, AivmManifestSpeaker, AivmManifestSpeakerStyle]:
+        """
+        スタイル ID に対応する AivmManifest, AivmManifestSpeaker, AivmManifestSpeakerStyle を取得する
+
+        Parameters
+        ----------
+        style_id : StyleId
+            スタイル ID
+
+        Returns
+        -------
+        aivm_manifest : AivmManifest
+            AIVM (Aivis Voice Model) マニフェスト
+        aivm_manifest_speaker : AivmManifestSpeaker
+            AIVM (Aivis Voice Model) マニフェスト内の話者
+        aivm_manifest_style : AivmManifestSpeakerStyle
+            AIVM (Aivis Voice Model) マニフェスト内のスタイル
+        """
+
+        # fmt: off
+        aivm_infos = self.get_installed_aivm_infos()
+        for aivm_info in aivm_infos.values():
+            for aivm_info_speaker in aivm_info.speakers:
+                for aivm_info_speaker_style in aivm_info_speaker.speaker.styles:
+                    if aivm_info_speaker_style.id == style_id:
+                        # ここでスタイル ID が示す音声合成モデルに対応する AivmManifest を特定
+                        aivm_manifest = self.get_aivm_manifest(aivm_info.uuid)
+                        for aivm_manifest_speaker in aivm_manifest.speakers:
+                            # ここでスタイル ID が示す話者に対応する AivmManifestSpeaker を特定
+                            if aivm_manifest_speaker.uuid == aivm_info_speaker.speaker.speaker_uuid:
+                                for aivm_manifest_style in aivm_manifest_speaker.styles:
+                                    # ここでスタイル ID が示すスタイルに対応する AivmManifestSpeakerStyle を特定
+                                    local_style_id = self.style_id_to_local_style_id(style_id, aivm_manifest_speaker.uuid)
+                                    if aivm_manifest_style.id == local_style_id:
+                                        # すべて取得できたので値を返す
+                                        return aivm_manifest, aivm_manifest_speaker, aivm_manifest_style
+
+        raise HTTPException(
+            status_code=404,
+            detail=f"スタイル {style_id} は存在しません。",
+        )
+
     def install_aivm(self, aivm_uuid: str, file: BinaryIO) -> Path:
         """
         音声合成モデルパッケージファイル (`.aivm`) をインストールする
@@ -538,3 +489,52 @@ class AivmManager:
                 status_code=500,
                 detail=f"音声合成モデル {aivm_uuid} の削除に失敗しました。",
             )
+
+    @staticmethod
+    def local_style_id_to_style_id(local_style_id: int, speaker_uuid: str) -> StyleId:
+        """
+        AIVM マニフェスト内のローカルなスタイル ID を VOICEVOX ENGINE 互換のグローバルに一意な StyleId に変換する
+
+        Parameters
+        ----------
+        manifest_style_id : int
+            AIVM マニフェスト内のローカルなスタイル ID
+        speaker_uuid : str
+            話者の UUID (aivm_manifest.json に記載されているものと同一)
+
+        Returns
+        -------
+        style_id : StyleId
+            VOICEVOX ENGINE 互換のグローバルに一意なスタイル ID
+        """
+
+        # AIVM マニフェスト内のスタイル ID は、話者ごとにローカルな 0 から始まる連番になっている
+        # この値は config.json に記述されているハイパーパラメータの data.style2id の値と一致する
+        # 一方 VOICEVOX ENGINE は互換性問題？による歴史的事情でスタイル ID を音声合成 API に渡す形となっており、
+        # スタイル ID がグローバルに一意になっていなければならない
+        # そこで、数値化した話者 UUID にスタイル ID を組み合わせることで、一意なスタイル ID を生成する
+        # 2**53 - 1 は JavaScript の Number.MAX_SAFE_INTEGER に合わせた値
+        uuid_int = int(speaker_uuid.replace("-", ""), 16)
+        return StyleId((uuid_int % (2**53 - 1)) + local_style_id)
+
+    @staticmethod
+    def style_id_to_local_style_id(style_id: StyleId, speaker_uuid: str) -> int:
+        """
+        VOICEVOX ENGINE 互換のグローバルに一意な StyleId を AIVM マニフェスト内のローカルなスタイル ID に変換する
+
+        Parameters
+        ----------
+        style_id : StyleId
+            VOICEVOX ENGINE 互換のグローバルに一意なスタイル ID
+        speaker_uuid : str
+            話者の UUID (aivm_manifest.json に記載されているものと同一)
+
+        Returns
+        -------
+        local_style_id : int
+            AIVM マニフェスト内のローカルなスタイル ID
+        """
+
+        # local_style_id_to_style_id() の逆変換
+        uuid_int = int(speaker_uuid.replace("-", ""), 16)
+        return (style_id - (uuid_int % (2**53 - 1))) % (2**53 - 1)

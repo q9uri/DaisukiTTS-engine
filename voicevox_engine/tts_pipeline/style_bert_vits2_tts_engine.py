@@ -78,6 +78,13 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         )
         logger.info("BERT model and tokenizer loaded.")
 
+        # load_all_models が True の場合は全ての音声合成モデルをロードしておく
+        if load_all_models is True:
+            logger.info("Loading all models...")
+            for aivm_uuid in self.aivm_manager.get_installed_aivm_infos().keys():
+                self.load_model(aivm_uuid)
+            logger.info("All models loaded.")
+
         # 継承元の TTSEngine の __init__ を呼び出す
         # VOICEVOX CORE の通常の CoreWrapper の代わりに MockCoreWrapper を利用する
         super().__init__(MockCoreWrapper())
@@ -158,7 +165,7 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         if query.kana is not None and query.kana != "":
             text = query.kana
 
-        # スタイル ID と一致する AivmManifest, AivmManifestSpeaker, AivmManifestSpeakerStyle を取得
+        # スタイル ID に対応する AivmManifest, AivmManifestSpeaker, AivmManifestSpeakerStyle を取得
         result = self.aivm_manager.get_aivm_manifest_from_style_id(style_id)
         aivm_manifest = result[0]
         aivm_manifest_speaker = result[1]
