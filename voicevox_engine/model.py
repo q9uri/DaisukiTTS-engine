@@ -66,7 +66,16 @@ class AudioQuery(BaseModel):
     outputStereo: bool = Field(title="音声データをステレオ出力するか否か")
     kana: Optional[str] = Field(
         default=None,
-        title="[読み取り専用]AquesTalk 風記法によるテキスト。音声合成用のクエリとしては無視される",
+        title="読み上げるテキスト (AquesTalk 風記法テキストではない点で VOICEVOX ENGINE と異なる)",
+        description=(
+            "読み上げるテキスト。\n"
+            "VOICEVOX ENGINE では AquesTalk 風記法テキストが入る読み取り専用フィールドだが (音声合成時には無視される) 、"
+            "AivisSpeech Engine では音声合成時に漢字や記号が含まれた通常の読み上げテキストも必要なため、"
+            "苦肉の策で読み上げテキスト指定用のフィールドとして転用した。\n"
+            "VOICEVOX ENGINE との互換性のため None や空文字列が指定された場合も動作するが、"
+            "その場合はアクセント句から自動生成されたひらがな文字列が読み上げテキストになるため、不自然なイントネーションになってしまう。\n"
+            "可能な限り kana に読み上げテキストを指定した上で音声合成 API に渡すことを推奨する。"
+        ),
     )
 
     def __hash__(self) -> int:

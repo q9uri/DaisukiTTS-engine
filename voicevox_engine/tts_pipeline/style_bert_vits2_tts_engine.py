@@ -1,6 +1,7 @@
 # flake8: noqa
 
 import copy
+from typing import Literal
 
 import jaconv
 import numpy as np
@@ -45,6 +46,7 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         self.tts_models: dict[str, TTSModel] = {}
 
         # PyTorch での推論に利用するデバイスを選択
+        self.device: Literal["cpu", "cuda", "mps"]
         if use_gpu is True:
             if torch.backends.cuda.is_built() and torch.cuda.is_available():
                 self.device = "cuda"
@@ -152,12 +154,6 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         # モーフィング時などに同一参照の AudioQuery で複数回呼ばれる可能性があるので、元の引数の AudioQuery に破壊的変更を行わない
         query = copy.deepcopy(query)
 
-        # 読み仮名 (カタカナのみ) のテキストを取得
-        ## ひらがなの方がまだ抑揚の棒読み度がマシになるため、カタカナをひらがなに変換している
-        flatten_moras = to_flatten_moras(query.accent_phrases)
-        text = "".join([mora.text for mora in flatten_moras]) + "。"
-        text = jaconv.kata2hira(text)
-
         # もし AudioQuery.kana に漢字混じりの通常の文章が指定されている場合はそれを使う (AivisSpeech 独自仕様)
         ## VOICEVOX ENGINE では AudioQuery.kana は読み取り専用パラメータだが、AivisSpeech Engine では
         ## 音声合成 API にアクセント句だけでなく通常の読み上げテキストを直接渡すためのパラメータとして利用している
@@ -165,6 +161,13 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         ## VOICEVOX ENGINE との互換性維持のための苦肉の策で、基本可能な限り AudioQuery.kana に読み上げテキストを指定すべき
         if query.kana is not None and query.kana != "":
             text = query.kana
+        else:
+            logger.warning("AudioQuery.kana is not specified. Using accent phrases instead.")  # fmt: skip
+            # 読み仮名 (カタカナのみ) のテキストを取得
+            ## ひらがなの方がまだ抑揚の棒読み度がマシになるため、カタカナをひらがなに変換した上で句点を付ける
+            flatten_moras = to_flatten_moras(query.accent_phrases)
+            text = "".join([mora.text for mora in flatten_moras]) + "。"
+            text = jaconv.kata2hira(text)
 
         # スタイル ID に対応する AivmManifest, AivmManifestSpeaker, AivmManifestSpeakerStyle を取得
         result = self.aivm_manager.get_aivm_manifest_from_style_id(style_id)

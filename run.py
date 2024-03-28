@@ -68,7 +68,7 @@ from voicevox_engine.preset.PresetError import PresetError
 from voicevox_engine.preset.PresetManager import PresetManager
 from voicevox_engine.setting.Setting import CorsPolicyMode, Setting
 from voicevox_engine.setting.SettingLoader import USER_SETTING_PATH, SettingHandler
-from voicevox_engine.tts_pipeline.kana_converter import create_kana, parse_kana
+from voicevox_engine.tts_pipeline.kana_converter import parse_kana
 from voicevox_engine.tts_pipeline.style_bert_vits2_tts_engine import (
     StyleBertVITS2TTSEngine,
 )
@@ -289,7 +289,8 @@ def generate_app(
             postPhonemeLength=0.1,
             outputSamplingRate=core.default_sampling_rate,
             outputStereo=False,
-            kana=create_kana(accent_phrases),
+            # kana=create_kana(accent_phrases),
+            kana=text,  # AivisSpeech Engine では音声合成時に読み上げテキストも必要なため、kana に読み上げテキストをそのまま入れて返す
         )
 
     @app.post(
@@ -332,7 +333,8 @@ def generate_app(
             postPhonemeLength=selected_preset.postPhonemeLength,
             outputSamplingRate=core.default_sampling_rate,
             outputStereo=False,
-            kana=create_kana(accent_phrases),
+            # kana=create_kana(accent_phrases),
+            kana=text,  # AivisSpeech Engine では音声合成時に読み上げテキストも必要なため、kana に読み上げテキストをそのまま入れて返す
         )
 
     @app.post(
@@ -355,7 +357,7 @@ def generate_app(
     ) -> list[AccentPhrase]:
         """
         テキストからアクセント句を得ます。
-        is_kanaが`true`のとき、テキストは次のAquesTalk 風記法で解釈されます。デフォルトは`false`です。
+        is_kanaが`true`のとき、テキストは次の AquesTalk 風記法で解釈されます。デフォルトは`false`です。
         * 全てのカナはカタカナで記述される
         * アクセント句は`/`または`、`で区切る。`、`で区切った場合に限り無音区間が挿入される。
         * カナの手前に`_`を入れるとそのカナは無声化される
