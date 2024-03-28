@@ -6,6 +6,7 @@ from typing import Literal
 import jaconv
 import numpy as np
 import torch
+import torch.version
 from numpy.typing import NDArray
 from style_bert_vits2.constants import DEFAULT_SDP_RATIO, Languages
 from style_bert_vits2.logging import logger as style_bert_vits2_logger
@@ -48,10 +49,17 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         # PyTorch での推論に利用するデバイスを選択
         self.device: Literal["cpu", "cuda", "mps"]
         if use_gpu is True:
+            # NVIDIA GPU が接続されているなら CUDA (Compute Unified Device Architecture) を利用できる
             if torch.backends.cuda.is_built() and torch.cuda.is_available():
                 self.device = "cuda"
-                logger.info("Using GPU (NVIDIA CUDA) for inference.")
-            # Mac であれば基本 Apple MPS (Metal Performance Shaders) が利用できる
+                # AMD ROCm は PyTorch 上において CUDA デバイスとして認識されるらしい
+                ## torch.version.hip が None でなければ CUDA ではなく ROCm が利用されていると判断できるらしい
+                ## ref: https://pytorch.org/docs/stable/notes/hip.html
+                if torch.version.hip is not None:
+                    logger.info("Using GPU (AMD ROCm) for inference.")
+                else:
+                    logger.info("Using GPU (NVIDIA CUDA) for inference.")
+            # Mac なら基本 Apple MPS (Metal Performance Shaders) が利用できる
             elif torch.backends.mps.is_built() and torch.backends.mps.is_available():
                 self.device = "mps"
                 logger.info("Using GPU (Apple MPS) for inference.")
@@ -223,7 +231,7 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         logger.info(f"Speed:     {length:.3f} (Query: {query.speedScale})")
         logger.info(f"Pitch:     {pitch_scale:.3f} (Query: {query.pitchScale})")
         logger.info(f"SDP Ratio: {sdp_ratio:.3f} (Query: {query.intonationScale})")
-        sample_rate, raw_wave = model.infer(
+        raw_sample_rate, raw_wave = model.infer(
             text=text,
             language=Languages.JP,
             speaker_id=local_speaker_id,
@@ -240,6 +248,13 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         ## float32 に変換する際に -1.0 ~ 1.0 の範囲に正規化する
         raw_wave = raw_wave.astype(np.float32) / 32768.0
 
+        # 前後の無音区間を追加
+        pre_silence_length = int(raw_sample_rate * query.prePhonemeLength)
+        post_silence_length = int(raw_sample_rate * query.postPhonemeLength)
+        silence_wave_pre = np.zeros(pre_silence_length, dtype=np.float32)
+        silence_wave_post = np.zeros(post_silence_length, dtype=np.float32)
+        raw_wave = np.concatenate((silence_wave_pre, raw_wave, silence_wave_post))
+
         # 生成した音声の音量調整/サンプルレート変更/ステレオ化を行ってから返す
-        wave = raw_wave_to_output_wave(query, raw_wave, sample_rate)
+        wave = raw_wave_to_output_wave(query, raw_wave, raw_sample_rate)
         return wave
