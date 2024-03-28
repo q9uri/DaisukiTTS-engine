@@ -577,8 +577,8 @@ class TTSEngine:
 
 def make_tts_engines_from_cores(cores: dict[str, CoreAdapter]) -> dict[str, TTSEngine]:
     """コア一覧からTTSエンジン一覧を生成する"""
-    # FIXME: `MOCK_VER` を循環 import 無しに `initialize_cores()` 関連モジュールから import する
-    MOCK_VER = "0.0.0"
+    from ..core.core_initializer import MOCK_VER
+
     tts_engines: dict[str, TTSEngine] = {}
     for ver, core in cores.items():
         if ver == MOCK_VER:
