@@ -121,10 +121,11 @@ class StyleBertVITS2TTSEngine(TTSEngine):
             return self.tts_models[aivm_uuid]
 
         # モデルをロードする
+        aivm_dir = self.aivm_manager.installed_aivm_dir / f"aivm_{aivm_uuid}"
         tts_model = TTSModel(
-            model_path=self.aivm_manager.installed_aivm_dir / aivm_uuid / "model.safetensors",
-            config_path=self.aivm_manager.installed_aivm_dir / aivm_uuid / "config.json",
-            style_vec_path=self.aivm_manager.installed_aivm_dir / aivm_uuid / "style_vectors.npy",
+            model_path=aivm_dir / "model.safetensors",
+            config_path=aivm_dir / "config.json",
+            style_vec_path=aivm_dir / "style_vectors.npy",
             device=self.device,
         )  # fmt: skip
         logger.info("Loading model...")

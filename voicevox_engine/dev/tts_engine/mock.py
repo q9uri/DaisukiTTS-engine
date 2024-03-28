@@ -1,5 +1,4 @@
 import copy
-from logging import getLogger
 from typing import Any
 
 import numpy as np
@@ -7,6 +6,7 @@ from numpy.typing import NDArray
 from pyopenjtalk import tts
 from soxr import resample
 
+from ...logging import logger
 from ...metas.Metas import StyleId
 from ...model import AudioQuery
 from ...tts_pipeline.tts_engine import TTSEngine, to_flatten_moras
@@ -65,7 +65,6 @@ class MockTTSEngine(TTSEngine):
         # resampleの説明
         非モック実装（decode_forward）と合わせるために、出力を24kHz、32bit浮動小数に変換した。
         """
-        logger = getLogger("uvicorn")  # FastAPI / Uvicorn 内からの利用のため
         logger.info("[Mock] input text: %s" % text)
         wave, _ = tts(text)
         wave /= 2**15

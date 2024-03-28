@@ -2,7 +2,6 @@
 
 import base64
 import json
-import logging
 import shutil
 import zipfile
 from pathlib import Path
@@ -12,6 +11,7 @@ from fastapi import HTTPException
 from pydantic import ValidationError
 from semver.version import Version
 
+from .logging import logger
 from .metas.Metas import (
     Speaker,
     SpeakerInfo,
@@ -76,6 +76,9 @@ class AivmManager:
             for aivm_info_speaker in aivm_info.speakers:
                 speakers.append(aivm_info_speaker.speaker)
 
+        # 話者名でソート
+        speakers = sorted(speakers, key=lambda x: x.name)
+
         return speakers
 
     def get_speaker_info(self, speaker_uuid: str) -> SpeakerInfo:
@@ -114,16 +117,18 @@ class AivmManager:
             インストール済み音声合成モデルの情報 (キー: AIVM UUID, 値: AivmInfo)
         """
 
-        logger = logging.getLogger("uvicorn")
-
         aivm_infos: dict[str, AivmInfo] = {}
         for aivm_dir in self.installed_aivm_dir.iterdir():
             if aivm_dir.is_dir():
-                aivm_uuid = aivm_dir.name
+                aivm_uuid = aivm_dir.name.replace("aivm_", "")
 
                 # AIVM マニフェストを取得し、仮で AivmInfo に変換
                 ## 話者情報は後で追加するため、空リストを渡す
-                aivm_manifest = self.get_aivm_manifest(aivm_uuid)
+                try:
+                    aivm_manifest = self.get_aivm_manifest(aivm_uuid)
+                except HTTPException as e:
+                    logger.warning(f"Failed to get AivmManifest of {aivm_uuid}: {e.detail}")  # fmt: skip
+                    continue
                 aivm_info = AivmInfo(
                     name=aivm_manifest.name,
                     description=aivm_manifest.description,
@@ -247,6 +252,9 @@ class AivmManager:
                 # 完成した AivmInfo を UUID をキーとして追加
                 aivm_infos[aivm_uuid] = aivm_info
 
+        # 音声合成モデル名でソート
+        aivm_infos = dict(sorted(aivm_infos.items(), key=lambda x: x[1].name))
+
         return aivm_infos
 
     def get_aivm_manifest(self, aivm_uuid: str) -> AivmManifest:
@@ -265,14 +273,15 @@ class AivmManager:
         """
 
         # 対象の音声合成モデルがインストール済みであることの確認
-        if (self.installed_aivm_dir / aivm_uuid).is_dir() is False:
+        aivm_dir = self.installed_aivm_dir / f"aivm_{aivm_uuid}"
+        if aivm_dir.is_dir() is False:
             raise HTTPException(
                 status_code=404,
                 detail=f"音声合成モデル {aivm_uuid} はインストールされていません。",
             )
 
         # マニフェストファイルの存在確認
-        aivm_manifest_path = self.installed_aivm_dir / aivm_uuid / self.MANIFEST_FILE
+        aivm_manifest_path = aivm_dir / self.MANIFEST_FILE
         if aivm_manifest_path.is_file() is False:
             raise HTTPException(
                 status_code=500,
@@ -362,7 +371,7 @@ class AivmManager:
         """
 
         # インストール先ディレクトリの生成
-        install_dir = self.installed_aivm_dir / f'aivm_{aivm_uuid}'
+        install_dir = self.installed_aivm_dir / f"aivm_{aivm_uuid}"
         install_dir.mkdir(exist_ok=True)
 
         # zipファイル形式のバリデーション
@@ -449,7 +458,7 @@ class AivmManager:
             for aivm_manifest_speaker in aivm_manifest.speakers:
                 # 話者のデフォルトスタイルのアイコンと利用規約は必須
                 # デフォルトスタイル以外のスタイルのアイコンと、ボイスサンプルは任意
-                speaker_dir = f"{aivm_manifest_speaker.uuid}/"
+                speaker_dir = f"speaker_{aivm_manifest_speaker.uuid}/"
                 REQUIRED_FILES.append(speaker_dir + "icon.png")
                 REQUIRED_FILES.append(speaker_dir + "terms.md")
             if not all([file in zf.namelist() for file in REQUIRED_FILES]):
@@ -482,8 +491,9 @@ class AivmManager:
             )
 
         # ディレクトリ削除によるアンインストール
+        aivm_dir = self.installed_aivm_dir / f"aivm_{aivm_uuid}"
         try:
-            shutil.rmtree(self.installed_aivm_dir / aivm_uuid)
+            shutil.rmtree(aivm_dir)
         except Exception:
             raise HTTPException(
                 status_code=500,
