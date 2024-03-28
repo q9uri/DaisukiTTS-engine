@@ -12,6 +12,7 @@ from style_bert_vits2.nlp import bert_models
 from style_bert_vits2.tts_model import TTSModel
 
 from ..aivm_manager import AivmManager
+from ..core.core_adapter import CoreAdapter
 from ..dev.core.mock import MockCoreWrapper
 from ..logging import logger
 from ..metas.Metas import StyleId
@@ -85,9 +86,9 @@ class StyleBertVITS2TTSEngine(TTSEngine):
                 self.load_model(aivm_uuid)
             logger.info("All models loaded.")
 
-        # 継承元の TTSEngine の __init__ を呼び出す
         # VOICEVOX CORE の通常の CoreWrapper の代わりに MockCoreWrapper を利用する
-        super().__init__(MockCoreWrapper())
+        ## 継承元の TTSEngine は self._core に CoreWrapper を入れた CoreAdapter のインスタンスがないと動作しない
+        self._core = CoreAdapter(MockCoreWrapper())
 
     def load_model(self, aivm_uuid: str) -> TTSModel:
         """
@@ -194,6 +195,9 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         # 話速を指定
         ## ref: https://github.com/litagin02/Style-Bert-VITS2/blob/2.4.1/server_editor.py#L314
         length = 1 / query.speedScale
+        ## MPS 利用時はなぜか CPU 使用時よりも 1.15 倍ほど話速が遅くなるため (ヒューリスティックな実測値) 、それを補正する
+        if self.device == "mps":
+            length = 1 / (query.speedScale * 1.15)
         # ピッチを指定 (0.0 以外を指定すると音質が劣化する)
         ## pitchScale の基準は 0.0 (-1 ~ 1) なので、1.0 を基準とした 0 ~ 2 の範囲に変換する
         pitch_scale = 1.0 + query.pitchScale
