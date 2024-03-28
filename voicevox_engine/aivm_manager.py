@@ -143,7 +143,8 @@ class AivmManager:
                             if aivm_manifest_speaker.uuid == aivm_info_speaker.speaker.speaker_uuid:
                                 for aivm_manifest_style in aivm_manifest_speaker.styles:
                                     # ここでスタイル ID が示すスタイルに対応する AivmManifestSpeakerStyle を特定
-                                    if aivm_manifest_style.id == self.style_id_to_local_style_id(style_id, aivm_manifest_speaker.uuid):
+                                    local_style_id = self.style_id_to_local_style_id(style_id, aivm_manifest_speaker.uuid)
+                                    if aivm_manifest_style.id == local_style_id:
                                         # すべて取得できたので値を返す
                                         return aivm_manifest, aivm_manifest_speaker, aivm_manifest_style
 
@@ -486,6 +487,24 @@ class AivmManager:
                 raise HTTPException(
                     status_code=422,
                     detail=f"音声合成モデルの UUID {aivm_uuid} が aivm_manifest.json の uuid ({aivm_manifest.uuid}) と一致しません。",
+                )
+
+            # AIVM ファイル内に必須のファイルが存在するか確認
+            REQUIRED_FILES: list[str] = [
+                "config.json",
+                "model.safetensors",
+                "style_vectors.npy",
+            ]
+            for aivm_manifest_speaker in aivm_manifest.speakers:
+                # 話者のデフォルトスタイルのアイコンと利用規約は必須
+                # デフォルトスタイル以外のスタイルのアイコンと、ボイスサンプルは任意
+                speaker_dir = f"{aivm_manifest_speaker.uuid}/"
+                REQUIRED_FILES.append(speaker_dir + "icon.png")
+                REQUIRED_FILES.append(speaker_dir + "terms.md")
+            if not all([file in zf.namelist() for file in REQUIRED_FILES]):
+                raise HTTPException(
+                    status_code=422,
+                    detail=f"音声合成モデル {aivm_uuid} に必要なファイルが存在しません。",
                 )
 
             # 展開によるインストール
