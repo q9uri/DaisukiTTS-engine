@@ -52,7 +52,7 @@
         },
         "synthesis_morphing" : {
             "type": "bool",
-            "value": true,
+            "value": false,
             "name": "2種類のスタイルでモーフィングした音声を合成"
         },
         "sing" : {

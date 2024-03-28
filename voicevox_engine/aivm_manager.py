@@ -233,9 +233,10 @@ class AivmManager:
                             name=speaker_manifest.name,
                             styles=speaker_styles,
                             version=speaker_manifest.version,
-                            # AivisSpeech では全話者に対し常にモーフィング機能を有効化する
+                            # AivisSpeech Engine では全話者に対し常にモーフィング機能を無効化する
+                            ## Style-Bert-VITS2 の仕様上音素長を一定にできず、話者ごとに発話タイミングがずれてまともに合成できないため
                             supported_features=SpeakerSupportedFeatures(
-                                permitted_synthesis_morphing=SpeakerSupportPermittedSynthesisMorphing.ALL,
+                                permitted_synthesis_morphing=SpeakerSupportPermittedSynthesisMorphing.NOTHING,
                             ),
                         ),
                         speaker_info=SpeakerInfo(
