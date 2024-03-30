@@ -326,7 +326,7 @@ def generate_app(
         accent_phrases = engine.create_accent_phrases(text, selected_preset.style_id)
         return AudioQuery(
             accent_phrases=accent_phrases,
-            styleStrengthScale=5.0,  # スタイルの強さは現状プリセットには含まれていないため、固定値を入れる
+            styleStrengthScale=selected_preset.styleStrengthScale,
             intonationScale=selected_preset.intonationScale,
             speedScale=selected_preset.speedScale,
             pitchScale=selected_preset.pitchScale,

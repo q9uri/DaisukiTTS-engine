@@ -12,6 +12,16 @@ class Preset(BaseModel):
     name: str = Field(title="プリセット名")
     speaker_uuid: str = Field(title="話者の UUID")
     style_id: StyleId = Field(title="スタイル ID")
+    styleStrengthScale: float = Field(
+        default=5.0,
+        title="全体のスタイルの強さ (AivisSpeech Engine 固有のフィールド)",
+        description=(
+            "指定された話者のスタイルをどの程度全体に反映するかを指定する。\n"
+            "例えばスタイルが Happy ならば、この値を大きくするほど全体の話し方が明るくなる。\n"
+            "一方値を大きくしすぎると発声がおかしくなりがちなので、適宜調整が必要。\n"
+            "VOICEVOX ENGINE との互換性のため、未指定時はデフォルト値が適用される。"
+        ),
+    )
     intonationScale: float = Field(
         title="全体のテンポの緩急 (抑揚設定ではない点で VOICEVOX ENGINE と異なる)"
     )
