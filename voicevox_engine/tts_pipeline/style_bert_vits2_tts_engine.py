@@ -204,15 +204,8 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         if local_style_name is None:
             raise ValueError(f"Style ID {local_style_id} not found in hyper parameters.")  # fmt: skip
 
-        # 話速を指定
-        ## ref: https://github.com/litagin02/Style-Bert-VITS2/blob/2.4.1/server_editor.py#L314
-        length = 1 / query.speedScale
-        ## MPS 利用時はなぜか CPU 使用時よりも 1.15 倍ほど話速が遅くなるため (ヒューリスティックな実測値) 、それを補正する
-        if self.device == "mps":
-            length = 1 / (query.speedScale * 1.15)
-        # ピッチを指定 (0.0 以外を指定すると音質が劣化する)
-        ## pitchScale の基準は 0.0 (-1 ~ 1) なので、1.0 を基準とした 0 ~ 2 の範囲に変換する
-        pitch_scale = 1.0 + query.pitchScale
+        # スタイルの強さ
+        style_strength = max(0.0, query.styleStrengthScale)
         # SDP Ratio を「テンポの緩急」の比率として指定
         ## VOICEVOX では「抑揚」の比率だが、AivisSpeech では声のテンポの緩急を指定する値としている
         ## Style-Bert-VITS2 にも一応「抑揚」パラメータはあるが、pyworld で変換している関係で音質が明確に劣化する上、あまり効果がない
@@ -223,23 +216,38 @@ class StyleBertVITS2TTSEngine(TTSEngine):
             sdp_ratio = DEFAULT_SDP_RATIO + (query.intonationScale - 1.0) * 0.8 / 1.0
         else:
             sdp_ratio = DEFAULT_SDP_RATIO
+        # 話速
+        ## ref: https://github.com/litagin02/Style-Bert-VITS2/blob/2.4.1/server_editor.py#L314
+        length = 1 / max(0.0, query.speedScale)
+        ## MPS 利用時はなぜか CPU 使用時よりも 1.15 倍ほど話速が遅くなるため (ヒューリスティックな実測値) 、それを補正する
+        if self.device == "mps":
+            length = 1 / (query.speedScale * 1.15)
+        # ピッチ
+        ## 0.0 以外を指定すると音質が劣化するので基本使わない
+        ## pitchScale の基準は 0.0 (-1 ~ 1) なので、1.0 を基準とした 0 ~ 2 の範囲に変換する
+        pitch_scale = max(0.0, 1.0 + query.pitchScale)
 
         # 音声合成を実行
         ## infer() に渡されない AudioQuery のパラメータは無視される (volumeScale のみ合成後に適用される)
         ## 出力音声は int16 型の NDArray で返される
         logger.info("Running inference...")
         logger.info(f"Text: {text}")
-        logger.info(f"Speed:     {length:.3f} (Query: {query.speedScale})")
-        logger.info(f"Pitch:     {pitch_scale:.3f} (Query: {query.pitchScale})")
-        logger.info(f"SDP Ratio: {sdp_ratio:.3f} (Query: {query.intonationScale})")
+        logger.info(f"Style Strength: {style_strength:.3f}")
+        logger.info(f"     SDP Ratio: {sdp_ratio:.3f} (Query: {query.intonationScale})")
+        logger.info(f"         Speed: {length:.3f} (Query: {query.speedScale})")
+        logger.info(f"         Pitch: {pitch_scale:.3f} (Query: {query.pitchScale})")
+        logger.info(f"        Volume: {query.volumeScale:.3f}")
+        logger.info(f"   Pre-Silence: {query.prePhonemeLength:.3f}")
+        logger.info(f"  Post-Silence: {query.postPhonemeLength:.3f}")
         raw_sample_rate, raw_wave = model.infer(
             text=text,
             language=Languages.JP,
             speaker_id=local_speaker_id,
             style=local_style_name,
+            style_weight=style_strength,
+            sdp_ratio=sdp_ratio,
             length=length,
             pitch_scale=pitch_scale,
-            sdp_ratio=sdp_ratio,
             # AivisSpeech Engine ではテキストの改行ごとの分割生成を行わない (エディタ側の機能と競合するため)
             line_split=False,
         )

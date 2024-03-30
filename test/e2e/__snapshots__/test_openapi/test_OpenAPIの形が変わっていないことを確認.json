@@ -230,7 +230,7 @@
             "type": "array"
           },
           "intonationScale": {
-            "title": "全体の抑揚",
+            "title": "全体のテンポの緩急 (抑揚設定ではない点で VOICEVOX ENGINE と異なる)",
             "type": "number"
           },
           "kana": {
@@ -269,6 +269,12 @@
             "title": "全体の話速",
             "type": "number"
           },
+          "styleStrengthScale": {
+            "default": 5.0,
+            "description": "指定された話者のスタイルをどの程度全体に反映するかを指定する。\n例えばスタイルが Happy ならば、この値を大きくするほど全体の話し方が明るくなる。\n一方値を大きくしすぎると発声がおかしくなりがちなので、適宜調整が必要。\nVOICEVOX ENGINE との互換性のため、未指定時はデフォルト値が適用される。",
+            "title": "全体のスタイルの強さ (AivisSpeech Engine 固有のフィールド)",
+            "type": "number"
+          },
           "volumeScale": {
             "title": "全体の音量",
             "type": "number"
@@ -276,9 +282,9 @@
         },
         "required": [
           "accent_phrases",
+          "intonationScale",
           "speedScale",
           "pitchScale",
-          "intonationScale",
           "volumeScale",
           "prePhonemeLength",
           "postPhonemeLength",
@@ -656,11 +662,11 @@
         "description": "プリセット情報",
         "properties": {
           "id": {
-            "title": "プリセットID",
+            "title": "プリセット ID",
             "type": "integer"
           },
           "intonationScale": {
-            "title": "全体の抑揚",
+            "title": "全体のテンポの緩急 (抑揚設定ではない点で VOICEVOX ENGINE と異なる)",
             "type": "number"
           },
           "name": {
@@ -680,7 +686,7 @@
             "type": "number"
           },
           "speaker_uuid": {
-            "title": "話者のUUID",
+            "title": "話者の UUID",
             "type": "string"
           },
           "speedScale": {
@@ -688,7 +694,7 @@
             "type": "number"
           },
           "style_id": {
-            "title": "スタイルID",
+            "title": "スタイル ID",
             "type": "integer"
           },
           "volumeScale": {
@@ -701,9 +707,9 @@
           "name",
           "speaker_uuid",
           "style_id",
+          "intonationScale",
           "speedScale",
           "pitchScale",
-          "intonationScale",
           "volumeScale",
           "prePhonemeLength",
           "postPhonemeLength"

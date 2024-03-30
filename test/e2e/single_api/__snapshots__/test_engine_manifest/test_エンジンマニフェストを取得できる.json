@@ -24,7 +24,7 @@
     "interrogative_upspeak": false,
     "manage_library": false,
     "sing": false,
-    "synthesis_morphing": true
+    "synthesis_morphing": false
   },
   "terms_of_service": "dummy teams of service",
   "update_infos": [
