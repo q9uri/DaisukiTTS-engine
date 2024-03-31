@@ -8,6 +8,7 @@
     "prePhonemeLength": 0.1,
     "speaker_uuid": "7ffcb7ce-00ec-4bdc-82cd-45a8889e43ff",
     "speedScale": 1.0,
+    "styleStrengthScale": 5.0,
     "style_id": 0,
     "volumeScale": 1.0
   }
