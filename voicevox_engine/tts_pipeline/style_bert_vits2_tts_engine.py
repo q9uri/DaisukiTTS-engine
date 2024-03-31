@@ -373,13 +373,13 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         ## 出力音声は int16 型の NDArray で返される
         logger.info("Running inference...")
         logger.info(f"Text: {text}")
-        logger.info(f"Style Strength: {style_strength:.3f}")
-        logger.info(f"     SDP Ratio: {sdp_ratio:.3f} (Query: {query.intonationScale})")
-        logger.info(f"         Speed: {length:.3f} (Query: {query.speedScale})")
-        logger.info(f"         Pitch: {pitch_scale:.3f} (Query: {query.pitchScale})")
-        logger.info(f"        Volume: {query.volumeScale:.3f}")
-        logger.info(f"   Pre-Silence: {query.prePhonemeLength:.3f}")
-        logger.info(f"  Post-Silence: {query.postPhonemeLength:.3f}")
+        logger.info(f"Style Strength: {style_strength:.2f}")
+        logger.info(f"     SDP Ratio: {sdp_ratio:.2f} (Query: {query.intonationScale})")
+        logger.info(f"         Speed: {length:.2f} (Query: {query.speedScale})")
+        logger.info(f"         Pitch: {pitch_scale:.2f} (Query: {query.pitchScale})")
+        logger.info(f"        Volume: {query.volumeScale:.2f}")
+        logger.info(f"   Pre-Silence: {query.prePhonemeLength:.2f}")
+        logger.info(f"  Post-Silence: {query.postPhonemeLength:.2f}")
         raw_sample_rate, raw_wave = model.infer(
             text=text,
             given_tone=given_tone_list,
