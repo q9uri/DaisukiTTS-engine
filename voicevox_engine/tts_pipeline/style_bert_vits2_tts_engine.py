@@ -11,7 +11,7 @@ from numpy.typing import NDArray
 from style_bert_vits2.constants import DEFAULT_SDP_RATIO, Languages
 from style_bert_vits2.logging import logger as style_bert_vits2_logger
 from style_bert_vits2.nlp import bert_models
-from style_bert_vits2.nlp.japanese.g2p_utils import g2kata_tone
+from style_bert_vits2.nlp.japanese.g2p_utils import g2kata_tone, kata_tone2phone_tone
 from style_bert_vits2.nlp.japanese.normalizer import normalize_text
 from style_bert_vits2.tts_model import TTSModel
 
@@ -290,6 +290,29 @@ class StyleBertVITS2TTSEngine(TTSEngine):
             text = "".join([mora.text for mora in flatten_moras]) + "。"
             text = jaconv.kata2hira(text)
 
+        # AudioQuery.accent_phrase をカタカナモーラと音高 (0 or 1) のリストに変換
+        kata_tone_list: list[tuple[str, int]] = []
+        for accent_phrase in query.accent_phrases:
+            # モーラのうちどこがアクセント核かを示すインデックス
+            accent_index = accent_phrase.accent - 1  # 1-indexed -> 0-indexed
+            for index, mora in enumerate(accent_phrase.moras):
+                tone = 0
+                # index が 0 かつ accent_index が 0 以外の時は常に tone を 0 にする
+                if index == 0 and accent_index != 0:
+                    tone = 0
+                # index <= accent_index の時は tone を 1 にする
+                elif index <= accent_index:
+                    tone = 1
+                # それ以外の時は tone を 0 にする
+                else:
+                    tone = 0
+                # モーラのテキストと音高をリストに追加
+                kata_tone_list.append((mora.text, tone))
+
+        # 音素と音高のリストに変換した後、さらに音高だけのリストに変換
+        ## 一度音素と音高のリストに変換するのが大変重要 (これをやらないと InvalidToneError が発生する)
+        given_tone_list = [tone for _, tone in kata_tone2phone_tone(kata_tone_list)]
+
         # スタイル ID に対応する AivmManifest, AivmManifestSpeaker, AivmManifestSpeakerStyle を取得
         result = self.aivm_manager.get_aivm_manifest_from_style_id(style_id)
         aivm_manifest = result[0]
@@ -353,6 +376,7 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         logger.info(f"  Post-Silence: {query.postPhonemeLength:.3f}")
         raw_sample_rate, raw_wave = model.infer(
             text=text,
+            given_tone=given_tone_list,
             language=Languages.JP,
             speaker_id=local_speaker_id,
             style=local_style_name,
