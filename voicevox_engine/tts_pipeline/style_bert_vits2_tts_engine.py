@@ -166,17 +166,23 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         ## 三点リーダー "…" は normalize_text() で "." × 3 に変換される
         PUNCTUATIONS = [".", ",", "?", "!", "'", "-"]
 
+        # 入力テキストを Style-Bert-VITS2 の基準で正規化
+        ## Style-Bert-VITS2 では「〜」などの伸ばす棒も長音記号として扱うため、normalize_text() でそれらを統一する
+        ## text_to_accent_phrases() に正規化したテキストを渡さないと、VOICEVOX ENGINE 側と Style-Bert-VITS2 側で
+        ## 「〜」などの記号の扱いに齟齬が発生し、InvalidToneError の要因になる
+        normalized_text = normalize_text(text)
+
         # テキストからアクセント句系列を生成
         ## VOICEVOX ENGINE 側では、pyopenjtalk から取得したフルコンテキストラベルを解析しまくることでアクセント句系列を生成している
         ## テキストに含まれる句読点や記号はすべて AccentPhrase.pause_mora に統合されてしまう
         ## たとえば 「調子は、どうですか？」と「調子は...どうですか？」は同じアクセント句系列になる
-        accent_phrases = text_to_accent_phrases(text)
+        accent_phrases = text_to_accent_phrases(normalized_text)
 
         # g2p 処理を行い、テキストからカタカナ化されたモーラと音高 (0 or 1) のリストを取得
         ## Style-Bert-VITS2 側では、pyopenjtalk_g2p_prosody() から取得したアクセント情報が含まれるモーラのリストを
         ## モーラと音高のリストに変換し (句読点や記号は失われている) 、後付けで失われた句読点や記号のモーラを適切な位置に追加する形で実装されている
         ## ここでは音高情報は使わない (VOICEVOX ENGINE 側から取得できる情報をそのまま利用する) ので、カタカナ化されたモーラのリストだけを取得する
-        kata_tone_list = g2kata_tone(normalize_text(text))
+        kata_tone_list = g2kata_tone(normalized_text)
         kata_list = [kata for kata, _ in kata_tone_list]
 
         # kata_list の先頭から連続する句読点/記号があれば抽出する
