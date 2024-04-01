@@ -360,9 +360,6 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         # 話速
         ## ref: https://github.com/litagin02/Style-Bert-VITS2/blob/2.4.1/server_editor.py#L314
         length = 1 / max(0.0, query.speedScale)
-        ## MPS 利用時はなぜか CPU 使用時よりも 1.15 倍ほど話速が遅くなるため (ヒューリスティックな実測値) 、それを補正する
-        if self.device == "mps":
-            length = 1 / (query.speedScale * 1.15)
         # ピッチ
         ## 0.0 以外を指定すると音質が劣化するので基本使わない
         ## pitchScale の基準は 0.0 (-1 ~ 1) なので、1.0 を基準とした 0 ~ 2 の範囲に変換する
