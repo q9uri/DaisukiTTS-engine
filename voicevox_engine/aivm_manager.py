@@ -50,6 +50,7 @@ class AivmManager:
         - style_(style_id: aivm_manifest.json に記載の 0 から始まる連番 ID)/: スタイルごとのアセット (省略時はデフォルトスタイルのものが使われる)
             - icon.png : デフォルト以外の各スタイルごとのアイコン画像 (正方形)
             - voice_sample_(01~99).wav : デフォルト以外の各スタイルごとの音声サンプル
+            - voice_sample_(01~99).txt : デフォルト以外の各スタイルごとの音声サンプルの書き起こしテキスト
     """
 
     MANIFEST_FILE: str = "aivm_manifest.json"
