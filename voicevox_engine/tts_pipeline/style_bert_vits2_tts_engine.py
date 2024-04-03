@@ -63,9 +63,10 @@ class StyleBertVITS2TTSEngine(TTSEngine):
                 else:
                     logger.info("Using GPU (NVIDIA CUDA) for inference.")
             # Mac なら基本 Apple MPS (Metal Performance Shaders) が利用できる
-            elif torch.backends.mps.is_built() and torch.backends.mps.is_available():
-                self.device = "mps"
-                logger.info("Using GPU (Apple MPS) for inference.")
+            # FIXME: Mac だと SDP Ratio の値次第で話速が遅くなる謎の問題があるため当面はコメントアウト
+            # elif torch.backends.mps.is_built() and torch.backends.mps.is_available():
+            #     self.device = "mps"
+            #     logger.info("Using GPU (Apple MPS) for inference.")
             # それ以外の環境では CPU にフォールバック
             else:
                 logger.warning("GPU is not available. Using CPU instead.")
