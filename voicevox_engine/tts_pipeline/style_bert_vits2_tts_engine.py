@@ -288,7 +288,7 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         ## 通常の読み上げテキストの方が遥かに抑揚が自然になるため、読み仮名のみの読み上げテキストよりも優先される
         ## VOICEVOX ENGINE との互換性維持のための苦肉の策で、基本可能な限り AudioQuery.kana に読み上げテキストを指定すべき
         if query.kana is not None and query.kana != "":
-            text = query.kana
+            text = query.kana.strip()
 
             # アクセント辞書でのプレビュー時のエラーを回避するための処理
             ## もし AudioQuery に含まれる最後のモーラの text が "ガ" だったら、テキストの末尾に "ガ" を追加する
@@ -314,6 +314,9 @@ class StyleBertVITS2TTSEngine(TTSEngine):
             flatten_moras = to_flatten_moras(query.accent_phrases)
             text = "".join([mora.text for mora in flatten_moras]) + "。"
             text = jaconv.kata2hira(text)
+            ## この時点で text が句点だけの場合は空文字列にする
+            if text == "。":
+                text = ""
 
         # AudioQuery.accent_phrase をカタカナモーラと音高 (0 or 1) のリストに変換
         kata_tone_list: list[tuple[str, int]] = []
@@ -335,8 +338,12 @@ class StyleBertVITS2TTSEngine(TTSEngine):
                 kata_tone_list.append((mora.text, tone))
 
         # 音素と音高のリストに変換した後、さらに音高だけのリストに変換
-        ## 一度音素と音高のリストに変換するのが大変重要 (これをやらないと InvalidToneError が発生する)
-        given_tone_list = [tone for _, tone in kata_tone2phone_tone(kata_tone_list)]
+        ## text が空文字列の時は、InvalidToneError を回避するために None を渡す
+        if text != "":
+            # 事前に音素と音高のリストに変換するのが大変重要 (これをやらないと InvalidToneError が発生する)
+            given_tone_list = [tone for _, tone in kata_tone2phone_tone(kata_tone_list)]
+        else:
+            given_tone_list = None
 
         # スタイル ID に対応する AivmManifest, AivmManifestSpeaker, AivmManifestSpeakerStyle を取得
         result = self.aivm_manager.get_aivm_manifest_from_style_id(style_id)
