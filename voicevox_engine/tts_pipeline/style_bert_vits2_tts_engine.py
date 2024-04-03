@@ -289,6 +289,24 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         ## VOICEVOX ENGINE との互換性維持のための苦肉の策で、基本可能な限り AudioQuery.kana に読み上げテキストを指定すべき
         if query.kana is not None and query.kana != "":
             text = query.kana
+
+            # アクセント辞書でのプレビュー時のエラーを回避するための処理
+            ## もし AudioQuery に含まれる最後のモーラの text が "ガ" だったら、テキストの末尾に "ガ" を追加する
+            ## Style-Bert-VITS2 ではトーンの数と g2p した際の音素の数が一致している必要があるが、
+            ## アクセント辞書のプレビュー時にエディタから送信される kana の末尾には "ガ" が含まれておらず、InvalidToneError が発生する
+            ## エディタ側で修正することも可能だが、VOICEVOX ENGINE との互換性のため、エラーにならないようにここで処理する
+            if (
+                len(query.accent_phrases) > 0
+                and len(query.accent_phrases[-1].moras) > 0
+            ):
+                # 最後のモーラを取得し、その text が "ガ" であることを確認
+                last_mora = query.accent_phrases[-1].moras[-1]
+                if last_mora.text == "ガ":
+                    # Style-Bert-VITS2 側の g2p 処理を呼び、カタカナ化されたモーラのリストを取得
+                    kata_mora_list = g2kata_tone(normalize_text(text))
+                    # kata_mora_list の最後のモーラが "ガ" でない場合は "ガ" を追加
+                    if len(kata_mora_list) > 0 and kata_mora_list[-1][0] != "ガ":
+                        text += "ガ"
         else:
             logger.warning("AudioQuery.kana is not specified. Using accent phrases instead.")  # fmt: skip
             # 読み仮名 (カタカナのみ) のテキストを取得
