@@ -55,7 +55,7 @@ class AivmManager:
 
     MANIFEST_FILE: str = "aivm_manifest.json"
     SUPPORTED_MANIFEST_VERSION: Version = Version.parse("1.0.0")
-    SUPPORTED_MODEL_ARCHITECTURES: list[str] = ["Style-Bert-VITS2 JP-Extra"]
+    SUPPORTED_MODEL_ARCHITECTURES: list[str] = ["Style-Bert-VITS2 (JP-Extra)"]
 
     def __init__(self, installed_aivm_dir: Path):
         self.installed_aivm_dir = installed_aivm_dir
