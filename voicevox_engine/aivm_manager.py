@@ -45,12 +45,12 @@ class AivmManager:
     - style_vectors.npy : Style-Bert-VITS2 のスタイルベクトルファイル
     - speaker_(speaker_uuid: aivm_manifest.json に記載の UUID)/: 話者ごとのアセット
         - icon.png : 話者 (デフォルトスタイル) のアイコン画像 (正方形)
-        - voice_sample_(01~99).wav : 話者 (デフォルトスタイル) の音声サンプル
+        - voice_sample_(01~99).wav : 話者 (デフォルトスタイル) のボイスサンプル
         - terms.md : 話者の利用規約
         - style_(style_id: aivm_manifest.json に記載の 0 から始まる連番 ID)/: スタイルごとのアセット (省略時はデフォルトスタイルのものが使われる)
             - icon.png : デフォルト以外の各スタイルごとのアイコン画像 (正方形)
-            - voice_sample_(01~99).wav : デフォルト以外の各スタイルごとの音声サンプル
-            - voice_sample_(01~99).txt : デフォルト以外の各スタイルごとの音声サンプルの書き起こしテキスト
+            - voice_sample_(01~99).wav : デフォルト以外の各スタイルごとのボイスサンプル
+            - voice_sample_(01~99).txt : デフォルト以外の各スタイルごとのボイスサンプルの書き起こしテキスト
     """
 
     MANIFEST_FILE: str = "aivm_manifest.json"
@@ -176,6 +176,12 @@ class AivmManager:
                             detail=f"音声合成モデル {aivm_uuid} の話者 {speaker_uuid} に terms.md が存在しません。",
                         )
                     default_style_voice_sample_paths = sorted(list(speaker_dir.glob("voice_sample_*.wav")))  # fmt: skip
+                    default_style_voice_sample_transcript_paths = sorted(list(speaker_dir.glob("voice_sample_*.txt")))  # fmt: skip
+                    if len(default_style_voice_sample_paths) != len(default_style_voice_sample_transcript_paths):  # fmt: skip
+                        raise HTTPException(
+                            status_code=500,
+                            detail=f"音声合成モデル {aivm_uuid} の話者 {speaker_uuid} のボイスサンプルと書き起こしテキストの数が一致しません。",
+                        )
 
                     # スタイルごとにアセットを取得
                     speaker_styles: list[SpeakerStyle] = []
@@ -195,12 +201,14 @@ class AivmManager:
                                     detail=f"音声合成モデル {aivm_uuid} の話者 {speaker_uuid} のスタイル {style_id} に icon.png が存在しません。",
                                 )
                             style_voice_sample_paths = sorted(list(style_dir.glob("voice_sample_*.wav")))  # fmt: skip
+                            style_voice_sample_transcript_paths = sorted(list(style_dir.glob("voice_sample_*.txt")))  # fmt: skip
 
                         # スタイルディレクトリが存在しない場合はデフォルトスタイルのアセットのパスを使う
                         ## デフォルトスタイル (ID: 0) はスタイルごとのディレクトリが作成されないため、常にこの分岐に入る
                         else:
                             style_icon_path = default_style_icon_path
                             style_voice_sample_paths = default_style_voice_sample_paths
+                            style_voice_sample_transcript_paths = default_style_voice_sample_transcript_paths  # fmt: skip
 
                         # SpeakerStyle の作成
                         speaker_style = SpeakerStyle(
@@ -219,10 +227,15 @@ class AivmManager:
                             # 立ち絵を省略
                             ## VOICEVOX 本家では portrait に立ち絵が入るが、AivisSpeech では敢えてアイコン画像のみを設定する
                             portrait=None,
-                            # 音声サンプルを Base64 エンコードして文字列化
+                            # ボイスサンプルを Base64 エンコードして文字列化
                             voice_samples=[
                                 base64.b64encode(sample_path.read_bytes()).decode("utf-8")
                                 for sample_path in style_voice_sample_paths
+                            ],
+                            # 書き起こしテキストを読み取って文字列に格納
+                            voice_sample_transcripts=[
+                                sample_transcript_path.read_text(encoding="utf-8")
+                                for sample_transcript_path in style_voice_sample_transcript_paths
                             ],
                         )  # fmt: skip
                         style_infos.append(style_info)

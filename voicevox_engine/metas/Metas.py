@@ -20,10 +20,10 @@ class SpeakerStyle(BaseModel):
         default="talk",
         title=(
             "スタイルの種類。"
-            "talk:音声合成クエリの作成と音声合成が可能。"
-            "singing_teacher:歌唱音声合成用のクエリの作成が可能。"
-            "frame_decode:歌唱音声合成が可能。"
-            "sing:歌唱音声合成用のクエリの作成と歌唱音声合成が可能。"
+            "talk: 音声合成クエリの作成と音声合成が可能。"
+            "singing_teacher: 歌唱音声合成用のクエリの作成が可能。"
+            "frame_decode: 歌唱音声合成が可能。"
+            "sing: 歌唱音声合成用のクエリの作成と歌唱音声合成が可能。"
         ),
     )
 
@@ -55,7 +55,7 @@ class CoreSpeaker(BaseModel):
     """
 
     name: str = Field(title="名前")
-    speaker_uuid: str = Field(title="話者のUUID")
+    speaker_uuid: str = Field(title="話者の UUID")
     styles: List[SpeakerStyle] = Field(title="スタイルの一覧")
     version: str = Field("話者のバージョン")
 
@@ -83,14 +83,18 @@ class StyleInfo(BaseModel):
     スタイルの追加情報
     """
 
-    id: StyleId = Field(title="スタイルID")
-    icon: str = Field(title="当該スタイルのアイコンをbase64エンコードしたもの")
+    id: StyleId = Field(title="スタイル ID")
+    icon: str = Field(title="当該スタイルのアイコンを Base64 エンコードしたもの")
     portrait: Optional[str] = Field(
         default=None,
-        title="当該スタイルのportrait.pngをbase64エンコードしたもの",
+        title="当該スタイルの portrait.png を Base64 エンコードしたもの",
     )
     voice_samples: List[str] = Field(
-        title="voice_sampleのwavファイルをbase64エンコードしたもの",
+        title="ボイスサンプルの wav ファイルを Base64 エンコードしたもの",
+    )
+    voice_sample_transcripts: Optional[List[str]] = Field(
+        default=None,
+        title="ボイスサンプルの書き起こしテキスト",
     )
 
 
@@ -99,6 +103,6 @@ class SpeakerInfo(BaseModel):
     話者の追加情報
     """
 
-    policy: str = Field(title="policy.md")
-    portrait: str = Field(title="portrait.pngをbase64エンコードしたもの")
+    policy: str = Field(title="利用規約")
+    portrait: str = Field(title="portrait.png を Base64 エンコードしたもの")
     style_infos: List[StyleInfo] = Field(title="スタイルの追加情報")

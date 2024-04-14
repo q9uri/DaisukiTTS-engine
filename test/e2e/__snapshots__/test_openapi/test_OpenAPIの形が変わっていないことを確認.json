@@ -156,7 +156,7 @@
         "type": "object"
       },
       "AivmManifestSpeaker": {
-        "description": "AIVM (Aivis Voice Model) マニフェストの話者の定義\n画像や音声サンプルは容量が大きいためマニフェストには含まれず、 別途ファイルとして AIVM に格納される",
+        "description": "AIVM (Aivis Voice Model) マニフェストの話者の定義\n画像やボイスサンプルは容量が大きいためマニフェストには含まれず、 別途ファイルとして AIVM に格納される",
         "properties": {
           "id": {
             "title": "話者の ID (この AIVM ファイル内で一意な 0 から始まる連番で、speaker_uuid とは異なる)",
@@ -748,7 +748,7 @@
             "type": "string"
           },
           "speaker_uuid": {
-            "title": "話者のUUID",
+            "title": "話者の UUID",
             "type": "string"
           },
           "styles": {
@@ -784,11 +784,11 @@
         "description": "話者の追加情報",
         "properties": {
           "policy": {
-            "title": "policy.md",
+            "title": "利用規約",
             "type": "string"
           },
           "portrait": {
-            "title": "portrait.pngをbase64エンコードしたもの",
+            "title": "portrait.png を Base64 エンコードしたもの",
             "type": "string"
           },
           "style_infos": {
@@ -834,7 +834,7 @@
               }
             ],
             "default": "talk",
-            "title": "スタイルの種類。talk:音声合成クエリの作成と音声合成が可能。singing_teacher:歌唱音声合成用のクエリの作成が可能。frame_decode:歌唱音声合成が可能。sing:歌唱音声合成用のクエリの作成と歌唱音声合成が可能。"
+            "title": "スタイルの種類。talk: 音声合成クエリの作成と音声合成が可能。singing_teacher: 歌唱音声合成用のクエリの作成が可能。frame_decode: 歌唱音声合成が可能。sing: 歌唱音声合成用のクエリの作成と歌唱音声合成が可能。"
           }
         },
         "required": [
@@ -873,11 +873,11 @@
         "description": "スタイルの追加情報",
         "properties": {
           "icon": {
-            "title": "当該スタイルのアイコンをbase64エンコードしたもの",
+            "title": "当該スタイルのアイコンを Base64 エンコードしたもの",
             "type": "string"
           },
           "id": {
-            "title": "スタイルID",
+            "title": "スタイル ID",
             "type": "integer"
           },
           "portrait": {
@@ -889,13 +889,27 @@
                 "type": "null"
               }
             ],
-            "title": "当該スタイルのportrait.pngをbase64エンコードしたもの"
+            "title": "当該スタイルの portrait.png を Base64 エンコードしたもの"
+          },
+          "voice_sample_transcripts": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "ボイスサンプルの書き起こしテキスト"
           },
           "voice_samples": {
             "items": {
               "type": "string"
             },
-            "title": "voice_sampleのwavファイルをbase64エンコードしたもの",
+            "title": "ボイスサンプルの wav ファイルを Base64 エンコードしたもの",
             "type": "array"
           }
         },
