@@ -336,13 +336,24 @@ class StyleBertVITS2TTSEngine(TTSEngine):
                     tone = 0
                 # モーラのテキストと音高をリストに追加
                 kata_tone_list.append((mora.text, tone))
+            # もし pause_mora があればそれも追加
+            ## AivisSpeech Engine から取得した AudioQuery がそのまま送られた際は pause_mora は設定されず、
+            ## 句読点や記号は通常の mora (vowel=pau) として text 内の記号表現を維持した状態で含まれる
+            ## 一方 AivisSpeech エディタ側で読みが編集されている際は AudioQuery に pause_mora が設定されていることがあるため、
+            ## 互換性のために pause_mora が設定されている場合のみ読点として追加する
+            if accent_phrase.pause_mora is not None:
+                kata_tone_list.append((',', 0))  # テキストは "," 固定 ("," は正規化後の読点の文字列表現) 、音高は 0 固定  # fmt: skip
 
-        # 音素と音高のリストに変換した後、さらに音高だけのリストに変換
+        # 音素と音高のリストに変換した後、さらにそれぞれ音素・音高だけのリストに変換
         ## text が空文字列の時は、InvalidToneError を回避するために None を渡す
         if text != "":
-            # 事前に音素と音高のリストに変換するのが大変重要 (これをやらないと InvalidToneError が発生する)
-            given_tone_list = [tone for _, tone in kata_tone2phone_tone(kata_tone_list)]
+            # 事前にカタカナ表記でない音素と音高のリストに変換するのが大変重要
+            ## これをやらないと InvalidToneError が発生する
+            phone_tone_list = kata_tone2phone_tone(kata_tone_list)
+            given_phone_list = [phone for phone, _ in phone_tone_list]
+            given_tone_list = [tone for _, tone in phone_tone_list]
         else:
+            given_phone_list = None
             given_tone_list = None
 
         # スタイル ID に対応する AivmManifest, AivmManifestSpeaker, AivmManifestSpeakerStyle を取得
@@ -405,6 +416,7 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         logger.info(f"  Post-Silence: {query.postPhonemeLength:.2f}")
         raw_sample_rate, raw_wave = model.infer(
             text=text,
+            given_phone=given_phone_list,
             given_tone=given_tone_list,
             language=Languages.JP,
             speaker_id=local_speaker_id,
@@ -414,6 +426,7 @@ class StyleBertVITS2TTSEngine(TTSEngine):
             length=length,
             pitch_scale=pitch_scale,
             # AivisSpeech Engine ではテキストの改行ごとの分割生成を行わない (エディタ側の機能と競合するため)
+            # line_split=True だと音素やアクセントの指定ができない
             line_split=False,
         )
         logger.info("Inference done.")
