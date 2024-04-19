@@ -13,6 +13,7 @@ from style_bert_vits2.logging import logger as style_bert_vits2_logger
 from style_bert_vits2.nlp import bert_models
 from style_bert_vits2.nlp.japanese.g2p_utils import g2kata_tone, kata_tone2phone_tone
 from style_bert_vits2.nlp.japanese.normalizer import normalize_text
+from style_bert_vits2.nlp.symbols import PUNCTUATIONS
 from style_bert_vits2.tts_model import TTSModel
 
 from ..aivm_manager import AivmManager
@@ -21,7 +22,7 @@ from ..dev.core.mock import MockCoreWrapper
 from ..logging import logger
 from ..metas.Metas import StyleId
 from ..model import AccentPhrase, AudioQuery, Mora
-from ..tts_pipeline.text_analyzer import text_to_accent_phrases
+from ..tts_pipeline.mora_mapping import mora_kana_to_mora_phonemes
 from ..tts_pipeline.tts_engine import (
     TTSEngine,
     raw_wave_to_output_wave,
@@ -145,7 +146,8 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         継承元の TTSEngine.create_accent_phrases() をオーバーライドし、Style-Bert-VITS2 に適したアクセント句系列生成処理に差し替えている
 
         Style-Bert-VITS2 は同じ pyopenjtalk ベースの自然言語処理でありながら VOICEVOX ENGINE とアクセント関連の実装が異なるため、
-        一旦 g2kana_tone() でカタカナ化されたモーラと音高のリストを取得し、それを VOICEVOX ENGINE 本来のアクセント句系列にマージする形で実装している
+        VOICEVOX ENGINE 本来のアクセント句系列生成処理は利用せず、代わりに g2kana_tone() から取得したカタカナ化されたモーラと音高のリストから
+        擬似的にアクセント句系列 AccentPhrase を生成する形で実装している
         こうすることで、VOICEVOX ENGINE (pyopenjtalk) では一律削除されてしまう句読点や記号を保持した状態でアクセント句系列を生成できる
         VOICEVOX ENGINE と異なりスタイル ID に基づいてその音素長・モーラ音高を更新することは原理上不可能なため、
         音素長・モーラ音高はモック版 VOICEVOX CORE によってランダム生成されたダミーデータが入った状態で返される
@@ -163,90 +165,128 @@ class StyleBertVITS2TTSEngine(TTSEngine):
             アクセント句系列
         """
 
-        # 正規化された句読点や記号
-        ## 三点リーダー "…" は normalize_text() で "." × 3 に変換される
-        PUNCTUATIONS = [".", ",", "?", "!", "'", "-"]
-
         # 入力テキストを Style-Bert-VITS2 の基準で正規化
         ## Style-Bert-VITS2 では「〜」などの伸ばす棒も長音記号として扱うため、normalize_text() でそれらを統一する
-        ## text_to_accent_phrases() に正規化したテキストを渡さないと、VOICEVOX ENGINE 側と Style-Bert-VITS2 側で
-        ## 「〜」などの記号の扱いに齟齬が発生し、InvalidToneError の要因になる
         normalized_text = normalize_text(text)
-
-        # テキストからアクセント句系列を生成
-        ## VOICEVOX ENGINE 側では、pyopenjtalk から取得したフルコンテキストラベルを解析しまくることでアクセント句系列を生成している
-        ## テキストに含まれる句読点や記号はすべて AccentPhrase.pause_mora に統合されてしまう
-        ## たとえば 「調子は、どうですか？」と「調子は...どうですか？」は同じアクセント句系列になる
-        accent_phrases = text_to_accent_phrases(normalized_text)
 
         # g2p 処理を行い、テキストからカタカナ化されたモーラと音高 (0 or 1) のリストを取得
         ## Style-Bert-VITS2 側では、pyopenjtalk_g2p_prosody() から取得したアクセント情報が含まれるモーラのリストを
         ## モーラと音高のリストに変換し (句読点や記号は失われている) 、後付けで失われた句読点や記号のモーラを適切な位置に追加する形で実装されている
-        ## ここでは音高情報は使わない (VOICEVOX ENGINE 側から取得できる情報をそのまま利用する) ので、カタカナ化されたモーラのリストだけを取得する
-        kata_tone_list = g2kata_tone(normalized_text)
-        kata_list = [kata for kata, _ in kata_tone_list]
+        ## VOICEVOX ENGINE 側のアクセント句系列生成処理は使わない
+        kata_tone_list: list[tuple[str, int]] = g2kata_tone(normalized_text)
 
-        # kata_list の先頭から連続する句読点/記号があれば抽出する
-        first_punctuations: list[str] = []
-        while kata_list and kata_list[0] in PUNCTUATIONS:
-            first_punctuations.append(kata_list.pop(0))  # 先頭の句読点/記号を取り出す
-
-        # 抽出した first_punctuations を accent_phrases の先頭に新しい AccentPhrase として追加
-        # 「...私は,,そう思うよ...?どうかな.」の先頭の「...」が、先頭に句読点/記号のみを含む AccentPhrase として追加される
-        if len(first_punctuations) > 0:
-            first_accent_phrase = AccentPhrase(
-                moras=[
-                    Mora(
-                        text=punctuation,
-                        consonant=None,
-                        consonant_length=None,
-                        vowel="pau",
-                        vowel_length=0.0,  # ダミー値
-                        pitch=0.0,  # ダミー値
-                    )
-                    for punctuation in first_punctuations
-                ],
-                accent=1,  # 何か設定しないといけないので、とりあえず先頭をアクセント核とする
-            )
-            accent_phrases.insert(0, first_accent_phrase)
-
-        # 残った kata_list のうち、句読点/記号群をグループ化して抽出
-        # 大元の (正規化された) テキストが 「...私は,,そう思うよ...?どうかな.」なら「,,」「...?」「.」に分割される
-        punctuation_groups: list[list[str]] = []
-        index = 0
-        while index < len(kata_list):
-            group: list[str] = []
-            # 連続する句読点/記号が尽きるまで取り出す
-            while index < len(kata_list) and kata_list[index] in PUNCTUATIONS:
-                group.append(kata_list[index])
-                index += 1
-            # 取り出した句読点/記号があればグループとして追加
-            if len(group) > 0:
-                punctuation_groups.append(group)
+        # kata_tone_list を、まず記号から通常のモーラに変わったタイミングで区切ってグループ化
+        # 通常のモーラから記号に変わったタイミングでは区切らない
+        ## 例: 「...私は,,そう思うよ...?どうかな.」 -> [["..."], ["私", "は", ",", ","], ["そう", "思う", "よ", "...", "?"], ["どう", "か", "な", "."]]
+        kata_tone_groups: list[list[tuple[str, int]]] = []
+        current_group: list[tuple[str, int]] = []
+        for index, (kata, tone) in enumerate(kata_tone_list):
+            if index == 0 or (
+                kata not in PUNCTUATIONS
+                and kata_tone_list[index - 1][0] in PUNCTUATIONS
+            ):
+                if current_group:
+                    kata_tone_groups.append(current_group)
+                    current_group = []
+                current_group.append((kata, tone))
             else:
-                index += 1
+                current_group.append((kata, tone))
+        if current_group:
+            kata_tone_groups.append(current_group)
 
-        # accent_phrases のうち、pause_mora を含む AccentPhrase のみを抽出
-        # 最後の AccentPhrase は pause_mora が含まれているかに関わらず追加する
-        with_pause_accent_phrases = [ap for ap in accent_phrases if ap.pause_mora is not None]  # fmt: skip
-        if len(accent_phrases) > 0:
-            with_pause_accent_phrases.append(accent_phrases[-1])
+        # さらにグループごとに、アクセントが変わるタイミングで区切って再グループ化
+        # 音高が 前: 1, 現在: 0, 次: 1 の場合、前と現在の間で区切る
+        # 音高が 前: 0, 現在: 0, 次: 1 の場合、前と現在の間で区切る
+        re_grouped_kata_tone_groups: list[list[list[tuple[str, int]]]] = []
+        for group in kata_tone_groups:
+            re_grouped_group: list[list[tuple[str, int]]] = []
+            current_group: list[tuple[str, int]] = []
+            for index, (kata, tone) in enumerate(group):
+                # 音高が 前: 1, 現在: 0, 次: 1 の場合、前と現在の間で区切る
+                if (
+                    (index > 0 and group[index - 1][1] == 1)
+                    and (tone == 0)
+                    and (index < len(group) - 1 and group[index + 1][1] == 1)
+                ):
+                    re_grouped_group.append(current_group)
+                    current_group = [(kata, tone)]
+                # 音高が 前: 0, 現在: 0, 次: 1 の場合、前と現在の間で区切る
+                elif (
+                    (index > 0 and group[index - 1][1] == 0)
+                    and (tone == 0)
+                    and (index < len(group) - 1 and group[index + 1][1] == 1)
+                ):
+                    re_grouped_group.append(current_group)
+                    current_group = [(kata, tone)]
+                # それ以外の場合はグループに追加
+                else:
+                    current_group.append((kata, tone))
+            if current_group:
+                re_grouped_group.append(current_group)
+            re_grouped_kata_tone_groups.append(re_grouped_group)
 
-        # pause_mora を含む AccentPhrase に、同一インデックスの punctuations_group 内の句読点/記号モーラを追加
-        for with_pause_accent_phrase, punctuation_group in zip(with_pause_accent_phrases, punctuation_groups):  # fmt: skip
-            for punctuation in punctuation_group:
-                with_pause_accent_phrase.moras.append(
+        # グループのグループのようにネスト構造になっているので、flatten する
+        kata_tone_groups = [
+            item for sublist in re_grouped_kata_tone_groups for item in sublist
+        ]
+
+        # kata_tone_groups を AccentPhrase に変換
+        accent_phrases: list[AccentPhrase] = []
+        for group in kata_tone_groups:
+
+            # グループ内で次のモーラで音高が 1 から 0 に下がるモーラをアクセント核のインデックスとする
+            # 1-indexed なので 1 から始まるインデックスに変換
+            accent_index = None
+            for index, (kata, tone) in enumerate(group):
+                if tone == 1 and index < len(group) - 1 and group[index + 1][1] == 0:
+                    accent_index = index + 1
+                    break
+            ## この時点でアクセント核が見つからなかった場合は最後のモーラまで音高が高いままだと思われるので、
+            ## 最後のモーラをアクセント核とする
+            if accent_index is None:
+                accent_index = len(group)
+
+            # グループ内のカタカナ化されたモーラを Mora に変換
+            moras: list[Mora] = []
+            for kata, _ in group:
+                # 記号の場合
+                if kata in PUNCTUATIONS:
+                    consonant = None
+                    vowel = "pau"  # VOICEVOX ENGINE では記号は pau として扱われる
+                # 通常のモーラの場合
+                else:
+                    # モーラのカタカナ表記と音素の対応表から対応する音素を取得
+                    ## mora_kana_to_mora_phonemes には Style-Bert-VITS2 のではなく VOICEVOX ENGINE のを使うのが大変重要
+                    ## Style-Bert-VITS2 の mora_list は VOICEVOX ENGINE のコードが若干改変された上で利用されているが、
+                    ## 一部音素の記述表現が異なる (例えば "ッ" (促音) が Style-Bert-VITS2 版では cl から q に変わっている) ため、
+                    ## 後述の update_length_and_pitch() 実行時に失敗しうる
+                    ## どのみち音声合成時にこの値は利用されないが、互換性向上のため VOICEVOX ENGINE のを使っている
+                    consonant, vowel = mora_kana_to_mora_phonemes[kata]  # type: ignore
+                moras.append(
                     Mora(
-                        text=punctuation,
-                        consonant=None,
-                        consonant_length=None,
-                        vowel="pau",
-                        vowel_length=0.0,  # ダミー値
-                        pitch=0.0,  # ダミー値
+                        text=kata,
+                        consonant=consonant,
+                        consonant_length=(
+                            None if consonant is None else 0.0
+                        ),  # AivisSpeech Engine では常にダミー値
+                        vowel=vowel,
+                        vowel_length=0.0,  # AivisSpeech Engine では常にダミー値
+                        pitch=0.0,  # AivisSpeech Engine では常にダミー値
                     )
                 )
-                # 重複を避けるため、punctuations_group 内の句読点/記号モーラを追加した AccentPhrase から pause_mora を削除
-                with_pause_accent_phrase.pause_mora = None
+
+            # アクセント句を生成
+            accent_phrases.append(
+                AccentPhrase(
+                    moras=moras,
+                    # 取得したアクセント核を指定
+                    accent=accent_index,
+                    # AivisSpeech Engine では moras に記号モーラも含めているため、pause_mora は常に None に設定
+                    ## Style-Bert-VITS2 は音声合成時に読み上げテキストに付与する記号 (…!? など)で感情表現が大きく変わるほか、
+                    ## 記号自体にアクセント情報を付与できるため、VOICEVOX のように連続する記号を pause_mora としてまとめられると困る
+                    pause_mora=None,
+                )
+            )
 
         # モック版 VOICEVOX CORE を使ってダミーの音素長・モーラ音高を生成
         ## VOICEVOX ENGINE と異なりスタイル ID に基づいてその音素長・モーラ音高を更新することは原理上不可能なため、
