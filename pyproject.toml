@@ -68,7 +68,7 @@ soxr = "^0.3.6"
 pydantic = "^2.6.4"
 starlette = "^0.36.3"
 jaconv = "^0.3.4"
-style-bert-vits2 = "^2.4.1"
+style-bert-vits2 = { git = "https://github.com/zunan-islands/Style-Bert-VITS2", rev = "9d15d5763de90b6f6f7675a5e2e45c7064bfe60d" }
 
 [tool.poetry.group.dev.dependencies]
 pyinstaller = "^5.13"
