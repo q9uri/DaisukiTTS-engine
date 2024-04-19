@@ -7,11 +7,6 @@ from pathlib import Path
 from typing import List, Optional
 
 
-class LicenseError(Exception):
-    # License違反があった場合、このエラーを出します。
-    pass
-
-
 @dataclass
 class License:
     name: str
@@ -22,6 +17,19 @@ class License:
 
 def generate_licenses() -> List[License]:
     licenses: List[License] = []
+
+    # VOICEVOX ENGINE
+    with urllib.request.urlopen(
+        "https://raw.githubusercontent.com/VOICEVOX/voicevox_engine/master/LGPL_LICENSE"
+    ) as res:
+        licenses.append(
+            License(
+                name="VOICEVOX ENGINE",
+                version=None,
+                license="LGPL license",
+                text=res.read().decode(),
+            )
+        )
 
     # openjtalk
     # https://sourceforge.net/projects/open-jtalk/files/Open%20JTalk/open_jtalk-1.11/
@@ -49,43 +57,6 @@ def generate_licenses() -> List[License]:
             text=Path("docs/licenses//open_jtalk/mecab-naist-jdic/COPYING").read_text(),
         )
     )
-    with urllib.request.urlopen(
-        "https://raw.githubusercontent.com/r9y9/pyopenjtalk/master/pyopenjtalk/htsvoice/LICENSE_mei_normal.htsvoice"  # noqa: B950
-    ) as res:
-        licenses.append(
-            License(
-                name='HTS Voice "Mei"',
-                version=None,
-                license="Creative Commons Attribution 3.0 license",
-                text=res.read().decode(),
-            )
-        )
-
-    # VOICEVOX CORE
-    # with urllib.request.urlopen(
-    #     "https://raw.githubusercontent.com/VOICEVOX/voicevox_core/main/LICENSE"
-    # ) as res:
-    #     licenses.append(
-    #         License(
-    #             name="VOICEVOX CORE",
-    #             version=None,
-    #             license="MIT license",
-    #             text=res.read().decode(),
-    #         )
-    #     )
-
-    # VOICEVOX ENGINE
-    with urllib.request.urlopen(
-        "https://raw.githubusercontent.com/VOICEVOX/voicevox_engine/master/LGPL_LICENSE"
-    ) as res:
-        licenses.append(
-            License(
-                name="VOICEVOX ENGINE",
-                version=None,
-                license="LGPL license",
-                text=res.read().decode(),
-            )
-        )
 
     # world
     with urllib.request.urlopen(
@@ -101,33 +72,21 @@ def generate_licenses() -> List[License]:
         )
 
     # pytorch
+    pytorch_version = "2.2.2"
     with urllib.request.urlopen(
-        "https://raw.githubusercontent.com/pytorch/pytorch/master/LICENSE"
+        f"https://raw.githubusercontent.com/pytorch/pytorch/v{pytorch_version}/LICENSE"
     ) as res:
         licenses.append(
             License(
                 name="PyTorch",
-                version="1.9.0",
+                version=pytorch_version,
                 license="BSD-style license",
                 text=res.read().decode(),
             )
         )
 
-    # onnxruntime
-    with urllib.request.urlopen(
-        "https://raw.githubusercontent.com/microsoft/onnxruntime/master/LICENSE"
-    ) as res:
-        licenses.append(
-            License(
-                name="ONNX Runtime",
-                version="1.13.1",
-                license="MIT license",
-                text=res.read().decode(),
-            )
-        )
-
     # Python
-    python_version = "3.11.3"
+    python_version = "3.11.9"
     with urllib.request.urlopen(
         f"https://raw.githubusercontent.com/python/cpython/v{python_version}/LICENSE"
     ) as res:
@@ -167,21 +126,9 @@ def generate_licenses() -> List[License]:
             license=license_json["License"],
             text=license_json["LicenseText"],
         )
-        license_names_str = license.license or ""
-        license_names = license_names_str.split("; ")
-        for license_name in license_names:
-            if license_name in [
-                "GNU General Public License v2 (GPLv2)",
-                "GNU General Public License (GPL)",
-                "GNU General Public License v3 (GPLv3)",
-                "GNU Affero General Public License v3 (AGPL-3)",
-            ]:
-                raise LicenseError(f"ライセンス違反: {license.name}")
         # FIXME: assert license type
         if license.text == "UNKNOWN":
-            if license.name.lower() == "core" and license.version == "0.0.0":
-                continue
-            elif license.name.lower() == "future":
+            if license.name.lower() == "future":
                 with urllib.request.urlopen(
                     "https://raw.githubusercontent.com/PythonCharmers/python-future/master/LICENSE.txt"  # noqa: B950
                 ) as res:
@@ -191,9 +138,9 @@ def generate_licenses() -> List[License]:
                     "https://raw.githubusercontent.com/erocarrera/pefile/master/LICENSE"  # noqa: B950
                 ) as res:
                     license.text = res.read().decode()
-            elif license.name.lower() == "pyopenjtalk":
+            elif license.name.lower() == "pyopenjtalk-dict":
                 with urllib.request.urlopen(
-                    "https://raw.githubusercontent.com/r9y9/pyopenjtalk/master/LICENSE.md"
+                    "https://raw.githubusercontent.com/litagin02/pyopenjtalk/master/LICENSE.md"
                 ) as res:
                     license.text = res.read().decode()
             elif license.name.lower() == "python-multipart":
@@ -231,6 +178,46 @@ def generate_licenses() -> List[License]:
                     "https://raw.githubusercontent.com/gsnedders/python-webencodings/fa2cb5d75ab41e63ace691bc0825d3432ba7d694/LICENSE"
                 ) as res:
                     license.text = res.read().decode()
+            elif license.name.lower() == "antlr4-python3-runtime":
+                with urllib.request.urlopen(
+                    "https://raw.githubusercontent.com/antlr/antlr4/v4.11.1/LICENSE.txt"
+                ) as res:
+                    license.text = res.read().decode()
+            elif license.name.lower() == "gradio_client":
+                with urllib.request.urlopen(
+                    "https://raw.githubusercontent.com/gradio-app/gradio/v3.41.0/LICENSE"
+                ) as res:
+                    license.text = res.read().decode()
+            elif license.name.lower() == "jieba":
+                with urllib.request.urlopen(
+                    "https://raw.githubusercontent.com/fxsjy/jieba/v0.42.1/LICENSE"
+                ) as res:
+                    license.text = res.read().decode()
+            elif license.name.lower() == "primepy":
+                with urllib.request.urlopen(
+                    "https://raw.githubusercontent.com/janaindrajit/primePy/9c98276fee5211e8761dfc03c9a1e02127e09e4a/LICENSE"
+                ) as res:
+                    license.text = res.read().decode()
+            elif license.name.lower() == "safetensors":
+                with urllib.request.urlopen(
+                    "https://raw.githubusercontent.com/huggingface/safetensors/v0.4.3/LICENSE"
+                ) as res:
+                    license.text = res.read().decode()
+            elif license.name.lower() == "sentencepiece":
+                with urllib.request.urlopen(
+                    "https://raw.githubusercontent.com/google/sentencepiece/v0.2.0/LICENSE"
+                ) as res:
+                    license.text = res.read().decode()
+            elif license.name.lower() == "tokenizers":
+                with urllib.request.urlopen(
+                    "https://raw.githubusercontent.com/huggingface/tokenizers/v0.19.1/LICENSE"
+                ) as res:
+                    license.text = res.read().decode()
+            elif license.name.lower() == "types-pyyaml":
+                with urllib.request.urlopen(
+                    "https://raw.githubusercontent.com/python/typeshed/57f3dcac8dbed008479b251512975901a0206deb/LICENSE"
+                ) as res:
+                    license.text = res.read().decode()
             else:
                 # ライセンスがpypiに無い
                 raise Exception(f"No License info provided for {license.name}")
@@ -243,137 +230,6 @@ def generate_licenses() -> List[License]:
                 license.text = res.read().decode()
 
         licenses.append(license)
-
-    # OpenBLAS
-    with urllib.request.urlopen(
-        "https://raw.githubusercontent.com/xianyi/OpenBLAS/develop/LICENSE"
-    ) as res:
-        licenses.append(
-            License(
-                name="OpenBLAS",
-                version=None,
-                license="BSD 3-clause license",
-                text=res.read().decode(),
-            )
-        )
-
-    # libsndfile-binaries
-    with urllib.request.urlopen(
-        "https://raw.githubusercontent.com/bastibe/libsndfile-binaries/d9887ef926bb11cf1a2526be4ab6f9dc690234c0/COPYING"  # noqa: B950
-    ) as res:
-        licenses.append(
-            License(
-                name="libsndfile-binaries",
-                version="1.2.0",
-                license="LGPL-2.1 license",
-                text=res.read().decode(),
-            )
-        )
-
-    # libogg
-    with urllib.request.urlopen(
-        "https://raw.githubusercontent.com/xiph/ogg/v1.3.5/COPYING"
-    ) as res:
-        licenses.append(
-            License(
-                name="libogg",
-                version="1.3.5",
-                license="BSD 3-clause license",
-                text=res.read().decode(),
-            )
-        )
-
-    # libvorbis
-    with urllib.request.urlopen(
-        "https://raw.githubusercontent.com/xiph/vorbis/v1.3.7/COPYING"
-    ) as res:
-        licenses.append(
-            License(
-                name="libvorbis",
-                version="1.3.7",
-                license="BSD 3-clause license",
-                text=res.read().decode(),
-            )
-        )
-
-    # libflac
-    with urllib.request.urlopen(
-        "https://raw.githubusercontent.com/xiph/flac/1.4.2/COPYING.Xiph"
-    ) as res:
-        licenses.append(
-            License(
-                name="FLAC",
-                version="1.4.2",
-                license="Xiph.org's BSD-like license",
-                text=res.read().decode(),
-            )
-        )
-
-    # libopus
-    with urllib.request.urlopen(
-        "https://raw.githubusercontent.com/xiph/opus/v1.3.1/COPYING"
-    ) as res:
-        licenses.append(
-            License(
-                name="Opus",
-                version="1.3.1",
-                license="BSD 3-clause license",
-                text=res.read().decode(),
-            )
-        )
-
-    # mpg123
-    # https://sourceforge.net/projects/mpg123/files/mpg123/1.30.2/
-    licenses.append(
-        License(
-            name="mpg123",
-            version="1.30.2",
-            license="LGPL-2.1 license",
-            text=Path("docs/licenses/mpg123/COPYING").read_text(encoding="utf-8"),
-        )
-    )
-
-    # liblame
-    # https://sourceforge.net/projects/lame/files/lame/3.100/
-    with urllib.request.urlopen(
-        "https://svn.code.sf.net/p/lame/svn/tags/RELEASE__3_100/lame/COPYING"
-    ) as res:
-        licenses.append(
-            License(
-                name="lame",
-                version="3.100",
-                license="LGPL-2.0 license",
-                text=res.read().decode(),
-            )
-        )
-
-    # cuda
-    # license text from CUDA 11.8.0
-    # https://developer.nvidia.com/cuda-11-8-0-download-archive?target_os=Windows&target_arch=x86_64&target_version=10&target_type=exe_local # noqa: B950
-    # https://developer.download.nvidia.com/compute/cuda/11.8.0/local_installers/cuda_11.8.0_522.06_windows.exe # noqa: B950
-    # cuda_11.8.0_522.06_windows.exe (cuda_documentation/Doc/EULA.txt)
-    licenses.append(
-        License(
-            name="CUDA Toolkit",
-            version="11.8.0",
-            license=None,
-            text=Path("docs/licenses/cuda/EULA.txt").read_text(encoding="utf8"),
-        )
-    )
-    # cudnn
-    # license text from
-    # cuDNN v8.9.2 (June 1st, 2023), for CUDA 11.x, cuDNN Library for Windows
-    # https://developer.nvidia.com/rdp/cudnn-archive # noqa: B950
-    # https://developer.download.nvidia.com/compute/cudnn/redist/cudnn/windows-x86_64/cudnn-windows-x86_64-8.9.2.26_cuda11-archive.zip # noqa: B950
-    # cudnn-windows-x86_64-8.9.2.26_cuda11-archive.zip (cudnn-windows-x86_64-8.9.2.26_cuda11-archive/LICENSE) # noqa: B950
-    licenses.append(
-        License(
-            name="cuDNN",
-            version="8.9.2",
-            license=None,
-            text=Path("docs/licenses/cudnn/LICENSE").read_text(encoding="utf8"),
-        )
-    )
 
     return licenses
 

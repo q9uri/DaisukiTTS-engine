@@ -1,26 +1,9 @@
-# 仮想環境を作ってrequirements.txtをインストールし、ライセンス一覧を生成する
+# まだ Poetry で依存ライブラリがインストールされていない場合はインストールし、ライセンス一覧を生成する
 
 set -eux
 
-if [ ! -v OUTPUT_LICENSE_JSON_PATH ]; then
-    echo "OUTPUT_LICENSE_JSON_PATHが未定義です"
-    exit 1
-fi
+poetry install --with=license
+poetry run python build_util/generate_licenses.py > engine_manifest_assets/dependency_licenses.json
 
-VENV_PATH="licenses_venv"
-
-python -m venv $VENV_PATH
-if [ -d "$VENV_PATH/Scripts" ]; then
-    # shellcheck disable=SC1091
-    source $VENV_PATH/Scripts/activate
-else
-    # shellcheck disable=SC1091
-    source $VENV_PATH/bin/activate
-fi
-
-pip install -r requirements-license.txt
-python build_util/generate_licenses.py > "${OUTPUT_LICENSE_JSON_PATH}"
-
-deactivate
-
-rm -rf $VENV_PATH
+# FIXME: AivisSpeech (editor) cannot build without licenses.json
+cp engine_manifest_assets/dependency_licenses.json licenses.json

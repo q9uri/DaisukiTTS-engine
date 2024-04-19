@@ -17,9 +17,8 @@ def generate_api_docs_html(schema: str) -> str:
         """<!DOCTYPE html>
 <html lang="ja">
 <head>
-    <title>voicevox_engine API Document</title>
+    <title>AivisSpeech Engine API Document</title>
     <meta charset="utf-8">
-    <link rel="shortcut icon" href="https://voicevox.hiroshiba.jp/favicon-32x32.png">
 </head>
 <body>
     <div id="redoc-container"></div>

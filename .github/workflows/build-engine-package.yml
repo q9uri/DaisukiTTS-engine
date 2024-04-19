@@ -441,10 +441,7 @@ jobs:
 
       - name: Generate licenses.json
         run: |
-          OUTPUT_LICENSE_JSON_PATH=engine_manifest_assets/dependency_licenses.json \
           bash build_util/create_venv_and_generate_licenses.bash
-          # FIXME: AivisSpeech (editor) cannot build without licenses.json
-          cp engine_manifest_assets/dependency_licenses.json licenses.json
 
       - name: Build run.py with PyInstaller
         run: |

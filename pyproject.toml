@@ -5,6 +5,7 @@ lint = "pysen run lint"
 test = "pytest"
 update-snapshots = "pytest --snapshot-update"
 update-requirements = "poetry export --without-hashes -o requirements.txt && poetry export --without-hashes --with dev -o requirements-dev.txt && poetry export --without-hashes --with test -o requirements-test.txt && poetry export --without-hashes --with license -o requirements-license.txt"
+update-licenses = "bash build_util/create_venv_and_generate_licenses.bash"
 
 [tool.pysen]
 version = "0.10.5"
