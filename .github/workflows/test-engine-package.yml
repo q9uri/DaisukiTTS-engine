@@ -37,18 +37,14 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: ubuntu-20.04
-            target: linux-cpu
-          - os: ubuntu-20.04
-            target: linux-nvidia
+          - os: windows-2019
+            target: windows-x64
           - os: macos-11
             target: macos-x64
-          - os: windows-2019
-            target: windows-cpu
-          - os: windows-2019
-            target: windows-nvidia
-          - os: windows-2019
-            target: windows-directml
+          - os: macos-11
+            target: macos-arm64
+          - os: ubuntu-20.04
+            target: linux-x64
 
     runs-on: ${{ matrix.os }}
 
@@ -63,7 +59,7 @@ jobs:
 
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.11.3"
+          python-version: "3.11.9"
           cache: pip
 
       - name: Download
