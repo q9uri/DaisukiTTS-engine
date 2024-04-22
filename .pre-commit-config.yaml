@@ -40,3 +40,9 @@ repos:
         language: python
         stages: [push]
         pass_filenames: false
+      - id: update-licenses
+        name: update-licenses
+        entry: poetry run task update-licenses
+        language: system
+        stages: [push]
+        pass_filenames: false

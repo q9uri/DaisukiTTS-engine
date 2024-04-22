@@ -60,6 +60,12 @@ poetry run task update-snapshots
 
 # Poetry で管理している依存関係を requirements.txt に反映
 poetry run task update-requirements
+
+# ライセンス情報を更新
+poetry run task update-licenses
+
+# AivisSpeech Engine をビルド
+poetry run task build
 ```
 
 -----

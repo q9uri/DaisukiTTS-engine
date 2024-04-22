@@ -6,6 +6,7 @@ test = "pytest"
 update-snapshots = "pytest --snapshot-update"
 update-requirements = "poetry export --without-hashes -o requirements.txt && poetry export --without-hashes --with dev -o requirements-dev.txt && poetry export --without-hashes --with test -o requirements-test.txt && poetry export --without-hashes --with license -o requirements-license.txt"
 update-licenses = "bash build_util/create_venv_and_generate_licenses.bash"
+build = "poetry run task update-licenses && pyinstaller --noconfirm run.spec"
 
 [tool.pysen]
 version = "0.10.5"
@@ -72,7 +73,7 @@ jaconv = "^0.3.4"
 style-bert-vits2 = { git = "https://github.com/zunan-islands/Style-Bert-VITS2", rev = "9d15d5763de90b6f6f7675a5e2e45c7064bfe60d" }
 
 [tool.poetry.group.dev.dependencies]
-pyinstaller = "^5.13"
+pyinstaller = "^6.6.0"
 pre-commit = "^2.16.0"
 poetry = "1.8.1"
 poetry-plugin-export = "^1.6.0"

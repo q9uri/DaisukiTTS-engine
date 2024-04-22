@@ -14,7 +14,7 @@ on:
 jobs:
   latest-dev-build:
     runs-on: ubuntu-latest
-    if: github.repository_owner == 'VOICEVOX'
+    if: github.repository_owner == 'Aivis-Project'
     steps:
       - name: Trigger workflow_dispatch
         uses: actions/github-script@v6
