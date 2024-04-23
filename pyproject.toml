@@ -70,7 +70,19 @@ soxr = "^0.3.6"
 pydantic = "^2.6.4"
 starlette = "^0.36.3"
 jaconv = "^0.3.4"
+# AivisSpeech-Engine にはカスタマイズされた Style-Bert-VITS2 が必要
 style-bert-vits2 = { git = "https://github.com/tsukumijima/Style-Bert-VITS2", rev = "28f254f44927c4f6bd989b5f71031ad1db51425f" }
+# torch / torchaudio は Windows・Linux では CUDA 版を、macOS は CUDA 版がないので CPU (& MPS) 版をインストールする
+torch = [
+  { version = "^2.2.2", platform = "win32", source = "pytorch-cuda" },
+  { version = "^2.2.2", platform = "darwin" },
+  { version = "^2.2.2", platform = "linux", source = "pytorch-cuda" },
+]
+torchaudio = [
+  { version = "^2.2.2", platform = "win32", source = "pytorch-cuda" },
+  { version = "^2.2.2", platform = "darwin" },
+  { version = "^2.2.2", platform = "linux", source = "pytorch-cuda" },
+]
 
 [tool.poetry.group.dev.dependencies]
 pyinstaller = "^6.6.0"
@@ -97,6 +109,11 @@ types-pyyaml = "^6.0"
 
 [tool.poetry.group.license.dependencies]
 pip-licenses = "^4.3.4"
+
+[[tool.poetry.source]]
+name = "pytorch-cuda"
+url = "https://download.pytorch.org/whl/cu121"
+priority = "explicit"
 
 [build-system]
 requires = ["poetry-core"]
