@@ -13,6 +13,7 @@ AivisSpeech Engine は、[VOICEVOX ENGINE](https://github.com/VOICEVOX/voicevox_
 
 - VOICEVOX 最新版への追従を容易にするため、できるだけ改変を必要最小限に留める
   - VOICEVOX ENGINE から AivisSpeech Engine へのリブランディングは必要な箇所のみ行う
+  - `voicevox_engine` ディレクトリをリネームすると import 文の変更差分が膨大になるため、あえてリブランディングを行わない
 - リファクタリングを行わない
   - VOICEVOX ENGINE とのコンフリクトが発生することが容易に予想される上、コード全体に精通しているわけではないため
 - AivisSpeech で利用しない機能 (歌声合成機能など) であっても、コードの削除は行わない
@@ -23,7 +24,7 @@ AivisSpeech Engine は、[VOICEVOX ENGINE](https://github.com/VOICEVOX/voicevox_
 
 ## 開発環境の構築
 
-手順は一部オリジナルの VOICEVOX ENGINE と異なります。  
+手順はオリジナルの VOICEVOX ENGINE と大幅に異なります。  
 事前に Python 3.11 がインストールされている必要があります。
 
 ```bash
@@ -39,6 +40,8 @@ poetry install --no-root
 
 ## 開発
 
+手順はオリジナルの VOICEVOX ENGINE と大幅に異なります。
+
 ```bash
 # 開発環境で AivisSpeech Engine を起動
 poetry run task serve
@@ -51,6 +54,9 @@ poetry run task format
 
 # コードフォーマットをチェック
 poetry run task lint
+
+# typos によるタイポチェック
+poetry run task typos
 
 # テストを実行
 poetry run task test
