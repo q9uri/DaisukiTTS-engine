@@ -72,16 +72,30 @@ starlette = "^0.36.3"
 jaconv = "^0.3.4"
 # AivisSpeech-Engine にはカスタマイズされた Style-Bert-VITS2 が必要
 style-bert-vits2 = { git = "https://github.com/tsukumijima/Style-Bert-VITS2", rev = "28f254f44927c4f6bd989b5f71031ad1db51425f" }
-# torch / torchaudio は Windows・Linux では CUDA 版を、macOS は CUDA 版がないので CPU (& MPS) 版をインストールする
 torch = [
-  { version = "^2.2.2", platform = "win32", source = "pytorch-cuda" },
-  { version = "^2.2.2", platform = "darwin" },
-  { version = "^2.2.2", platform = "linux", source = "pytorch-cuda" },
+    # ref: https://tech.layerx.co.jp/entry/2023/07/28/184937
+    # Windows: CUDA 12.1
+    { url = "https://download.pytorch.org/whl/cu121/torch-2.2.2%2Bcu121-cp311-cp311-win_amd64.whl", markers = "sys_platform == 'win32'" },
+    # macOS (Intel): CPU only
+    { url = "https://download.pytorch.org/whl/cpu/torch-2.2.2-cp311-none-macosx_10_9_x86_64.whl", markers = "sys_platform == 'darwin' and platform_machine == 'x86_64'" },
+    # macOS (Apple Silicon): CPU only
+    { url = "https://download.pytorch.org/whl/cpu/torch-2.2.2-cp311-none-macosx_11_0_arm64.whl", markers = "sys_platform == 'darwin' and platform_machine == 'arm64'" },
+    # Linux: CUDA 12.1
+    { url = "https://download.pytorch.org/whl/cu121/torch-2.2.2%2Bcu121-cp311-cp311-linux_x86_64.whl", markers = "sys_platform == 'linux' and platform_machine == 'x86_64'" },
+    # Linux (ARM): CPU only
+    { url = "https://download.pytorch.org/whl/cpu/torch-2.2.2-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", markers = "sys_platform == 'linux' and platform_machine == 'aarch64'" },
 ]
 torchaudio = [
-  { version = "^2.2.2", platform = "win32", source = "pytorch-cuda" },
-  { version = "^2.2.2", platform = "darwin" },
-  { version = "^2.2.2", platform = "linux", source = "pytorch-cuda" },
+  # Windows: CUDA 12.1
+  { url = "https://download.pytorch.org/whl/cu121/torchaudio-2.2.2%2Bcu121-cp311-cp311-win_amd64.whl", markers = "sys_platform == 'win32'" },
+  # macOS (Intel): CPU only
+  { url = "https://download.pytorch.org/whl/cpu/torchaudio-2.2.2-cp311-cp311-macosx_10_13_x86_64.whl", markers = "sys_platform == 'darwin' and platform_machine == 'x86_64'" },
+  # macOS (Apple Silicon): CPU only
+  { url = "https://download.pytorch.org/whl/cpu/torchaudio-2.2.2-cp311-cp311-macosx_11_0_arm64.whl", markers = "sys_platform == 'darwin' and platform_machine == 'arm64'" },
+  # Linux: CUDA 12.1
+  { url = "https://download.pytorch.org/whl/cu121/torchaudio-2.2.2%2Bcu121-cp311-cp311-linux_x86_64.whl", markers = "sys_platform == 'linux' and platform_machine == 'x86_64'" },
+  # Linux (ARM): CPU only
+  { url = "https://download.pytorch.org/whl/cpu/torchaudio-2.2.2-cp311-cp311-linux_aarch64.whl", markers = "sys_platform == 'linux' and platform_machine == 'aarch64'" },
 ]
 
 [tool.poetry.group.dev.dependencies]
@@ -109,11 +123,6 @@ types-pyyaml = "^6.0"
 
 [tool.poetry.group.license.dependencies]
 pip-licenses = "^4.3.4"
-
-[[tool.poetry.source]]
-name = "pytorch-cuda"
-url = "https://download.pytorch.org/whl/cu121"
-priority = "explicit"
 
 [build-system]
 requires = ["poetry-core"]
