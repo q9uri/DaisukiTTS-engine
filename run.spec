@@ -1,7 +1,6 @@
 # -*- mode: python ; coding: utf-8 -*-
 # このファイルはPyInstallerによって自動生成されたもので、それをカスタマイズして使用しています。
 from PyInstaller.utils.hooks import collect_data_files
-import os
 
 datas = [
     ('engine_manifest_assets', 'engine_manifest_assets'),
@@ -12,6 +11,7 @@ datas = [
     ('ui_template', 'ui_template'),
 ]
 datas += collect_data_files('pyopenjtalk')
+datas += collect_data_files('style_bert_vits2')
 
 
 block_cipher = None
