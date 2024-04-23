@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: "バージョン情報（A.BB.C / A.BB.C-preview.D）"
+        description: "バージョン情報 (A.BB.C / A.BB.C-preview.D)"
         required: true
       prerelease:
         description: "プレリリースかどうか"
@@ -20,7 +20,7 @@ on:
         type: boolean
         default: false
       upload_artifact:
-        description: "デバッグ用に成果物をartifactにアップロードするか"
+        description: "デバッグ用に成果物を artifact にアップロードするか"
         type: boolean
         default: false
 
@@ -56,11 +56,11 @@ jobs:
           - os: windows-2019
             architecture: "x64"
             target: windows-x64
-          # macOS x64
+          # macOS x64 (Intel Mac)
           - os: macos-11
             architecture: "x64"
             target: macos-x64
-          # macOS arm64 (Apple Silicon)
+          # macOS arm64 (Apple Silicon Mac)
           - os: macos-11
             architecture: "arm64"
             target: macos-arm64
@@ -96,6 +96,9 @@ jobs:
         if: startsWith(matrix.os, 'windows-')
         uses: ilammy/msvc-dev-cmd@v1
 
+      - name: Install Poetry
+        run: pipx install poetry
+
       # Python install path of windows: C:/hostedtoolcache/windows/Python
       - name: Setup Python
         id: setup-python
@@ -103,11 +106,11 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           architecture: ${{ matrix.architecture }}
-          cache: pip
+          cache: poetry
 
       - name: Install Python dependencies
         run: |
-          python -m pip install -r requirements-dev.txt
+          poetry install --with=dev
 
           if [ "$RUNNER_OS" = Windows ]; then
             # Modify PyInstaller to enable NvOptimusEnablement and AmdPowerXpressRequestHighPerformance
@@ -118,7 +121,7 @@ jobs:
           # try 5 times, sleep 5 seconds before retry
           for i in $(seq 5); do
             EXIT_CODE=0
-            python3 -c "import pyopenjtalk; pyopenjtalk._lazy_init()" || EXIT_CODE=$?
+            poetry run python -c "import pyopenjtalk; pyopenjtalk._lazy_init()" || EXIT_CODE=$?
 
             if [ "$EXIT_CODE" = "0" ]; then
               break
@@ -148,7 +151,7 @@ jobs:
           # Replace version & specify dynamic libraries
           $sed -i "s/__version__ = \"latest\"/__version__ = \"${{ needs.config.outputs.version_or_latest }}\"/" voicevox_engine/__init__.py
 
-          pyinstaller --noconfirm run.spec
+          poetry run task build
 
       - name: Set @rpath to @executable_path
         if: startsWith(matrix.os, 'macos-')

@@ -93,40 +93,24 @@ EOF
 COPY --from=compile-python-env /opt/python /opt/python
 
 # Install Python dependencies
-ADD ./requirements.txt /tmp/
+ADD ./poetry.toml ./poetry.lock ./pyproject.toml /opt/aivisspeech-engine/
 RUN <<EOF
-    # Install requirements
-    gosu user /opt/python/bin/pip3 install -r /tmp/requirements.txt
+    gosu user /opt/python/bin/pip3 install poetry
+    gosu user /opt/python/bin/poetry install --only=main
 EOF
 
 # Add local files
-ADD ./voicevox_engine /opt/aivisspeech-engine/voicevox_engine
-ADD ./docs /opt/aivisspeech-engine/docs
+ADD ./voicevox_engine /opt/aivisspeech-engine/voicevox_engine/
+ADD ./docs /opt/aivisspeech-engine/docs/
 ADD ./run.py ./presets.yaml ./default.csv ./engine_manifest.json /opt/aivisspeech-engine/
 ADD ./build_util/generate_licenses.py /opt/aivisspeech-engine/build_util/
-ADD ./ui_template /opt/aivisspeech-engine/ui_template
-ADD ./engine_manifest_assets /opt/aivisspeech-engine/engine_manifest_assets
+ADD ./ui_template /opt/aivisspeech-engine/ui_template/
+ADD ./engine_manifest_assets /opt/aivisspeech-engine/engine_manifest_assets/
 
 # Replace version
 ARG AIVISSPEECH_ENGINE_VERSION=latest
 RUN sed -i "s/__version__ = \"latest\"/__version__ = \"${AIVISSPEECH_ENGINE_VERSION}\"/" /opt/aivisspeech-engine/voicevox_engine/__init__.py
 RUN sed -i "s/\"version\": \"999\\.999\\.999\"/\"version\": \"${AIVISSPEECH_ENGINE_VERSION}\"/" /opt/aivisspeech-engine/engine_manifest.json
-
-# Generate licenses.json
-ADD ./requirements-license.txt /tmp/
-RUN <<EOF
-    set -eux
-
-    cd /opt/aivisspeech-engine
-
-    # Define temporary env vars
-    # /home/user/.local/bin is required to use the commands installed by pip
-    export PATH="/home/user/.local/bin:${PATH:-}"
-
-    gosu user /opt/python/bin/pip3 install -r /tmp/requirements-license.txt
-    gosu user /opt/python/bin/python3 build_util/generate_licenses.py > /opt/aivisspeech-engine/engine_manifest_assets/dependency_licenses.json
-    cp /opt/aivisspeech-engine/engine_manifest_assets/dependency_licenses.json /opt/aivisspeech-engine/licenses.json
-EOF
 
 # Keep this layer separated to use layer cache on download failed in local build
 RUN <<EOF

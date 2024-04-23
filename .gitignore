@@ -4,8 +4,6 @@
 *.build
 /build
 /cache
-## Artifact of generating licenses
-/licenses.json
 
 # Copied from `https://github.com/github/gitignore/blob/main/Python.gitignore` @2022-01-10
 # Byte-compiled / optimized / DLL files

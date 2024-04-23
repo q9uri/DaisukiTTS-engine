@@ -35,7 +35,7 @@ pip install poetry poetry-plugin-export pre-commit
 pre-commit install
 
 # 依存関係をすべてインストール
-poetry install --no-root
+poetry install
 ```
 
 ## 開発
@@ -63,9 +63,6 @@ poetry run task test
 
 # テストのスナップショットを更新
 poetry run task update-snapshots
-
-# Poetry で管理している依存関係を requirements.txt に反映
-poetry run task update-requirements
 
 # ライセンス情報を更新
 poetry run task update-licenses

@@ -4,6 +4,3 @@ set -eux
 
 poetry install --with=license
 poetry run python build_util/generate_licenses.py > engine_manifest_assets/dependency_licenses.json
-
-# FIXME: AivisSpeech (editor) cannot build without licenses.json
-cp engine_manifest_assets/dependency_licenses.json licenses.json

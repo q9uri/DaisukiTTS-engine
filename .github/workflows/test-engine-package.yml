@@ -17,10 +17,11 @@ on:
         required: true
       repo_url:
         type: string
-        description: "リポジトリのURL（省略可能）"
+        description: "リポジトリの URL (省略可能)"
         required: false
 
 env:
+  PYTHON_VERSION: "3.11.9"
   REPO_URL:
     |- # repo_url指定時はrepo_urlを、それ以外はgithubのリポジトリURLを使用
     ${{ (github.event.inputs || inputs).repo_url || format('{0}/{1}', github.server_url, github.repository) }}
@@ -57,10 +58,15 @@ jobs:
 
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5
+      - name: Install Poetry
+        run: pipx install poetry
+
+      - name: Setup Python
+        id: setup-python
+        uses: actions/setup-python@v5
         with:
-          python-version: "3.11.9"
-          cache: pip
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: poetry
 
       - name: Download
         run: |
@@ -74,9 +80,9 @@ jobs:
         if: startsWith(matrix.target, 'linux') || startsWith(matrix.target, 'macos')
         run: chmod +x dist/run
 
-      - name: Install requirements
+      - name: Install Python dependencies
         run: |
-          pip install -r requirements-test.txt
+          poetry install --with=test
 
       - name: Test
-        run: python build_util/check_release_build.py --dist_dir dist/
+        run: poetry run python build_util/check_release_build.py --dist_dir dist/
