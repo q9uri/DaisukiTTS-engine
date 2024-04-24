@@ -443,7 +443,6 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         pitch_scale = max(0.0, 1.0 + query.pitchScale)
 
         # 音声合成を実行
-        ## infer() に渡されない AudioQuery のパラメータは無視される (volumeScale のみ合成後に適用される)
         ## 出力音声は int16 型の NDArray で返される
         logger.info("Running inference...")
         logger.info(f"Text: {text}")
