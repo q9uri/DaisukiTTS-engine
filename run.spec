@@ -30,6 +30,10 @@ a = Analysis(
     win_private_assemblies=False,
     cipher=block_cipher,
     noarchive=False,
+    module_collection_mode={
+        # Style-Bert-VITS2 内部で使われている TorchScript (@torch.jit) による問題を回避するのに必要
+        'style_bert_vits2': 'pyz+py',
+    },
 )
 
 pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
