@@ -92,8 +92,8 @@ class StyleInfo(BaseModel):
     voice_samples: List[str] = Field(
         title="ボイスサンプルの wav ファイルを Base64 エンコードしたもの",
     )
-    voice_sample_transcripts: Optional[List[str]] = Field(
-        default=None,
+    voice_sample_transcripts: List[str] = Field(
+        default=[],
         title="ボイスサンプルの書き起こしテキスト",
     )
 
