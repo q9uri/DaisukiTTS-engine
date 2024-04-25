@@ -3,14 +3,920 @@
   "default_sampling_rate": 44100,
   "dependency_licenses": [
     {
-      "license": "dummy license",
-      "name": "dummy library",
-      "text": "dummy license text",
-      "version": "0.0.1"
+      "license": "LGPL license",
+      "name": "VOICEVOX ENGINE",
+      "text": "MD5:b5b6bed06dd8ed68f00c26d0b4cede89",
+      "version": null
+    },
+    {
+      "license": "Modified BSD license",
+      "name": "Open JTalk",
+      "text": "MD5:08e5af09ad553855c280bb3df3d436d8",
+      "version": "1.11"
+    },
+    {
+      "license": "Modified BSD license",
+      "name": "MeCab",
+      "text": "MD5:ae6247a42b1cc29f80dea6f36f8caa02",
+      "version": null
+    },
+    {
+      "license": "Modified BSD license",
+      "name": "NAIST Japanese Dictionary",
+      "text": "MD5:5b2727454b1381febb9b89ac9c6a3dfc",
+      "version": null
+    },
+    {
+      "license": "Modified BSD license",
+      "name": "world",
+      "text": "MD5:dc1f70c6b963fa38d7d1f7ffde7e7ca2",
+      "version": null
+    },
+    {
+      "license": "BSD-style license",
+      "name": "PyTorch",
+      "text": "MD5:5c853508d63a8090fa952ff1af58217d",
+      "version": "2.2.2"
+    },
+    {
+      "license": "Python Software Foundation License",
+      "name": "Python",
+      "text": "MD5:fcf6b249c2641540219a727f35d8d2c2",
+      "version": "3.11.9"
+    },
+    {
+      "license": "BSD License",
+      "name": "Authlib",
+      "text": "MD5:ec053ca028e37ec79d3da3af34976d48",
+      "version": "1.3.0"
+    },
+    {
+      "license": "Apache Software License",
+      "name": "CacheControl",
+      "text": "Copyright 2012-2021  Eric Larson\n\nLicensed under the Apache License, Version 2.0 (the \"License\");\nyou may not use this file except in compliance with the License.\nYou may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\nUnless required by applicable law or agreed to in writing, software\ndistributed under the License is distributed on an \"AS IS\" BASIS,\nWITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\nSee the License for the specific language governing permissions and\nlimitations under the License.\n",
+      "version": "0.14.0"
+    },
+    {
+      "license": "Apache Software License",
+      "name": "Cython",
+      "text": "The original Pyrex code as of 2006-04 is licensed under the following\nlicense: \"Copyright stuff: Pyrex is free of restrictions. You may use,\nredistribute, modify and distribute modified versions.\"\n\n------------------\n\nCython, which derives from Pyrex, is licensed under the Apache 2.0\nSoftware License.  More precisely, all modifications and new code\nmade to go from Pyrex to Cython are so licensed.\n\nSee LICENSE.txt for more details.\n\n------------------\n\nThe output of a Cython compilation is NOT considered a derivative\nwork of Cython.  Specifically, though the compilation process may\nembed snippets of varying lengths into the final output, these\nsnippets, as embedded in the output, do not encumber the resulting\noutput with any license restrictions.\n",
+      "version": "3.0.10"
+    },
+    {
+      "license": "GNU General Public License (GPL)",
+      "name": "Distance",
+      "text": "MD5:6de68b639a273c1a6ef855a3f496fbb3",
+      "version": "0.1.3"
+    },
+    {
+      "license": "BSD License",
+      "name": "GitPython",
+      "text": "MD5:5279a7ab369ba336989dcf2a107e5c8e",
+      "version": "3.1.43"
+    },
+    {
+      "license": "BSD License",
+      "name": "Jinja2",
+      "text": "MD5:5dc88300786f1c214c1e9827a5229462",
+      "version": "3.1.3"
+    },
+    {
+      "license": "BSD License",
+      "name": "MarkupSafe",
+      "text": "MD5:ffeffa59c90c9c4a033c7574f8f3fb75",
+      "version": "2.1.5"
+    },
+    {
+      "license": "MIT License",
+      "name": "PyYAML",
+      "text": "MD5:6d8242660a8371add5fe547adf083079",
+      "version": "6.0.1"
+    },
+    {
+      "license": "BSD License",
+      "name": "Pygments",
+      "text": "MD5:36a13c90514e2899f1eba7f41c3ee592",
+      "version": "2.17.2"
+    },
+    {
+      "license": "MIT License",
+      "name": "altgraph",
+      "text": "MD5:3590eb8d695bdcea3ba57e74adf8a4ed",
+      "version": "0.17.4"
+    },
+    {
+      "license": "MIT License",
+      "name": "annotated-types",
+      "text": "MD5:c6afb13fdc220497ee5cded1e717ed67",
+      "version": "0.6.0"
+    },
+    {
+      "license": "MIT License",
+      "name": "anyio",
+      "text": "MD5:c0a769411d2af7894099e8ff75058c9f",
+      "version": "4.3.0"
+    },
+    {
+      "license": "BSD License",
+      "name": "asgiref",
+      "text": "MD5:f09eb47206614a4954c51db8a94840fa",
+      "version": "3.8.1"
+    },
+    {
+      "license": "MIT License",
+      "name": "attrs",
+      "text": "MD5:5e55731824cf9205cfabeab9a0600887",
+      "version": "23.2.0"
+    },
+    {
+      "license": "MIT License",
+      "name": "black",
+      "text": "MD5:d3465a2a183908c9cb95bf490bd1e7ab",
+      "version": "24.4.1"
+    },
+    {
+      "license": "MIT License",
+      "name": "build",
+      "text": "MD5:310439af287b0fb4780b2ad6907c256c",
+      "version": "1.2.1"
+    },
+    {
+      "license": "Mozilla Public License 2.0 (MPL 2.0)",
+      "name": "certifi",
+      "text": "This package contains a modified version of ca-bundle.crt:\n\nca-bundle.crt -- Bundle of CA Root Certificates\n\nThis is a bundle of X.509 certificates of public Certificate Authorities\n(CA). These were automatically extracted from Mozilla's root certificates\nfile (certdata.txt).  This file can be found in the mozilla source tree:\nhttps://hg.mozilla.org/mozilla-central/file/tip/security/nss/lib/ckfw/builtins/certdata.txt\nIt contains the certificates in PEM format and therefore\ncan be directly used with curl / libcurl / php_curl, or with\nan Apache+mod_ssl webserver for SSL client authentication.\nJust configure this file as the SSLCACertificateFile.#\n\n***** BEGIN LICENSE BLOCK *****\nThis Source Code Form is subject to the terms of the Mozilla Public License,\nv. 2.0. If a copy of the MPL was not distributed with this file, You can obtain\none at http://mozilla.org/MPL/2.0/.\n\n***** END LICENSE BLOCK *****\n@(#) $RCSfile: certdata.txt,v $ $Revision: 1.80 $ $Date: 2011/11/03 15:11:58 $\n",
+      "version": "2024.2.2"
+    },
+    {
+      "license": "MIT License",
+      "name": "cffi",
+      "text": "MD5:5677e2fdbf7cdda61d6dd2b57df547bf",
+      "version": "1.16.0"
+    },
+    {
+      "license": "MIT License",
+      "name": "cfgv",
+      "text": "MD5:92844452d544a48a78abc3a862fbd8a4",
+      "version": "3.4.0"
+    },
+    {
+      "license": "MIT License",
+      "name": "charset-normalizer",
+      "text": "MD5:0974a390827087287db39928f7c524b5",
+      "version": "3.3.2"
+    },
+    {
+      "license": "MIT License",
+      "name": "cleo",
+      "text": "MD5:24357f5c106343e13048f862d4a246e6",
+      "version": "2.1.0"
+    },
+    {
+      "license": "BSD License",
+      "name": "click",
+      "text": "MD5:1fa98232fd645608937a0fdc82e999b8",
+      "version": "8.1.7"
+    },
+    {
+      "license": "GNU General Public License v3 or later (GPLv3+)",
+      "name": "cmudict",
+      "text": "MD5:9461bd113012f497ef5a0987ab6db68c",
+      "version": "1.0.23"
+    },
+    {
+      "license": "MIT License",
+      "name": "cn2an",
+      "text": "MD5:bafa5d3139084f1e46259d165df68571",
+      "version": "0.5.22"
+    },
+    {
+      "license": "BSD License",
+      "name": "colorama",
+      "text": "MD5:b4936429a56a652b84c5c01280dcaa26",
+      "version": "0.4.6"
+    },
+    {
+      "license": "MIT License",
+      "name": "colorlog",
+      "text": "MD5:85a1d478cd35d62763a1419e948bdde4",
+      "version": "4.8.0"
+    },
+    {
+      "license": "Apache Software License",
+      "name": "coverage",
+      "text": "MD5:2ee41112a44fe7014dce33e26468ba93",
+      "version": "6.5.0"
+    },
+    {
+      "license": "MIT License",
+      "name": "coveralls",
+      "text": "MD5:46a0f0b3337d6a559cf7fb82c7c6ad9d",
+      "version": "3.3.1"
+    },
+    {
+      "license": "MIT License",
+      "name": "crashtest",
+      "text": "MD5:78c39cfd009863ae44237a7ab1f9cedc",
+      "version": "0.4.1"
+    },
+    {
+      "license": "Apache Software License; BSD License",
+      "name": "cryptography",
+      "text": "This software is made available under the terms of *either* of the licenses\nfound in LICENSE.APACHE or LICENSE.BSD. Contributions to cryptography are made\nunder the terms of *both* these licenses.\n",
+      "version": "42.0.5"
+    },
+    {
+      "license": "MIT License",
+      "name": "dacite",
+      "text": "MD5:72f6cbdc854c4c393ac30db3dbba2766",
+      "version": "1.8.1"
+    },
+    {
+      "license": "Python Software Foundation License",
+      "name": "distlib",
+      "text": "MD5:f6a11430d5cd6e2cd3832ee94f22ddfc",
+      "version": "0.3.8"
+    },
+    {
+      "license": "MIT License",
+      "name": "docopt",
+      "text": "MD5:09b77fb74986791a3d4a0e746a37d88f",
+      "version": "0.6.2"
+    },
+    {
+      "license": "MIT License",
+      "name": "dparse",
+      "text": "MD5:220d28dc5d30a15667788003c931221c",
+      "version": "0.6.4b0"
+    },
+    {
+      "license": "Apache Software License",
+      "name": "dulwich",
+      "text": "MD5:c1d1116d142f9444c78a630531d32234",
+      "version": "0.21.7"
+    },
+    {
+      "license": "MIT License",
+      "name": "fastapi",
+      "text": "MD5:95792ff3fe8e11aa49ceb247e66e4810",
+      "version": "0.110.0"
+    },
+    {
+      "license": "BSD License",
+      "name": "fastjsonschema",
+      "text": "MD5:6ddb48173ae95b92910c0f4d45b6d875",
+      "version": "2.19.1"
+    },
+    {
+      "license": "The Unlicense (Unlicense)",
+      "name": "filelock",
+      "text": "MD5:911690f51af322440237a253d695d19f",
+      "version": "3.13.4"
+    },
+    {
+      "license": "MIT License",
+      "name": "flake8",
+      "text": "MD5:75b26781f1adf1aa310bda6098937878",
+      "version": "7.0.0"
+    },
+    {
+      "license": "MIT License",
+      "name": "flake8-bugbear",
+      "text": "MD5:d511f8e447826b7e5b61da03a3f5e82b",
+      "version": "24.4.21"
+    },
+    {
+      "license": "BSD License",
+      "name": "fsspec",
+      "text": "MD5:b38a11bf4dcdfc66307f8515ce1fbaa6",
+      "version": "2024.3.1"
+    },
+    {
+      "license": "Apache Software License",
+      "name": "g2p-en",
+      "text": "MD5:e3fc50a88d0a364313df4b21ef20c29e",
+      "version": "2.1.0"
+    },
+    {
+      "license": "BSD License",
+      "name": "gitdb",
+      "text": "MD5:59e5ecb13339a936eedf83282eaf4528",
+      "version": "4.0.11"
+    },
+    {
+      "license": "MIT License",
+      "name": "h11",
+      "text": "MD5:f5501d19c3116f4aaeef89369f458693",
+      "version": "0.14.0"
+    },
+    {
+      "license": "BSD License",
+      "name": "httpcore",
+      "text": "MD5:1c1f23b073da202e1f4f9e426490210c",
+      "version": "1.0.5"
+    },
+    {
+      "license": "BSD License",
+      "name": "httpx",
+      "text": "MD5:c624803bdf6fc1c4ce39f5ae11d7bd05",
+      "version": "0.25.2"
+    },
+    {
+      "license": "Apache Software License",
+      "name": "huggingface-hub",
+      "text": "MD5:86d3f3a95c324c9479bd8986968f4327",
+      "version": "0.22.2"
+    },
+    {
+      "license": "MIT License",
+      "name": "identify",
+      "text": "MD5:bbdc006359f3157660173ec7f133a80e",
+      "version": "2.5.36"
+    },
+    {
+      "license": "BSD License",
+      "name": "idna",
+      "text": "MD5:204c0612e40a4dd46012a78d02c80fb1",
+      "version": "3.7"
+    },
+    {
+      "license": "Apache Software License",
+      "name": "importlib_metadata",
+      "text": "MD5:3b83ef96387f14655fc854ddc3c6bd57",
+      "version": "7.1.0"
+    },
+    {
+      "license": "Apache Software License",
+      "name": "importlib_resources",
+      "text": "MD5:3b83ef96387f14655fc854ddc3c6bd57",
+      "version": "6.4.0"
+    },
+    {
+      "license": "MIT License",
+      "name": "inflect",
+      "text": "MD5:141643e11c48898150daa83802dbc65f",
+      "version": "7.2.1"
+    },
+    {
+      "license": "MIT License",
+      "name": "iniconfig",
+      "text": "MD5:a6bb0320b04a0a503f12f69fea479de9",
+      "version": "2.0.0"
+    },
+    {
+      "license": "MIT License",
+      "name": "installer",
+      "text": "MD5:5038641aec7a77451e31da828ebfae00",
+      "version": "0.7.0"
+    },
+    {
+      "license": "MIT License",
+      "name": "isort",
+      "text": "MD5:aaaaf0879d17df0110d1aa8c8c9f46f5",
+      "version": "5.13.2"
+    },
+    {
+      "license": "MIT License",
+      "name": "jaconv",
+      "text": "MD5:87a909af060fe41e6d850041a3f90f78",
+      "version": "0.3.4"
+    },
+    {
+      "license": "MIT License",
+      "name": "jaraco.classes",
+      "text": "MD5:141643e11c48898150daa83802dbc65f",
+      "version": "3.4.0"
+    },
+    {
+      "license": "MIT License",
+      "name": "jieba",
+      "text": "MD5:a51bd72b399c720e6db5e5ab9bb6b7f4",
+      "version": "0.42.1"
+    },
+    {
+      "license": "BSD License",
+      "name": "joblib",
+      "text": "MD5:2e481820abf0a70a18011a30153df066",
+      "version": "1.4.0"
+    },
+    {
+      "license": "MIT License",
+      "name": "keyring",
+      "text": "MD5:141643e11c48898150daa83802dbc65f",
+      "version": "24.3.1"
+    },
+    {
+      "license": "BSD",
+      "name": "llvmlite",
+      "text": "MD5:a15ea9843f27327e08f3c5fbf8043a2b",
+      "version": "0.42.0"
+    },
+    {
+      "license": "MIT License",
+      "name": "loguru",
+      "text": "MD5:4c50b6bd2e1e6481b0c7ed7691425651",
+      "version": "0.7.2"
+    },
+    {
+      "license": "MIT License",
+      "name": "macholib",
+      "text": "MD5:e7a5c17bc3716a184e49c4c7d1aea78c",
+      "version": "1.16.3"
+    },
+    {
+      "license": "MIT License",
+      "name": "markdown-it-py",
+      "text": "MD5:a38a1697260a7ad7bf29f44b362db1fc",
+      "version": "3.0.0"
+    },
+    {
+      "license": "MIT License",
+      "name": "marshmallow",
+      "text": "MD5:27586b20700d7544c06933afe56f7df4",
+      "version": "3.21.1"
+    },
+    {
+      "license": "MIT License",
+      "name": "mccabe",
+      "text": "MD5:a489dc62bacbdad3335c0f160a974f0f",
+      "version": "0.7.0"
+    },
+    {
+      "license": "MIT License",
+      "name": "mdurl",
+      "text": "MD5:aca1dc6b9088f1dda81c89cad2c77ad1",
+      "version": "0.1.2"
+    },
+    {
+      "license": "MIT License",
+      "name": "more-itertools",
+      "text": "MD5:3396ea30f9d21389d7857719816f83b5",
+      "version": "10.2.0"
+    },
+    {
+      "license": "BSD License",
+      "name": "mpmath",
+      "text": "MD5:bde3c575382996b75d85702949512751",
+      "version": "1.3.0"
+    },
+    {
+      "license": "Apache Software License",
+      "name": "msgpack",
+      "text": "Copyright (C) 2008-2011 INADA Naoki <songofacandy@gmail.com>\n\n   Licensed under the Apache License, Version 2.0 (the \"License\");\n   you may not use this file except in compliance with the License.\n   You may obtain a copy of the License at\n\n       http://www.apache.org/licenses/LICENSE-2.0\n\n   Unless required by applicable law or agreed to in writing, software\n   distributed under the License is distributed on an \"AS IS\" BASIS,\n   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n   See the License for the specific language governing permissions and\n   limitations under the License.\n\n",
+      "version": "1.0.8"
+    },
+    {
+      "license": "MIT License",
+      "name": "mypy",
+      "text": "MD5:8d62fd8f8648cb018e52857347e340b9",
+      "version": "1.10.0"
+    },
+    {
+      "license": "MIT License",
+      "name": "mypy-extensions",
+      "text": "MD5:0fe3219e2470a78c0d1837019b8b426e",
+      "version": "1.0.0"
+    },
+    {
+      "license": "BSD License",
+      "name": "networkx",
+      "text": "MD5:810f34d8853910e36388f63c0e87f0ed",
+      "version": "3.3"
+    },
+    {
+      "license": "Apache Software License",
+      "name": "nltk",
+      "text": "MD5:3b83ef96387f14655fc854ddc3c6bd57",
+      "version": "3.8.1"
+    },
+    {
+      "license": "BSD License",
+      "name": "nodeenv",
+      "text": "MD5:a9e238ffae5bb6447dbac6291e1dc3a3",
+      "version": "1.8.0"
+    },
+    {
+      "license": "GNU Library or Lesser General Public License (LGPL)",
+      "name": "num2words",
+      "text": "MD5:f1b68565299e4b2403b8b3a87d0bcacf",
+      "version": "0.5.13"
+    },
+    {
+      "license": "BSD License",
+      "name": "numba",
+      "text": "MD5:d9bed34136e8491d5d792c7efc17f10c",
+      "version": "0.59.1"
+    },
+    {
+      "license": "BSD License",
+      "name": "numpy",
+      "text": "MD5:451e86de6cc339717ad112307dc598bb",
+      "version": "1.26.4"
+    },
+    {
+      "license": "Apache Software License; BSD License",
+      "name": "packaging",
+      "text": "This software is made available under the terms of *either* of the licenses\nfound in LICENSE.APACHE or LICENSE.BSD. Contributions to this software is made\nunder the terms of *both* these licenses.\n",
+      "version": "24.0"
+    },
+    {
+      "license": "Mozilla Public License 2.0 (MPL 2.0)",
+      "name": "pathspec",
+      "text": "MD5:815ca599c9df247a0c7f619bab123dad",
+      "version": "0.12.1"
+    },
+    {
+      "license": "ISC License (ISCL)",
+      "name": "pexpect",
+      "text": "ISC LICENSE\n\n    This license is approved by the OSI and FSF as GPL-compatible.\n        http://opensource.org/licenses/isc-license.txt\n\n    Copyright (c) 2013-2014, Pexpect development team\n    Copyright (c) 2012, Noah Spurrier <noah@noah.org>\n\n    Permission to use, copy, modify, and/or distribute this software for any\n    purpose with or without fee is hereby granted, provided that the above\n    copyright notice and this permission notice appear in all copies.\n    \n    THE SOFTWARE IS PROVIDED \"AS IS\" AND THE AUTHOR DISCLAIMS ALL WARRANTIES\n    WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF\n    MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR\n    ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES\n    WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN\n    ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF\n    OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.\n\n",
+      "version": "4.9.0"
+    },
+    {
+      "license": "MIT License",
+      "name": "pkginfo",
+      "text": "MD5:6fc86b61c6077306ca1f5edc8edcc490",
+      "version": "1.10.0"
+    },
+    {
+      "license": "MIT License",
+      "name": "platformdirs",
+      "text": "MD5:ea4f5a41454746a9ed111e3d8723d17a",
+      "version": "4.2.1"
+    },
+    {
+      "license": "MIT License",
+      "name": "pluggy",
+      "text": "MD5:1c8206d16fd5cc02fa9b0bb98955e5c2",
+      "version": "1.5.0"
+    },
+    {
+      "license": "MIT License",
+      "name": "poetry",
+      "text": "MD5:e1facaac5bbfd8cfb94a95185e366c42",
+      "version": "1.8.1"
+    },
+    {
+      "license": "MIT License",
+      "name": "poetry-core",
+      "text": "MD5:6ddb48173ae95b92910c0f4d45b6d875",
+      "version": "1.9.0"
+    },
+    {
+      "license": "MIT License",
+      "name": "poetry-plugin-export",
+      "text": "MD5:1205266cc807366e153b9a0a5845e17a",
+      "version": "1.7.1"
+    },
+    {
+      "license": "MIT License",
+      "name": "pre-commit",
+      "text": "MD5:b53a93744e3ff841e5fc9a934da8e1c8",
+      "version": "2.21.0"
+    },
+    {
+      "license": "MIT License",
+      "name": "proces",
+      "text": "MD5:1c77851b8fc792b26988ea71205cb48d",
+      "version": "0.1.7"
+    },
+    {
+      "license": "BSD License",
+      "name": "psutil",
+      "text": "MD5:a9c72113a843d0d732a0ac1c200d81b1",
+      "version": "5.9.8"
+    },
+    {
+      "license": "ISC License (ISCL)",
+      "name": "ptyprocess",
+      "text": "Ptyprocess is under the ISC license, as code derived from Pexpect.\n    http://opensource.org/licenses/ISC\n\nCopyright (c) 2013-2014, Pexpect development team\nCopyright (c) 2012, Noah Spurrier <noah@noah.org>\n\nPERMISSION TO USE, COPY, MODIFY, AND/OR DISTRIBUTE THIS SOFTWARE FOR ANY PURPOSE\nWITH OR WITHOUT FEE IS HEREBY GRANTED, PROVIDED THAT THE ABOVE COPYRIGHT NOTICE\nAND THIS PERMISSION NOTICE APPEAR IN ALL COPIES. THE SOFTWARE IS PROVIDED\n\"AS IS\" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE\nINCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT\nSHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL\nDAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS,\nWHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING\nOUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.\n\n",
+      "version": "0.7.0"
+    },
+    {
+      "license": "MIT License",
+      "name": "pycodestyle",
+      "text": "MD5:a8546d0e77f416fb05a26acd89c8b3bd",
+      "version": "2.11.1"
+    },
+    {
+      "license": "BSD License",
+      "name": "pycparser",
+      "text": "MD5:9761c3ffee7ba99c60dca0408fd3262b",
+      "version": "2.22"
+    },
+    {
+      "license": "MIT License",
+      "name": "pydantic",
+      "text": "MD5:09280955509d1c4ca14bae02f21d49a6",
+      "version": "2.7.1"
+    },
+    {
+      "license": "MIT License",
+      "name": "pydantic_core",
+      "text": "MD5:ab599c188b4a314d2856b3a55030c75c",
+      "version": "2.18.2"
+    },
+    {
+      "license": "MIT License",
+      "name": "pyflakes",
+      "text": "MD5:690c2d09203dc9e07c4083fc45ea981f",
+      "version": "3.2.0"
+    },
+    {
+      "license": "GNU General Public License v2 (GPLv2)",
+      "name": "pyinstaller",
+      "text": "MD5:9026c0c1a28526b6ed7e4dce6423fbd7",
+      "version": "5.13.2"
+    },
+    {
+      "license": "Apache Software License; GNU General Public License v2 (GPLv2)",
+      "name": "pyinstaller-hooks-contrib",
+      "text": "============================================\nPyInstaller Community Hooks: License details\n============================================\n\nThis software is made available under the terms of the licenses\nfound in LICENSE.APL.txt or LICENSE.GPL.txt. Contributions to the Community Hooks are made\nunder the terms of the license that covers that type of hook/file. (See below)\n\n\nStandard hooks and files\n------------------------\n\nThese are all hooks/files except runtime hooks. (See below)\nThese files are licensed under the terms found in LICENSE.GPL.txt.\n\n\nRuntime hooks\n-------------\n\nThese are runtime hooks, bundled with complete pyinstaller executables.\nThese files are licensed under the terms found in LICENSE.APL.txt.\n\nThese generally reside in \"src/_pyinstaller_hooks_contrib/hooks/rthooks\".\n",
+      "version": "2024.5"
+    },
+    {
+      "license": "MIT License",
+      "name": "pyopenjtalk-dict",
+      "text": "MD5:300d675fbf3cc264bd32942c997f7d4e",
+      "version": "0.3.4.dev2"
+    },
+    {
+      "license": "MIT License",
+      "name": "pypinyin",
+      "text": "MD5:b1f98dfaf0379e562033e77b5cf79ffd",
+      "version": "0.51.0"
+    },
+    {
+      "license": "MIT License",
+      "name": "pyproject_hooks",
+      "text": "MD5:aad69c93f605003e3342b174d9b0708c",
+      "version": "1.0.0"
+    },
+    {
+      "license": "MIT License",
+      "name": "pysen",
+      "text": "MD5:580bb42b71a4649282539930937af747",
+      "version": "0.10.6"
+    },
+    {
+      "license": "MIT License",
+      "name": "pytest",
+      "text": "MD5:bd27e41b6550fe0fc45356d1d81ee37c",
+      "version": "8.1.1"
+    },
+    {
+      "license": "Apache Software License",
+      "name": "python-multipart",
+      "text": "Copyright 2012, Andrew Dunham\n\nLicensed under the Apache License, Version 2.0 (the \"License\");\nyou may not use this file except in compliance with the License.\nYou may obtain a copy of the License at\n\n   https://www.apache.org/licenses/LICENSE-2.0\n\nUnless required by applicable law or agreed to in writing, software\ndistributed under the License is distributed on an \"AS IS\" BASIS,\nWITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\nSee the License for the specific language governing permissions and\nlimitations under the License.\n\n",
+      "version": "0.0.7"
+    },
+    {
+      "license": "UNKNOWN",
+      "name": "pyworld-prebuilt",
+      "text": "MD5:bc6562ffe37412c7698249a64e26cf4a",
+      "version": "0.3.4.1"
+    },
+    {
+      "license": "MIT License",
+      "name": "rapidfuzz",
+      "text": "MD5:dcd1023081943827dd63f01dc3fda218",
+      "version": "3.8.1"
+    },
+    {
+      "license": "Apache Software License",
+      "name": "regex",
+      "text": "MD5:7b5751ddd6b643203c31ff873051d069",
+      "version": "2024.4.16"
+    },
+    {
+      "license": "Apache Software License",
+      "name": "requests",
+      "text": "MD5:34400b68072d710fecd0a2940a0d1658",
+      "version": "2.31.0"
+    },
+    {
+      "license": "Apache Software License",
+      "name": "requests-toolbelt",
+      "text": "Copyright 2014 Ian Cordasco, Cory Benfield\n\n   Licensed under the Apache License, Version 2.0 (the \"License\");\n   you may not use this file except in compliance with the License.\n   You may obtain a copy of the License at\n\n       https://www.apache.org/licenses/LICENSE-2.0\n\n   Unless required by applicable law or agreed to in writing, software\n   distributed under the License is distributed on an \"AS IS\" BASIS,\n   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n   See the License for the specific language governing permissions and\n   limitations under the License.\n",
+      "version": "1.0.0"
+    },
+    {
+      "license": "MIT License",
+      "name": "rich",
+      "text": "MD5:b5f0b94fbc94f5ad9ae4efcf8a778303",
+      "version": "13.7.1"
+    },
+    {
+      "license": "MIT License",
+      "name": "ruamel.yaml",
+      "text": "MD5:30cbbccd94bf3a2b0285ec35671a1938",
+      "version": "0.18.6"
+    },
+    {
+      "license": "MIT License",
+      "name": "ruamel.yaml.clib",
+      "text": "MD5:1debc1593104ded7e88b0ac5659af552",
+      "version": "0.2.8"
+    },
+    {
+      "license": "Apache Software License",
+      "name": "safetensors",
+      "text": "MD5:86d3f3a95c324c9479bd8986968f4327",
+      "version": "0.4.3"
+    },
+    {
+      "license": "MIT License",
+      "name": "safety",
+      "text": "MD5:099fc3870abf45d87b724566807229dd",
+      "version": "3.1.0"
+    },
+    {
+      "license": "MIT License",
+      "name": "safety-schemas",
+      "text": "MD5:df7b3195b859b3fb2e8b7e0e58d831cd",
+      "version": "0.0.2"
+    },
+    {
+      "license": "BSD License",
+      "name": "semver",
+      "text": "MD5:d9da679db3bdce30a1b4328d5c474f98",
+      "version": "3.0.2"
+    },
+    {
+      "license": "ISC License (ISCL)",
+      "name": "shellingham",
+      "text": "Copyright (c) 2018, Tzu-ping Chung <uranusjr@gmail.com>\n\nPermission to use, copy, modify, and distribute this software for any\npurpose with or without fee is hereby granted, provided that the above\ncopyright notice and this permission notice appear in all copies.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\" AND THE AUTHOR DISCLAIMS ALL WARRANTIES\nWITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF\nMERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR\nANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES\nWHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN\nACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF\nOR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.\n",
+      "version": "1.5.4"
+    },
+    {
+      "license": "MIT License",
+      "name": "six",
+      "text": "MD5:43cfc9e4ac0e377acfb9b76f56b8415d",
+      "version": "1.16.0"
+    },
+    {
+      "license": "BSD License",
+      "name": "smmap",
+      "text": "MD5:6081cefc063aadb00257efe98fad8f7c",
+      "version": "5.0.1"
+    },
+    {
+      "license": "Apache Software License; MIT License",
+      "name": "sniffio",
+      "text": "This software is made available under the terms of *either* of the\nlicenses found in LICENSE.APACHE2 or LICENSE.MIT. Contributions to are\nmade under the terms of *both* these licenses.\n",
+      "version": "1.3.1"
+    },
+    {
+      "license": "BSD License",
+      "name": "soundfile",
+      "text": "MD5:e77fe93202736b47c07035910f47974a",
+      "version": "0.12.1"
+    },
+    {
+      "license": "GNU Lesser General Public License v2 or later (LGPLv2+)",
+      "name": "soxr",
+      "text": "MD5:7ee20017174eaf719dcd702ab8957561",
+      "version": "0.3.7"
+    },
+    {
+      "license": "BSD License",
+      "name": "starlette",
+      "text": "MD5:11e8c8dbfd5fa373c703de492140ff7a",
+      "version": "0.36.3"
+    },
+    {
+      "license": "UNKNOWN",
+      "name": "style-bert-vits2",
+      "text": "MD5:4ae09d45eac4aa08d013b5f2e01c67f6",
+      "version": "2.4.1"
+    },
+    {
+      "license": "BSD License",
+      "name": "sympy",
+      "text": "MD5:b70381bd640070cb20be9d6f93f47036",
+      "version": "1.12"
+    },
+    {
+      "license": "Apache Software License",
+      "name": "syrupy",
+      "text": "MD5:5792ba68383cea1c5a8149061cc66801",
+      "version": "4.6.1"
+    },
+    {
+      "license": "MIT License",
+      "name": "taskipy",
+      "text": "MD5:a005c1d96f118fa7d76f0d3728b05c88",
+      "version": "1.12.2"
+    },
+    {
+      "license": "Apache Software License",
+      "name": "tokenizers",
+      "text": "MD5:86d3f3a95c324c9479bd8986968f4327",
+      "version": "0.19.1"
+    },
+    {
+      "license": "MIT License",
+      "name": "tomli",
+      "text": "MD5:aaaaf0879d17df0110d1aa8c8c9f46f5",
+      "version": "2.0.1"
+    },
+    {
+      "license": "MIT License",
+      "name": "tomlkit",
+      "text": "MD5:31aac0dbc1babd278d5386dadb7f8e82",
+      "version": "0.12.4"
+    },
+    {
+      "license": "BSD License",
+      "name": "torch",
+      "text": "MD5:dc3304f91c1c03a0aaa8eca9ef057bed",
+      "version": "2.2.2"
+    },
+    {
+      "license": "BSD License",
+      "name": "torchaudio",
+      "text": "MD5:570eef9ba0d4b42e6e7be2b2ca31f13c",
+      "version": "2.2.2"
+    },
+    {
+      "license": "MIT License; Mozilla Public License 2.0 (MPL 2.0)",
+      "name": "tqdm",
+      "text": "MD5:42dfa9e8c616dbc295df3f58d756b2a1",
+      "version": "4.66.2"
+    },
+    {
+      "license": "Apache Software License",
+      "name": "transformers",
+      "text": "MD5:d15f16de23b5d7f8e28dd073d2ed8b28",
+      "version": "4.40.1"
+    },
+    {
+      "license": "Apache Software License",
+      "name": "trove-classifiers",
+      "text": "MD5:86d3f3a95c324c9479bd8986968f4327",
+      "version": "2024.4.10"
+    },
+    {
+      "license": "MIT License",
+      "name": "typeguard",
+      "text": "MD5:f0e423eea5c91e7aa21bdb70184b3e53",
+      "version": "4.2.1"
+    },
+    {
+      "license": "MIT License",
+      "name": "typer",
+      "text": "MD5:173d405eb704b1499218013178722617",
+      "version": "0.12.3"
+    },
+    {
+      "license": "Apache Software License",
+      "name": "types-PyYAML",
+      "text": "MD5:ec038232ab86edd7354b091c54e190e2",
+      "version": "6.0.12.20240311"
+    },
+    {
+      "license": "Python Software Foundation License",
+      "name": "typing_extensions",
+      "text": "MD5:fcf6b249c2641540219a727f35d8d2c2",
+      "version": "4.11.0"
+    },
+    {
+      "license": "MIT",
+      "name": "unidiff",
+      "text": "MD5:4c434b08ef42fea235bb019b5e5a97b3",
+      "version": "0.7.5"
+    },
+    {
+      "license": "MIT License",
+      "name": "urllib3",
+      "text": "MD5:52d273a3054ced561275d4d15260ecda",
+      "version": "2.2.1"
+    },
+    {
+      "license": "BSD License",
+      "name": "uvicorn",
+      "text": "MD5:206119e27d6b034e7ce70d73063c82a8",
+      "version": "0.15.0"
+    },
+    {
+      "license": "MIT License",
+      "name": "virtualenv",
+      "text": "MD5:0ce089158cf60a8ab6abb452b6405538",
+      "version": "20.26.0"
+    },
+    {
+      "license": "MIT License",
+      "name": "xattr",
+      "text": "MD5:7ebb582f22ddff5dcb0bc33d04f7cbb8",
+      "version": "1.1.0"
+    },
+    {
+      "license": "MIT License",
+      "name": "zipp",
+      "text": "MD5:141643e11c48898150daa83802dbc65f",
+      "version": "3.18.1"
     }
   ],
   "frame_rate": 172.265625,
-  "icon": "MD5:f957eb4f5daedccb4eb6a5170f384bf4",
+  "icon": "MD5:28a47331f1e7a5d2f8a38e861a43ff99",
   "manifest_version": "0.13.1",
   "name": "AivisSpeech Engine",
   "supported_aivm_manifest_version": "1.0.0",
@@ -26,7 +932,7 @@
     "sing": false,
     "synthesis_morphing": false
   },
-  "terms_of_service": "dummy teams of service",
+  "terms_of_service": "MD5:5802e1b6e37cf8b1bcf6d10849cf51f2",
   "update_infos": [
     {
       "contributors": [

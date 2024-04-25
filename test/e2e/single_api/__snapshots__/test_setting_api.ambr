@@ -3,10 +3,10 @@
   '''
   <!DOCTYPE html>
   
-  <!-- 
-    AivisSpeechエンジンの設定ページです。
-    VueとBootstrapを使っています。
-    ライブラリを読み込んだあと、Vueコンポーネントの初期化が完了してからUIを表示します。
+  <!--
+    AivisSpeech Engine の設定ページです。
+    Vue と Bootstrap を使っています。
+    ライブラリを読み込んだあと、Vue コンポーネントの初期化が完了してから UI を表示します。
   -->
   
   <html lang="ja">
@@ -35,17 +35,17 @@
     </head>
   
     <body>
-      <!-- Vueの準備が完了した後にdisplay: noneにする -->
+      <!-- Vue の準備が完了した後に display: none にする -->
       <div id="before-init" style="display: block" class="before-init-fadein">
         <p>読み込み中です。表示には数秒かかることがあります。</p>
       </div>
   
-      <!-- Vueの準備が完了した後にdisplay: blockにする -->
+      <!-- Vue の準備が完了した後に display: block にする -->
       <div id="app" class="container p-3" style="display: none">
-        <h1 class="mb-3">{{brandName}} エンジン 設定</h1>
+        <h1 class="mb-3">AivisSpeech Engine 設定</h1>
   
         <div class="alert alert-warning" role="alert">
-          変更を反映するにはエンジンの再起動が必要です。
+          変更を反映するには音声合成エンジンの再起動が必要です。
         </div>
   
         <div class="mb-3">
@@ -60,12 +60,15 @@
           </select>
           <div class="form-text">
             <p class="mb-1">
-              localappsはオリジン間リソース共有ポリシーを、app://.とlocalhost関連に限定します。
+              <code>localapps</code> はオリジン間リソース共有ポリシーを、
+              <code>app://.</code> と <code>localhost</code> 関連に限定します。
             </p>
             <p class="mb-1">
-              その他のオリジンはAllow Originオプションで追加できます。
+              その他のオリジンは Allow Origin オプションで追加できます。
             </p>
-            <p>allはすべてを許可します。危険性を理解した上でご利用ください。</p>
+            <p>
+              <code>all</code> はすべてを許可します。危険性を理解した上でご利用ください。
+            </p>
           </div>
         </div>
   
