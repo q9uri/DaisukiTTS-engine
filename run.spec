@@ -16,6 +16,21 @@ datas += collect_data_files('style_bert_vits2')
 block_cipher = None
 
 
+# ライブラリの噛み合わせが悪いのかなぜか標準ライブラリの dataclasses に __version__ 変数が存在しないと PyInstaller ビルドに失敗する
+# 大昔 dataclasses が標準ライブラリで存在しなかった頃の名残なのか…？
+# これをどうにか回避するため、苦肉の策ではあるがビルド時だけ dataclasses.py の場所を探して追記する
+from pathlib import Path
+import sys
+base_prefix = getattr(sys, 'base_prefix', sys.prefix)
+dataclasses_path = Path(base_prefix) / 'lib' / f'python{sys.version_info.major}.{sys.version_info.minor}' / 'dataclasses.py'
+try:
+    with dataclasses_path.open('a') as file:
+        file.write('\n__version__ = "1.0"')
+    print(f'Added __version__ to {dataclasses_path}')
+except Exception as e:
+    print(f'Error while writing to dataclasses.py: {e}')
+
+
 a = Analysis(
     ['run.py'],
     pathex=[],
@@ -66,3 +81,16 @@ coll = COLLECT(
     upx_exclude=[],
     name='run',
 )
+
+# ビルド時だけ追記した __version__ を削除
+import re
+try:
+    with open(dataclasses_path, 'r+') as file:
+        content = file.read()
+        content = re.sub(r'\n__version__ = "1\.0"', '', content)
+        file.seek(0)
+        file.write(content)
+        file.truncate()
+    print(f'Removed __version__ from {dataclasses_path}')
+except Exception as e:
+    print(f'Error while writing to dataclasses.py: {e}')
