@@ -198,6 +198,11 @@ def generate_licenses() -> List[License]:
                     "https://raw.githubusercontent.com/janaindrajit/primePy/9c98276fee5211e8761dfc03c9a1e02127e09e4a/LICENSE"
                 ) as res:
                     license.text = res.read().decode()
+            elif license.name.lower() == "pyproject_hooks":
+                with urllib.request.urlopen(
+                    "https://raw.githubusercontent.com/pypa/pyproject-hooks/v1.1.0/LICENSE"
+                ) as res:
+                    license.text = res.read().decode()
             elif license.name.lower() == "safetensors":
                 with urllib.request.urlopen(
                     "https://raw.githubusercontent.com/huggingface/safetensors/v0.4.3/LICENSE"

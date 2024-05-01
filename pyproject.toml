@@ -71,7 +71,7 @@ pydantic = "^2.6.4"
 starlette = "^0.36.3"
 jaconv = "^0.3.4"
 # AivisSpeech-Engine にはカスタマイズされた Style-Bert-VITS2 が必要
-style-bert-vits2 = { git = "https://github.com/tsukumijima/Style-Bert-VITS2", rev = "aa0f9308b111a0c386f78f93565570d9072961c7" }
+style-bert-vits2 = { git = "https://github.com/tsukumijima/Style-Bert-VITS2", rev = "3730eb50b7843c1c3029d7b40aebf8ee14caa82f" }
 torch = [
     # ref: https://tech.layerx.co.jp/entry/2023/07/28/184937
     # Windows: CUDA 12.1
