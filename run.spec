@@ -3,9 +3,9 @@
 from PyInstaller.utils.hooks import collect_data_files
 
 datas = [
+    ('dictionaries', 'dictionaries'),
     ('engine_manifest_assets', 'engine_manifest_assets'),
     ('engine_manifest.json', '.'),
-    ('default.csv', '.'),
     ('presets.yaml', '.'),
     ('ui_template', 'ui_template'),
 ]

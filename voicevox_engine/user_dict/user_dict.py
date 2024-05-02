@@ -20,9 +20,12 @@ save_dir = get_save_dir()
 if not save_dir.is_dir():
     save_dir.mkdir(parents=True)
 
-default_dict_path = root_dir / "default.csv"  # VOICEVOXデフォルト辞書ファイルのパス
-user_dict_path = save_dir / "user_dict.json"  # ユーザー辞書ファイルのパス
-compiled_dict_path = save_dir / "user.dic"  # コンパイル済み辞書ファイルのパス
+# デフォルト辞書ファイル (.csv) の配置ディレクトリのパス
+DEFAULT_DICT_DIR_PATH = root_dir / "dictionaries"
+# ユーザー辞書ファイルのパス
+USER_DICT_PATH = save_dir / "user_dict.json"
+# コンパイル済み辞書ファイルのパス
+COMPILED_DICT_PATH = save_dir / "user.dic"
 
 
 # 同時書き込みの制御
@@ -58,16 +61,13 @@ def _write_to_json(user_dict: Dict[str, UserDictWord], user_dict_path: Path) -> 
 
 @mutex_wrapper(mutex_openjtalk_dict)
 def update_dict(
-    default_dict_path: Path = default_dict_path,
-    user_dict_path: Path = user_dict_path,
-    compiled_dict_path: Path = compiled_dict_path,
+    user_dict_path: Path = USER_DICT_PATH,
+    compiled_dict_path: Path = COMPILED_DICT_PATH,
 ) -> None:
     """
     辞書の更新
     Parameters
     ----------
-    default_dict_path : Path
-        デフォルト辞書ファイルのパス
     user_dict_path : Path
         ユーザー辞書ファイルのパス
     compiled_dict_path : Path
@@ -86,13 +86,15 @@ def update_dict(
         csv_text = ""
 
         # デフォルト辞書データの追加
-        if not default_dict_path.is_file():
+        default_dict_files = sorted(DEFAULT_DICT_DIR_PATH.glob("*.csv"))
+        if len(default_dict_files) == 0:
             logger.warning("Cannot find default dictionary.")
             return
-        default_dict = default_dict_path.read_text(encoding="utf-8")
-        if default_dict == default_dict.rstrip():
-            default_dict += "\n"
-        csv_text += default_dict
+        for file_path in default_dict_files:
+            default_dict_content = file_path.read_text(encoding="utf-8")
+            if not default_dict_content.endswith("\n"):
+                default_dict_content += "\n"
+            csv_text += default_dict_content
 
         # ユーザー辞書データの追加
         user_dict = read_dict(user_dict_path=user_dict_path)
@@ -150,7 +152,7 @@ def update_dict(
 
 
 @mutex_wrapper(mutex_user_dict)
-def read_dict(user_dict_path: Path = user_dict_path) -> Dict[str, UserDictWord]:
+def read_dict(user_dict_path: Path = USER_DICT_PATH) -> Dict[str, UserDictWord]:
     """
     ユーザー辞書の読み出し
     Parameters
@@ -243,8 +245,8 @@ def apply_word(
     accent_type: int,
     word_type: Optional[WordTypes] = None,
     priority: Optional[int] = None,
-    user_dict_path: Path = user_dict_path,
-    compiled_dict_path: Path = compiled_dict_path,
+    user_dict_path: Path = USER_DICT_PATH,
+    compiled_dict_path: Path = COMPILED_DICT_PATH,
 ) -> str:
     """
     新規単語の追加
@@ -295,8 +297,8 @@ def rewrite_word(
     accent_type: int,
     word_type: Optional[WordTypes] = None,
     priority: Optional[int] = None,
-    user_dict_path: Path = user_dict_path,
-    compiled_dict_path: Path = compiled_dict_path,
+    user_dict_path: Path = USER_DICT_PATH,
+    compiled_dict_path: Path = COMPILED_DICT_PATH,
 ) -> None:
     """
     既存単語の上書き更新
@@ -342,8 +344,8 @@ def rewrite_word(
 
 def delete_word(
     word_uuid: str,
-    user_dict_path: Path = user_dict_path,
-    compiled_dict_path: Path = compiled_dict_path,
+    user_dict_path: Path = USER_DICT_PATH,
+    compiled_dict_path: Path = COMPILED_DICT_PATH,
 ) -> None:
     """
     単語の削除
@@ -372,9 +374,8 @@ def delete_word(
 def import_user_dict(
     dict_data: Dict[str, UserDictWord],
     override: bool = False,
-    user_dict_path: Path = user_dict_path,
-    default_dict_path: Path = default_dict_path,
-    compiled_dict_path: Path = compiled_dict_path,
+    user_dict_path: Path = USER_DICT_PATH,
+    compiled_dict_path: Path = COMPILED_DICT_PATH,
 ) -> None:
     """
     ユーザー辞書のインポート
@@ -386,8 +387,6 @@ def import_user_dict(
         重複したエントリがあった場合、上書きするかどうか
     user_dict_path : Path
         ユーザー辞書ファイルのパス
-    default_dict_path : Path
-        デフォルト辞書ファイルのパス
     compiled_dict_path : Path
         コンパイル済み辞書ファイルのパス
     """
@@ -428,7 +427,6 @@ def import_user_dict(
     # 更新された辞書データの保存と適用
     _write_to_json(user_dict=new_dict, user_dict_path=user_dict_path)
     update_dict(
-        default_dict_path=default_dict_path,
         user_dict_path=user_dict_path,
         compiled_dict_path=compiled_dict_path,
     )
