@@ -1,0 +1,5 @@
+{
+  "cpu": true,
+  "cuda": true,
+  "dml": false
+}

@@ -37,26 +37,24 @@ jobs:
           - cpu
 
     steps:
-      - uses: actions/checkout@v4
+      - name: <Setup> Check out the repository
+        uses: actions/checkout@v4
 
       - name: Install Poetry
         run: pipx install poetry
 
-      - name: Setup Python
+      - name: <Setup> Setup Python
         id: setup-python
         uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: poetry
 
-      - name: Install Python dependencies
+      - name: <Setup> Install Python dependencies
         run: |
           poetry install --with=test
 
-      #
-      # Setup Docker Environment
-      #
-      - name: Declare variables
+      - name: <Setup> Declare variables
         id: docker_vars
         run: |
           if [ "${{ matrix.tag }}" != "" ]; then
@@ -65,17 +63,17 @@ jobs:
             echo "image_tag=${{ env.IMAGE_NAME }}:${{ env.VERSION }}" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Docker pull
+      - name: <Setup> Pull ENGINE application docker image
         run: docker pull "${{ steps.docker_vars.outputs.image_tag }}"
 
-      - name: Docker run
+      - name: <Setup> Run ENGINE application docker container
         run: docker run -d -p 10101:10101 "${{ steps.docker_vars.outputs.image_tag }}"
 
       # Docker コンテナが起動してから、レスポンスが返ってくるまで待機する
       # リトライは10回まで `/version` にアクセスしてレスポンスのステータスコードをチェック
       # - ステータスコードが `200` の場合は正常終了します
       # - ステータスコードが `200` 以外の場合は、5秒間スリープしてリトライします
-      - name: Wait for container to start
+      - name: <Setup> Warm up ENGINE server by waiting
         run: |
           set +e # curlのエラーを無視する
 
@@ -95,5 +93,5 @@ jobs:
           done
           exit 1
 
-      - name: Test
+      - name: <Test> Test ENGINE application docker container
         run: poetry run python build_util/check_release_build.py --skip_run_process --dist_dir dist/

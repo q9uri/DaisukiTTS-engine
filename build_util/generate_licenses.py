@@ -2,102 +2,93 @@ import json
 import os
 import subprocess
 import urllib.request
-from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import List, Optional
+from typing import Literal
 
 
-@dataclass
+class LicenseError(Exception):
+    # License違反があった場合、このエラーを出します。
+    pass
+
+
 class License:
-    name: str
-    version: Optional[str]
-    license: Optional[str]
-    text: str
+    def __init__(
+        self,
+        name: str,  # TODO: `package_name` へリネーム
+        version: str | None,  # TODO: `package_version` へリネーム
+        license: str | None,  # TODO: `license_name` へリネーム
+        text: str,  # TODO: `license_text` へリネーム
+        license_text_type: Literal["raw", "local_address", "remote_address"],
+    ):
+        self.name = name  # TODO: `package_name` へリネーム
+        self.version = version  # TODO: `package_version` へリネーム
+        self.license = license  # TODO: `license_name` へリネーム
+
+        if license_text_type == "raw":
+            self.text = text  # TODO: `license_text` へリネーム
+        elif license_text_type == "local_address":
+            # ライセンステキストをローカルのライセンスファイルから抽出する
+            self.text = Path(text).read_text(encoding="utf8")
+        elif license_text_type == "remote_address":
+            # ライセンステキストをリモートのライセンスファイルから抽出する
+            with urllib.request.urlopen(text) as res:
+                license_text: str = res.read().decode()
+                self.text = license_text
+        else:
+            raise Exception("型で保護され実行されないはずのパスが実行されました")
 
 
-def generate_licenses() -> List[License]:
-    licenses: List[License] = []
+def generate_licenses() -> list[License]:
+    licenses: list[License] = []
 
-    # VOICEVOX ENGINE
-    with urllib.request.urlopen(
-        "https://raw.githubusercontent.com/VOICEVOX/voicevox_engine/master/LGPL_LICENSE"
-    ) as res:
-        licenses.append(
-            License(
-                name="VOICEVOX ENGINE",
-                version=None,
-                license="LGPL license",
-                text=res.read().decode(),
-            )
-        )
-
-    # openjtalk
-    # https://sourceforge.net/projects/open-jtalk/files/Open%20JTalk/open_jtalk-1.11/
-    licenses.append(
+    licenses += [
+        License(
+            name="VOICEVOX ENGINE",
+            version=None,
+            license="LGPL license",
+            text="https://raw.githubusercontent.com/VOICEVOX/voicevox_engine/master/LGPL_LICENSE",
+            license_text_type="remote_address",
+        ),
+        # https://sourceforge.net/projects/open-jtalk/files/Open%20JTalk/open_jtalk-1.11/
         License(
             name="Open JTalk",
             version="1.11",
             license="Modified BSD license",
-            text=Path("docs/licenses/open_jtalk/COPYING").read_text(),
-        )
-    )
-    licenses.append(
+            text="docs/licenses/open_jtalk/COPYING",
+            license_text_type="local_address",
+        ),
         License(
             name="MeCab",
             version=None,
             license="Modified BSD license",
-            text=Path("docs/licenses/open_jtalk/mecab/COPYING").read_text(),
-        )
-    )
-    licenses.append(
+            text="docs/licenses/open_jtalk/mecab/COPYING",
+            license_text_type="local_address",
+        ),
         License(
             name="NAIST Japanese Dictionary",
             version=None,
             license="Modified BSD license",
-            text=Path("docs/licenses//open_jtalk/mecab-naist-jdic/COPYING").read_text(),
-        )
-    )
-
-    # world
-    with urllib.request.urlopen(
-        "https://raw.githubusercontent.com/mmorise/World/master/LICENSE.txt"
-    ) as res:
-        licenses.append(
-            License(
-                name="world",
-                version=None,
-                license="Modified BSD license",
-                text=res.read().decode(),
-            )
-        )
-
-    # pytorch
-    pytorch_version = "2.2.2"
-    with urllib.request.urlopen(
-        f"https://raw.githubusercontent.com/pytorch/pytorch/v{pytorch_version}/LICENSE"
-    ) as res:
-        licenses.append(
-            License(
-                name="PyTorch",
-                version=pytorch_version,
-                license="BSD-style license",
-                text=res.read().decode(),
-            )
-        )
-
-    # Python
+            text="docs/licenses//open_jtalk/mecab-naist-jdic/COPYING",
+            license_text_type="local_address",
+        ),
+        License(
+            name="PyTorch",
+            version="2.2.2",
+            license="BSD-style license",
+            text="https://raw.githubusercontent.com/pytorch/pytorch/master/LICENSE",
+            license_text_type="remote_address",
+        ),
+    ]
     python_version = "3.11.9"
-    with urllib.request.urlopen(
-        f"https://raw.githubusercontent.com/python/cpython/v{python_version}/LICENSE"
-    ) as res:
-        licenses.append(
-            License(
-                name="Python",
-                version=python_version,
-                license="Python Software Foundation License",
-                text=res.read().decode(),
-            )
+    licenses += [
+        License(
+            name="Python",
+            version=python_version,
+            license="Python Software Foundation License",
+            text=f"https://raw.githubusercontent.com/python/cpython/v{python_version}/LICENSE",
+            license_text_type="remote_address",
         )
+    ]
 
     # pip
     try:
@@ -125,6 +116,7 @@ def generate_licenses() -> List[License]:
             version=license_json["Version"],
             license=license_json["License"],
             text=license_json["LicenseText"],
+            license_text_type="raw",
         )
         # FIXME: assert license type
         if license.text == "UNKNOWN":
@@ -254,6 +246,14 @@ if __name__ == "__main__":
     # dump
     out = Path(output_path).open("w") if output_path else sys.stdout
     json.dump(
-        [asdict(license) for license in licenses],
+        [
+            {
+                "name": license.name,
+                "version": license.version,
+                "license": license.license,
+                "text": license.text,
+            }
+            for license in licenses
+        ],
         out,
     )

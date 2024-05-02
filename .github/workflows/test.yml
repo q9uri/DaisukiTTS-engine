@@ -20,51 +20,37 @@ jobs:
         python: ["3.11.9"]
 
     steps:
-      - uses: actions/checkout@v4
+      - name: <Setup> Check out the repository
+        uses: actions/checkout@v4
 
-      - name: Install Poetry
+      - name: <Setup> Install Poetry
         run: pipx install poetry
 
-      - name: Set up Python ${{ matrix.python }}
+      - name: <Setup> Set up Python ${{ matrix.python }}
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python }}
           cache: poetry
 
-      - name: Install Python dependencies
+      - name: <Setup> Install Python dependencies
         run: |
           poetry install --with=test
 
-      - name: Validate poetry.lock
+      - name: <Test> Validate poetry.lock
         run: |
           poetry lock --no-update
           git diff --exit-code
 
-      - run: poetry run task lint
+      - name: <Test> Check format
+        run: poetry run task lint
 
-      - name: Run pytest and get coverage
-        run: |
-          poetry run coverage run --omit=test/* -m pytest
-
-      - name: Submit coverage to Coveralls
+      - name: <Test> Test codes and coverage
+        run: poetry run coverage run --omit=test/* -m pytest
+      - name: <Deploy> Submit coverage results to Coveralls
         if: matrix.os == 'ubuntu-20.04'
         run: poetry run coveralls --service=github
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Create coverage result
-        if: github.event_name == 'pull_request' && matrix.os == 'ubuntu-20.04'
-        run: |
-          mkdir report
-          poetry run coverage report > report/report.txt
-          echo ${{ github.event.number }} > report/pr_num.txt
-
-      - name: Upload coverage result
-        if: github.event_name == 'pull_request' && matrix.os == 'ubuntu-20.04'
-        uses: actions/upload-artifact@v3
-        with:
-          name: report
-          path: report/
 
       - name: Check licenses
         shell: bash

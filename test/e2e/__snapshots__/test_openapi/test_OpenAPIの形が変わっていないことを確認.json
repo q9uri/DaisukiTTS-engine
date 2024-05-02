@@ -317,6 +317,22 @@
         "title": "Body_setting_post_setting_post",
         "type": "object"
       },
+      "Body_sing_frame_volume_sing_frame_volume_post": {
+        "properties": {
+          "frame_audio_query": {
+            "$ref": "#/components/schemas/FrameAudioQuery"
+          },
+          "score": {
+            "$ref": "#/components/schemas/Score"
+          }
+        },
+        "required": [
+          "score",
+          "frame_audio_query"
+        ],
+        "title": "Body_sing_frame_volume_sing_frame_volume_post",
+        "type": "object"
+      },
       "CorsPolicyMode": {
         "description": "CORSの許可モード",
         "enum": [
@@ -892,18 +908,12 @@
             "title": "当該スタイルの portrait.png を Base64 エンコードしたもの"
           },
           "voice_sample_transcripts": {
-            "anyOf": [
-              {
-                "items": {
-                  "type": "string"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "ボイスサンプルの書き起こしテキスト"
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "ボイスサンプルの書き起こしテキスト",
+            "type": "array"
           },
           "voice_samples": {
             "items": {
@@ -1973,6 +1983,7 @@
             }
           },
           {
+            "description": "AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。",
             "in": "query",
             "name": "core_version",
             "required": false,
@@ -1985,6 +1996,7 @@
                   "type": "null"
                 }
               ],
+              "description": "AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。",
               "title": "Core Version"
             }
           }
@@ -2025,6 +2037,7 @@
             }
           },
           {
+            "description": "AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。",
             "in": "query",
             "name": "core_version",
             "required": false,
@@ -2037,6 +2050,7 @@
                   "type": "null"
                 }
               ],
+              "description": "AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。",
               "title": "Core Version"
             }
           }
@@ -2596,6 +2610,80 @@
         ]
       }
     },
+    "/sing_frame_volume": {
+      "post": {
+        "operationId": "sing_frame_volume_sing_frame_volume_post",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "speaker",
+            "required": true,
+            "schema": {
+              "title": "Speaker",
+              "type": "integer"
+            }
+          },
+          {
+            "description": "AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。",
+            "in": "query",
+            "name": "core_version",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。",
+              "title": "Core Version"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_sing_frame_volume_sing_frame_volume_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "type": "number"
+                  },
+                  "title": "Response Sing Frame Volume Sing Frame Volume Post",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "AivisSpeech Engine ではサポートされていない API です (常に 501 Not Implemented を返します)",
+        "tags": [
+          "クエリ編集"
+        ]
+      }
+    },
     "/singer_info": {
       "get": {
         "operationId": "singer_info_singer_info_get",
@@ -2836,6 +2924,7 @@
         "operationId": "supported_devices_supported_devices_get",
         "parameters": [
           {
+            "description": "AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。",
             "in": "query",
             "name": "core_version",
             "required": false,
@@ -2848,6 +2937,7 @@
                   "type": "null"
                 }
               ],
+              "description": "AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。",
               "title": "Core Version"
             }
           }
@@ -2998,6 +3088,7 @@
             }
           },
           {
+            "description": "AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。",
             "in": "query",
             "name": "core_version",
             "required": false,
@@ -3010,6 +3101,7 @@
                   "type": "null"
                 }
               ],
+              "description": "AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。",
               "title": "Core Version"
             }
           }

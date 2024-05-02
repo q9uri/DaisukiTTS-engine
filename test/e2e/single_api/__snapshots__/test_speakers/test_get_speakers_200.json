@@ -1,0 +1,137 @@
+[
+  {
+    "name": "JVNV-F1",
+    "speaker_uuid": "62dbe72b-2705-4101-bc85-bb28a92a7055",
+    "styles": [
+      {
+        "id": 8748130372367666,
+        "name": "Neutral",
+        "type": "talk"
+      },
+      {
+        "id": 8748130372367667,
+        "name": "Angry",
+        "type": "talk"
+      },
+      {
+        "id": 8748130372367668,
+        "name": "Disgust",
+        "type": "talk"
+      },
+      {
+        "id": 8748130372367669,
+        "name": "Fear",
+        "type": "talk"
+      },
+      {
+        "id": 8748130372367670,
+        "name": "Happy",
+        "type": "talk"
+      },
+      {
+        "id": 8748130372367671,
+        "name": "Sad",
+        "type": "talk"
+      },
+      {
+        "id": 8748130372367672,
+        "name": "Surprise",
+        "type": "talk"
+      }
+    ],
+    "supported_features": {
+      "permitted_synthesis_morphing": "NOTHING"
+    },
+    "version": "1.0.0"
+  },
+  {
+    "name": "JVNV-F2",
+    "speaker_uuid": "2a09f660-3f66-4fa2-a0df-502b2dd155ed",
+    "styles": [
+      {
+        "id": 5156874359467377,
+        "name": "Neutral",
+        "type": "talk"
+      },
+      {
+        "id": 5156874359467378,
+        "name": "Angry",
+        "type": "talk"
+      },
+      {
+        "id": 5156874359467379,
+        "name": "Disgust",
+        "type": "talk"
+      },
+      {
+        "id": 5156874359467380,
+        "name": "Fear",
+        "type": "talk"
+      },
+      {
+        "id": 5156874359467381,
+        "name": "Happy",
+        "type": "talk"
+      },
+      {
+        "id": 5156874359467382,
+        "name": "Sad",
+        "type": "talk"
+      },
+      {
+        "id": 5156874359467383,
+        "name": "Surprise",
+        "type": "talk"
+      }
+    ],
+    "supported_features": {
+      "permitted_synthesis_morphing": "NOTHING"
+    },
+    "version": "1.0.0"
+  },
+  {
+    "name": "井ノ上たきな",
+    "speaker_uuid": "769bb8f0-9e51-4058-8507-a1d21e5d70b9",
+    "styles": [
+      {
+        "id": 4264750732925903,
+        "name": "ノーマル",
+        "type": "talk"
+      },
+      {
+        "id": 4264750732925904,
+        "name": "うれしい",
+        "type": "talk"
+      },
+      {
+        "id": 4264750732925905,
+        "name": "ダウナー",
+        "type": "talk"
+      },
+      {
+        "id": 4264750732925906,
+        "name": "ごきげん",
+        "type": "talk"
+      },
+      {
+        "id": 4264750732925907,
+        "name": "ツンツン",
+        "type": "talk"
+      },
+      {
+        "id": 4264750732925908,
+        "name": "うたがい",
+        "type": "talk"
+      },
+      {
+        "id": 4264750732925909,
+        "name": "ささやき",
+        "type": "talk"
+      }
+    ],
+    "supported_features": {
+      "permitted_synthesis_morphing": "NOTHING"
+    },
+    "version": "1.0.0"
+  }
+]

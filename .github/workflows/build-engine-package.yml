@@ -38,7 +38,7 @@ jobs:
       version: ${{ steps.vars.outputs.version }}
       version_or_latest: ${{ steps.vars.outputs.version_or_latest }}
     steps:
-      - name: declare variables
+      - name: <Setup> Declare variables
         id: vars
         run: |
           : # release タグ名, または workflow_dispatch でのバージョン名. リリースでない (push event) 場合は空文字列
@@ -77,22 +77,23 @@ jobs:
       split: ${{ startsWith(matrix.os, 'macos-') && 'gsplit' || 'split' }}
 
     steps:
-      - name: declare variables
+      - name: <Setup> Declare variables
         id: vars
         run: |
           echo "package_name=aivisspeech-engine-${{ matrix.target }}-${{ needs.config.outputs.version }}" >> "$GITHUB_OUTPUT"
 
-      - uses: actions/checkout@v4
+      - name: <Setup> Check out the repository
+        uses: actions/checkout@v4
 
       # NOTE: The default 'sed' and 'split' of macOS is BSD 'sed' and 'split'.
       #       There is a difference in specification between BSD 'sed' and 'split' and GNU 'sed' and 'split',
       #       so you need to install GNU 'sed' and 'split'.
-      - name: Install GNU sed on macOS
+      - name: <Setup> Install dependencies (macOS)
         if: startsWith(matrix.os, 'macos-')
         run: |
           brew install gnu-sed coreutils
 
-      - name: Setup MSVC
+      - name: <Setup> Set up MSVC
         if: startsWith(matrix.os, 'windows-')
         uses: ilammy/msvc-dev-cmd@v1
 
@@ -100,7 +101,7 @@ jobs:
         run: pipx install poetry
 
       # Python install path of windows: C:/hostedtoolcache/windows/Python
-      - name: Setup Python
+      - name: <Setup> Set up Python
         id: setup-python
         uses: actions/setup-python@v5
         with:
@@ -108,7 +109,7 @@ jobs:
           architecture: ${{ matrix.architecture }}
           cache: poetry
 
-      - name: Install Python dependencies
+      - name: <Setup> Install Python dependencies
         run: |
           poetry install --with=dev
 
@@ -134,14 +135,14 @@ jobs:
             exit "$EXIT_CODE"
           fi
 
-      - name: Create download directory
+      - name: <Setup> Create download directory
         run: mkdir -p download/
 
-      - name: Generate licenses.json
+      - name: <Build> Generate licenses.json
         run: |
           bash build_util/create_venv_and_generate_licenses.bash
 
-      - name: Build run.py with PyInstaller
+      - name: <Build> Build AivisSpeech Engine run.py
         run: |
           set -eux
 
@@ -153,12 +154,12 @@ jobs:
 
           poetry run task build
 
-      - name: Set @rpath to @executable_path
+      - name: <Setup> Set @rpath to @executable_path
         if: startsWith(matrix.os, 'macos-')
         run: |
           install_name_tool -add_rpath @executable_path/. dist/run/run
 
-      - name: Code signing
+      - name: <Build> Code signing
         if: github.event.inputs.code_signing == 'true' && startsWith(matrix.os, 'windows-')
         run: |
           bash build_util/codesign.bash "dist/run/run.exe"
@@ -167,12 +168,12 @@ jobs:
           ESIGNERCKA_PASSWORD: ${{ secrets.ESIGNERCKA_PASSWORD }}
           ESIGNERCKA_TOTP_SECRET: ${{ secrets.ESIGNERCKA_TOTP_SECRET }}
 
-      - name: Rename artifact directory to archive
+      - name: <Build> Rename artifact directory to archive
         run: |
           mv dist/run/ "${{ matrix.target }}/"
 
       # 7z archives
-      - name: Create 7z archives
+      - name: <Build> Create 7z archives
         run: |
           # Compress to artifact.7z.001, artifact.7z.002, ...
           7z -r -v1900m a "${{ steps.vars.outputs.package_name }}.7z" "${{ matrix.target }}/"
@@ -181,7 +182,7 @@ jobs:
           ls ${{ steps.vars.outputs.package_name }}.7z.* > archives_7z.txt
           mv archives_7z.txt "${{ steps.vars.outputs.package_name }}.7z.txt"
 
-      - name: Upload 7z archives to artifact
+      - name: <Deploy> Upload 7z archives to artifact
         if: github.event.inputs.upload_artifact == 'true'
         uses: actions/upload-artifact@v3
         with:
@@ -189,7 +190,7 @@ jobs:
           path: |
             ${{ steps.vars.outputs.package_name }}.7z.*
 
-      - name: Upload 7z archives to Release assets
+      - name: <Deploy> Upload 7z archives to Release assets
         if: needs.config.outputs.version != ''
         uses: ncipollo/release-action@v1
         with:
@@ -201,12 +202,12 @@ jobs:
             ${{ steps.vars.outputs.package_name }}.7z.*
           commit: ${{ github.sha }}
 
-      - name: Clean 7z archives to reduce disk usage
+      - name: <Setup> Clean 7z archives to reduce disk usage
         run: |
           rm -f ${{ steps.vars.outputs.package_name }}.7z.*
 
       # VVPP archives
-      - name: Create VVPP archives
+      - name: <Build> Create VVPP archives
         run: |
           # Compress to compressed.zip.001, compressed.zip.002, ...
           # NOTE: 1000th archive will be "compressed.zip.1000" after "compressed.zip.999". This is unconsidered as an extreme case.
@@ -227,7 +228,7 @@ jobs:
           ls ${{ steps.vars.outputs.package_name }}*.vvppp ${{ steps.vars.outputs.package_name }}.vvpp > archives_vvpp.txt || true
           mv archives_vvpp.txt "${{ steps.vars.outputs.package_name }}.vvpp.txt"
 
-      - name: Upload VVPP archives to artifact
+      - name: <Deploy> Upload VVPP archives to artifact
         if: github.event.inputs.upload_artifact == 'true'
         uses: actions/upload-artifact@v3
         with:
@@ -237,7 +238,7 @@ jobs:
             ${{ steps.vars.outputs.package_name }}*.vvppp
             ${{ steps.vars.outputs.package_name }}.vvpp.txt
 
-      - name: Upload VVPP archives to Release assets
+      - name: <Deploy> Upload VVPP archives to Release assets
         if: needs.config.outputs.version != ''
         uses: ncipollo/release-action@v1
         with:

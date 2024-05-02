@@ -3,9 +3,10 @@
 import base64
 from typing import Annotated
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query, Response
 
 from voicevox_engine.aivm_manager import AivmManager
+from voicevox_engine.metas.Metas import StyleId
 from voicevox_engine.model import Speaker, SpeakerInfo
 
 
@@ -179,5 +180,40 @@ def generate_router(aivm_manager: AivmManager) -> APIRouter:
         #     speaker_or_singer="singer",
         #     core_version=core_version,
         # )
+
+    @router.post("/initialize_speaker", status_code=204, tags=["その他"])
+    def initialize_speaker(
+        style_id: Annotated[StyleId, Query(alias="speaker")],
+        skip_reinit: Annotated[
+            bool,
+            Query(
+                description="既に初期化済みのスタイルの再初期化をスキップするかどうか",
+            ),
+        ] = False,
+        core_version: Annotated[str | None, Query(description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。")] = None,  # fmt: skip # noqa
+    ) -> Response:
+        """
+        指定されたスタイルを初期化します。
+        実行しなくても他のAPIは使用できますが、初回実行時に時間がかかることがあります。
+        """
+        # core = get_core(core_version)
+        # core.initialize_style_id_synthesis(style_id, skip_reinit=skip_reinit)
+
+        # AivisSpeech Engine では常に何もせずに 204 No Content を返す
+        return Response(status_code=204)
+
+    @router.get("/is_initialized_speaker", response_model=bool, tags=["その他"])
+    def is_initialized_speaker(
+        style_id: Annotated[StyleId, Query(alias="speaker")],
+        core_version: Annotated[str | None, Query(description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。")] = None,  # fmt: skip # noqa
+    ) -> bool:
+        """
+        指定されたスタイルが初期化されているかどうかを返します。
+        """
+        # core = get_core(core_version)
+        # return core.is_initialized_style_id_synthesis(style_id)
+
+        # AivisSpeech Engine では常に True を返す
+        return True
 
     return router

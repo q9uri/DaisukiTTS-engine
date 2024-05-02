@@ -132,7 +132,7 @@
       "license": "MIT License",
       "name": "black",
       "text": "MD5:d3465a2a183908c9cb95bf490bd1e7ab",
-      "version": "24.4.1"
+      "version": "24.4.2"
     },
     {
       "license": "MIT License",
@@ -270,7 +270,7 @@
       "license": "The Unlicense (Unlicense)",
       "name": "filelock",
       "text": "MD5:911690f51af322440237a253d695d19f",
-      "version": "3.13.4"
+      "version": "3.14.0"
     },
     {
       "license": "MIT License",
@@ -282,7 +282,7 @@
       "license": "MIT License",
       "name": "flake8-bugbear",
       "text": "MD5:d511f8e447826b7e5b61da03a3f5e82b",
-      "version": "24.4.21"
+      "version": "24.4.26"
     },
     {
       "license": "BSD License",
@@ -648,7 +648,7 @@
       "license": "MIT License",
       "name": "pyproject_hooks",
       "text": "MD5:aad69c93f605003e3342b174d9b0708c",
-      "version": "1.0.0"
+      "version": "1.1.0"
     },
     {
       "license": "MIT License",
@@ -660,7 +660,7 @@
       "license": "MIT License",
       "name": "pytest",
       "text": "MD5:bd27e41b6550fe0fc45356d1d81ee37c",
-      "version": "8.1.1"
+      "version": "8.2.0"
     },
     {
       "license": "Apache Software License",
@@ -684,7 +684,7 @@
       "license": "Apache Software License",
       "name": "regex",
       "text": "MD5:7b5751ddd6b643203c31ff873051d069",
-      "version": "2024.4.16"
+      "version": "2024.4.28"
     },
     {
       "license": "Apache Software License",
@@ -900,7 +900,7 @@
       "license": "MIT License",
       "name": "virtualenv",
       "text": "MD5:0ce089158cf60a8ab6abb452b6405538",
-      "version": "20.26.0"
+      "version": "20.26.1"
     },
     {
       "license": "MIT License",

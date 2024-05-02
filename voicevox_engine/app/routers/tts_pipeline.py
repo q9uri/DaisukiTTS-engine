@@ -48,7 +48,7 @@ def generate_router(
     )
     def audio_query(
         text: str,
-        style_id: StyleId = Query(alias="speaker"),  # noqa: B008
+        style_id: Annotated[StyleId, Query(alias="speaker")],
         core_version: Annotated[str | None, Query(description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。")] = None,  # fmt: skip # noqa
     ) -> AudioQuery:
         """
@@ -131,7 +131,7 @@ def generate_router(
     )
     def accent_phrases(
         text: str,
-        style_id: StyleId = Query(alias="speaker"),  # noqa: B008
+        style_id: Annotated[StyleId, Query(alias="speaker")],
         is_kana: bool = False,
         core_version: Annotated[str | None, Query(description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。")] = None,  # fmt: skip # noqa
     ) -> list[AccentPhrase]:
@@ -163,7 +163,7 @@ def generate_router(
     )
     def mora_data(
         accent_phrases: list[AccentPhrase],
-        style_id: StyleId = Query(alias="speaker"),  # noqa: B008
+        style_id: Annotated[StyleId, Query(alias="speaker")],
         core_version: Annotated[str | None, Query(description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。")] = None,  # fmt: skip # noqa
     ) -> list[AccentPhrase]:
         engine = get_engine(core_version)
@@ -177,7 +177,7 @@ def generate_router(
     )
     def mora_length(
         accent_phrases: list[AccentPhrase],
-        style_id: StyleId = Query(alias="speaker"),  # noqa: B008
+        style_id: Annotated[StyleId, Query(alias="speaker")],
         core_version: Annotated[str | None, Query(description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。")] = None,  # fmt: skip # noqa
     ) -> list[AccentPhrase]:
         engine = get_engine(core_version)
@@ -191,7 +191,7 @@ def generate_router(
     )
     def mora_pitch(
         accent_phrases: list[AccentPhrase],
-        style_id: StyleId = Query(alias="speaker"),  # noqa: B008
+        style_id: Annotated[StyleId, Query(alias="speaker")],
         core_version: Annotated[str | None, Query(description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。")] = None,  # fmt: skip # noqa
     ) -> list[AccentPhrase]:
         engine = get_engine(core_version)
@@ -212,7 +212,7 @@ def generate_router(
     )
     def synthesis(
         query: AudioQuery,
-        style_id: StyleId = Query(alias="speaker"),  # noqa: B008
+        style_id: Annotated[StyleId, Query(alias="speaker")],
         enable_interrogative_upspeak: bool = Query(  # noqa: B008
             default=True,
             description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。",
@@ -252,7 +252,7 @@ def generate_router(
     def cancellable_synthesis(
         query: AudioQuery,
         request: Request,
-        style_id: StyleId = Query(alias="speaker"),  # noqa: B008
+        style_id: Annotated[StyleId, Query(alias="speaker")],
         core_version: Annotated[str | None, Query(description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。")] = None,  # fmt: skip # noqa
     ) -> FileResponse:
         raise HTTPException(
@@ -294,7 +294,7 @@ def generate_router(
     )
     def multi_synthesis(
         queries: list[AudioQuery],
-        style_id: StyleId = Query(alias="speaker"),  # noqa: B008
+        style_id: Annotated[StyleId, Query(alias="speaker")],
         core_version: Annotated[str | None, Query(description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。")] = None,  # fmt: skip # noqa
     ) -> FileResponse:
         engine = get_engine(core_version)
@@ -335,7 +335,7 @@ def generate_router(
     )
     def sing_frame_audio_query(
         score: Score,
-        style_id: StyleId = Query(alias="speaker"),  # noqa: B008
+        style_id: Annotated[StyleId, Query(alias="speaker")],
         core_version: Annotated[str | None, Query(description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。")] = None,  # fmt: skip # noqa
     ) -> FrameAudioQuery:
         # """
@@ -362,6 +362,29 @@ def generate_router(
         # )
 
     @router.post(
+        "/sing_frame_volume",
+        response_model=list[float],
+        tags=["クエリ編集"],
+        # summary="スコア・歌唱音声合成用のクエリからフレームごとの音量を得る",
+        summary="AivisSpeech Engine ではサポートされていない API です (常に 501 Not Implemented を返します)",
+    )
+    def sing_frame_volume(
+        score: Score,
+        frame_audio_query: FrameAudioQuery,
+        style_id: Annotated[StyleId, Query(alias="speaker")],
+        core_version: Annotated[str | None, Query(description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。")] = None,  # fmt: skip # noqa
+    ) -> list[float]:
+        raise HTTPException(
+            status_code=501,
+            detail="Sing frame volume is not supported in AivisSpeech Engine.",
+        )
+
+        # engine = get_engine(core_version)
+        # return engine.create_sing_volume_from_phoneme_and_f0(
+        #     score, frame_audio_query.phonemes, frame_audio_query.f0, style_id
+        # )
+
+    @router.post(
         "/frame_synthesis",
         response_class=FileResponse,
         responses={
@@ -376,7 +399,7 @@ def generate_router(
     )
     def frame_synthesis(
         query: FrameAudioQuery,
-        style_id: StyleId = Query(alias="speaker"),  # noqa: B008
+        style_id: Annotated[StyleId, Query(alias="speaker")],
         core_version: Annotated[str | None, Query(description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。")] = None,  # fmt: skip # noqa
     ) -> FileResponse:
         # """
