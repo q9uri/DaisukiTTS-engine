@@ -84,7 +84,7 @@ def generate_licenses() -> list[License]:
             license="Python Software Foundation License",
             text=f"https://raw.githubusercontent.com/python/cpython/v{python_version}/LICENSE",
             license_text_type="remote_address",
-        )
+        ),
     ]
 
     # pip
