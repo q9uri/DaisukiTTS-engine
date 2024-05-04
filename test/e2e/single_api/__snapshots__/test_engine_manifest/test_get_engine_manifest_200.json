@@ -27,12 +27,6 @@
       "version": null
     },
     {
-      "license": "Modified BSD license",
-      "name": "world",
-      "text": "MD5:dc1f70c6b963fa38d7d1f7ffde7e7ca2",
-      "version": null
-    },
-    {
       "license": "BSD-style license",
       "name": "PyTorch",
       "text": "MD5:5c853508d63a8090fa952ff1af58217d",
@@ -552,7 +546,7 @@
       "license": "MIT License",
       "name": "poetry",
       "text": "MD5:e1facaac5bbfd8cfb94a95185e366c42",
-      "version": "1.8.1"
+      "version": "1.8.2"
     },
     {
       "license": "MIT License",

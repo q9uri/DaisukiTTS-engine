@@ -31,7 +31,7 @@ from voicevox_engine.utility.path_utility import delete_file
 synthesis_morphing_parameter = lru_cache(maxsize=4)(_synthesis_morphing_parameter)
 
 
-def generate_router(
+def generate_morphing_router(
     get_engine: Callable[[str | None], TTSEngine],
     get_core: Callable[[str | None], CoreAdapter],
     aivm_manager: AivmManager,

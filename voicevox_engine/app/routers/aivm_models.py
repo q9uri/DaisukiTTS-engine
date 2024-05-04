@@ -12,7 +12,7 @@ from voicevox_engine.model import AivmInfo, AivmManifest
 from ..dependencies import check_disabled_mutable_api
 
 
-def generate_router(aivm_manager: AivmManager) -> APIRouter:
+def generate_aivm_models_router(aivm_manager: AivmManager) -> APIRouter:
     """音声合成モデル管理 API Router を生成する"""
     router = APIRouter()
 

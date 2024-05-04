@@ -16,16 +16,14 @@ from voicevox_engine import __version__
 from voicevox_engine.aivm_manager import AivmManager
 from voicevox_engine.app.dependencies import deprecated_mutable_api
 from voicevox_engine.app.middlewares import configure_middlewares
-from voicevox_engine.app.routers import (
-    aivm_models,
-    engine_info,
-    morphing,
-    preset,
-    setting,
-    speaker,
-    tts_pipeline,
-    user_dict,
-)
+from voicevox_engine.app.routers.aivm_models import generate_aivm_models_router
+from voicevox_engine.app.routers.engine_info import generate_engine_info_router
+from voicevox_engine.app.routers.morphing import generate_morphing_router
+from voicevox_engine.app.routers.preset import generate_preset_router
+from voicevox_engine.app.routers.setting import generate_setting_router
+from voicevox_engine.app.routers.speaker import generate_speaker_router
+from voicevox_engine.app.routers.tts_pipeline import generate_tts_pipeline_router
+from voicevox_engine.app.routers.user_dict import generate_user_dict_router
 from voicevox_engine.cancellable_engine import CancellableEngine
 from voicevox_engine.core.core_adapter import CoreAdapter
 from voicevox_engine.core.core_initializer import MOCK_VER, initialize_cores
@@ -123,12 +121,6 @@ def generate_app(
         variable_end_string="<JINJA_POST>",
     )
 
-    # @app.on_event("startup")
-    # async def start_catch_disconnection():
-    #     if cancellable_engine is not None:
-    #         loop = asyncio.get_event_loop()
-    #         _ = loop.create_task(cancellable_engine.catch_disconnection())
-
     def get_engine(core_version: Optional[str]) -> TTSEngine:
         if core_version is None:
             return tts_engines[latest_core_version]
@@ -145,26 +137,20 @@ def generate_app(
         raise HTTPException(status_code=422, detail="不明なバージョンです")
 
     app.include_router(
-        tts_pipeline.generate_router(
+        generate_tts_pipeline_router(
             get_engine, get_core, preset_manager, cancellable_engine
         )
     )
-
-    app.include_router(morphing.generate_router(get_engine, get_core, aivm_manager))
-    app.include_router(preset.generate_router(preset_manager))
-
-    app.include_router(speaker.generate_router(aivm_manager))
-
-    app.include_router(aivm_models.generate_router(aivm_manager))
-
-    app.include_router(user_dict.generate_router())
-
+    app.include_router(generate_morphing_router(get_engine, get_core, aivm_manager))
+    app.include_router(generate_preset_router(preset_manager))
+    app.include_router(generate_speaker_router(aivm_manager))
+    app.include_router(generate_aivm_models_router(aivm_manager))
+    app.include_router(generate_user_dict_router())
     app.include_router(
-        engine_info.generate_router(get_core, cores, engine_manifest_data)
+        generate_engine_info_router(get_core, cores, engine_manifest_data)
     )
-
     app.include_router(
-        setting.generate_router(
+        generate_setting_router(
             setting_loader, engine_manifest_data, setting_ui_template
         )
     )
@@ -343,7 +329,7 @@ def main() -> None:
     )
     # tts_engines = make_tts_engines_from_cores(cores)
     # assert len(tts_engines) != 0, "音声合成エンジンがありません。"
-    # latest_core_version = get_latest_core_version(versions=list(tts_engines.keys()))
+    # latest_core_version = get_latest_version(versions=list(tts_engines.keys()))
     latest_core_version = MOCK_VER
 
     # AivmManager を初期化

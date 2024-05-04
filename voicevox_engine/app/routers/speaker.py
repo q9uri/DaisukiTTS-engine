@@ -14,7 +14,7 @@ def b64encode_str(s: bytes) -> str:
     return base64.b64encode(s).decode("utf-8")
 
 
-def generate_router(aivm_manager: AivmManager) -> APIRouter:
+def generate_speaker_router(aivm_manager: AivmManager) -> APIRouter:
     """話者情報 API Router を生成する"""
     router = APIRouter()
 

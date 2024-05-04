@@ -39,8 +39,8 @@ class License:
 
 
 def generate_licenses() -> list[License]:
+    python_version = "3.11.9"
     licenses: list[License] = []
-
     licenses += [
         License(
             name="VOICEVOX ENGINE",
@@ -78,9 +78,6 @@ def generate_licenses() -> list[License]:
             text="https://raw.githubusercontent.com/pytorch/pytorch/master/LICENSE",
             license_text_type="remote_address",
         ),
-    ]
-    python_version = "3.11.9"
-    licenses += [
         License(
             name="Python",
             version=python_version,

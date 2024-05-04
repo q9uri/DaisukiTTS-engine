@@ -2,10 +2,15 @@
 /frame_synthesis API のテスト
 """
 
+from test.utility import hash_wave_floats_from_wav_bytes
+
 from fastapi.testclient import TestClient
+from syrupy.assertion import SnapshotAssertion
 
 
-def test_post_frame_synthesis_200(client: TestClient) -> None:
+def test_post_frame_synthesis_200(
+    client: TestClient, snapshot: SnapshotAssertion
+) -> None:
     query = {
         "f0": [
             0.0,
@@ -84,3 +89,7 @@ def test_post_frame_synthesis_200(client: TestClient) -> None:
     assert response.status_code == 501
     return
     assert response.status_code == 200
+
+    # FileResponse 内の .wav から抽出された音声波形が一致する
+    assert response.headers["content-type"] == "audio/wav"
+    assert snapshot == hash_wave_floats_from_wav_bytes(response.read())
