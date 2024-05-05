@@ -1,6 +1,7 @@
 # flake8: noqa
 
 import copy
+import time
 from typing import Literal
 
 import jaconv
@@ -64,7 +65,7 @@ class StyleBertVITS2TTSEngine(TTSEngine):
                 else:
                     logger.info("Using GPU (NVIDIA CUDA) for inference.")
             # Mac なら基本 Apple MPS (Metal Performance Shaders) が利用できる
-            # FIXME: Mac だと SDP Ratio の値次第で話速が遅くなる謎の問題があるため当面はコメントアウト
+            # FIXME: SDP Ratio の値次第で話速が遅くなる謎の問題がある上 CPU と推論速度が然程変わらないため、当面コメントアウト
             # elif torch.backends.mps.is_built() and torch.backends.mps.is_available():
             #     self.device = "mps"
             #     logger.info("Using GPU (Apple MPS) for inference.")
@@ -470,6 +471,7 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         logger.info(f"        Volume: {query.volumeScale:.2f}")
         logger.info(f"   Pre-Silence: {query.prePhonemeLength:.2f}")
         logger.info(f"  Post-Silence: {query.postPhonemeLength:.2f}")
+        start_time = time.time()
         raw_sample_rate, raw_wave = model.infer(
             text=text,
             given_phone=given_phone_list,
@@ -485,7 +487,7 @@ class StyleBertVITS2TTSEngine(TTSEngine):
             # line_split=True だと音素やアクセントの指定ができない
             line_split=False,
         )
-        logger.info("Inference done.")
+        logger.info("Inference done. Elapsed time: {:.2f} sec.".format(time.time() - start_time))  # fmt: skip
 
         # VOICEVOX CORE は float32 型の音声波形を返すため、int16 から float32 に変換して VOICEVOX CORE に合わせる
         ## float32 に変換する際に -1.0 ~ 1.0 の範囲に正規化する
