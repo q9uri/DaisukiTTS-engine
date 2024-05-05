@@ -1,22 +1,31 @@
 """話者情報機能を提供する API Router"""
 
 import base64
-from typing import Annotated
+from typing import Annotated, Callable
 
 from fastapi import APIRouter, HTTPException, Query, Response
 
 from voicevox_engine.aivm_manager import AivmManager
 from voicevox_engine.metas.Metas import StyleId
 from voicevox_engine.model import Speaker, SpeakerInfo
+from voicevox_engine.tts_pipeline.style_bert_vits2_tts_engine import (
+    StyleBertVITS2TTSEngine,
+)
+from voicevox_engine.tts_pipeline.tts_engine import TTSEngine
 
 
 def b64encode_str(s: bytes) -> str:
     return base64.b64encode(s).decode("utf-8")
 
 
-def generate_speaker_router(aivm_manager: AivmManager) -> APIRouter:
+def generate_speaker_router(
+    get_engine: Callable[[str | None], TTSEngine],
+    aivm_manager: AivmManager,
+) -> APIRouter:
     """話者情報 API Router を生成する"""
     router = APIRouter()
+    tts_engine = get_engine(None)
+    assert isinstance(tts_engine, StyleBertVITS2TTSEngine)
 
     @router.get("/speakers", response_model=list[Speaker], tags=["その他"])
     def speakers(
@@ -199,7 +208,10 @@ def generate_speaker_router(aivm_manager: AivmManager) -> APIRouter:
         # core = get_core(core_version)
         # core.initialize_style_id_synthesis(style_id, skip_reinit=skip_reinit)
 
-        # AivisSpeech Engine では常に何もせずに 204 No Content を返す
+        # AivisSpeech Engine ではスタイル ID に対応する AivmManifest を取得後、
+        # AIVM マニフェスト記載の UUID に対応する音声合成モデルをロードする
+        aivm_manifest, _, _ = aivm_manager.get_aivm_manifest_from_style_id(style_id)
+        tts_engine.load_model(aivm_manifest.uuid)
         return Response(status_code=204)
 
     @router.get("/is_initialized_speaker", response_model=bool, tags=["その他"])
@@ -213,7 +225,9 @@ def generate_speaker_router(aivm_manager: AivmManager) -> APIRouter:
         # core = get_core(core_version)
         # return core.is_initialized_style_id_synthesis(style_id)
 
-        # AivisSpeech Engine では常に True を返す
-        return True
+        # AivisSpeech Engine ではスタイル ID に対応する AivmManifest を取得後、
+        # AIVM マニフェスト記載の UUID に対応する音声合成モデルがロードされているかどうかを返す
+        aivm_manifest, _, _ = aivm_manager.get_aivm_manifest_from_style_id(style_id)
+        return tts_engine.is_model_loaded(aivm_manifest.uuid)
 
     return router

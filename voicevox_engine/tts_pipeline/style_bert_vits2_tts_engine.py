@@ -140,6 +140,23 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         self.tts_models[aivm_uuid] = tts_model
         return tts_model
 
+    def is_model_loaded(self, aivm_uuid: str) -> bool:
+        """
+        指定された AIVM の UUID に対応する音声合成モデルがロード済みかどうかを返す
+
+        Parameters
+        ----------
+        aivm_uuid : str
+            AIVM の UUID
+
+        Returns
+        -------
+        bool
+            モデルがロード済みかどうか
+        """
+
+        return aivm_uuid in self.tts_models
+
     def create_accent_phrases(self, text: str, style_id: StyleId) -> list[AccentPhrase]:
         """
         テキストからアクセント句系列を生成する

@@ -143,7 +143,7 @@ def generate_app(
     )
     app.include_router(generate_morphing_router(get_engine, get_core, aivm_manager))
     app.include_router(generate_preset_router(preset_manager))
-    app.include_router(generate_speaker_router(aivm_manager))
+    app.include_router(generate_speaker_router(get_engine, aivm_manager))
     app.include_router(generate_aivm_models_router(aivm_manager))
     app.include_router(generate_user_dict_router())
     app.include_router(
