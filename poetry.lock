@@ -3356,8 +3356,8 @@ transformers = "*"
 [package.source]
 type = "git"
 url = "https://github.com/tsukumijima/Style-Bert-VITS2"
-reference = "3730eb50b7843c1c3029d7b40aebf8ee14caa82f"
-resolved_reference = "3730eb50b7843c1c3029d7b40aebf8ee14caa82f"
+reference = "2d6baa3928d0cf225d4b21abf6d316c89dd3527b"
+resolved_reference = "2d6baa3928d0cf225d4b21abf6d316c89dd3527b"
 
 [[package]]
 name = "sympy"
@@ -4154,4 +4154,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "~3.11"
-content-hash = "63f96ac8b3204e99ef28f3a1b56652263ad77d113e83d6d68044d3baa966a94f"
+content-hash = "c57f0aa00c8fe373bc64f3553a730b525fd54ea79e04deb6140338cc1fb3a827"
