@@ -181,13 +181,13 @@ def main() -> None:
         "--port", type=int, default=10101, help="接続を受け付けるポート番号です。"
     )
     parser.add_argument(
-        "--use_gpu", action="store_true", help="GPUを使って音声合成するようになります。"
+        "--use_gpu", action="store_true", help="対応している場合、GPU を使い音声合成処理を行います。"
     )
     parser.add_argument(
         "--aivisspeech_dir",
         type=Path,
         default=None,
-        help="AivisSpeechのディレクトリパスです。",
+        help="AivisSpeech のディレクトリパスです。",
     )
     # parser.add_argument(
     #     "--voicelib_dir",
@@ -242,8 +242,8 @@ def main() -> None:
         "--output_log_utf8",
         action="store_true",
         help=(
-            "ログ出力をUTF-8でおこないます。指定しない場合、代わりに環境変数 VV_OUTPUT_LOG_UTF8 の値が使われます。"
-            "VV_OUTPUT_LOG_UTF8 の値が1の場合はUTF-8で、0または空文字、値がない場合は環境によって自動的に決定されます。"
+            "ログ出力を UTF-8 で行います。指定しない場合、代わりに環境変数 VV_OUTPUT_LOG_UTF8 の値が使われます。"
+            "VV_OUTPUT_LOG_UTF8 の値が 1 の場合は UTF-8 で、0 または空文字、値がない場合は環境によって自動的に決定されます。"
         ),
     )
 
@@ -253,10 +253,10 @@ def main() -> None:
         choices=list(CorsPolicyMode),
         default=None,
         help=(
-            "CORSの許可モード。allまたはlocalappsが指定できます。allはすべてを許可します。"
-            "localappsはオリジン間リソース共有ポリシーを、app://.とlocalhost関連に限定します。"
-            "その他のオリジンはallow_originオプションで追加できます。デフォルトはlocalapps。"
-            "このオプションは--setting_fileで指定される設定ファイルよりも優先されます。"
+            "CORS の許可モード。all または localapps が指定できます。all はすべてを許可します。"
+            "localapps はオリジン間リソース共有ポリシーを、app://. と localhost 関連に限定します。"
+            "その他のオリジンは allow_origin オプションで追加できます。デフォルトは localapps 。"
+            "このオプションは --setting_file で指定される設定ファイルよりも優先されます。"
         ),
     )
 
@@ -265,7 +265,7 @@ def main() -> None:
         nargs="*",
         help=(
             "許可するオリジンを指定します。スペースで区切ることで複数指定できます。"
-            "このオプションは--setting_fileで指定される設定ファイルよりも優先されます。"
+            "このオプションは --setting_file で指定される設定ファイルよりも優先されます。"
         ),
     )
 
@@ -282,8 +282,8 @@ def main() -> None:
         default=None,
         help=(
             "プリセットファイルを指定できます。"
-            "指定がない場合、環境変数 VV_PRESET_FILE、--aivisspeech_dirのpresets.yaml、"
-            "実行ファイルのディレクトリのpresets.yamlを順に探します。"
+            "指定がない場合、環境変数 VV_PRESET_FILE 、--aivisspeech_dir の presets.yaml 、"
+            "実行ファイルのディレクトリの presets.yaml を順に探します。"
         ),
     )
 
@@ -293,7 +293,7 @@ def main() -> None:
         help=(
             "辞書登録や設定変更など、エンジンの静的なデータを変更するAPIを無効化します。"
             "指定しない場合、代わりに環境変数 VV_DISABLE_MUTABLE_API の値が使われます。"
-            "VV_DISABLE_MUTABLE_API の値が1の場合は無効化で、0または空文字、値がない場合は無視されます。"
+            "VV_DISABLE_MUTABLE_API の値が 1 の場合は無効化で、0 または空文字、値がない場合は無視されます。"
         ),
     )
 
