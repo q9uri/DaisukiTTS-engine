@@ -181,7 +181,9 @@ def main() -> None:
         "--port", type=int, default=10101, help="接続を受け付けるポート番号です。"
     )
     parser.add_argument(
-        "--use_gpu", action="store_true", help="対応している場合、GPU を使い音声合成処理を行います。"
+        "--use_gpu",
+        action="store_true",
+        help="対応している場合、GPU を使い音声合成処理を行います。",
     )
     parser.add_argument(
         "--aivisspeech_dir",
