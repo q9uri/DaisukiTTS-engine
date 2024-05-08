@@ -558,9 +558,11 @@ class AivmManager:
         local_style_id_masked = local_style_id & LOCAL_STYLE_ID_MASK
         # UUID のハッシュ値の下位 27bit とローカルスタイル ID の 5bit を組み合わせる
         combined_id = (uuid_hash << LOCAL_STYLE_ID_BITS) | local_style_id_masked
-        # 32bit 符号付き整数として解釈するために、32bit 目が 1 の場合は負の値として扱う
+        # 32bit 符号付き整数として解釈するために、32bit 目が 1 の場合は正の値として扱う
+        # 負の値にすると誤作動を引き起こす可能性があるため、符号ビットを反転させる
         if combined_id & SIGN_BIT:
-            combined_id -= 0x100000000
+            combined_id &= ~SIGN_BIT
+
         return StyleId(combined_id)
 
     @staticmethod
