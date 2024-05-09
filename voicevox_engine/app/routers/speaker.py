@@ -25,7 +25,6 @@ def generate_speaker_router(
     """話者情報 API Router を生成する"""
     router = APIRouter()
     tts_engine = get_engine(None)
-    assert isinstance(tts_engine, StyleBertVITS2TTSEngine)
 
     @router.get("/speakers", response_model=list[Speaker], tags=["その他"])
     def speakers(
@@ -208,6 +207,10 @@ def generate_speaker_router(
         # core = get_core(core_version)
         # core.initialize_style_id_synthesis(style_id, skip_reinit=skip_reinit)
 
+        # テスト用 TTSEngine の場合は何もしない
+        if not isinstance(tts_engine, StyleBertVITS2TTSEngine):
+            return Response(status_code=204)
+
         # AivisSpeech Engine ではスタイル ID に対応する AivmManifest を取得後、
         # AIVM マニフェスト記載の UUID に対応する音声合成モデルをロードする
         aivm_manifest, _, _ = aivm_manager.get_aivm_manifest_from_style_id(style_id)
@@ -224,6 +227,10 @@ def generate_speaker_router(
         """
         # core = get_core(core_version)
         # return core.is_initialized_style_id_synthesis(style_id)
+
+        # テスト用 TTSEngine の場合は常に True を返す
+        if not isinstance(tts_engine, StyleBertVITS2TTSEngine):
+            return True
 
         # AivisSpeech Engine ではスタイル ID に対応する AivmManifest を取得後、
         # AIVM マニフェスト記載の UUID に対応する音声合成モデルがロードされているかどうかを返す

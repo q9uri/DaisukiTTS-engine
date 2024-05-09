@@ -72,7 +72,7 @@
       "license": "BSD License",
       "name": "Jinja2",
       "text": "MD5:5dc88300786f1c214c1e9827a5229462",
-      "version": "3.1.3"
+      "version": "3.1.4"
     },
     {
       "license": "BSD License",
@@ -834,7 +834,7 @@
       "license": "MIT License; Mozilla Public License 2.0 (MPL 2.0)",
       "name": "tqdm",
       "text": "MD5:42dfa9e8c616dbc295df3f58d756b2a1",
-      "version": "4.66.2"
+      "version": "4.66.3"
     },
     {
       "license": "Apache Software License",
@@ -913,7 +913,6 @@
   "icon": "MD5:28a47331f1e7a5d2f8a38e861a43ff99",
   "manifest_version": "0.13.1",
   "name": "AivisSpeech Engine",
-  "supported_aivm_manifest_version": "1.0.0",
   "supported_features": {
     "adjust_intonation_scale": true,
     "adjust_mora_pitch": false,
@@ -926,6 +925,7 @@
     "sing": false,
     "synthesis_morphing": false
   },
+  "supported_vvlib_manifest_version": null,
   "terms_of_service": "MD5:5802e1b6e37cf8b1bcf6d10849cf51f2",
   "update_infos": [
     {

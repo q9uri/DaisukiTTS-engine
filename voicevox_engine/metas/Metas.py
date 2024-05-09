@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import List, Literal, NewType, Optional
+from typing import Literal, NewType
 
 from pydantic import BaseModel, Field
 
@@ -16,7 +16,7 @@ class SpeakerStyle(BaseModel):
 
     name: str = Field(title="スタイル名")
     id: StyleId = Field(title="スタイルID")
-    type: Optional[StyleType] = Field(
+    type: StyleType | None = Field(
         default="talk",
         title=(
             "スタイルの種類。"
@@ -49,33 +49,18 @@ class SpeakerSupportedFeatures(BaseModel):
     )
 
 
-class CoreSpeaker(BaseModel):
-    """
-    コアに含まれる話者情報
-    """
-
-    name: str = Field(title="名前")
-    speaker_uuid: str = Field(title="話者の UUID")
-    styles: List[SpeakerStyle] = Field(title="スタイルの一覧")
-    version: str = Field("話者のバージョン")
-
-
-class EngineSpeaker(BaseModel):
-    """
-    エンジンに含まれる話者情報
-    """
-
-    supported_features: SpeakerSupportedFeatures = Field(
-        title="話者の対応機能", default_factory=SpeakerSupportedFeatures
-    )
-
-
-class Speaker(CoreSpeaker, EngineSpeaker):
+class Speaker(BaseModel):
     """
     話者情報
     """
 
-    pass
+    name: str = Field(title="名前")
+    speaker_uuid: str = Field(title="話者のUUID")
+    styles: list[SpeakerStyle] = Field(title="スタイルの一覧")
+    version: str = Field("話者のバージョン")
+    supported_features: SpeakerSupportedFeatures = Field(
+        title="話者の対応機能", default_factory=SpeakerSupportedFeatures
+    )
 
 
 class StyleInfo(BaseModel):
@@ -83,18 +68,18 @@ class StyleInfo(BaseModel):
     スタイルの追加情報
     """
 
-    id: StyleId = Field(title="スタイル ID")
-    icon: str = Field(title="当該スタイルのアイコンを Base64 エンコードしたもの")
-    portrait: Optional[str] = Field(
+    id: StyleId = Field(title="スタイルID")
+    icon: str = Field(title="当該スタイルのアイコンをbase64エンコードしたもの")
+    portrait: str | None = Field(
         default=None,
-        title="当該スタイルの portrait.png を Base64 エンコードしたもの",
+        title="当該スタイルのportrait.pngをbase64エンコードしたもの",
     )
-    voice_samples: List[str] = Field(
-        title="ボイスサンプルの wav ファイルを Base64 エンコードしたもの",
+    voice_samples: list[str] = Field(
+        title="ボイスサンプルの音声ファイルをbase64エンコードしたもの"
     )
-    voice_sample_transcripts: List[str] = Field(
+    voice_sample_transcripts: list[str] = Field(
         default=[],
-        title="ボイスサンプルの書き起こしテキスト",
+        title="ボイスサンプルの書き起こしテキスト (voice_samples の配列インデックスと対応し、存在しない場合は空文字列)",
     )
 
 
@@ -103,6 +88,6 @@ class SpeakerInfo(BaseModel):
     話者の追加情報
     """
 
-    policy: str = Field(title="利用規約")
-    portrait: str = Field(title="portrait.png を Base64 エンコードしたもの")
-    style_infos: List[StyleInfo] = Field(title="スタイルの追加情報")
+    policy: str = Field(title="policy.md")
+    portrait: str = Field(title="portrait.pngをbase64エンコードしたもの")
+    style_infos: list[StyleInfo] = Field(title="スタイルの追加情報")
