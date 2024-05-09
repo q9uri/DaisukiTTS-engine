@@ -518,10 +518,10 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         ## 出力音声は int16 型の NDArray で返される
         logger.info("Running inference...")
         logger.info(f"Text: {text}")
-        logger.info(f"         Speed: {query.speedScale} (Raw: {length:.2f})")
-        logger.info(f"  Style Weight: {query.intonationScale} (Raw: {style_weight:.2f})")  # fmt: skip
-        logger.info(f"Tempo Dynamics: {query.tempoDynamicsScale} (Raw: {sdp_ratio:.2f})")  # fmt: skip
-        logger.info(f"         Pitch: {query.pitchScale} (Raw: {pitch_scale:.2f})")
+        logger.info(f"         Speed: {length:.2f} (Input: {query.speedScale:.2f})")
+        logger.info(f"  Style Weight: {style_weight:.2f} (Input: {query.intonationScale:.2f})")  # fmt: skip
+        logger.info(f"Tempo Dynamics: {sdp_ratio:.2f} (Input: {query.tempoDynamicsScale:.2f})")  # fmt: skip
+        logger.info(f"         Pitch: {pitch_scale:.2f} (Input: {query.pitchScale:.2f})")  # fmt: skip
         logger.info(f"        Volume: {query.volumeScale:.2f}")
         logger.info(f"   Pre-Silence: {query.prePhonemeLength:.2f}")
         logger.info(f"  Post-Silence: {query.postPhonemeLength:.2f}")
