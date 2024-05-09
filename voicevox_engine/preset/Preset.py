@@ -12,21 +12,46 @@ class Preset(BaseModel):
     name: str = Field(title="プリセット名")
     speaker_uuid: str = Field(title="話者の UUID")
     style_id: StyleId = Field(title="スタイル ID")
-    styleStrengthScale: float = Field(
-        default=5.0,
-        title="全体のスタイルの強さ (AivisSpeech Engine 固有のフィールド)",
+    speedScale: float = Field(
+        title="全体の話速",
         description=(
-            "指定された話者のスタイルをどの程度全体に反映するかを指定する。\n"
-            "例えばスタイルが Happy ならば、この値を大きくするほど全体の話し方が明るくなる。\n"
-            "一方値を大きくしすぎると発声がおかしくなりがちなので、適宜調整が必要。\n"
-            "VOICEVOX ENGINE との互換性のため、未指定時はデフォルト値が適用される。"
+            "全体の話速を 0.5 ~ 2.0 の範囲で指定する (デフォルト: 1.0) 。\n"
+            "2.0 で 2 倍速、0.5 で 0.5 倍速になる。"
         ),
     )
     intonationScale: float = Field(
-        title="全体のテンポの緩急 (抑揚設定ではない点で VOICEVOX ENGINE と異なる)"
+        title="全体のスタイルの強さ (「全体の抑揚」ではない点で VOICEVOX ENGINE と異なる)",
+        description=(
+            "話者スタイルの声色の強弱を 0.0 ~ 2.0 の範囲で指定する (デフォルト: 1.0) 。\n"
+            "値が大きいほどそのスタイルに近い抑揚がついた声になる。\n"
+            "例えば話者スタイルが「うれしい」なら、値が大きいほどより嬉しそうな明るい話し方になる。\n"
+            "一方スタイルによっては値を大きくしすぎると不自然な棒読みボイスになりがちなので、適宜調整が必要。\n"
+            "全スタイルの平均であるノーマルスタイルには指定できない (値にかかわらず無視される) 。"
+        ),
     )
-    speedScale: float = Field(title="全体の話速")
-    pitchScale: float = Field(title="全体の音高")
-    volumeScale: float = Field(title="全体の音量")
-    prePhonemeLength: float = Field(title="音声の前の無音時間")
-    postPhonemeLength: float = Field(title="音声の後の無音時間")
+    tempoDynamicsScale: float = Field(
+        default=1.0,
+        title="全体のテンポの緩急 (AivisSpeech Engine 固有のフィールド)",
+        description=(
+            "話す速さの緩急の強弱を 0.0 ~ 2.0 の範囲で指定する (デフォルト: 1.0) 。\n"
+            "値が大きいほどより早口で生っぽい抑揚がついた声になる。\n"
+            "VOICEVOX ENGINE との互換性のため、未指定時はデフォルト値が適用される。"
+        ),
+    )
+    pitchScale: float = Field(
+        title="全体の音高",
+        description=(
+            "全体の音高を -0.15 ~ 0.15 の範囲で指定する (デフォルト: 0.0) 。\n"
+            "値が大きいほど高い声になる。\n"
+            "VOICEVOX ENGINE と異なり、この値を 0.0 から変更すると音質が劣化するため注意が必要。"
+        ),
+    )
+    volumeScale: float = Field(
+        title="全体の音量",
+        description=(
+            "全体の音量を 0.0 ~ 2.0 の範囲で指定する (デフォルト: 1.0) 。\n"
+            "値が大きいほど大きな声になる。"
+        ),
+    )
+    prePhonemeLength: float = Field(title="音声の前の無音時間 (秒)")
+    postPhonemeLength: float = Field(title="音声の後の無音時間 (秒)")

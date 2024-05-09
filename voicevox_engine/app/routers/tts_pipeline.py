@@ -59,11 +59,11 @@ def generate_tts_pipeline_router(
         accent_phrases = engine.create_accent_phrases(text, style_id)
         return AudioQuery(
             accent_phrases=accent_phrases,
-            styleStrengthScale=5.0,
-            intonationScale=1,
-            speedScale=1,
-            pitchScale=0,
-            volumeScale=1,
+            speedScale=1.0,
+            intonationScale=1.0,
+            tempoDynamicsScale=1.0,
+            pitchScale=0.0,
+            volumeScale=1.0,
             prePhonemeLength=0.1,
             postPhonemeLength=0.1,
             outputSamplingRate=core.default_sampling_rate,
@@ -106,9 +106,9 @@ def generate_tts_pipeline_router(
         accent_phrases = engine.create_accent_phrases(text, selected_preset.style_id)
         return AudioQuery(
             accent_phrases=accent_phrases,
-            styleStrengthScale=selected_preset.styleStrengthScale,
-            intonationScale=selected_preset.intonationScale,
             speedScale=selected_preset.speedScale,
+            intonationScale=selected_preset.intonationScale,
+            tempoDynamicsScale=selected_preset.tempoDynamicsScale,
             pitchScale=selected_preset.pitchScale,
             volumeScale=selected_preset.volumeScale,
             prePhonemeLength=selected_preset.prePhonemeLength,

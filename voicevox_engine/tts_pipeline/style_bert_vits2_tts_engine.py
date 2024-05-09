@@ -9,7 +9,11 @@ import numpy as np
 import torch
 import torch.version
 from numpy.typing import NDArray
-from style_bert_vits2.constants import DEFAULT_SDP_RATIO, Languages
+from style_bert_vits2.constants import (
+    DEFAULT_SDP_RATIO,
+    DEFAULT_STYLE_WEIGHT,
+    Languages,
+)
 from style_bert_vits2.logging import logger as style_bert_vits2_logger
 from style_bert_vits2.nlp import bert_models
 from style_bert_vits2.nlp.japanese.g2p_utils import g2kata_tone, kata_tone2phone_tone
@@ -475,21 +479,36 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         if local_style_name is None:
             raise ValueError(f"Style ID {local_style_id} not found in hyper parameters.")  # fmt: skip
 
-        # スタイルの強さ
-        style_strength = max(0.0, query.styleStrengthScale)
-        # SDP Ratio を「テンポの緩急」の比率として指定
-        ## VOICEVOX では「抑揚」の比率だが、AivisSpeech では声のテンポの緩急を指定する値としている
-        ## Style-Bert-VITS2 にも一応「抑揚」パラメータはあるが、pyworld で変換している関係で音質が明確に劣化する上、あまり効果がない
-        ## intonationScale の基準は 1.0 (0 ~ 2) なので、DEFAULT_SDP_RATIO を基準とした 0 ~ 1 の範囲に変換する
-        if 0.0 <= query.intonationScale <= 1.0:
-            sdp_ratio = query.intonationScale * DEFAULT_SDP_RATIO
-        elif 1.0 < query.intonationScale <= 2.0:
-            sdp_ratio = DEFAULT_SDP_RATIO + (query.intonationScale - 1.0) * 0.8 / 1.0
-        else:
-            sdp_ratio = DEFAULT_SDP_RATIO
         # 話速
         ## ref: https://github.com/litagin02/Style-Bert-VITS2/blob/2.4.1/server_editor.py#L314
         length = 1 / max(0.0, query.speedScale)
+
+        # スタイルの強さ
+        ## VOICEVOX では「抑揚」の比率だが、AivisSpeech では声のテンポの緩急を指定する値としている
+        ## intonationScale の基準は 1.0 (0 ~ 2) なので、DEFAULT_STYLE_WEIGHT を基準とした 0 ~ 10 の範囲に変換する
+        if 0.0 <= query.intonationScale <= 1.0:
+            style_weight = query.intonationScale * DEFAULT_STYLE_WEIGHT
+        elif 1.0 < query.intonationScale <= 2.0:
+            style_weight = (
+                DEFAULT_STYLE_WEIGHT
+                + (query.intonationScale - 1.0) * (10.0 - DEFAULT_STYLE_WEIGHT) / 1.0
+            )
+        else:
+            style_weight = DEFAULT_STYLE_WEIGHT
+
+        # テンポの緩急 (SDP Ratio)
+        ## Style-Bert-VITS2 にも一応「抑揚」パラメータはあるが、pyworld で変換している関係で明確に音質が劣化する上、あまり効果がない
+        ## tempoDynamicsScale の基準は 1.0 (0 ~ 2) なので、DEFAULT_SDP_RATIO を基準とした 0 ~ 1 の範囲に変換する
+        if 0.0 <= query.tempoDynamicsScale <= 1.0:
+            sdp_ratio = query.tempoDynamicsScale * DEFAULT_SDP_RATIO
+        elif 1.0 < query.tempoDynamicsScale <= 2.0:
+            sdp_ratio = (
+                DEFAULT_SDP_RATIO
+                + (query.tempoDynamicsScale - 1.0) * (1.0 - DEFAULT_SDP_RATIO) / 1.0
+            )
+        else:
+            sdp_ratio = DEFAULT_SDP_RATIO
+
         # ピッチ
         ## 0.0 以外を指定すると音質が劣化するので基本使わない
         ## pitchScale の基準は 0.0 (-1 ~ 1) なので、1.0 を基準とした 0 ~ 2 の範囲に変換する
@@ -499,10 +518,10 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         ## 出力音声は int16 型の NDArray で返される
         logger.info("Running inference...")
         logger.info(f"Text: {text}")
-        logger.info(f"Style Strength: {style_strength:.2f}")
-        logger.info(f"     SDP Ratio: {sdp_ratio:.2f} (Query: {query.intonationScale})")
-        logger.info(f"         Speed: {length:.2f} (Query: {query.speedScale})")
-        logger.info(f"         Pitch: {pitch_scale:.2f} (Query: {query.pitchScale})")
+        logger.info(f"         Speed: {query.speedScale} (Raw: {length:.2f})")
+        logger.info(f"  Style Weight: {query.intonationScale} (Raw: {style_weight:.2f})")  # fmt: skip
+        logger.info(f"Tempo Dynamics: {query.tempoDynamicsScale} (Raw: {sdp_ratio:.2f})")  # fmt: skip
+        logger.info(f"         Pitch: {query.pitchScale} (Raw: {pitch_scale:.2f})")
         logger.info(f"        Volume: {query.volumeScale:.2f}")
         logger.info(f"   Pre-Silence: {query.prePhonemeLength:.2f}")
         logger.info(f"  Post-Silence: {query.postPhonemeLength:.2f}")
@@ -514,7 +533,7 @@ class StyleBertVITS2TTSEngine(TTSEngine):
             language=Languages.JP,
             speaker_id=local_speaker_id,
             style=local_style_name,
-            style_weight=style_strength,
+            style_weight=style_weight,
             sdp_ratio=sdp_ratio,
             length=length,
             pitch_scale=pitch_scale,

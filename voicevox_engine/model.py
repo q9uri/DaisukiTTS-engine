@@ -56,37 +56,62 @@ class AudioQuery(BaseModel):
     """
 
     accent_phrases: list[AccentPhrase] = Field(title="アクセント句のリスト")
-    styleStrengthScale: float = Field(
-        default=5.0,
-        title="全体のスタイルの強さ (AivisSpeech Engine 固有のフィールド)",
+    speedScale: float = Field(
+        title="全体の話速",
         description=(
-            "指定された話者のスタイルをどの程度全体に反映するかを指定する。\n"
-            "例えばスタイルが Happy ならば、この値を大きくするほど全体の話し方が明るくなる。\n"
-            "一方値を大きくしすぎると発声がおかしくなりがちなので、適宜調整が必要。\n"
-            "VOICEVOX ENGINE との互換性のため、未指定時はデフォルト値が適用される。"
+            "全体の話速を 0.5 ~ 2.0 の範囲で指定する (デフォルト: 1.0) 。\n"
+            "2.0 で 2 倍速、0.5 で 0.5 倍速になる。"
         ),
     )
     intonationScale: float = Field(
-        title="全体のテンポの緩急 (抑揚設定ではない点で VOICEVOX ENGINE と異なる)"
+        title="全体のスタイルの強さ (「全体の抑揚」ではない点で VOICEVOX ENGINE と異なる)",
+        description=(
+            "話者スタイルの声色の強弱を 0.0 ~ 2.0 の範囲で指定する (デフォルト: 1.0) 。\n"
+            "値が大きいほどそのスタイルに近い抑揚がついた声になる。\n"
+            "例えば話者スタイルが「うれしい」なら、値が大きいほどより嬉しそうな明るい話し方になる。\n"
+            "一方スタイルによっては値を大きくしすぎると不自然な棒読みボイスになりがちなので、適宜調整が必要。\n"
+            "全スタイルの平均であるノーマルスタイルには指定できない (値にかかわらず無視される) 。"
+        ),
     )
-    speedScale: float = Field(title="全体の話速")
-    pitchScale: float = Field(title="全体の音高")
-    volumeScale: float = Field(title="全体の音量")
-    prePhonemeLength: float = Field(title="音声の前の無音時間")
-    postPhonemeLength: float = Field(title="音声の後の無音時間")
+    tempoDynamicsScale: float = Field(
+        default=1.0,
+        title="全体のテンポの緩急 (AivisSpeech Engine 固有のフィールド)",
+        description=(
+            "話す速さの緩急の強弱を 0.0 ~ 2.0 の範囲で指定する (デフォルト: 1.0) 。\n"
+            "値が大きいほどより早口で生っぽい抑揚がついた声になる。\n"
+            "VOICEVOX ENGINE との互換性のため、未指定時はデフォルト値が適用される。"
+        ),
+    )
+    pitchScale: float = Field(
+        title="全体の音高",
+        description=(
+            "全体の音高を -0.15 ~ 0.15 の範囲で指定する (デフォルト: 0.0) 。\n"
+            "値が大きいほど高い声になる。\n"
+            "VOICEVOX ENGINE と異なり、この値を 0.0 から変更すると音質が劣化するため注意が必要。"
+        ),
+    )
+    volumeScale: float = Field(
+        title="全体の音量",
+        description=(
+            "全体の音量を 0.0 ~ 2.0 の範囲で指定する (デフォルト: 1.0) 。\n"
+            "値が大きいほど大きな声になる。"
+        ),
+    )
+    prePhonemeLength: float = Field(title="音声の前の無音時間 (秒)")
+    postPhonemeLength: float = Field(title="音声の後の無音時間 (秒)")
     outputSamplingRate: int = Field(title="音声データの出力サンプリングレート")
     outputStereo: bool = Field(title="音声データをステレオ出力するか否か")
     kana: str | None = Field(
         default=None,
-        title="読み上げるテキスト (AquesTalk 風記法テキストではない点で VOICEVOX ENGINE と異なる)",
+        title="読み上げるテキスト (「読みの AquesTalk 風記法テキスト」ではない点で VOICEVOX ENGINE と異なる)",
         description=(
-            "読み上げるテキスト。\n"
+            "読み上げるテキストを指定する。\n"
             "VOICEVOX ENGINE では AquesTalk 風記法テキストが入る読み取り専用フィールドだが (音声合成時には無視される) 、"
             "AivisSpeech Engine では音声合成時に漢字や記号が含まれた通常の読み上げテキストも必要なため、"
             "苦肉の策で読み上げテキスト指定用のフィールドとして転用した。\n"
             "VOICEVOX ENGINE との互換性のため None や空文字列が指定された場合も動作するが、"
             "その場合はアクセント句から自動生成されたひらがな文字列が読み上げテキストになるため、不自然なイントネーションになってしまう。\n"
-            "可能な限り kana に読み上げテキストを指定した上で音声合成 API に渡すことを推奨する。"
+            "可能な限り kana に通常の読み上げテキストを指定した上で音声合成 API に渡すことを推奨する。"
         ),
     )
 
