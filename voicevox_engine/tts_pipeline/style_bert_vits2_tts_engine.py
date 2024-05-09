@@ -168,7 +168,7 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         擬似的にアクセント句系列 AccentPhrase を生成する形で実装している
         こうすることで、VOICEVOX ENGINE (pyopenjtalk) では一律削除されてしまう句読点や記号を保持した状態でアクセント句系列を生成できる
         VOICEVOX ENGINE と異なりスタイル ID に基づいてその音素長・モーラ音高を更新することは原理上不可能なため、
-        音素長・モーラ音高はモック版 VOICEVOX CORE によってランダム生成されたダミーデータが入った状態で返される
+        音素長・モーラ音高は常にダミー値で返される
 
         Parameters
         ----------
@@ -306,10 +306,45 @@ class StyleBertVITS2TTSEngine(TTSEngine):
                 )
             )
 
-        # モック版 VOICEVOX CORE を使ってダミーの音素長・モーラ音高を生成
+        # ダミーの音素長・モーラ音高を生成
         ## VOICEVOX ENGINE と異なりスタイル ID に基づいてその音素長・モーラ音高を更新することは原理上不可能なため、
-        ## 音素長・モーラ音高はモック版 VOICEVOX CORE によってランダム生成されたダミーデータが入った状態で返される
+        ## 音素長・モーラ音高は常にダミー値で返される
+        ## 上記処理ですでにダミーデータは入れられているのだが、念のため
         accent_phrases = self.update_length_and_pitch(accent_phrases, style_id)
+        return accent_phrases
+
+    def update_length(
+        self, accent_phrases: list[AccentPhrase], style_id: StyleId
+    ) -> list[AccentPhrase]:
+        """
+        アクセント句系列に含まれるモーラの音素長属性をスタイルに合わせて更新する
+        VOICEVOX ENGINE と異なりスタイル ID に基づいてその音素長を更新することは原理上不可能なため、常にダミー値が入る
+        モック版 VOICEVOX CORE を使うとスタイル ID をベースに無意味に生成した巨大な値が音素長に設定されるため、敢えて使っていない
+        """
+
+        for accent_phrase in accent_phrases:
+            for mora in accent_phrase.moras:
+                # consonant_length は子音が None でない場合のみ更新
+                if mora.consonant is not None:
+                    mora.consonant_length = 0.0
+                else:
+                    mora.consonant_length = None
+                # vowel_length は常にダミー値
+                mora.vowel_length = 0.0
+        return accent_phrases
+
+    def update_pitch(
+        self, accent_phrases: list[AccentPhrase], style_id: StyleId
+    ) -> list[AccentPhrase]:
+        """
+        アクセント句系列に含まれるモーラの音高属性をスタイルに合わせて更新する
+        VOICEVOX ENGINE と異なりスタイル ID に基づいてその音高を更新することは原理上不可能なため、常にダミー値が入る
+        モック版 VOICEVOX CORE を使うとスタイル ID をベースに無意味に生成した巨大な値が音高に設定されるため、敢えて使っていない
+        """
+
+        for accent_phrase in accent_phrases:
+            for mora in accent_phrase.moras:
+                mora.pitch = 0.0
         return accent_phrases
 
     def synthesize_wave(
