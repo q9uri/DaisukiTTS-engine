@@ -26,7 +26,7 @@ def generate_speaker_router(
     router = APIRouter()
     tts_engine = get_engine(None)
 
-    @router.get("/speakers", response_model=list[Speaker], tags=["その他"])
+    @router.get("/speakers", tags=["その他"])
     def speakers(
         core_version: Annotated[str | None, Query(description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。")] = None,  # fmt: skip # noqa
     ) -> list[Speaker]:
@@ -35,7 +35,7 @@ def generate_speaker_router(
         # speakers = metas_store.load_combined_metas(get_core(core_version))
         # return filter_speakers_and_styles(speakers, "speaker")
 
-    @router.get("/speaker_info", response_model=SpeakerInfo, tags=["その他"])
+    @router.get("/speaker_info", tags=["その他"])
     def speaker_info(
         speaker_uuid: Annotated[str, Query(..., description="話者の UUID 。")],  # noqa
         core_version: Annotated[str | None, Query(description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。")] = None,  # fmt: skip # noqa
@@ -149,7 +149,6 @@ def generate_speaker_router(
 
     @router.get(
         "/singers",
-        response_model=list[Speaker],
         tags=["その他"],
         summary="AivisSpeech Engine ではサポートされていない API です (常に 501 Not Implemented を返します)",
     )
@@ -166,7 +165,6 @@ def generate_speaker_router(
 
     @router.get(
         "/singer_info",
-        response_model=SpeakerInfo,
         tags=["その他"],
         summary="AivisSpeech Engine ではサポートされていない API です (常に 501 Not Implemented を返します)",
     )
@@ -217,7 +215,7 @@ def generate_speaker_router(
         tts_engine.load_model(aivm_manifest.uuid)
         return Response(status_code=204)
 
-    @router.get("/is_initialized_speaker", response_model=bool, tags=["その他"])
+    @router.get("/is_initialized_speaker", tags=["その他"])
     def is_initialized_speaker(
         style_id: Annotated[StyleId, Query(alias="speaker")],
         core_version: Annotated[str | None, Query(description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。")] = None,  # fmt: skip # noqa

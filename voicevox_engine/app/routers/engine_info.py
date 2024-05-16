@@ -21,10 +21,12 @@ def generate_engine_info_router(
 
     @router.get("/version", tags=["その他"])
     async def version() -> str:
+        """エンジンのバージョンを取得します。"""
         return __version__
 
     @router.get("/core_versions", response_model=list[str], tags=["その他"])
     async def core_versions() -> Response:
+        """利用可能なコアのバージョン一覧を取得します。"""
         return Response(
             content=json.dumps(list(cores.keys())),
             media_type="application/json",
@@ -36,6 +38,7 @@ def generate_engine_info_router(
     def supported_devices(
         core_version: Annotated[str | None, Query(description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。")] = None,  # fmt: skip # noqa
     ) -> Response:
+        """対応デバイスの一覧を取得します。"""
         supported_devices = get_core(core_version).supported_devices
         if supported_devices is None:
             raise HTTPException(status_code=422, detail="非対応の機能です。")
@@ -46,6 +49,7 @@ def generate_engine_info_router(
 
     @router.get("/engine_manifest", response_model=EngineManifest, tags=["その他"])
     async def engine_manifest() -> EngineManifest:
+        """エンジンマニフェストを取得します。"""
         return engine_manifest_data
 
     return router

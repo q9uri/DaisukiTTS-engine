@@ -22,12 +22,12 @@ from voicevox_engine.model import (
 )
 from voicevox_engine.preset.PresetError import PresetInputError, PresetInternalError
 from voicevox_engine.preset.PresetManager import PresetManager
-from voicevox_engine.tts_pipeline.kana_converter import parse_kana
-from voicevox_engine.tts_pipeline.tts_engine import TTSEngine
-from voicevox_engine.utility.connect_base64_waves import (
+from voicevox_engine.tts_pipeline.connect_base64_waves import (
     ConnectBase64WavesException,
     connect_base64_waves,
 )
+from voicevox_engine.tts_pipeline.kana_converter import parse_kana
+from voicevox_engine.tts_pipeline.tts_engine import TTSEngine
 from voicevox_engine.utility.path_utility import delete_file
 
 
@@ -42,7 +42,6 @@ def generate_tts_pipeline_router(
 
     @router.post(
         "/audio_query",
-        response_model=AudioQuery,
         tags=["クエリ作成"],
         summary="音声合成用のクエリを作成する",
     )
@@ -74,7 +73,6 @@ def generate_tts_pipeline_router(
 
     @router.post(
         "/audio_query_from_preset",
-        response_model=AudioQuery,
         tags=["クエリ作成"],
         summary="音声合成用のクエリをプリセットを用いて作成する",
     )
@@ -121,7 +119,6 @@ def generate_tts_pipeline_router(
 
     @router.post(
         "/accent_phrases",
-        response_model=list[AccentPhrase],
         tags=["クエリ編集"],
         summary="テキストからアクセント句を得る",
         responses={
@@ -159,7 +156,6 @@ def generate_tts_pipeline_router(
 
     @router.post(
         "/mora_data",
-        response_model=list[AccentPhrase],
         tags=["クエリ編集"],
         summary="アクセント句から音高・音素長を得る",
     )
@@ -173,7 +169,6 @@ def generate_tts_pipeline_router(
 
     @router.post(
         "/mora_length",
-        response_model=list[AccentPhrase],
         tags=["クエリ編集"],
         summary="アクセント句から音素長を得る",
     )
@@ -187,7 +182,6 @@ def generate_tts_pipeline_router(
 
     @router.post(
         "/mora_pitch",
-        response_model=list[AccentPhrase],
         tags=["クエリ編集"],
         summary="アクセント句から音高を得る",
     )
@@ -330,7 +324,6 @@ def generate_tts_pipeline_router(
 
     @router.post(
         "/sing_frame_audio_query",
-        response_model=FrameAudioQuery,
         tags=["クエリ作成"],
         # summary="歌唱音声合成用のクエリを作成する",
         summary="AivisSpeech Engine ではサポートされていない API です (常に 501 Not Implemented を返します)",
@@ -365,7 +358,6 @@ def generate_tts_pipeline_router(
 
     @router.post(
         "/sing_frame_volume",
-        response_model=list[float],
         tags=["クエリ編集"],
         # summary="スコア・歌唱音声合成用のクエリからフレームごとの音量を得る",
         summary="AivisSpeech Engine ではサポートされていない API です (常に 501 Not Implemented を返します)",
@@ -464,7 +456,6 @@ def generate_tts_pipeline_router(
 
     @router.post(
         "/validate_kana",
-        response_model=bool,
         tags=["その他"],
         summary="テキストが AquesTalk 風記法に従っているか判定する",
         responses={

@@ -6,7 +6,9 @@ from platformdirs import user_data_dir
 
 
 def engine_root() -> Path:
-    if is_development():
+    """エンジンのルートディレクトリを指すパスを取得する。"""
+    if _is_development():
+        # git レポジトリのルートを指している
         root_dir = Path(__file__).parents[2]
 
     # Nuitka/Pyinstallerでビルドされている場合
@@ -16,9 +18,9 @@ def engine_root() -> Path:
     return root_dir.resolve(strict=True)
 
 
-def is_development() -> bool:
+def _is_development() -> bool:
     """
-    開発版かどうか判定する関数
+    動作環境が開発版であるか否かを返す。
     Nuitka/Pyinstallerでコンパイルされていない場合は開発環境とする。
     """
     # nuitkaビルドをした際はグローバルに__compiled__が含まれる
@@ -33,8 +35,10 @@ def is_development() -> bool:
 
 
 def get_save_dir() -> Path:
+    """ファイルの保存先ディレクトリを指すパスを取得する。"""
+
     # FIXME: ファイル保存場所をエンジン固有のIDが入ったものにする
-    if is_development():
+    if _is_development():
         app_name = "AivisSpeech-Engine-Dev"
     else:
         app_name = "AivisSpeech-Engine"
@@ -42,6 +46,7 @@ def get_save_dir() -> Path:
 
 
 def delete_file(file_path: str) -> None:
+    """指定されたファイルを削除する。"""
     try:
         os.remove(file_path)
     except OSError:

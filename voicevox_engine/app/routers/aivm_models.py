@@ -18,7 +18,6 @@ def generate_aivm_models_router(aivm_manager: AivmManager) -> APIRouter:
 
     @router.get(
         "/aivm_models",
-        response_model=dict[str, AivmInfo],
         response_description="インストールした音声合成モデルの情報",
         tags=["音声合成モデル管理"],
     )
@@ -63,7 +62,6 @@ def generate_aivm_models_router(aivm_manager: AivmManager) -> APIRouter:
 
     @router.get(
         "/aivm_models/{aivm_uuid}/manifest",
-        response_model=AivmManifest,
         tags=["音声合成モデル管理"],
     )
     def get_aivm_manifest(
