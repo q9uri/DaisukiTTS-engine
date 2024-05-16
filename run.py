@@ -288,7 +288,7 @@ def main() -> None:
     latest_core_version = MOCK_VER
 
     # AivmManager を初期化
-    aivm_manager = AivmManager(get_save_dir() / "installed_aivm")
+    aivm_manager = AivmManager(get_save_dir() / "aivm_models")
 
     # StyleBertVITS2TTSEngine を TTSEngine の代わりに利用
     tts_engines: dict[str, TTSEngine] = {

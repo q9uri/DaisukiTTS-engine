@@ -39,7 +39,7 @@ if __name__ == "__main__":
     # FastAPI の機能を用いて OpenAPI schema を生成する
     app = generate_app(
         tts_engines={"mock": MockTTSEngine()},
-        aivm_manager=AivmManager(get_save_dir() / "installed_aivm"),
+        aivm_manager=AivmManager(get_save_dir() / "aivm_models"),
         cores={"mock": CoreAdapter(mock_core)},
         latest_core_version="mock",
         setting_loader=SettingHandler(USER_SETTING_PATH),
