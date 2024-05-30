@@ -28,19 +28,16 @@ jobs:
         run: pipx install poetry
 
       - name: <Setup> Set up Python
-        id: setup-python
         uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: poetry
 
       - name: <Setup> Install Python dependencies
-        run: |
-          poetry install --only=main
+        run: poetry install --only=main
 
       - name: <Build> Make documents
-        run: |
-          PYTHONPATH=. poetry run python build_util/make_docs.py
+        run: PYTHONPATH=. poetry run python build_util/make_docs.py
 
       - name: <Deploy> Deploy documents to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3

@@ -100,13 +100,12 @@ RUN <<EOF
 EOF
 
 # Add local files
-ADD ./voicevox_engine /opt/aivisspeech-engine/voicevox_engine/
-ADD ./docs /opt/aivisspeech-engine/docs/
+ADD ./aivisspeech-engine /opt/aivisspeech-engine/aivisspeech-engine
+ADD ./docs /opt/aivisspeech-engine/docs
 ADD ./run.py ./presets.yaml ./engine_manifest.json /opt/aivisspeech-engine/
+ADD ./resources /opt/aivisspeech-engine/resources
 ADD ./build_util/generate_licenses.py /opt/aivisspeech-engine/build_util/
-ADD ./ui_template /opt/aivisspeech-engine/ui_template/
-ADD ./engine_manifest_assets /opt/aivisspeech-engine/engine_manifest_assets/
-ADD ./dictionaries /opt/aivisspeech-engine/dictionaries/
+ADD ./build_util/licenses /opt/aivisspeech-engine/build_util/licenses
 
 # Replace version
 ARG AIVISSPEECH_ENGINE_VERSION=latest

@@ -1,9 +1,9 @@
 """話者情報機能を提供する API Router"""
 
 import base64
-from typing import Annotated, Callable
+from typing import Annotated
 
-from fastapi import APIRouter, HTTPException, Query, Response
+from fastapi import APIRouter, HTTPException, Query
 
 from voicevox_engine.aivm_manager import AivmManager
 from voicevox_engine.metas.Metas import StyleId
@@ -11,7 +11,7 @@ from voicevox_engine.model import Speaker, SpeakerInfo
 from voicevox_engine.tts_pipeline.style_bert_vits2_tts_engine import (
     StyleBertVITS2TTSEngine,
 )
-from voicevox_engine.tts_pipeline.tts_engine import TTSEngine
+from voicevox_engine.tts_pipeline.tts_engine import TTSEngineManager
 
 
 def b64encode_str(s: bytes) -> str:
@@ -19,23 +19,23 @@ def b64encode_str(s: bytes) -> str:
 
 
 def generate_speaker_router(
-    get_engine: Callable[[str | None], TTSEngine],
+    tts_engines: TTSEngineManager,
     aivm_manager: AivmManager,
 ) -> APIRouter:
     """話者情報 API Router を生成する"""
-    router = APIRouter()
-    tts_engine = get_engine(None)
+    router = APIRouter(tags=["その他"])
+    tts_engine = tts_engines.get_engine()
 
-    @router.get("/speakers", tags=["その他"])
+    @router.get("/speakers")
     def speakers(
         core_version: Annotated[str | None, Query(description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。")] = None,  # fmt: skip # noqa
     ) -> list[Speaker]:
         # AivisSpeech Engine では常に AivmManager から Speaker を取得する
         return aivm_manager.get_speakers()
-        # speakers = metas_store.load_combined_metas(get_core(core_version))
+        # speakers = metas_store.load_combined_metas(core_manager.get_core(core_version))
         # return filter_speakers_and_styles(speakers, "speaker")
 
-    @router.get("/speaker_info", tags=["その他"])
+    @router.get("/speaker_info")
     def speaker_info(
         speaker_uuid: Annotated[str, Query(..., description="話者の UUID 。")],  # noqa
         core_version: Annotated[str | None, Query(description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。")] = None,  # fmt: skip # noqa
@@ -81,49 +81,51 @@ def generate_speaker_router(
     #     #       {speaker_uuid_1}/
     #     #           ...
 
-    #     # 該当話者の検索
+    #     # 該当話者を検索する
     #     speakers = parse_obj_as(
-    #         list[Speaker], json.loads(get_core(core_version).speakers)
+    #         list[Speaker], json.loads(core_manager.get_core(core_version).speakers)
     #     )
     #     speakers = filter_speakers_and_styles(speakers, speaker_or_singer)
-    #     for i in range(len(speakers)):
-    #         if speakers[i].speaker_uuid == speaker_uuid:
-    #             speaker = speakers[i]
-    #             break
-    #     else:
+    #     speaker = next(
+    #         filter(lambda spk: spk.speaker_uuid == speaker_uuid, speakers), None
+    #     )
+    #     if speaker is None:
     #         raise HTTPException(status_code=404, detail="該当する話者が見つかりません")
 
+    #     # 話者情報を取得する
     #     try:
     #         speaker_path = root_dir / "speaker_info" / speaker_uuid
-    #         # 話者情報の取得
+
     #         # speaker policy
     #         policy_path = speaker_path / "policy.md"
     #         policy = policy_path.read_text("utf-8")
+
     #         # speaker portrait
     #         portrait_path = speaker_path / "portrait.png"
     #         portrait = b64encode_str(portrait_path.read_bytes())
-    #         # スタイル情報の取得
+
+    #         # スタイル情報を取得する
     #         style_infos = []
     #         for style in speaker.styles:
     #             id = style.id
+
     #             # style icon
     #             style_icon_path = speaker_path / "icons" / f"{id}.png"
     #             icon = b64encode_str(style_icon_path.read_bytes())
+
     #             # style portrait
     #             style_portrait_path = speaker_path / "portraits" / f"{id}.png"
     #             style_portrait = None
     #             if style_portrait_path.exists():
     #                 style_portrait = b64encode_str(style_portrait_path.read_bytes())
+
     #             # voice samples
-    #             voice_samples = [
-    #                 b64encode_str(
-    #                     (
-    #                         speaker_path
-    #                         / "voice_samples/{}_{}.wav".format(id, str(j + 1).zfill(3))
-    #                     ).read_bytes()
-    #                 )
-    #                 for j in range(3)
-    #             ]
+    #             voice_samples: list[str] = []
+    #             for j in range(3):
+    #                 num = str(j + 1).zfill(3)
+    #                 voice_path = speaker_path / "voice_samples" / f"{id}_{num}.wav"
+    #                 voice_samples.append(b64encode_str(voice_path.read_bytes()))
+
     #             style_infos.append(
     #                 {
     #                     "id": id,
@@ -133,23 +135,17 @@ def generate_speaker_router(
     #                 }
     #             )
     #     except FileNotFoundError:
-    #         import traceback
-
     #         traceback.print_exc()
-    #         raise HTTPException(
-    #             status_code=500, detail="追加情報が見つかりませんでした"
-    #         )
+    #         msg = "追加情報が見つかりませんでした"
+    #         raise HTTPException(status_code=500, detail=msg)
 
-    #     ret_data = SpeakerInfo(
-    #         policy=policy,
-    #         portrait=portrait,
-    #         style_infos=style_infos,
+    #     spk_info = SpeakerInfo(
+    #         policy=policy, portrait=portrait, style_infos=style_infos
     #     )
-    #     return ret_data
+    #     return spk_info
 
     @router.get(
         "/singers",
-        tags=["その他"],
         summary="AivisSpeech Engine ではサポートされていない API です (常に 501 Not Implemented を返します)",
     )
     def singers(
@@ -159,13 +155,11 @@ def generate_speaker_router(
             status_code=501,
             detail="Singers is not supported in AivisSpeech Engine.",
         )
-
-        # singers = metas_store.load_combined_metas(get_core(core_version))
+        # singers = metas_store.load_combined_metas(core_manager.get_core(core_version))
         # return filter_speakers_and_styles(singers, "singer")
 
     @router.get(
         "/singer_info",
-        tags=["その他"],
         summary="AivisSpeech Engine ではサポートされていない API です (常に 501 Not Implemented を返します)",
     )
     def singer_info(
@@ -180,14 +174,13 @@ def generate_speaker_router(
             status_code=501,
             detail="Singer info is not supported in AivisSpeech Engine.",
         )
-
         # return _speaker_info(
         #     speaker_uuid=speaker_uuid,
         #     speaker_or_singer="singer",
         #     core_version=core_version,
         # )
 
-    @router.post("/initialize_speaker", status_code=204, tags=["その他"])
+    @router.post("/initialize_speaker", status_code=204)
     def initialize_speaker(
         style_id: Annotated[StyleId, Query(alias="speaker")],
         skip_reinit: Annotated[
@@ -197,25 +190,24 @@ def generate_speaker_router(
             ),
         ] = False,
         core_version: Annotated[str | None, Query(description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。")] = None,  # fmt: skip # noqa
-    ) -> Response:
+    ) -> None:
         """
         指定されたスタイルを初期化します。
         実行しなくても他のAPIは使用できますが、初回実行時に時間がかかることがあります。
         """
-        # core = get_core(core_version)
+        # core = core_manager.get_core(core_version)
         # core.initialize_style_id_synthesis(style_id, skip_reinit=skip_reinit)
 
         # テスト用 TTSEngine の場合は何もしない
         if not isinstance(tts_engine, StyleBertVITS2TTSEngine):
-            return Response(status_code=204)
+            return
 
         # AivisSpeech Engine ではスタイル ID に対応する AivmManifest を取得後、
         # AIVM マニフェスト記載の UUID に対応する音声合成モデルをロードする
         aivm_manifest, _, _ = aivm_manager.get_aivm_manifest_from_style_id(style_id)
         tts_engine.load_model(aivm_manifest.uuid)
-        return Response(status_code=204)
 
-    @router.get("/is_initialized_speaker", tags=["その他"])
+    @router.get("/is_initialized_speaker")
     def is_initialized_speaker(
         style_id: Annotated[StyleId, Query(alias="speaker")],
         core_version: Annotated[str | None, Query(description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。")] = None,  # fmt: skip # noqa
@@ -223,7 +215,7 @@ def generate_speaker_router(
         """
         指定されたスタイルが初期化されているかどうかを返します。
         """
-        # core = get_core(core_version)
+        # core = core_manager.get_core(core_version)
         # return core.is_initialized_style_id_synthesis(style_id)
 
         # テスト用 TTSEngine の場合は常に True を返す

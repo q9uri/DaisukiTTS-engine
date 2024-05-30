@@ -3,4 +3,4 @@
 set -eux
 
 poetry install --with=license
-poetry run python build_util/generate_licenses.py > engine_manifest_assets/dependency_licenses.json
+poetry run python build_util/generate_licenses.py > resources/engine_manifest_assets/dependency_licenses.json

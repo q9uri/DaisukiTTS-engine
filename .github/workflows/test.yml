@@ -3,13 +3,14 @@ name: test
 on:
   push:
   pull_request:
-    branches:
-      - "**"
   workflow_dispatch:
 
 defaults:
   run:
     shell: bash
+
+env:
+  PYTHON_VERSION: "3.11.9"
 
 jobs:
   test:
@@ -17,7 +18,6 @@ jobs:
     strategy:
       matrix:
         os: [windows-latest, macos-latest, ubuntu-20.04]
-        python: ["3.11.9"]
 
     steps:
       - name: <Setup> Check out the repository
@@ -26,15 +26,14 @@ jobs:
       - name: <Setup> Install Poetry
         run: pipx install poetry
 
-      - name: <Setup> Set up Python ${{ matrix.python }}
+      - name: <Setup> Set up Python ${{ env.PYTHON_VERSION }}
         uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python }}
+          python-version: ${{ env.PYTHON_VERSION }}
           cache: poetry
 
       - name: <Setup> Install Python dependencies
-        run: |
-          poetry install --with=test
+        run: poetry install --with=test
 
       - name: <Test> Validate poetry.lock
         run: |
@@ -46,22 +45,21 @@ jobs:
 
       - name: <Test> Test codes and coverage
         run: poetry run coverage run --omit=test/* -m pytest
+
       - name: <Deploy> Submit coverage results to Coveralls
         if: matrix.os == 'ubuntu-20.04'
         run: poetry run coveralls --service=github
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Check licenses
-        shell: bash
-        run: |
-          poetry run task update-licenses
+      - name: <Test> Check licenses
+        run: poetry run task update-licenses
 
-      - name: Test names by checking typo
-        if: ${{ startsWith(matrix.os, 'ubuntu-') }}
+      - name: <Test> Test names by checking typo
+        if: matrix.os == 'ubuntu-20.04'
         uses: crate-ci/typos@v1.12.12
 
-  shellcheck:
+  lint-builders:
     runs-on: ubuntu-20.04
     steps:
       - name: <Setup> Check out the repository
@@ -74,3 +72,8 @@ jobs:
 
       - name: <Test> Check shell files
         run: git ls-files | grep -E '\.(ba)?sh' | xargs shellcheck
+
+      - name: <Test> Check workflow files
+        run: |
+          bash <(curl https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash)
+          ./actionlint

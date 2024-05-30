@@ -2,7 +2,7 @@
 
 from functools import lru_cache
 from tempfile import NamedTemporaryFile
-from typing import Annotated, Callable
+from typing import Annotated
 
 import soundfile
 from fastapi import APIRouter, HTTPException, Query
@@ -10,7 +10,7 @@ from starlette.background import BackgroundTask
 from starlette.responses import FileResponse
 
 from voicevox_engine.aivm_manager import AivmManager
-from voicevox_engine.core.core_adapter import CoreAdapter
+from voicevox_engine.core.core_initializer import CoreManager
 from voicevox_engine.metas.Metas import StyleId
 from voicevox_engine.metas.MetasStore import construct_lookup
 from voicevox_engine.model import AudioQuery, MorphableTargetInfo, StyleIdNotFoundError
@@ -22,7 +22,7 @@ from voicevox_engine.morphing import (
 from voicevox_engine.morphing import (
     synthesis_morphing_parameter as _synthesis_morphing_parameter,
 )
-from voicevox_engine.tts_pipeline.tts_engine import TTSEngine
+from voicevox_engine.tts_pipeline.tts_engine import TTSEngineManager
 from voicevox_engine.utility.path_utility import delete_file
 
 # キャッシュを有効化
@@ -32,16 +32,15 @@ synthesis_morphing_parameter = lru_cache(maxsize=4)(_synthesis_morphing_paramete
 
 
 def generate_morphing_router(
-    get_engine: Callable[[str | None], TTSEngine],
-    get_core: Callable[[str | None], CoreAdapter],
+    tts_engines: TTSEngineManager,
+    core_manager: CoreManager,
     aivm_manager: AivmManager,
 ) -> APIRouter:
     """モーフィング API Router を生成する"""
-    router = APIRouter()
+    router = APIRouter(tags=["音声合成"])
 
     @router.post(
         "/morphable_targets",
-        tags=["音声合成"],
         summary="指定したスタイルに対してエンジン内の話者がモーフィングが可能か判定する",
     )
     def morphable_targets(
@@ -56,7 +55,7 @@ def generate_morphing_router(
         AivisSpeech Engine では話者ごとに発声タイミングが異なる関係で実装不可能なため (動作こそするが聴くに耐えない) 、
         全ての話者でモーフィングが禁止されています。
         """
-        # core = get_core(core_version)
+        # core = core_manager.get_core(core_version)
 
         try:
             # speakers = metas_store.load_combined_metas(core=core)
@@ -85,7 +84,6 @@ def generate_morphing_router(
                 },
             }
         },
-        tags=["音声合成"],
         summary="2種類のスタイルでモーフィングした音声を合成する",
     )
     def _synthesis_morphing(
@@ -101,8 +99,8 @@ def generate_morphing_router(
         AivisSpeech Engine では話者ごとに発声タイミングが異なる関係で実装不可能なため (動作こそするが聴くに耐えない) 、
         常に 400 Bad Request を返します。
         """
-        engine = get_engine(core_version)
-        core = get_core(core_version)
+        engine = tts_engines.get_engine(core_version)
+        core = core_manager.get_core(core_version)
 
         try:
             # speakers = metas_store.load_combined_metas(core=core)

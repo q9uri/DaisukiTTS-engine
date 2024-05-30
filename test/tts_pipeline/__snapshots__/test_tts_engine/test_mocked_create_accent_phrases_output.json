@@ -1,6 +1,6 @@
 [
   {
-    "accent": 5,
+    "accent": 4,
     "is_interrogative": false,
     "moras": [
       {
@@ -30,16 +30,16 @@
       {
         "consonant": "ch",
         "consonant_length": 1.62,
-        "pitch": 2.94,
+        "pitch": 3.0,
         "text": "チ",
         "vowel": "i",
         "vowel_length": 2.31
       },
       {
-        "consonant": "w",
-        "consonant_length": 3.62,
-        "pitch": 4.19,
-        "text": "ワ",
+        "consonant": "h",
+        "consonant_length": 2.19,
+        "pitch": 2.69,
+        "text": "ハ",
         "vowel": "a",
         "vowel_length": 1.44
       }

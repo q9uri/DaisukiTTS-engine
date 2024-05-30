@@ -10,8 +10,7 @@
         "priority"
       ],
       "msg": "Input should be less than or equal to 10",
-      "type": "less_than_equal",
-      "url": "https://errors.pydantic.dev/2.7/v/less_than_equal"
+      "type": "less_than_equal"
     }
   ]
 }

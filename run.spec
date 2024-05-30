@@ -3,11 +3,9 @@
 from PyInstaller.utils.hooks import collect_data_files
 
 datas = [
-    ('dictionaries', 'dictionaries'),
-    ('engine_manifest_assets', 'engine_manifest_assets'),
+    ('resources', 'resources'),
     ('engine_manifest.json', '.'),
     ('presets.yaml', '.'),
-    ('ui_template', 'ui_template'),
 ]
 datas += collect_data_files('pyopenjtalk')
 datas += collect_data_files('style_bert_vits2')

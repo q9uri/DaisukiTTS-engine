@@ -90,7 +90,7 @@
       "license": "BSD License",
       "name": "Pygments",
       "text": "MD5:36a13c90514e2899f1eba7f41c3ee592",
-      "version": "2.17.2"
+      "version": "2.18.0"
     },
     {
       "license": "MIT License",
@@ -216,7 +216,7 @@
       "license": "Apache Software License; BSD License",
       "name": "cryptography",
       "text": "This software is made available under the terms of *either* of the licenses\nfound in LICENSE.APACHE or LICENSE.BSD. Contributions to cryptography are made\nunder the terms of *both* these licenses.\n",
-      "version": "42.0.5"
+      "version": "42.0.7"
     },
     {
       "license": "MIT License",
@@ -253,6 +253,12 @@
       "name": "fastapi",
       "text": "MD5:95792ff3fe8e11aa49ceb247e66e4810",
       "version": "0.110.0"
+    },
+    {
+      "license": "MIT License",
+      "name": "fastapi-slim",
+      "text": "MD5:95792ff3fe8e11aa49ceb247e66e4810",
+      "version": "0.111.0"
     },
     {
       "license": "BSD License",
@@ -312,7 +318,7 @@
       "license": "BSD License",
       "name": "httpx",
       "text": "MD5:c624803bdf6fc1c4ce39f5ae11d7bd05",
-      "version": "0.25.2"
+      "version": "0.27.0"
     },
     {
       "license": "Apache Software License",
@@ -426,7 +432,7 @@
       "license": "MIT License",
       "name": "marshmallow",
       "text": "MD5:27586b20700d7544c06933afe56f7df4",
-      "version": "3.21.1"
+      "version": "3.21.2"
     },
     {
       "license": "MIT License",
@@ -558,7 +564,7 @@
       "license": "MIT License",
       "name": "poetry-plugin-export",
       "text": "MD5:1205266cc807366e153b9a0a5845e17a",
-      "version": "1.7.1"
+      "version": "1.8.0"
     },
     {
       "license": "MIT License",
@@ -648,7 +654,7 @@
       "license": "MIT License",
       "name": "pysen",
       "text": "MD5:580bb42b71a4649282539930937af747",
-      "version": "0.10.6"
+      "version": "0.11.0"
     },
     {
       "license": "MIT License",
@@ -660,7 +666,7 @@
       "license": "Apache Software License",
       "name": "python-multipart",
       "text": "Copyright 2012, Andrew Dunham\n\nLicensed under the Apache License, Version 2.0 (the \"License\");\nyou may not use this file except in compliance with the License.\nYou may obtain a copy of the License at\n\n   https://www.apache.org/licenses/LICENSE-2.0\n\nUnless required by applicable law or agreed to in writing, software\ndistributed under the License is distributed on an \"AS IS\" BASIS,\nWITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\nSee the License for the specific language governing permissions and\nlimitations under the License.\n\n",
-      "version": "0.0.7"
+      "version": "0.0.9"
     },
     {
       "license": "UNKNOWN",
@@ -684,7 +690,7 @@
       "license": "Apache Software License",
       "name": "requests",
       "text": "MD5:34400b68072d710fecd0a2940a0d1658",
-      "version": "2.31.0"
+      "version": "2.32.0"
     },
     {
       "license": "Apache Software License",
@@ -720,7 +726,7 @@
       "license": "MIT License",
       "name": "safety",
       "text": "MD5:099fc3870abf45d87b724566807229dd",
-      "version": "3.1.0"
+      "version": "3.2.0"
     },
     {
       "license": "MIT License",
@@ -774,7 +780,7 @@
       "license": "BSD License",
       "name": "starlette",
       "text": "MD5:11e8c8dbfd5fa373c703de492140ff7a",
-      "version": "0.36.3"
+      "version": "0.37.2"
     },
     {
       "license": "UNKNOWN",
@@ -887,8 +893,8 @@
     {
       "license": "BSD License",
       "name": "uvicorn",
-      "text": "MD5:206119e27d6b034e7ce70d73063c82a8",
-      "version": "0.15.0"
+      "text": "MD5:5c778842f66a649636561c423c0eec2e",
+      "version": "0.29.0"
     },
     {
       "license": "MIT License",

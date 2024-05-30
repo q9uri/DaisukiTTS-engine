@@ -5,7 +5,7 @@ name: test-security
 
 on:
   schedule:
-    - cron: '00 04 15 * *' # 毎月15日 13:00 JST
+    - cron: "00 04 15 * *" # 毎月15日 13:00 JST
 
 env:
   PYTHON_VERSION: "3.11.9"
@@ -21,19 +21,22 @@ jobs:
       - name: <Setup> Check out the repository
         uses: actions/checkout@v4
 
+      - name: Install Poetry
+        run: pipx install poetry
+
       - name: <Setup> Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-          cache: pip
+          cache: poetry
 
       - name: <Setup> Install Python dependencies
-        run: pip install -r requirements-dev.txt
+        run: poetry install --with=test
 
       - name: <Test> Check Python dependency security
-        run: safety check -r requirements.txt -r requirements-dev.txt -r requirements-test.txt -r requirements-license.txt -o bare
+        run: poetry run safety check -o bare
 
-      # - name: Notify Discord of security testing result
+      # - name: <Deploy> Notify Discord of security testing result
       #   uses: sarisia/actions-status-discord@v1
       #   if: always()
       #   with:
@@ -41,6 +44,6 @@ jobs:
       #     username: GitHub Actions
       #     title: "依存パッケージ脆弱性診断の結果"
       #     status: ${{ job.status }}
-      #     color: ${{ job.status == 'success' && 0x00FF00 || 0xFF0000 }}
+      #     color: ${{ job.status == 'success' && '0x00FF00' || '0xFF0000' }}
       #     url: "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
 

@@ -17,8 +17,8 @@ on:
         required: true
 
 env:
-  PYTHON_VERSION: "3.11.9"
   IMAGE_NAME: ${{ vars.DOCKERHUB_USERNAME }}/aivisspeech-engine
+  PYTHON_VERSION: "3.11.9"
   VERSION: |- # version指定時はversionを、それ以外はタグ名を使用
     ${{ (github.event.inputs || inputs).version }}
 
@@ -51,8 +51,7 @@ jobs:
           cache: poetry
 
       - name: <Setup> Install Python dependencies
-        run: |
-          poetry install --with=test
+        run: poetry install --with=test
 
       - name: <Setup> Declare variables
         id: docker_vars

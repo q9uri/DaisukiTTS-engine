@@ -4,7 +4,7 @@ import asyncio
 from io import BytesIO
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Path, Request, Response
+from fastapi import APIRouter, Depends, Path, Request
 
 from voicevox_engine.aivm_manager import AivmManager
 from voicevox_engine.model import AivmInfo, AivmManifest
@@ -36,14 +36,13 @@ def generate_aivm_models_router(aivm_manager: AivmManager) -> APIRouter:
     async def install_aivm(
         aivm_uuid: Annotated[str, Path(description="音声合成モデルの UUID")],
         request: Request,
-    ) -> Response:
+    ) -> None:
         """
         音声合成モデルをインストールします。
         音声合成モデルパッケージファイル (`.aivm`) をリクエストボディとして送信してください。
         """
         archive = BytesIO(await request.body())
         await asyncio.to_thread(aivm_manager.install_aivm, aivm_uuid, archive)
-        return Response(status_code=204)
 
     @router.delete(
         "/aivm_models/{aivm_uuid}",
@@ -53,12 +52,11 @@ def generate_aivm_models_router(aivm_manager: AivmManager) -> APIRouter:
     )
     def uninstall_aivm(
         aivm_uuid: Annotated[str, Path(description="音声合成モデルの UUID")]
-    ) -> Response:
+    ) -> None:
         """
         音声合成モデルをアンインストールします。
         """
         aivm_manager.uninstall_aivm(aivm_uuid)
-        return Response(status_code=204)
 
     @router.get(
         "/aivm_models/{aivm_uuid}/manifest",

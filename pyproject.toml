@@ -9,7 +9,7 @@ update-licenses = "bash build_util/create_venv_and_generate_licenses.bash"
 build = "poetry run task update-licenses && pyinstaller --noconfirm run.spec"
 
 [tool.pysen]
-version = "0.10.5"
+version = "0.11.0"
 
 [tool.pysen.lint]
 enable_black = true
@@ -55,12 +55,12 @@ package-mode = false
 
 [tool.poetry.dependencies]
 python = "~3.11"
-numpy = "^1.20.0"
-fastapi = "^0.110.0"
-python-multipart = "^0.0.7" # NOTE: required by fastapi
-uvicorn = "^0.15.0"
+numpy = "^1.26.0"
+fastapi-slim = "^0.111.0"
+python-multipart = "^0.0.9" # NOTE: required by fastapi
+uvicorn = "^0.29.0"
 soundfile = "^0.12.1"
-pyyaml = "^6.0"
+pyyaml = "^6.0.1"
 pyworld-prebuilt = "^0.3.4.1"
 jinja2 = "^3.1.4" # NOTE: required by fastapi
 pyopenjtalk-dict = "^0.3.4.dev2"
@@ -68,7 +68,7 @@ semver = "^3.0.0"
 platformdirs = "^4.2.0"
 soxr = "^0.3.6"
 pydantic = "^2.6.4"
-starlette = "^0.36.3"
+starlette = "^0.37.0"
 jaconv = "^0.3.4"
 # AivisSpeech-Engine にはカスタマイズされた Style-Bert-VITS2 が必要
 style-bert-vits2 = { git = "https://github.com/tsukumijima/Style-Bert-VITS2", rev = "0a3b57528b76ad35ca6efe9bce350ece0621329f" }
@@ -102,27 +102,31 @@ torchaudio = [
 pyinstaller = "^5.13.2"
 pre-commit = "^2.16.0"
 poetry = "1.8.2"
-poetry-plugin-export = "^1.6.0"
+poetry-plugin-export = "^1.8.0"
 safety = "^3.1.0"
 taskipy = "^1.12.2"
 
 [tool.poetry.group.test.dependencies]
-pysen = "~0.10.5"
-black = "^24.2.0"
-flake8-bugbear = "^24.2.6"
+pysen = "^0.11.0"
+black = "^24.4.0"
+flake8-bugbear = "^24.4.26"
 flake8 = "^7.0.0"
 isort = "^5.13.0"
-mypy = "^1.8.0"
-pytest = "^8.0.0"
+mypy = "^1.10.0"
+pytest = "^8.2.0"
 coveralls = "^3.2.0"
 poetry = "1.8.2"
-poetry-plugin-export = "^1.6.0"
-httpx = "^0.25.0" # NOTE: required by fastapi.testclient.TestClient
+poetry-plugin-export = "^1.8.0"
+httpx = "^0.27.0" # NOTE: required by fastapi.testclient.TestClient
 syrupy = "^4.6.1"
-types-pyyaml = "^6.0"
+types-pyyaml = "^6.0.12"
+safety = "^3.1.0"
+
+[tool.poetry.group.build.dependencies]
+pyinstaller = "^5.13"
 
 [tool.poetry.group.license.dependencies]
-pip-licenses = "^4.3.4"
+pip-licenses = "^4.4.0"
 
 [build-system]
 requires = ["poetry-core"]
