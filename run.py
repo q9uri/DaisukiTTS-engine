@@ -385,7 +385,7 @@ def main() -> None:
     try:
         uvicorn.run(app, host=args.host, port=args.port, log_config=LOGGING_CONFIG)
     except KeyboardInterrupt:
-        print("`KeyboardInterrupt` の検出によりエンジンを停止しました。")
+        logger.info("KeyboardInterrupt detected, stopping the engine.")
         pass
 
 

@@ -1,7 +1,6 @@
 """FastAPI ミドルウェア"""
 
 import re
-import sys
 from collections.abc import Awaitable, Callable
 
 from fastapi import FastAPI, Request, Response
@@ -38,10 +37,9 @@ def configure_middlewares(
         if allow_origin is not None:
             allowed_origins += allow_origin
             if "*" in allow_origin:
-                print(
-                    'WARNING: Deprecated use of argument "*" in allow_origin. '
+                logger.warning(
+                    'Deprecated use of argument "*" in allow_origin. '
                     'Use option "--cors_policy_mod all" instead. See "--help" for more.',
-                    file=sys.stderr,
                 )
 
     app.add_middleware(
