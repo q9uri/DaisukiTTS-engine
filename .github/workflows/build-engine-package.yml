@@ -112,7 +112,7 @@ jobs:
 
       - name: <Setup> Download pyopenjtalk dictionary
         run: |
-          poetry install --with=dev
+          poetry install --with=build
 
           # Download pyopenjtalk dictionary
           # try 5 times, sleep 5 seconds before retry

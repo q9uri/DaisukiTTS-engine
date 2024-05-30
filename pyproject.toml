@@ -62,7 +62,7 @@ uvicorn = "^0.29.0"
 soundfile = "^0.12.1"
 pyyaml = "^6.0.1"
 pyworld-prebuilt = "^0.3.4.1"
-jinja2 = "^3.1.4" # NOTE: required by fastapi
+jinja2 = "^3.1.3" # NOTE: required by fastapi
 pyopenjtalk-dict = "^0.3.4.dev2"
 semver = "^3.0.0"
 platformdirs = "^4.2.0"
@@ -99,11 +99,9 @@ torchaudio = [
 ]
 
 [tool.poetry.group.dev.dependencies]
-pyinstaller = "^5.13.2"
 pre-commit = "^2.16.0"
 poetry = "1.8.2"
 poetry-plugin-export = "^1.8.0"
-safety = "^3.1.0"
 taskipy = "^1.12.2"
 
 [tool.poetry.group.test.dependencies]
@@ -124,6 +122,9 @@ safety = "^3.1.0"
 
 [tool.poetry.group.build.dependencies]
 pyinstaller = "^5.13"
+poetry = "1.8.2"
+poetry-plugin-export = "^1.8.0"
+taskipy = "^1.12.2"
 
 [tool.poetry.group.license.dependencies]
 pip-licenses = "^4.4.0"
