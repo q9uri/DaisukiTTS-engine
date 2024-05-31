@@ -52,9 +52,6 @@ def generate_app(
         title=engine_manifest.name,
         description=f"{engine_manifest.brand_name} の音声合成エンジンです。",
         version=__version__,
-        # OpenAPI Generator が自動生成するコードとの互換性が壊れるため、リクエストとレスポンスで Pydantic スキーマを分離しないようにする
-        # ref: https://fastapi.tiangolo.com/how-to/separate-openapi-schemas/
-        separate_input_output_schemas=False,
     )
     app = configure_middlewares(app, cors_policy_mode, allow_origin)
     app = configure_global_exception_handlers(app)

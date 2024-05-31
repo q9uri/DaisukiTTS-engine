@@ -24,6 +24,9 @@ def configure_openapi_schema(app: FastAPI) -> FastAPI:
             terms_of_service=app.terms_of_service,
             contact=app.contact,
             license_info=app.license_info,
+            # OpenAPI Generator が自動生成するコードとの互換性が壊れるため、リクエストとレスポンスで Pydantic スキーマを分離しないようにする
+            # ref: https://fastapi.tiangolo.com/how-to/separate-openapi-schemas/
+            separate_input_output_schemas=False,
         )
         # 以下コードは最新の FastAPI + Pydantic V2 では動作しないためコメントアウト
         """
