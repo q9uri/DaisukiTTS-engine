@@ -67,13 +67,16 @@ pyopenjtalk-dict = "^0.3.4.dev2"
 semver = "^3.0.0"
 platformdirs = "^4.2.0"
 soxr = "^0.3.6"
-pydantic = "^2.6.4"
+pydantic = "^2.7.2"
 starlette = "^0.37.0"
 jaconv = "^0.3.4"
+# aivmlib は AIVM ファイルのメタデータ読み取りに必要
+aivmlib = { git = "git@github.com:Aivis-Project/aivmlib.git", rev = "93155a2b4b12787b0881a4e6fbf7e5f0a4b8f828" }
 # AivisSpeech-Engine にはカスタマイズされた Style-Bert-VITS2 が必要
-style-bert-vits2 = { git = "https://github.com/tsukumijima/Style-Bert-VITS2", rev = "0a3b57528b76ad35ca6efe9bce350ece0621329f" }
+style-bert-vits2 = { git = "https://github.com/tsukumijima/Style-Bert-VITS2", rev = "2771fbd20922a4d4ba89604bf9104a31c9d8d7d5" }
+# アーキテクチャに応じて適切な PyTorch をインストール
+# ref: https://tech.layerx.co.jp/entry/2023/07/28/184937
 torch = [
-    # ref: https://tech.layerx.co.jp/entry/2023/07/28/184937
     # Windows: CUDA 12.1
     { url = "https://download.pytorch.org/whl/cu121/torch-2.2.2%2Bcu121-cp311-cp311-win_amd64.whl", markers = "sys_platform == 'win32'" },
     # macOS (Intel): CPU only
