@@ -219,7 +219,86 @@
         "title": "AivmManifestSpeakerStyle",
         "type": "object"
       },
-      "AudioQuery": {
+      "AudioQuery-Input": {
+        "description": "音声合成用のクエリ",
+        "properties": {
+          "accent_phrases": {
+            "items": {
+              "$ref": "#/components/schemas/AccentPhrase"
+            },
+            "title": "アクセント句のリスト",
+            "type": "array"
+          },
+          "intonationScale": {
+            "description": "話者スタイルの声色の強弱を 0.0 ~ 2.0 の範囲で指定する (デフォルト: 1.0) 。\n値が大きいほどそのスタイルに近い抑揚がついた声になる。\n例えば話者スタイルが「うれしい」なら、値が大きいほどより嬉しそうな明るい話し方になる。\n一方スタイルによっては値を大きくしすぎると不自然な棒読みボイスになりがちなので、適宜調整が必要。\n全スタイルの平均であるノーマルスタイルには指定できない (値にかかわらず無視される) 。",
+            "title": "全体のスタイルの強さ (「全体の抑揚」ではない点で VOICEVOX ENGINE と異なる)",
+            "type": "number"
+          },
+          "kana": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "読み上げるテキストを指定する。\nVOICEVOX ENGINE では AquesTalk 風記法テキストが入る読み取り専用フィールドだが (音声合成時には無視される) 、AivisSpeech Engine では音声合成時に漢字や記号が含まれた通常の読み上げテキストも必要なため、苦肉の策で読み上げテキスト指定用のフィールドとして転用した。\nVOICEVOX ENGINE との互換性のため None や空文字列が指定された場合も動作するが、その場合はアクセント句から自動生成されたひらがな文字列が読み上げテキストになるため、不自然なイントネーションになってしまう。\n可能な限り kana に通常の読み上げテキストを指定した上で音声合成 API に渡すことを推奨する。",
+            "title": "読み上げるテキスト (「読みの AquesTalk 風記法テキスト」ではない点で VOICEVOX ENGINE と異なる)"
+          },
+          "outputSamplingRate": {
+            "title": "音声データの出力サンプリングレート",
+            "type": "integer"
+          },
+          "outputStereo": {
+            "title": "音声データをステレオ出力するか否か",
+            "type": "boolean"
+          },
+          "pitchScale": {
+            "description": "全体の音高を -0.15 ~ 0.15 の範囲で指定する (デフォルト: 0.0) 。\n値が大きいほど高い声になる。\nVOICEVOX ENGINE と異なり、この値を 0.0 から変更すると音質が劣化するため注意が必要。",
+            "title": "全体の音高",
+            "type": "number"
+          },
+          "postPhonemeLength": {
+            "title": "音声の後の無音時間 (秒)",
+            "type": "number"
+          },
+          "prePhonemeLength": {
+            "title": "音声の前の無音時間 (秒)",
+            "type": "number"
+          },
+          "speedScale": {
+            "description": "全体の話速を 0.5 ~ 2.0 の範囲で指定する (デフォルト: 1.0) 。\n2.0 で 2 倍速、0.5 で 0.5 倍速になる。",
+            "title": "全体の話速",
+            "type": "number"
+          },
+          "tempoDynamicsScale": {
+            "default": 1.0,
+            "description": "話す速さの緩急の強弱を 0.0 ~ 2.0 の範囲で指定する (デフォルト: 1.0) 。\n値が大きいほどより早口で生っぽい抑揚がついた声になる。\nVOICEVOX ENGINE との互換性のため、未指定時はデフォルト値が適用される。",
+            "title": "全体のテンポの緩急 (AivisSpeech Engine 固有のフィールド)",
+            "type": "number"
+          },
+          "volumeScale": {
+            "description": "全体の音量を 0.0 ~ 2.0 の範囲で指定する (デフォルト: 1.0) 。\n値が大きいほど大きな声になる。",
+            "title": "全体の音量",
+            "type": "number"
+          }
+        },
+        "required": [
+          "accent_phrases",
+          "speedScale",
+          "intonationScale",
+          "pitchScale",
+          "volumeScale",
+          "prePhonemeLength",
+          "postPhonemeLength",
+          "outputSamplingRate",
+          "outputStereo"
+        ],
+        "title": "AudioQuery",
+        "type": "object"
+      },
+      "AudioQuery-Output": {
         "description": "音声合成用のクエリ",
         "properties": {
           "accent_phrases": {
@@ -1567,7 +1646,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/AudioQuery"
+                  "$ref": "#/components/schemas/AudioQuery-Output"
                 }
               }
             },
@@ -1637,7 +1716,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/AudioQuery"
+                  "$ref": "#/components/schemas/AudioQuery-Output"
                 }
               }
             },
@@ -1696,7 +1775,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/AudioQuery"
+                "$ref": "#/components/schemas/AudioQuery-Input"
               }
             }
           },
@@ -2460,7 +2539,7 @@
             "application/json": {
               "schema": {
                 "items": {
-                  "$ref": "#/components/schemas/AudioQuery"
+                  "$ref": "#/components/schemas/AudioQuery-Input"
                 },
                 "title": "Queries",
                 "type": "array"
@@ -3051,7 +3130,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/AudioQuery"
+                "$ref": "#/components/schemas/AudioQuery-Input"
               }
             }
           },
@@ -3143,7 +3222,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/AudioQuery"
+                "$ref": "#/components/schemas/AudioQuery-Input"
               }
             }
           },

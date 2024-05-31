@@ -106,15 +106,15 @@ jobs:
           architecture: ${{ matrix.architecture }}
           cache: poetry
 
+      - name: <Setup> Install Python dependencies
+        run: poetry install --with=build
+
       - name: <Setup> Prepare custom PyInstaller
         if: startsWith(matrix.os, 'windows-')
         run: ./build_util/modify_pyinstaller.bash
 
       - name: <Setup> Download pyopenjtalk dictionary
         run: |
-          poetry install --with=build
-
-          # Download pyopenjtalk dictionary
           # try 5 times, sleep 5 seconds before retry
           for _ in $(seq 5); do
             EXIT_CODE=0
@@ -134,6 +134,7 @@ jobs:
       - name: <Setup> Create download directory
         run: mkdir -p download/
 
+      # Build
       - name: <Build> Generate licenses.json
         run: bash build_util/create_venv_and_generate_licenses.bash
 

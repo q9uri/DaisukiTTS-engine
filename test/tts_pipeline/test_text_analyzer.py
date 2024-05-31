@@ -321,38 +321,40 @@ def _gen_mora(text: str, consonant: str | None, vowel: str) -> Mora:
     )
 
 
-# def test_text_to_accent_phrases_normal() -> None:
-#     """`text_to_accent_phrases` は正常な日本語文をパースする"""
-#     # Inputs
-#     text = "こんにちは、ヒホです。"
-#     # Expects
-#     true_accent_phrases = [
-#         AccentPhrase(
-#             moras=[
-#                 _gen_mora("コ", "k", "o"),
-#                 _gen_mora("ン", None, "N"),
-#                 _gen_mora("ニ", "n", "i"),
-#                 _gen_mora("チ", "ch", "i"),
-#                 _gen_mora("ワ", "w", "a"),
-#             ],
-#             accent=5,
-#             pause_mora=_gen_mora("、", None, "pau"),
-#         ),
-#         AccentPhrase(
-#             moras=[
-#                 _gen_mora("ヒ", "h", "i"),
-#                 _gen_mora("ホ", "h", "o"),
-#                 _gen_mora("デ", "d", "e"),
-#                 _gen_mora("ス", "s", "U"),
-#             ],
-#             accent=1,
-#             pause_mora=None,
-#         ),
-#     ]
-#     # Outputs
-#     accent_phrases = text_to_accent_phrases(text)
-#     # Tests
-#     assert accent_phrases == true_accent_phrases
+'''
+def test_text_to_accent_phrases_normal() -> None:
+    """`text_to_accent_phrases` は正常な日本語文をパースする"""
+    # Inputs
+    text = "こんにちは、ヒホです。"
+    # Expects
+    true_accent_phrases = [
+        AccentPhrase(
+            moras=[
+                _gen_mora("コ", "k", "o"),
+                _gen_mora("ン", None, "N"),
+                _gen_mora("ニ", "n", "i"),
+                _gen_mora("チ", "ch", "i"),
+                _gen_mora("ワ", "w", "a"),
+            ],
+            accent=5,
+            pause_mora=_gen_mora("、", None, "pau"),
+        ),
+        AccentPhrase(
+            moras=[
+                _gen_mora("ヒ", "h", "i"),
+                _gen_mora("ホ", "h", "o"),
+                _gen_mora("デ", "d", "e"),
+                _gen_mora("ス", "s", "U"),
+            ],
+            accent=1,
+            pause_mora=None,
+        ),
+    ]
+    # Outputs
+    accent_phrases = text_to_accent_phrases(text)
+    # Tests
+    assert accent_phrases == true_accent_phrases
+'''
 
 
 def stub_unknown_features_koxx(_: str) -> list[str]:

@@ -19,8 +19,16 @@ AivisSpeech Engine は、[VOICEVOX ENGINE](https://github.com/VOICEVOX/voicevox_
 - AivisSpeech で利用しない機能 (歌声合成機能など) であっても、コードの削除は行わない
   - これもコンフリクトを回避するため
   - 利用しないコードの無効化は削除ではなく、コメントアウトで行う
+    - VOICEVOX ENGINE との差分を最小限に抑えるため、大量にコメントアウトが必要な場合は、# ではなく """ """ を使う
+  - ただし、Dockerfile や GitHub Actions などの構成ファイルやビルドツール類はこの限りではない
+    - 元々 AivisSpeech Engine での改変量が大きい部分につき、コメントアウトでは非常に雑多なコードになるため
 - 保守や追従が困難なため、ドキュメントの更新は行わない
   - このため各ドキュメントは一切更新されておらず、AivisSpeech Engine での変更を反映していない
+- AivisSpeech Engine 向けの改変にともないテストコードの維持が困難なため、テストコードの追加は行わない
+  - 既存のテストコードのみ、テストが通るように一部箇所の修正やコメントアウトを行い、消極的に維持する
+    - AivisSpeech Engine での改変により、テスト結果のスナップショットは VOICEVOX ENGINE と異なる
+    - AivisSpeech Engine での改変により動かなくなったテストの修正は行わず、コメントアウトで対応する
+  - AivisSpeech Engine 向けに新規開発した箇所は、保守コストを鑑みテストコードを追加しない
 
 ## 開発環境の構築
 

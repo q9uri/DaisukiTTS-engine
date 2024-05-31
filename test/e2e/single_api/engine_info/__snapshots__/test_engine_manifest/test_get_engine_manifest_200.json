@@ -102,13 +102,13 @@
       "license": "MIT License",
       "name": "annotated-types",
       "text": "MD5:c6afb13fdc220497ee5cded1e717ed67",
-      "version": "0.6.0"
+      "version": "0.7.0"
     },
     {
       "license": "MIT License",
       "name": "anyio",
       "text": "MD5:c0a769411d2af7894099e8ff75058c9f",
-      "version": "4.3.0"
+      "version": "4.4.0"
     },
     {
       "license": "BSD License",
@@ -288,7 +288,7 @@
       "license": "BSD License",
       "name": "fsspec",
       "text": "MD5:b38a11bf4dcdfc66307f8515ce1fbaa6",
-      "version": "2024.3.1"
+      "version": "2024.5.0"
     },
     {
       "license": "Apache Software License",
@@ -324,7 +324,7 @@
       "license": "Apache Software License",
       "name": "huggingface-hub",
       "text": "MD5:86d3f3a95c324c9479bd8986968f4327",
-      "version": "0.22.2"
+      "version": "0.23.2"
     },
     {
       "license": "MIT License",
@@ -396,7 +396,7 @@
       "license": "BSD License",
       "name": "joblib",
       "text": "MD5:2e481820abf0a70a18011a30153df066",
-      "version": "1.4.0"
+      "version": "1.4.2"
     },
     {
       "license": "MIT License",
@@ -492,7 +492,7 @@
       "license": "BSD License",
       "name": "nodeenv",
       "text": "MD5:a9e238ffae5bb6447dbac6291e1dc3a3",
-      "version": "1.8.0"
+      "version": "1.9.0"
     },
     {
       "license": "GNU Library or Lesser General Public License (LGPL)",
@@ -540,7 +540,7 @@
       "license": "MIT License",
       "name": "platformdirs",
       "text": "MD5:ea4f5a41454746a9ed111e3d8723d17a",
-      "version": "4.2.1"
+      "version": "4.2.2"
     },
     {
       "license": "MIT License",
@@ -606,13 +606,13 @@
       "license": "MIT License",
       "name": "pydantic",
       "text": "MD5:09280955509d1c4ca14bae02f21d49a6",
-      "version": "2.7.1"
+      "version": "2.7.2"
     },
     {
       "license": "MIT License",
       "name": "pydantic_core",
       "text": "MD5:ab599c188b4a314d2856b3a55030c75c",
-      "version": "2.18.2"
+      "version": "2.18.3"
     },
     {
       "license": "MIT License",
@@ -630,7 +630,7 @@
       "license": "Apache Software License; GNU General Public License v2 (GPLv2)",
       "name": "pyinstaller-hooks-contrib",
       "text": "============================================\nPyInstaller Community Hooks: License details\n============================================\n\nThis software is made available under the terms of the licenses\nfound in LICENSE.APL.txt or LICENSE.GPL.txt. Contributions to the Community Hooks are made\nunder the terms of the license that covers that type of hook/file. (See below)\n\n\nStandard hooks and files\n------------------------\n\nThese are all hooks/files except runtime hooks. (See below)\nThese files are licensed under the terms found in LICENSE.GPL.txt.\n\n\nRuntime hooks\n-------------\n\nThese are runtime hooks, bundled with complete pyinstaller executables.\nThese files are licensed under the terms found in LICENSE.APL.txt.\n\nThese generally reside in \"src/_pyinstaller_hooks_contrib/hooks/rthooks\".\n",
-      "version": "2024.5"
+      "version": "2024.6"
     },
     {
       "license": "MIT License",
@@ -660,7 +660,7 @@
       "license": "MIT License",
       "name": "pytest",
       "text": "MD5:bd27e41b6550fe0fc45356d1d81ee37c",
-      "version": "8.2.0"
+      "version": "8.2.1"
     },
     {
       "license": "Apache Software License",
@@ -678,19 +678,19 @@
       "license": "MIT License",
       "name": "rapidfuzz",
       "text": "MD5:dcd1023081943827dd63f01dc3fda218",
-      "version": "3.8.1"
+      "version": "3.9.2"
     },
     {
       "license": "Apache Software License",
       "name": "regex",
       "text": "MD5:7b5751ddd6b643203c31ff873051d069",
-      "version": "2024.4.28"
+      "version": "2024.5.15"
     },
     {
       "license": "Apache Software License",
       "name": "requests",
       "text": "MD5:34400b68072d710fecd0a2940a0d1658",
-      "version": "2.32.0"
+      "version": "2.32.3"
     },
     {
       "license": "Apache Software License",
@@ -792,7 +792,7 @@
       "license": "BSD License",
       "name": "sympy",
       "text": "MD5:b70381bd640070cb20be9d6f93f47036",
-      "version": "1.12"
+      "version": "1.12.1"
     },
     {
       "license": "Apache Software License",
@@ -822,7 +822,7 @@
       "license": "MIT License",
       "name": "tomlkit",
       "text": "MD5:31aac0dbc1babd278d5386dadb7f8e82",
-      "version": "0.12.4"
+      "version": "0.12.5"
     },
     {
       "license": "BSD License",
@@ -840,25 +840,25 @@
       "license": "MIT License; Mozilla Public License 2.0 (MPL 2.0)",
       "name": "tqdm",
       "text": "MD5:42dfa9e8c616dbc295df3f58d756b2a1",
-      "version": "4.66.3"
+      "version": "4.66.4"
     },
     {
       "license": "Apache Software License",
       "name": "transformers",
       "text": "MD5:d15f16de23b5d7f8e28dd073d2ed8b28",
-      "version": "4.40.1"
+      "version": "4.41.2"
     },
     {
       "license": "Apache Software License",
       "name": "trove-classifiers",
       "text": "MD5:86d3f3a95c324c9479bd8986968f4327",
-      "version": "2024.4.10"
+      "version": "2024.5.22"
     },
     {
       "license": "MIT License",
       "name": "typeguard",
       "text": "MD5:f0e423eea5c91e7aa21bdb70184b3e53",
-      "version": "4.2.1"
+      "version": "4.3.0"
     },
     {
       "license": "MIT License",
@@ -876,7 +876,7 @@
       "license": "Python Software Foundation License",
       "name": "typing_extensions",
       "text": "MD5:fcf6b249c2641540219a727f35d8d2c2",
-      "version": "4.11.0"
+      "version": "4.12.0"
     },
     {
       "license": "MIT",
@@ -900,7 +900,7 @@
       "license": "MIT License",
       "name": "virtualenv",
       "text": "MD5:0ce089158cf60a8ab6abb452b6405538",
-      "version": "20.26.1"
+      "version": "20.26.2"
     },
     {
       "license": "MIT License",
@@ -912,7 +912,7 @@
       "license": "MIT License",
       "name": "zipp",
       "text": "MD5:141643e11c48898150daa83802dbc65f",
-      "version": "3.18.1"
+      "version": "3.19.0"
     }
   ],
   "frame_rate": 172.265625,

@@ -62,8 +62,7 @@ jobs:
       - name: <Setup> Install Poetry
         run: pipx install poetry
 
-      - name: <Setup> Setup Python
-        id: setup-python
+      - name: <Setup> Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}

@@ -6,8 +6,10 @@ from voicevox_engine import __version__
 from voicevox_engine.aivm_manager import AivmManager
 from voicevox_engine.app.dependencies import deprecated_mutable_api
 from voicevox_engine.app.middlewares import configure_middlewares
+from voicevox_engine.app.openapi_schema import configure_openapi_schema
 from voicevox_engine.app.routers.aivm_models import generate_aivm_models_router
 from voicevox_engine.app.routers.engine_info import generate_engine_info_router
+from voicevox_engine.app.routers.library import generate_library_router
 from voicevox_engine.app.routers.morphing import generate_morphing_router
 from voicevox_engine.app.routers.portal_page import generate_portal_page_router
 from voicevox_engine.app.routers.preset import generate_preset_router
@@ -18,11 +20,12 @@ from voicevox_engine.app.routers.user_dict import generate_user_dict_router
 from voicevox_engine.cancellable_engine import CancellableEngine
 from voicevox_engine.core.core_initializer import CoreManager
 from voicevox_engine.engine_manifest import EngineManifest
+from voicevox_engine.library_manager import LibraryManager
 from voicevox_engine.preset.Preset import PresetManager
 from voicevox_engine.setting.Setting import CorsPolicyMode, SettingHandler
 from voicevox_engine.tts_pipeline.tts_engine import TTSEngineManager
 from voicevox_engine.user_dict.user_dict import UserDictionary
-from voicevox_engine.utility.path_utility import engine_root
+from voicevox_engine.utility.path_utility import engine_root, get_save_dir
 
 
 def generate_app(
@@ -45,8 +48,8 @@ def generate_app(
         root_dir = engine_root()
 
     app = FastAPI(
-        title="AivisSpeech Engine",
-        description="AivisSpeech の音声合成エンジンです。",
+        title=engine_manifest.name,
+        description=f"{engine_manifest.brand_name} の音声合成エンジンです。",
         version=__version__,
         # OpenAPI Generator が自動生成するコードとの互換性が壊れるため、リクエストとレスポンスで Pydantic スキーマを分離しないようにする
         # ref: https://fastapi.tiangolo.com/how-to/separate-openapi-schemas/
@@ -57,22 +60,38 @@ def generate_app(
     if disable_mutable_api:
         deprecated_mutable_api.enable = False
 
+    library_manager = LibraryManager(
+        # get_save_dir() / "installed_libraries",
+        # AivisSpeech では利用しない LibraryManager によるディレクトリ作成を防ぐため、get_save_dir() 直下を指定
+        get_save_dir(),
+        engine_manifest.supported_vvlib_manifest_version,
+        engine_manifest.brand_name,
+        engine_manifest.name,
+        engine_manifest.uuid,
+    )
+
+    # metas_store = MetasStore(root_dir / "speaker_info")
+
     app.include_router(
         generate_tts_pipeline_router(
             tts_engines, core_manager, preset_manager, cancellable_engine
         )
     )
     app.include_router(
-        generate_morphing_router(tts_engines, core_manager, aivm_manager)
+        generate_morphing_router(tts_engines, aivm_manager, core_manager)
     )
     app.include_router(generate_preset_router(preset_manager))
     app.include_router(generate_speaker_router(tts_engines, aivm_manager))
-    app.include_router(generate_aivm_models_router(aivm_manager))
+    if engine_manifest.supported_features.manage_library:
+        app.include_router(generate_library_router(engine_manifest, library_manager))
+    app.include_router(generate_aivm_models_router(aivm_manager))  # AivisSpeech Engine 独自追加ルーター  # noqa # fmt: skip
     app.include_router(generate_user_dict_router(user_dict))
     app.include_router(generate_engine_info_router(core_manager, engine_manifest))
     app.include_router(
         generate_setting_router(setting_loader, engine_manifest.brand_name)
     )
     app.include_router(generate_portal_page_router(engine_manifest.name))
+
+    app = configure_openapi_schema(app)
 
     return app

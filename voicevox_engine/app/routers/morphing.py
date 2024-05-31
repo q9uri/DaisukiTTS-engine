@@ -33,8 +33,8 @@ synthesis_morphing_parameter = lru_cache(maxsize=4)(_synthesis_morphing_paramete
 
 def generate_morphing_router(
     tts_engines: TTSEngineManager,
-    core_manager: CoreManager,
     aivm_manager: AivmManager,
+    core_manager: CoreManager,
 ) -> APIRouter:
     """モーフィング API Router を生成する"""
     router = APIRouter(tags=["音声合成"])
