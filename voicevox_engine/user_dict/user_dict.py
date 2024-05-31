@@ -42,8 +42,9 @@ save_dir = get_save_dir()
 if not save_dir.is_dir():
     save_dir.mkdir(parents=True)
 
+# デフォルトのファイルパス
 # デフォルト辞書ファイル (.csv) の配置ディレクトリのパス
-_DEFAULT_DICT_DIR_PATH = resource_dir / "dictionaries"
+DEFAULT_DICT_DIR_PATH = resource_dir / "dictionaries"
 # ユーザー辞書ファイルのパス
 _USER_DICT_PATH = save_dir / "user_dict.json"
 # コンパイル済み辞書ファイルのパス
@@ -289,7 +290,7 @@ class UserDictionary:
 
     def __init__(
         self,
-        default_dict_dir_path: Path = _DEFAULT_DICT_DIR_PATH,
+        default_dict_dir_path: Path = DEFAULT_DICT_DIR_PATH,
         user_dict_path: Path = _USER_DICT_PATH,
         compiled_dict_path: Path = _COMPILED_DICT_PATH,
     ) -> None:
@@ -335,7 +336,6 @@ class UserDictionary:
         # インポートする辞書データのバリデーション
         for word_uuid, word in dict_data.items():
             UUID(word_uuid)
-            assert isinstance(word, UserDictWord)
             for pos_detail in part_of_speech_data.values():
                 if word.context_id == pos_detail.context_id:
                     assert word.part_of_speech == pos_detail.part_of_speech

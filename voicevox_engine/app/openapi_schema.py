@@ -26,16 +26,18 @@ def configure_openapi_schema(app: FastAPI) -> FastAPI:
             license_info=app.license_info,
         )
         # 以下コードは最新の FastAPI + Pydantic V2 では動作しないためコメントアウト
-        # openapi_schema["components"]["schemas"][
-        #     "VvlibManifest"
-        # ] = VvlibManifest.model_json_schema()
-        # # ref_templateを指定しない場合、definitionsを参照してしまうので、手動で指定する
-        # base_library_info = BaseLibraryInfo.model_json_schema(
-        #     ref_template="#/components/schemas/{model}"
-        # )
-        # # definitionsは既存のモデルを重複して定義するため、不要なので削除
-        # del base_library_info["definitions"]
-        # openapi_schema["components"]["schemas"]["BaseLibraryInfo"] = base_library_info
+        """
+        openapi_schema["components"]["schemas"][
+            "VvlibManifest"
+        ] = VvlibManifest.model_json_schema()
+        # ref_templateを指定しない場合、definitionsを参照してしまうので、手動で指定する
+        base_library_info = BaseLibraryInfo.model_json_schema(
+            ref_template="#/components/schemas/{model}"
+        )
+        # definitionsは既存のモデルを重複して定義するため、不要なので削除
+        del base_library_info["definitions"]
+        openapi_schema["components"]["schemas"]["BaseLibraryInfo"] = base_library_info
+        """
         app.openapi_schema = openapi_schema
         return openapi_schema
 

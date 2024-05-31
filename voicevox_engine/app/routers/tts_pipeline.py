@@ -258,23 +258,28 @@ def generate_tts_pipeline_router(
             status_code=501,
             detail="Cancelable synthesis is not supported in AivisSpeech Engine.",
         )
+        """
+        if cancellable_engine is None:
+            raise HTTPException(
+                status_code=404,
+                detail="実験的機能はデフォルトで無効になっています。使用するには引数を指定してください。",
+            )
+        try:
+            f_name = cancellable_engine._synthesis_impl(
+                query, style_id, request, core_version=core_version
+            )
+        except CancellableEngineInternalError as e:
+            raise HTTPException(status_code=500, detail=str(e))
 
-        # if cancellable_engine is None:
-        #     raise HTTPException(
-        #         status_code=404,
-        #         detail="実験的機能はデフォルトで無効になっています。使用するには引数を指定してください。",
-        #     )
-        # f_name = cancellable_engine._synthesis_impl(
-        #     query, style_id, request, core_version=core_version
-        # )
-        # if f_name == "":
-        #     raise HTTPException(status_code=422, detail="不明なバージョンです")
+        if f_name == "":
+            raise HTTPException(status_code=422, detail="不明なバージョンです")
 
-        # return FileResponse(
-        #     f_name,
-        #     media_type="audio/wav",
-        #     background=BackgroundTask(delete_file, f_name),
-        # )
+        return FileResponse(
+            f_name,
+            media_type="audio/wav",
+            background=BackgroundTask(delete_file, f_name),
+        )
+        """
 
     @router.post(
         "/multi_synthesis",
@@ -343,20 +348,25 @@ def generate_tts_pipeline_router(
             status_code=501,
             detail="Sing frame audio query is not supported in AivisSpeech Engine.",
         )
-        # engine = tts_engines.get_engine(core_version)
-        # core = core_manager.get_core(core_version)
-        # phonemes, f0, volume = engine.create_sing_phoneme_and_f0_and_volume(
-        #     score, style_id
-        # )
+        """
+        engine = tts_engines.get_engine(core_version)
+        core = core_manager.get_core(core_version)
+        try:
+            phonemes, f0, volume = engine.create_sing_phoneme_and_f0_and_volume(
+                score, style_id
+            )
+        except TalkSingInvalidInputError as e:
+            raise HTTPException(status_code=400, detail=str(e))
 
-        # return FrameAudioQuery(
-        #     f0=f0,
-        #     volume=volume,
-        #     phonemes=phonemes,
-        #     volumeScale=1,
-        #     outputSamplingRate=core.default_sampling_rate,
-        #     outputStereo=False,
-        # )
+        return FrameAudioQuery(
+            f0=f0,
+            volume=volume,
+            phonemes=phonemes,
+            volumeScale=1,
+            outputSamplingRate=core.default_sampling_rate,
+            outputStereo=False,
+        )
+        """
 
     @router.post(
         "/sing_frame_volume",
@@ -374,10 +384,15 @@ def generate_tts_pipeline_router(
             status_code=501,
             detail="Sing frame volume is not supported in AivisSpeech Engine.",
         )
-        # engine = tts_engines.get_engine(core_version)
-        # return engine.create_sing_volume_from_phoneme_and_f0(
-        #     score, frame_audio_query.phonemes, frame_audio_query.f0, style_id
-        # )
+        """
+        engine = tts_engines.get_engine(core_version)
+        try:
+            return engine.create_sing_volume_from_phoneme_and_f0(
+                score, frame_audio_query.phonemes, frame_audio_query.f0, style_id
+            )
+        except TalkSingInvalidInputError as e:
+            raise HTTPException(status_code=400, detail=str(e))
+        """
 
     @router.post(
         "/frame_synthesis",
@@ -404,19 +419,24 @@ def generate_tts_pipeline_router(
             status_code=501,
             detail="Frame synthesis is not supported in AivisSpeech Engine.",
         )
-        # engine = tts_engines.get_engine(core_version)
-        # wave = engine.frame_synthsize_wave(query, style_id)
+        """
+        engine = tts_engines.get_engine(core_version)
+        try:
+            wave = engine.frame_synthsize_wave(query, style_id)
+        except TalkSingInvalidInputError as e:
+            raise HTTPException(status_code=400, detail=str(e))
 
-        # with NamedTemporaryFile(delete=False) as f:
-        #     soundfile.write(
-        #         file=f, data=wave, samplerate=query.outputSamplingRate, format="WAV"
-        #     )
+        with NamedTemporaryFile(delete=False) as f:
+            soundfile.write(
+                file=f, data=wave, samplerate=query.outputSamplingRate, format="WAV"
+            )
 
-        # return FileResponse(
-        #     f.name,
-        #     media_type="audio/wav",
-        #     background=BackgroundTask(delete_file, f.name),
-        # )
+        return FileResponse(
+            f.name,
+            media_type="audio/wav",
+            background=BackgroundTask(delete_file, f.name),
+        )
+        """
 
     @router.post(
         "/connect_waves",

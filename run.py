@@ -1,4 +1,4 @@
-"""VOICEVOX ENGINE の実行"""
+"""AivisSpeech Engine の実行"""
 
 import argparse
 import multiprocessing
@@ -61,34 +61,38 @@ def set_output_log_utf8() -> None:
     """標準出力と標準エラー出力の出力形式を UTF-8 ベースに切り替える"""
 
     # NOTE: for 文で回せないため関数内関数で実装している
-    def _prepare_utf8_stdio(stdio: TextIO | None) -> TextIO | None:
+    def _prepare_utf8_stdio(stdio: TextIO) -> TextIO:
         """UTF-8 ベースの標準入出力インターフェイスを用意する"""
 
         CODEC = "utf-8"  # locale に依存せず UTF-8 コーデックを用いる
         ERR = "backslashreplace"  # 不正な形式のデータをバックスラッシュ付きのエスケープシーケンスに置換する
 
-        # Python インタープリタが標準入出力へ接続されていないため設定不要とみなしそのまま返す
-        if stdio is None:
+        # 既定の `TextIOWrapper` 入出力インターフェイスを UTF-8 へ再設定して返す
+        if isinstance(stdio, TextIOWrapper):
+            stdio.reconfigure(encoding=CODEC)
             return stdio
         else:
-            # 既定の `TextIOWrapper` 入出力インターフェイスを UTF-8 へ再設定して返す
-            if isinstance(stdio, TextIOWrapper):
-                stdio.reconfigure(encoding=CODEC)
+            # 既定インターフェイスのバッファを全て出力しきった上で UTF-8 設定の `TextIOWrapper` を生成して返す
+            stdio.flush()
+            try:
+                return TextIOWrapper(stdio.buffer, encoding=CODEC, errors=ERR)
+            except AttributeError:
+                # バッファへのアクセスに失敗した場合、設定変更をおこなわず返す
                 return stdio
-            else:
-                # 既定インターフェイスのバッファを全て出力しきった上で UTF-8 設定の `TextIOWrapper` を生成して返す
-                stdio.flush()
-                try:
-                    return TextIOWrapper(stdio.buffer, encoding=CODEC, errors=ERR)
-                except AttributeError:
-                    # バッファへのアクセスに失敗した場合、設定変更をおこなわず返す
-                    return stdio
 
     # NOTE:
     # `sys.std*` はコンソールがない環境だと `None` をとる (出典: https://docs.python.org/ja/3/library/sys.html#sys.__stdin__ )  # noqa: B950
-    # しかし `TextIO | None` でなく `TextIO` と間違って型付けされているため、ここでは ignore している
-    sys.stdout = _prepare_utf8_stdio(sys.stdout)  # type: ignore[assignment]
-    sys.stderr = _prepare_utf8_stdio(sys.stderr)  # type: ignore[assignment]
+    # これは Python インタープリタが標準入出力へ接続されていないことを意味するため、設定不要とみなす
+
+    if sys.stdout is None:
+        pass
+    else:
+        sys.stdout = _prepare_utf8_stdio(sys.stdout)
+
+    if sys.stderr is None:
+        pass
+    else:
+        sys.stderr = _prepare_utf8_stdio(sys.stderr)
 
 
 T = TypeVar("T")
@@ -114,7 +118,7 @@ def select_first_not_none_or_none(candidates: list[S | None]) -> S | None:
 
 
 def main() -> None:
-    """VOICEVOX ENGINE を実行する"""
+    """AivisSpeech Engine を実行する"""
 
     multiprocessing.freeze_support()
 
@@ -363,7 +367,9 @@ def main() -> None:
     else:
         disable_mutable_api = decide_boolean_from_env("VV_DISABLE_MUTABLE_API")
 
-    # ASGI に準拠した VOICEVOX ENGINE アプリケーションを生成する
+    speaker_info_dir = root_dir / "speaker_info"
+
+    # ASGI に準拠した AivisSpeech Engine アプリケーションを生成する
     app = generate_app(
         tts_engines,
         aivm_manager,
@@ -374,13 +380,13 @@ def main() -> None:
         user_dict,
         engine_manifest,
         cancellable_engine,
-        root_dir,
+        speaker_info_dir,
         cors_policy_mode,
         allow_origin,
         disable_mutable_api=disable_mutable_api,
     )
 
-    # VOICEVOX ENGINE サーバーを起動
+    # AivisSpeech Engine サーバーを起動
     # NOTE: デフォルトは ASGI に準拠した HTTP/1.1 サーバー
     try:
         uvicorn.run(app, host=args.host, port=args.port, log_config=LOGGING_CONFIG)

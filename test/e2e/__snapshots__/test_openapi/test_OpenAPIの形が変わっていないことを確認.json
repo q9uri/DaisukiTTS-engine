@@ -2914,7 +2914,7 @@
     },
     "/speaker_info": {
       "get": {
-        "description": "指定されたspeaker_uuidに関する情報をjson形式で返します。\n画像や音声はbase64エンコードされたものが返されます。",
+        "description": "指定されたspeaker_uuidの話者に関する情報をjson形式で返します。\n画像や音声はbase64エンコードされたものが返されます。",
         "operationId": "speaker_info_speaker_info_get",
         "parameters": [
           {
@@ -2977,6 +2977,7 @@
     },
     "/speakers": {
       "get": {
+        "description": "話者情報の一覧を取得します。",
         "operationId": "speakers_speakers_get",
         "parameters": [
           {

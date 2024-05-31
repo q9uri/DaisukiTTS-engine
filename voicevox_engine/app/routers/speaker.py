@@ -30,6 +30,7 @@ def generate_speaker_router(
     def speakers(
         core_version: Annotated[str | None, Query(description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。")] = None,  # fmt: skip # noqa
     ) -> list[Speaker]:
+        """話者情報の一覧を取得します。"""
         # AivisSpeech Engine では常に AivmManager から Speaker を取得する
         return aivm_manager.get_speakers()
         # speakers = metas_store.load_combined_metas(core_manager.get_core(core_version))
@@ -41,7 +42,7 @@ def generate_speaker_router(
         core_version: Annotated[str | None, Query(description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。")] = None,  # fmt: skip # noqa
     ) -> SpeakerInfo:
         """
-        指定されたspeaker_uuidに関する情報をjson形式で返します。
+        指定されたspeaker_uuidの話者に関する情報をjson形式で返します。
         画像や音声はbase64エンコードされたものが返されます。
         """
         # AivisSpeech Engine では常に AivmManager から SpeakerInfo を取得する
@@ -84,7 +85,7 @@ def generate_speaker_router(
 
         # 該当話者を検索する
         speakers = parse_obj_as(
-            list[Speaker], json.loads(core_manager.get_core(core_version).speakers)
+            list[Speaker], core_manager.get_core(core_version).speakers
         )
         speakers = filter_speakers_and_styles(speakers, speaker_or_singer)
         speaker = next(
@@ -95,7 +96,7 @@ def generate_speaker_router(
 
         # 話者情報を取得する
         try:
-            speaker_path = root_dir / "speaker_info" / speaker_uuid
+            speaker_path = speaker_info_dir / speaker_uuid
 
             # speaker policy
             policy_path = speaker_path / "policy.md"
@@ -153,6 +154,7 @@ def generate_speaker_router(
     def singers(
         core_version: Annotated[str | None, Query(description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。")] = None,  # fmt: skip # noqa
     ) -> list[Speaker]:
+        # """歌手情報の一覧を取得します"""
         raise HTTPException(
             status_code=501,
             detail="Singers is not supported in AivisSpeech Engine.",
@@ -169,7 +171,7 @@ def generate_speaker_router(
         core_version: Annotated[str | None, Query(description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。")] = None,  # fmt: skip # noqa
     ) -> SpeakerInfo:
         # """
-        # 指定されたspeaker_uuidに関する情報をjson形式で返します。
+        # 指定されたspeaker_uuidの歌手に関する情報をjson形式で返します。
         # 画像や音声はbase64エンコードされたものが返されます。
         # """
         raise HTTPException(
@@ -188,7 +190,7 @@ def generate_speaker_router(
         skip_reinit: Annotated[
             bool,
             Query(
-                description="既に初期化済みのスタイルの再初期化をスキップするかどうか",
+                description="既に初期化済みのスタイルの再初期化をスキップするかどうか"
             ),
         ] = False,
         core_version: Annotated[str | None, Query(description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。")] = None,  # fmt: skip # noqa
