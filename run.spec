@@ -34,7 +34,10 @@ a = Analysis(
     pathex=[],
     binaries=[],
     datas=datas,
-    hiddenimports=[],
+    hiddenimports=[
+        # ref: https://github.com/pypa/setuptools/issues/4374
+        'pkg_resources.extern',
+    ],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
