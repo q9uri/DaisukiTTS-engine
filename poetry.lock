@@ -16,8 +16,8 @@ typer = {version = "^0.12.3", extras = ["all"]}
 [package.source]
 type = "git"
 url = "git@github.com:Aivis-Project/aivmlib.git"
-reference = "93155a2b4b12787b0881a4e6fbf7e5f0a4b8f828"
-resolved_reference = "93155a2b4b12787b0881a4e6fbf7e5f0a4b8f828"
+reference = "ea71cdff9e76bc99ed19769aa06d41a7d63146bb"
+resolved_reference = "ea71cdff9e76bc99ed19769aa06d41a7d63146bb"
 
 [[package]]
 name = "altgraph"
@@ -3336,7 +3336,7 @@ full = ["httpx (>=0.22.0)", "itsdangerous", "jinja2", "python-multipart (>=0.0.7
 
 [[package]]
 name = "style-bert-vits2"
-version = "2.4.1"
+version = "2.5.0"
 description = "Style-Bert-VITS2: Bert-VITS2 with more controllable voice styles."
 optional = false
 python-versions = ">=3.9"
@@ -3363,8 +3363,8 @@ transformers = "*"
 [package.source]
 type = "git"
 url = "https://github.com/tsukumijima/Style-Bert-VITS2"
-reference = "2771fbd20922a4d4ba89604bf9104a31c9d8d7d5"
-resolved_reference = "2771fbd20922a4d4ba89604bf9104a31c9d8d7d5"
+reference = "1f94d39f035bddb0c691f9ceb52733b04fcb005c"
+resolved_reference = "1f94d39f035bddb0c691f9ceb52733b04fcb005c"
 
 [[package]]
 name = "sympy"
@@ -4158,4 +4158,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "jaraco.test", "more
 [metadata]
 lock-version = "2.0"
 python-versions = "~3.11"
-content-hash = "7bda69d261c271f523eaf492efb0d5622523f56e856f1db46ada5b788489a17d"
+content-hash = "612458e3e8df8fba53f570af27ea6f3c88792e0a27df9161118aa2d6d0d5ef02"
