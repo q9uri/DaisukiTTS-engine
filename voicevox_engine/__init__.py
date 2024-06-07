@@ -12,9 +12,9 @@ warnings.filterwarnings(
     category=PydanticDeprecatedSince20,
 )
 
-# pyannote.audio による UserWarning 警告を抑制
+# PyTorch による UserWarning 警告を抑制
 warnings.filterwarnings(
     action="ignore",
     category=UserWarning,
-    message="torchaudio._backend.set_audio_backend has been deprecated. With dispatcher enabled, this function is no-op. You can remove the function call.",
+    message="torch.nn.utils.weight_norm is deprecated in favor of torch.nn.utils.parametrizations.weight_norm.",
 )
