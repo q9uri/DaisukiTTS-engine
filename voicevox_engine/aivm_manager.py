@@ -1,16 +1,18 @@
 # flake8: noqa
 
-import base64
+import glob
 import hashlib
-import json
-import shutil
-import zipfile
 from pathlib import Path
 from typing import BinaryIO
 
+import aivmlib
+from aivmlib.schemas.aivm_manifest import (
+    AivmManifest,
+    AivmManifestSpeaker,
+    AivmManifestSpeakerStyle,
+    ModelArchitecture,
+)
 from fastapi import HTTPException
-from pydantic import ValidationError
-from semver.version import Version
 
 from .logging import logger
 from .metas.Metas import (
@@ -22,43 +24,35 @@ from .metas.Metas import (
     StyleId,
     StyleInfo,
 )
-from .model import (
-    AivmInfo,
-    AivmInfoSpeaker,
-    AivmManifest,
-    AivmManifestSpeaker,
-    AivmManifestSpeakerStyle,
-)
+from .model import AivmInfo, LibrarySpeaker
 
 __all__ = ["AivmManager"]
 
 
 class AivmManager:
     """
-    AIVM (Aivis Voice Model) 音声合成モデルを管理するクラス
+    AIVM (Aivis Voice Model) ファイルフォーマットの音声合成モデルを管理するクラス
     VOICEVOX ENGINE の LibraryManager がベースだが、AivisSpeech Engine 向けに大幅に改変されている
-    -----
-    AIVM ファイルは音声合成モデルのパッケージファイルであり、以下の構成を持つ
-    VOICEVOX 本家では話者の立ち絵が表示されるが、立ち絵は見栄えが悪い上にユーザー側での用意が難しいため、AivisSpeech ではアイコンのみの表示に変更されている
-    - aivm_manifest.json : 音声合成モデルのメタデータを記述した JSON マニフェストファイル
-    - config.json : Style-Bert-VITS2 のハイパーパラメータを記述した JSON ファイル
-    - model.safetensors : Style-Bert-VITS2 のモデルファイル
-    - style_vectors.npy : Style-Bert-VITS2 のスタイルベクトルファイル
-    - speaker_(speaker_uuid: aivm_manifest.json に記載の UUID)/: 話者ごとのアセット
-        - icon.png : 話者 (デフォルトスタイル) のアイコン画像 (正方形)
-        - voice_sample_(01~99).wav : 話者 (デフォルトスタイル) のボイスサンプル
-        - terms.md : 話者の利用規約
-        - style_(style_id: aivm_manifest.json に記載の 0 から始まる連番 ID)/: スタイルごとのアセット (省略時はデフォルトスタイルのものが使われる)
-            - icon.png : デフォルト以外の各スタイルごとのアイコン画像 (正方形)
-            - voice_sample_(01~99).wav : デフォルト以外の各スタイルごとのボイスサンプル
-            - voice_sample_(01~99).txt : デフォルト以外の各スタイルごとのボイスサンプルの書き起こしテキスト
     """
 
-    MANIFEST_FILE: str = "aivm_manifest.json"
-    SUPPORTED_MANIFEST_VERSION: Version = Version.parse("1.0.0")
-    SUPPORTED_MODEL_ARCHITECTURES: list[str] = ["Style-Bert-VITS2 (JP-Extra)"]
+    # AivisSpeech でサポートされているマニフェストバージョン
+    SUPPORTED_MANIFEST_VERSIONS: list[str] = ["1.0"]
+    # AivisSpeech でサポートされている音声合成モデルのアーキテクチャ
+    SUPPORTED_MODEL_ARCHITECTURES: list[ModelArchitecture] = [
+        ModelArchitecture.StyleBertVITS2,
+        ModelArchitecture.StyleBertVITS2JPExtra,
+    ]
 
     def __init__(self, installed_aivm_dir: Path):
+        """
+        AivmManager のコンストラクタ
+
+        Parameters
+        ----------
+        installed_aivm_dir : Path
+            AIVM ファイルのインストール先ディレクトリ
+        """
+
         self.installed_aivm_dir = installed_aivm_dir
         self.installed_aivm_dir.mkdir(exist_ok=True)
 
@@ -78,10 +72,8 @@ class AivmManager:
             for aivm_info_speaker in aivm_info.speakers:
                 speakers.append(aivm_info_speaker.speaker)
 
-        # 話者名でソート
-        speakers = sorted(speakers, key=lambda x: x.name)
-
-        return speakers
+        # 話者名でソートしてから返す
+        return sorted(speakers, key=lambda x: x.name)
 
     def get_speaker_info(self, speaker_uuid: str) -> SpeakerInfo:
         """
@@ -109,173 +101,9 @@ class AivmManager:
             detail=f"話者 {speaker_uuid} はインストールされていません。",
         )
 
-    def get_installed_aivm_infos(self) -> dict[str, AivmInfo]:
+    def get_aivm_info(self, aivm_uuid: str) -> AivmInfo:
         """
-        すべてのインストール済み音声合成モデルの情報を取得する
-
-        Returns
-        -------
-        aivm_infos : dict[str, AivmInfo]
-            インストール済み音声合成モデルの情報 (キー: AIVM UUID, 値: AivmInfo)
-        """
-
-        aivm_infos: dict[str, AivmInfo] = {}
-        for aivm_dir in self.installed_aivm_dir.iterdir():
-            if aivm_dir.is_dir():
-                aivm_uuid = aivm_dir.name.replace("aivm_", "")
-
-                # AIVM マニフェストを取得し、仮で AivmInfo に変換
-                ## 話者情報は後で追加するため、空リストを渡す
-                try:
-                    aivm_manifest = self.get_aivm_manifest(aivm_uuid)
-                except HTTPException as e:
-                    logger.warning(f"Failed to get AivmManifest of {aivm_uuid}: {e.detail}")  # fmt: skip
-                    continue
-                aivm_info = AivmInfo(
-                    name=aivm_manifest.name,
-                    description=aivm_manifest.description,
-                    model_architecture=aivm_manifest.model_architecture,
-                    uuid=aivm_manifest.uuid,
-                    version=aivm_manifest.version,
-                    speakers=[],
-                )
-
-                # 万が一対応していないアーキテクチャの音声合成モデルの場合は除外
-                if aivm_manifest.model_architecture not in self.SUPPORTED_MODEL_ARCHITECTURES:  # fmt: skip
-                    logger.warning(f"TTS model {aivm_uuid} has unsupported model architecture {aivm_manifest.model_architecture}. Skipping.")  # fmt: skip
-                    continue
-
-                # 話者情報を AivmInfoSpeaker に変換し、AivmInfo.speakers に追加
-                for speaker_manifest in aivm_manifest.speakers:
-                    speaker_uuid = speaker_manifest.uuid
-                    speaker_dir = aivm_dir / f"speaker_{speaker_uuid}"
-
-                    # AivisSpeech Engine は日本語のみをサポートするため、日本語をサポートしない話者は除外
-                    ## supported_languages に大文字が設定されている可能性もあるため、小文字に変換して比較
-                    if "ja" not in [lang.lower() for lang in speaker_manifest.supported_languages]:  # fmt: skip
-                        logger.warning(f"Speaker {speaker_uuid} of TTS model {aivm_uuid} does not support Japanese. Skipping.")  # fmt: skip
-                        continue
-
-                    # 話者のディレクトリが存在しない場合
-                    if not speaker_dir.exists():
-                        raise HTTPException(
-                            status_code=500,
-                            detail=f"音声合成モデル {aivm_uuid} の話者 {speaker_uuid} のディレクトリが存在しません。",
-                        )
-
-                    # デフォルトスタイルのアセットと利用規約 (Markdown) のパスを取得
-                    default_style_icon_path = speaker_dir / "icon.png"
-                    if not default_style_icon_path.exists():
-                        raise HTTPException(
-                            status_code=500,
-                            detail=f"音声合成モデル {aivm_uuid} の話者 {speaker_uuid} に icon.png が存在しません。",
-                        )
-                    terms_path = speaker_dir / "terms.md"
-                    if not terms_path.exists():
-                        raise HTTPException(
-                            status_code=500,
-                            detail=f"音声合成モデル {aivm_uuid} の話者 {speaker_uuid} に terms.md が存在しません。",
-                        )
-                    default_style_voice_sample_paths = sorted(list(speaker_dir.glob("voice_sample_*.wav")))  # fmt: skip
-                    default_style_voice_sample_transcript_paths = sorted(list(speaker_dir.glob("voice_sample_*.txt")))  # fmt: skip
-                    if len(default_style_voice_sample_paths) != len(default_style_voice_sample_transcript_paths):  # fmt: skip
-                        raise HTTPException(
-                            status_code=500,
-                            detail=f"音声合成モデル {aivm_uuid} の話者 {speaker_uuid} のボイスサンプルと書き起こしテキストの数が一致しません。",
-                        )
-
-                    # スタイルごとにアセットを取得
-                    speaker_styles: list[SpeakerStyle] = []
-                    style_infos: list[StyleInfo] = []
-                    for style_manifest in speaker_manifest.styles:
-
-                        # AIVM マニフェスト内のスタイル ID を VOICEVOX ENGINE 互換の StyleId に変換
-                        style_id = self.local_style_id_to_style_id(style_manifest.id, speaker_uuid)  # fmt: skip
-
-                        # スタイルごとのディレクトリが存在する場合はアセットのパスを取得
-                        style_dir = speaker_dir / f"style_{style_id}"
-                        if style_dir.exists() and style_dir.is_dir():
-                            style_icon_path = style_dir / "icon.png"
-                            if not style_icon_path.exists():
-                                raise HTTPException(
-                                    status_code=500,
-                                    detail=f"音声合成モデル {aivm_uuid} の話者 {speaker_uuid} のスタイル {style_id} に icon.png が存在しません。",
-                                )
-                            style_voice_sample_paths = sorted(list(style_dir.glob("voice_sample_*.wav")))  # fmt: skip
-                            style_voice_sample_transcript_paths = sorted(list(style_dir.glob("voice_sample_*.txt")))  # fmt: skip
-
-                        # スタイルディレクトリが存在しない場合はデフォルトスタイルのアセットのパスを使う
-                        ## デフォルトスタイル (ID: 0) はスタイルごとのディレクトリが作成されないため、常にこの分岐に入る
-                        else:
-                            style_icon_path = default_style_icon_path
-                            style_voice_sample_paths = default_style_voice_sample_paths
-                            style_voice_sample_transcript_paths = default_style_voice_sample_transcript_paths  # fmt: skip
-
-                        # SpeakerStyle の作成
-                        speaker_style = SpeakerStyle(
-                            id=style_id,
-                            name=style_manifest.name,
-                            # AivisSpeech は仮称音声合成に対応しないので talk で固定
-                            type="talk",
-                        )
-                        speaker_styles.append(speaker_style)
-
-                        # StyleInfo の作成
-                        style_info = StyleInfo(
-                            id=style_id,
-                            # アイコン画像を Base64 エンコードして文字列化
-                            icon=base64.b64encode(style_icon_path.read_bytes()).decode("utf-8"),
-                            # 立ち絵を省略
-                            ## VOICEVOX 本家では portrait に立ち絵が入るが、AivisSpeech では敢えてアイコン画像のみを設定する
-                            portrait=None,
-                            # ボイスサンプルを Base64 エンコードして文字列化
-                            voice_samples=[
-                                base64.b64encode(sample_path.read_bytes()).decode("utf-8")
-                                for sample_path in style_voice_sample_paths
-                            ],
-                            # 書き起こしテキストを読み取って文字列に格納
-                            voice_sample_transcripts=[
-                                sample_transcript_path.read_text(encoding="utf-8")
-                                for sample_transcript_path in style_voice_sample_transcript_paths
-                            ],
-                        )  # fmt: skip
-                        style_infos.append(style_info)
-
-                    # AivmInfoSpeaker の作成
-                    aivm_info_speaker = AivmInfoSpeaker(
-                        speaker=Speaker(
-                            speaker_uuid=speaker_uuid,
-                            name=speaker_manifest.name,
-                            styles=speaker_styles,
-                            version=speaker_manifest.version,
-                            # AivisSpeech Engine では全話者に対し常にモーフィング機能を無効化する
-                            ## Style-Bert-VITS2 の仕様上音素長を一定にできず、話者ごとに発話タイミングがずれてまともに合成できないため
-                            supported_features=SpeakerSupportedFeatures(
-                                permitted_synthesis_morphing=SpeakerSupportPermittedSynthesisMorphing.NOTHING,
-                            ),
-                        ),
-                        speaker_info=SpeakerInfo(
-                            # 利用規約をそのまま読み取って文字列に格納
-                            policy=terms_path.read_text(encoding="utf-8"),
-                            # アイコン画像を Base64 エンコードして文字列化
-                            ## VOICEVOX 本家では portrait に立ち絵が入るが、AivisSpeech では敢えてアイコン画像を設定する
-                            portrait=base64.b64encode(default_style_icon_path.read_bytes()).decode("utf-8"),
-                            style_infos=style_infos,
-                        ),
-                    )  # fmt: skip
-                    aivm_info.speakers.append(aivm_info_speaker)
-
-                # 完成した AivmInfo を UUID をキーとして追加
-                aivm_infos[aivm_uuid] = aivm_info
-
-        # 音声合成モデル名でソート
-        aivm_infos = dict(sorted(aivm_infos.items(), key=lambda x: x[1].name))
-
-        return aivm_infos
-
-    def get_aivm_manifest(self, aivm_uuid: str) -> AivmManifest:
-        """
-        AIVM (Aivis Voice Model) マニフェストを取得する
+        AIVM ファイルの UUID から AIVM ファイルの情報を取得する
 
         Parameters
         ----------
@@ -284,46 +112,19 @@ class AivmManager:
 
         Returns
         -------
-        aivm_manifest : AivmManifest
-            AIVM (Aivis Voice Model) マニフェスト
+        aivm_info : AivmInfo
+            AIVM ファイルの情報
         """
 
-        # 対象の音声合成モデルがインストール済みであることの確認
-        aivm_dir = self.installed_aivm_dir / f"aivm_{aivm_uuid}"
-        if aivm_dir.is_dir() is False:
-            raise HTTPException(
-                status_code=404,
-                detail=f"音声合成モデル {aivm_uuid} はインストールされていません。",
-            )
+        aivm_infos = self.get_installed_aivm_infos()
+        for aivm_info in aivm_infos.values():
+            if aivm_info.manifest.uuid == aivm_uuid:
+                return aivm_info
 
-        # マニフェストファイルの存在確認
-        aivm_manifest_path = aivm_dir / self.MANIFEST_FILE
-        if aivm_manifest_path.is_file() is False:
-            raise HTTPException(
-                status_code=500,
-                detail=f"音声合成モデル {aivm_uuid} に aivm_manifest.json が存在しません。",
-            )
-
-        # マニフェストファイルの読み込み
-        try:
-            with open(aivm_manifest_path, mode="r", encoding="utf-8") as f:
-                raw_aivm_manifest = json.load(f)
-        except Exception:
-            raise HTTPException(
-                status_code=500,
-                detail=f"音声合成モデル {aivm_uuid} の aivm_manifest.json の読み込みに失敗しました。",
-            )
-
-        # マニフェスト形式のバリデーション
-        try:
-            aivm_manifest = AivmManifest.model_validate(raw_aivm_manifest)
-        except ValidationError:
-            raise HTTPException(
-                status_code=500,
-                detail=f"音声合成モデル {aivm_uuid} の aivm_manifest.json に不正なデータが含まれています。",
-            )
-
-        return aivm_manifest
+        raise HTTPException(
+            status_code=404,
+            detail=f"音声合成モデル {aivm_uuid} はインストールされていません。",
+        )
 
     def get_aivm_manifest_from_style_id(
         self, style_id: StyleId
@@ -339,11 +140,11 @@ class AivmManager:
         Returns
         -------
         aivm_manifest : AivmManifest
-            AIVM (Aivis Voice Model) マニフェスト
+            AIVM マニフェスト
         aivm_manifest_speaker : AivmManifestSpeaker
-            AIVM (Aivis Voice Model) マニフェスト内の話者
+            AIVM マニフェスト内の話者
         aivm_manifest_style : AivmManifestSpeakerStyle
-            AIVM (Aivis Voice Model) マニフェスト内のスタイル
+            AIVM マニフェスト内のスタイル
         """
 
         # fmt: off
@@ -353,14 +154,14 @@ class AivmManager:
                 for aivm_info_speaker_style in aivm_info_speaker.speaker.styles:
                     if aivm_info_speaker_style.id == style_id:
                         # ここでスタイル ID が示す音声合成モデルに対応する AivmManifest を特定
-                        aivm_manifest = self.get_aivm_manifest(aivm_info.uuid)
+                        aivm_manifest = aivm_info.manifest
                         for aivm_manifest_speaker in aivm_manifest.speakers:
                             # ここでスタイル ID が示す話者に対応する AivmManifestSpeaker を特定
                             if aivm_manifest_speaker.uuid == aivm_info_speaker.speaker.speaker_uuid:
                                 for aivm_manifest_style in aivm_manifest_speaker.styles:
                                     # ここでスタイル ID が示すスタイルに対応する AivmManifestSpeakerStyle を特定
                                     local_style_id = self.style_id_to_local_style_id(style_id)
-                                    if aivm_manifest_style.id == local_style_id:
+                                    if aivm_manifest_style.local_id == local_style_id:
                                         # すべて取得できたので値を返す
                                         return aivm_manifest, aivm_manifest_speaker, aivm_manifest_style
 
@@ -369,124 +170,198 @@ class AivmManager:
             detail=f"スタイル {style_id} は存在しません。",
         )
 
-    def install_aivm(self, aivm_uuid: str, file: BinaryIO) -> Path:
+    def get_installed_aivm_infos(self) -> dict[str, AivmInfo]:
+        """
+        すべてのインストール済み音声合成モデルの情報を取得する
+
+        Returns
+        -------
+        aivm_infos : dict[str, AivmInfo]
+            インストール済み音声合成モデルの情報 (キー: AIVM ファイルの UUID, 値: AivmInfo)
+        """
+
+        # AIVM ファイルのインストール先ディレクトリ内に配置されている .aivm ファイルのパスを取得
+        aivm_file_paths = glob.glob(str(self.installed_aivm_dir / "*.aivm"))
+
+        # 各 AIVM ファイルごとに
+        aivm_infos: dict[str, AivmInfo] = {}
+        for aivm_file_path in aivm_file_paths:
+
+            # 最低限のパスのバリデーション
+            aivm_file_path = Path(aivm_file_path)
+            if not aivm_file_path.exists():
+                logger.warning(f"{aivm_file_path}: File not found.")
+                continue
+            if not aivm_file_path.is_file():
+                logger.warning(f"{aivm_file_path}: Not a file.")
+                continue
+
+            # AIVM メタデータの読み込み
+            try:
+                with open(aivm_file_path, mode="rb") as f:
+                    aivm_metadata = aivmlib.read_aivm_metadata(f)
+                    aivm_manifest = aivm_metadata.manifest
+            except aivmlib.AivmValidationError as e:
+                logger.warning(f"{aivm_file_path}: Failed to read AIVM metadata. ({e})")
+                continue
+
+            # AIVM ファイルの UUID
+            aivm_uuid = str(aivm_manifest.uuid)
+
+            # マニフェストバージョンのバリデーション
+            if aivm_manifest.manifest_version not in self.SUPPORTED_MANIFEST_VERSIONS:  # fmt: skip
+                logger.warning(
+                    f"{aivm_file_path}: AIVM manifest version {aivm_manifest.manifest_version} is not supported."
+                )
+                continue
+
+            # 音声合成モデルのアーキテクチャのバリデーション
+            if aivm_manifest.model_architecture not in self.SUPPORTED_MODEL_ARCHITECTURES:  # fmt: skip
+                logger.warning(
+                    f"{aivm_file_path}: Model architecture {aivm_manifest.model_architecture} is not supported."
+                )
+                continue
+
+            # 仮の AivmInfo モデルを作成
+            aivm_info = AivmInfo(
+                # AIVM ファイルのインストール先パス
+                file_path=aivm_file_path,
+                # AIVM マニフェスト
+                manifest=aivm_manifest,
+                # 話者情報は後で追加するため、空リストを渡す
+                speakers=[],
+            )
+
+            # 話者情報を LibrarySpeaker に変換し、AivmInfo.speakers に追加
+            for speaker_manifest in aivm_manifest.speakers:
+                speaker_uuid = str(speaker_manifest.uuid)
+
+                # AivisSpeech Engine は日本語のみをサポートするため、日本語をサポートしない話者は除外
+                ## 念のため小文字に変換してから比較
+                if "ja" not in [lang.lower() for lang in speaker_manifest.supported_languages]:  # fmt: skip
+                    logger.warning(f"{aivm_file_path}: Speaker {speaker_uuid} does not support Japanese. Ignoring.")  # fmt: skip
+                    continue
+
+                # スタイルごとにアセットを取得
+                speaker_styles: list[SpeakerStyle] = []
+                style_infos: list[StyleInfo] = []
+                for style_manifest in speaker_manifest.styles:
+
+                    # AIVM マニフェスト内の話者スタイル ID を VOICEVOX ENGINE 互換の StyleId に変換
+                    style_id = self.local_style_id_to_style_id(style_manifest.local_id, speaker_uuid)  # fmt: skip
+
+                    # SpeakerStyle の作成
+                    speaker_style = SpeakerStyle(
+                        # VOICEVOX ENGINE 互換のスタイル ID
+                        id=style_id,
+                        # スタイル名
+                        name=style_manifest.name,
+                        # AivisSpeech は歌唱音声合成に対応しないので talk で固定
+                        type="talk",
+                    )
+                    speaker_styles.append(speaker_style)
+
+                    # StyleInfo の作成
+                    style_info = StyleInfo(
+                        # VOICEVOX ENGINE 互換のスタイル ID
+                        id=style_id,
+                        # アイコン画像
+                        icon=self.extract_base64_from_data_url(style_manifest.icon),
+                        # 立ち絵を省略
+                        ## VOICEVOX ENGINE 本家では portrait に立ち絵が入るが、AivisSpeech Engine では敢えてアイコン画像のみを設定する
+                        portrait=None,
+                        # ボイスサンプル
+                        voice_samples=[
+                            self.extract_base64_from_data_url(sample.audio)
+                            for sample in style_manifest.voice_samples
+                        ],
+                        # 書き起こしテキスト
+                        voice_sample_transcripts=[
+                            sample.transcript
+                            for sample in style_manifest.voice_samples
+                        ],
+                    )  # fmt: skip
+                    style_infos.append(style_info)
+
+                # LibrarySpeaker の作成
+                aivm_info_speaker = LibrarySpeaker(
+                    # 話者情報
+                    speaker=Speaker(
+                        # 話者 UUID
+                        speaker_uuid=speaker_uuid,
+                        # 話者名
+                        name=speaker_manifest.name,
+                        # 話者スタイル情報
+                        styles=speaker_styles,
+                        # 話者のバージョン
+                        version=speaker_manifest.version,
+                        # AivisSpeech Engine では全話者に対し常にモーフィング機能を無効化する
+                        ## Style-Bert-VITS2 の仕様上音素長を一定にできず、話者ごとに発話タイミングがずれてまともに合成できないため
+                        supported_features=SpeakerSupportedFeatures(
+                            permitted_synthesis_morphing=SpeakerSupportPermittedSynthesisMorphing.NOTHING,
+                        ),
+                    ),
+                    # 追加の話者情報
+                    speaker_info=SpeakerInfo(
+                        # 利用規約 (Markdown)
+                        ## 同一 AIVM ファイル内のすべての話者は同一の利用規約を持つ
+                        policy=aivm_manifest.terms_of_use,
+                        # アイコン画像を Base64 エンコードして文字列化
+                        ## 最初のスタイルのアイコンをこの話者全体のアイコンとして設定する
+                        ## VOICEVOX ENGINE 本家では portrait に立ち絵が入るが、AivisSpeech Engine では敢えてアイコン画像を設定する
+                        portrait=style_infos[0].icon,
+                        # 追加の話者スタイル情報
+                        style_infos=style_infos,
+                    ),
+                )  # fmt: skip
+                aivm_info.speakers.append(aivm_info_speaker)
+
+            # 完成した AivmInfo を UUID をキーとして追加
+            aivm_infos[aivm_uuid] = aivm_info
+
+        # 音声合成モデル名でソートしてから返す
+        return dict(sorted(aivm_infos.items(), key=lambda x: x[1].manifest.name))
+
+    def install_aivm(self, file: BinaryIO) -> None:
         """
         音声合成モデルパッケージファイル (`.aivm`) をインストールする
 
         Parameters
         ----------
-        aivm_uuid : str
-            音声合成モデルのUUID (aivm_manifest.json に記載されているものと同一)
-        file : BytesIO
+        file : BinaryIO
             AIVM ファイルのバイナリ
-
-        Returns
-        -------
-        model_dir : Path
-            インストール済みライブラリのディレクトリパス
         """
 
-        # インストール先ディレクトリの生成
-        install_dir = self.installed_aivm_dir / f"aivm_{aivm_uuid}"
-        install_dir.mkdir(exist_ok=True)
-
-        # zipファイル形式のバリデーション
-        if not zipfile.is_zipfile(file):
+        # AIVM ファイルからから AIVM メタデータを取得
+        try:
+            aivm_metadata = aivmlib.read_aivm_metadata(file)
+            aivm_manifest = aivm_metadata.manifest
+        except aivmlib.AivmValidationError as e:
             raise HTTPException(
                 status_code=422,
-                detail=f"音声合成モデル {aivm_uuid} は不正なファイルです。",
+                detail=f"指定された AIVM ファイルの形式が正しくありません。({e})",
             )
 
-        with zipfile.ZipFile(file) as zf:
-            if zf.testzip() is not None:
-                raise HTTPException(
-                    status_code=422,
-                    detail=f"音声合成モデル {aivm_uuid} は不正なファイルです。",
-                )
+        # マニフェストバージョンのバリデーション
+        if aivm_manifest.manifest_version not in self.SUPPORTED_MANIFEST_VERSIONS:  # fmt: skip
+            raise HTTPException(
+                status_code=422,
+                detail=f"AIVM マニフェストバージョン {aivm_manifest.manifest_version} には対応していません。",
+            )
 
-            # マニフェストファイルの存在とファイル形式をバリデーション
-            raw_aivm_manifest = None
-            try:
-                raw_aivm_manifest = json.loads(
-                    zf.read(self.MANIFEST_FILE).decode("utf-8")
-                )
-            except KeyError:
-                raise HTTPException(
-                    status_code=422,
-                    detail=f"音声合成モデル {aivm_uuid} に aivm_manifest.json が存在しません。",
-                )
-            except Exception:
-                raise HTTPException(
-                    status_code=422,
-                    detail=f"音声合成モデル {aivm_uuid} の aivm_manifest.json は不正です。",
-                )
+        # 音声合成モデルのアーキテクチャのバリデーション
+        if aivm_manifest.model_architecture not in self.SUPPORTED_MODEL_ARCHITECTURES:  # fmt: skip
+            raise HTTPException(
+                status_code=422,
+                detail=f'モデルアーキテクチャ "{aivm_manifest.model_architecture}" には対応していません。',
+            )
 
-            # マニフェスト形式のバリデーション
-            try:
-                aivm_manifest = AivmManifest.model_validate(raw_aivm_manifest)
-            except ValidationError:
-                raise HTTPException(
-                    status_code=422,
-                    detail=f"音声合成モデル {aivm_uuid} の aivm_manifest.json に不正なデータが含まれています。",
-                )
-
-            # マニフェストバージョンのバリデーション
-            try:
-                aivm_manifest_version = Version.parse(aivm_manifest.manifest_version)
-            except ValueError:
-                raise HTTPException(
-                    status_code=422,
-                    detail=f"音声合成モデル {aivm_uuid} の manifest_version ({aivm_manifest.manifest_version}) は不正です。",
-                )
-            if aivm_manifest_version > self.SUPPORTED_MANIFEST_VERSION:
-                raise HTTPException(
-                    status_code=422,
-                    detail=f"音声合成モデル {aivm_uuid} は未対応です。",
-                )
-
-            # 音声合成モデルのバージョンのバリデーション
-            if not Version.is_valid(aivm_manifest.version):
-                raise HTTPException(
-                    status_code=422,
-                    detail=f"音声合成モデル {aivm_uuid} の version ({aivm_manifest.version}) は不正です。",
-                )
-
-            # 音声合成モデルのアーキテクチャのバリデーション
-            if aivm_manifest.model_architecture not in self.SUPPORTED_MODEL_ARCHITECTURES:  # fmt: skip
-                raise HTTPException(
-                    status_code=422,
-                    detail=f"音声合成モデル {aivm_uuid} の architecture ({aivm_manifest.model_architecture}) は未対応です。",
-                )
-
-            # 音声合成モデルの UUID のバリデーション
-            if aivm_manifest.uuid != aivm_uuid:
-                raise HTTPException(
-                    status_code=422,
-                    detail=f"音声合成モデルの UUID {aivm_uuid} が aivm_manifest.json の uuid ({aivm_manifest.uuid}) と一致しません。",
-                )
-
-            # AIVM ファイル内に必須のファイルが存在するか確認
-            REQUIRED_FILES: list[str] = [
-                "config.json",
-                "model.safetensors",
-                "style_vectors.npy",
-            ]
-            for aivm_manifest_speaker in aivm_manifest.speakers:
-                # 話者のデフォルトスタイルのアイコンと利用規約は必須
-                # デフォルトスタイル以外のスタイルのアイコンと、ボイスサンプルは任意
-                speaker_dir = f"speaker_{aivm_manifest_speaker.uuid}/"
-                REQUIRED_FILES.append(speaker_dir + "icon.png")
-                REQUIRED_FILES.append(speaker_dir + "terms.md")
-            if not all([file in zf.namelist() for file in REQUIRED_FILES]):
-                raise HTTPException(
-                    status_code=422,
-                    detail=f"音声合成モデル {aivm_uuid} に必要なファイルが存在しません。",
-                )
-
-            # 展開によるインストール
-            zf.extractall(install_dir)
-
-        return install_dir
+        # AIVM ファイルをインストール
+        ## 通常は重複防止のため "(AIVM ファイルの UUID).aivm" のフォーマットのファイル名でインストールされるが、
+        ## 手動で .aivm ファイルをインストール先ディレクトリにコピーしても一通り動作するように考慮している
+        aivm_file_path = self.installed_aivm_dir / f"{aivm_manifest.uuid}.aivm"
+        with open(aivm_file_path, mode="wb") as f:
+            f.write(file.read())
 
     def uninstall_aivm(self, aivm_uuid: str) -> None:
         """
@@ -498,7 +373,7 @@ class AivmManager:
             音声合成モデルの UUID (aivm_manifest.json に記載されているものと同一)
         """
 
-        # 対象の音声合成モデルがインストール済みであることの確認
+        # 対象の音声合成モデルがインストール済みかを確認
         installed_aivm_infos = self.get_installed_aivm_infos()
         if aivm_uuid not in installed_aivm_infos.keys():
             raise HTTPException(
@@ -506,15 +381,10 @@ class AivmManager:
                 detail=f"音声合成モデル {aivm_uuid} はインストールされていません。",
             )
 
-        # ディレクトリ削除によるアンインストール
-        aivm_dir = self.installed_aivm_dir / f"aivm_{aivm_uuid}"
-        try:
-            shutil.rmtree(aivm_dir)
-        except Exception:
-            raise HTTPException(
-                status_code=500,
-                detail=f"音声合成モデル {aivm_uuid} の削除に失敗しました。",
-            )
+        # AIVM ファイルをアンインストール
+        ## AIVM ファイルのファイル名は必ずしも "(AIVM ファイルの UUID).aivm" になるとは限らないため、
+        ## AivmInfo 内に格納されているファイルパスを使って削除する
+        installed_aivm_infos[aivm_uuid].file_path.unlink()
 
     @staticmethod
     def local_style_id_to_style_id(local_style_id: int, speaker_uuid: str) -> StyleId:
@@ -583,3 +453,32 @@ class AivmManager:
 
         # スタイル ID の下位 5 bit からローカルなスタイル ID を取り出す
         return style_id & 0x1F
+
+    @staticmethod
+    def extract_base64_from_data_url(data_url: str) -> str:
+        """
+        Data URL から Base64 部分のみを取り出す
+
+        Parameters
+        ----------
+        data_url : str
+            Data URL
+
+        Returns
+        -------
+        base64 : str
+            Base64 部分
+        """
+
+        # バリデーション
+        if not data_url:
+            raise ValueError("Data URL is empty.")
+        if not data_url.startswith("data:"):
+            raise ValueError("Invalid data URL format.")
+
+        # Data URL のプレフィックスを除去して、カンマの後の Base64 エンコードされた部分を取得
+        if "," in data_url:
+            base64_part = data_url.split(",", 1)[1]
+        else:
+            raise ValueError("Invalid data URL format.")
+        return base64_part

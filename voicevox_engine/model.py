@@ -1,8 +1,10 @@
 from enum import Enum
+from pathlib import Path
 from re import findall, fullmatch
 from typing import Any
 
-from pydantic import BaseModel, ConfigDict, Field, StrictStr, validator
+from aivmlib.schemas.aivm_manifest import AivmManifest
+from pydantic import BaseModel, Field, StrictStr, validator
 
 from .metas.Metas import Speaker, SpeakerInfo
 
@@ -406,82 +408,16 @@ class VvlibManifest(BaseModel):
     engine_uuid: StrictStr = Field(title="エンジンのUUID")
 
 
-class AivmInfoSpeaker(BaseModel):
-    """
-    音声合成モデルに含まれる話者の情報
-    """
-
-    speaker: Speaker = Field(title="話者情報")
-    speaker_info: SpeakerInfo = Field(title="話者の追加情報")
-
-
 class AivmInfo(BaseModel):
     """
-    音声合成モデルの情報
+    AIVM (Aivis Voice Model) ファイルフォーマットの音声合成モデルの情報
+    AIVM マニフェストには音声合成モデルに関連するほぼ全てのメタデータが含まれる
+    speakers フィールド内の話者情報は、VOICEVOX ENGINE との API 互換性のため
+    AIVM マニフェストを元に Speaker / SpeakerStyle / SpeakerInfo / StyleInfo モデルに変換したもの
     """
 
-    # model_ 以下を Pydantic の保護対象から除外する
-    model_config = ConfigDict(protected_namespaces=())
-
-    name: str = Field(title="音声合成モデルの名前")
-    description: str = Field(title="音声合成モデルの説明 (省略時は空文字列になる)")
-    model_architecture: str = Field(
-        title="音声合成モデルのアーキテクチャ (音声合成技術の種類)"
-    )
-    uuid: str = Field(title="音声合成モデルの UUID")
-    version: str = Field(title="音声合成モデルのバージョン")
-    speakers: list[AivmInfoSpeaker] = Field(
-        title="音声合成モデルに含まれる話者のリスト"
-    )
-
-
-class AivmManifestSpeakerStyle(BaseModel):
-    """
-    AIVM (Aivis Voice Model) マニフェストの話者スタイルの定義
-    """
-
-    name: StrictStr = Field(title="スタイルの名前")
-    id: int = Field(
-        title="スタイルの ID (この AIVM ファイル内で一意な 0 から始まる連番で、style_id とは異なる)"
-    )
-
-
-class AivmManifestSpeaker(BaseModel):
-    """
-    AIVM (Aivis Voice Model) マニフェストの話者の定義
-    画像やボイスサンプルは容量が大きいためマニフェストには含まれず、 別途ファイルとして AIVM に格納される
-    """
-
-    name: StrictStr = Field(title="話者の名前")
-    supported_languages: list[StrictStr] = Field(
-        title="話者の対応言語のリスト (ja, en, zh のような ISO 639-1 言語コード)"
-    )
-    id: int = Field(
-        title="話者の ID (この AIVM ファイル内で一意な 0 から始まる連番で、speaker_uuid とは異なる)"
-    )
-    uuid: StrictStr = Field(title="話者の UUID (speaker_uuid と一致する)")
-    version: StrictStr = Field(title="話者のバージョン")
-    styles: list[AivmManifestSpeakerStyle] = Field(title="話者スタイルのリスト")
-
-
-class AivmManifest(BaseModel):
-    """
-    AIVM (Aivis Voice Model) マニフェストの定義
-    """
-
-    # model_ 以下を Pydantic の保護対象から除外する
-    model_config = ConfigDict(protected_namespaces=())
-
-    manifest_version: StrictStr = Field(title="AIVM マニフェストのバージョン")
-    name: StrictStr = Field(title="音声合成モデルの名前")
-    description: StrictStr = Field(
-        title="音声合成モデルの説明 (省略時は空文字列になる)"
-    )
-    model_architecture: StrictStr = Field(
-        title="音声合成モデルのアーキテクチャ (音声合成技術の種類)"
-    )
-    uuid: StrictStr = Field(title="音声合成モデルの UUID")
-    version: StrictStr = Field(title="音声合成モデルのバージョン")
-    speakers: list[AivmManifestSpeaker] = Field(
-        title="音声合成モデルに含まれる話者のリスト"
+    file_path: Path = Field(title="AIVM ファイルのインストール先パス")
+    manifest: AivmManifest = Field(title="AIVM マニフェスト")
+    speakers: list[LibrarySpeaker] = Field(
+        title="話者情報のリスト (VOICEVOX ENGINE 互換)"
     )

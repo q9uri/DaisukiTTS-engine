@@ -460,17 +460,17 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         aivm_manifest_speaker_style = result[2]
 
         # 音声合成モデルをロード (初回のみ)
-        model = self.load_model(aivm_manifest.uuid)
+        model = self.load_model(str(aivm_manifest.uuid))
         logger.info(f"Model: {aivm_manifest.name} / Version {aivm_manifest.version}")  # fmt: skip
         logger.info(f"Speaker: {aivm_manifest_speaker.name} / Style: {aivm_manifest_speaker_style.name} / Version {aivm_manifest_speaker.version}")  # fmt: skip
 
         # ローカルな話者 ID・スタイル ID を取得
         ## 現在の Style-Bert-VITS2 の API ではスタイル ID ではなくスタイル名を指定する必要があるため、
         ## 別途 local_style_id に対応するスタイル名をハイパーパラメータから取得している
-        ## AIVM マニフェスト記載のスタイル名とハイパーパラメータのスタイル名は一致していない可能性があり
-        ## そのまま指定できないため、AIVM マニフェストとハイパーパラメータで共通のスタイル ID からスタイル名を取得する
-        local_speaker_id: int = aivm_manifest_speaker.id
-        local_style_id: int = aivm_manifest_speaker_style.id
+        ## AIVM マニフェスト記載のスタイル名とハイパーパラメータのスタイル名は必ずしも一致しないため (通常一致するはずだが…) 、
+        ## 万が一に備え AIVM マニフェストとハイパーパラメータで共通のスタイル ID からスタイル名を取得する
+        local_speaker_id: int = aivm_manifest_speaker.local_id
+        local_style_id: int = aivm_manifest_speaker_style.local_id
         local_style_name: str | None = None
         for hps_style_name, hps_style_id in model.hyper_parameters.data.style2id.items():  # fmt: skip
             if hps_style_id == local_style_id:

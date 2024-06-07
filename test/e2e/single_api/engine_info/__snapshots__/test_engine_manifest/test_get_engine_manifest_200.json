@@ -94,6 +94,12 @@
     },
     {
       "license": "MIT License",
+      "name": "aivmlib",
+      "text": "MD5:29657c643d0fe3a7859e59d3606ed8dd",
+      "version": "1.0.0"
+    },
+    {
+      "license": "MIT License",
       "name": "altgraph",
       "text": "MD5:3590eb8d695bdcea3ba57e74adf8a4ed",
       "version": "0.17.4"
@@ -109,12 +115,6 @@
       "name": "anyio",
       "text": "MD5:c0a769411d2af7894099e8ff75058c9f",
       "version": "4.4.0"
-    },
-    {
-      "license": "BSD License",
-      "name": "asgiref",
-      "text": "MD5:f09eb47206614a4954c51db8a94840fa",
-      "version": "3.8.1"
     },
     {
       "license": "MIT License",
@@ -247,12 +247,6 @@
       "name": "dulwich",
       "text": "MD5:c1d1116d142f9444c78a630531d32234",
       "version": "0.21.7"
-    },
-    {
-      "license": "MIT License",
-      "name": "fastapi",
-      "text": "MD5:95792ff3fe8e11aa49ceb247e66e4810",
-      "version": "0.110.0"
     },
     {
       "license": "MIT License",
@@ -786,7 +780,7 @@
       "license": "UNKNOWN",
       "name": "style-bert-vits2",
       "text": "MD5:4ae09d45eac4aa08d013b5f2e01c67f6",
-      "version": "2.4.1"
+      "version": "2.5.0"
     },
     {
       "license": "BSD License",
