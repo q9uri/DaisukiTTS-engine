@@ -166,9 +166,8 @@ class StyleBertVITS2TTSEngine(TTSEngine):
             # 音声合成モデルのロード先の GPU デバイスを指定
             device=self.device,
         )  # fmt: skip
-        logger.info("Loading model...")
         tts_model.load()
-        logger.info(f"Model loaded. UUID: {aivm_uuid}")
+        logger.info(f"{aivm_info.manifest.name} ({aivm_uuid}) loaded.")
 
         self.tts_models[aivm_uuid] = tts_model
         return tts_model
