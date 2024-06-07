@@ -70,6 +70,7 @@ soxr = "^0.3.6"
 pydantic = "^2.7.2"
 starlette = "^0.37.0"
 jaconv = "^0.3.4"
+httpx = "^0.27.0"
 # aivmlib は AIVM ファイルのメタデータ読み取りに必要
 aivmlib = { git = "git@github.com:Aivis-Project/aivmlib.git", rev = "ea71cdff9e76bc99ed19769aa06d41a7d63146bb" }
 # AivisSpeech-Engine にはカスタマイズされた Style-Bert-VITS2 が必要

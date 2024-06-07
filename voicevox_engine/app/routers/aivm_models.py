@@ -2,7 +2,7 @@
 
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, File, Path, UploadFile
+from fastapi import APIRouter, Depends, File, Form, HTTPException, Path, UploadFile
 
 from voicevox_engine.aivm_manager import AivmManager
 from voicevox_engine.model import AivmInfo
@@ -36,14 +36,28 @@ def generate_aivm_models_router(aivm_manager: AivmManager) -> APIRouter:
     )
     def install_aivm(
         file: Annotated[
-            UploadFile, File(description="音声合成モデルパッケージファイル (`.aivm`)")
-        ]
+            UploadFile | None,
+            File(description="音声合成モデルパッケージファイル (`.aivm`)"),
+        ] = None,
+        url: Annotated[
+            str | None, Form(description="音声合成モデルパッケージファイルの URL")
+        ] = None,
     ) -> None:
         """
         音声合成モデルをインストールします。
+        ファイルからインストールする場合は `file` を指定してください。
+        URL からインストールする場合は `url` を指定してください。
         """
 
-        aivm_manager.install_aivm(file.file)
+        if file is not None:
+            aivm_manager.install_aivm(file.file)
+        elif url is not None:
+            aivm_manager.install_aivm_from_url(url)
+        else:
+            raise HTTPException(
+                status_code=422,
+                detail="Either file or url must be provided.",
+            )
 
     @router.get(
         "/{aivm_uuid}",

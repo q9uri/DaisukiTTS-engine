@@ -2,10 +2,12 @@
 
 import glob
 import hashlib
+from io import BytesIO
 from pathlib import Path
 from typing import BinaryIO
 
 import aivmlib
+import httpx
 from aivmlib.schemas.aivm_manifest import (
     AivmManifest,
     AivmManifestSpeaker,
@@ -14,8 +16,9 @@ from aivmlib.schemas.aivm_manifest import (
 )
 from fastapi import HTTPException
 
-from .logging import logger
-from .metas.Metas import (
+from voicevox_engine import __version__
+from voicevox_engine.logging import logger
+from voicevox_engine.metas.Metas import (
     Speaker,
     SpeakerInfo,
     SpeakerStyle,
@@ -24,7 +27,7 @@ from .metas.Metas import (
     StyleId,
     StyleInfo,
 )
-from .model import AivmInfo, LibrarySpeaker
+from voicevox_engine.model import AivmInfo, LibrarySpeaker
 
 __all__ = ["AivmManager"]
 
@@ -212,6 +215,13 @@ class AivmManager:
             # AIVM ファイルの UUID
             aivm_uuid = str(aivm_manifest.uuid)
 
+            # すでに同一 UUID のファイルがインストール済みかどうかのチェック
+            if aivm_uuid in aivm_infos:
+                logger.info(
+                    f"{aivm_file_path}: AIVM model {aivm_uuid} is already installed."
+                )
+                continue
+
             # マニフェストバージョンのバリデーション
             if aivm_manifest.manifest_version not in self.SUPPORTED_MANIFEST_VERSIONS:  # fmt: skip
                 logger.warning(
@@ -346,6 +356,13 @@ class AivmManager:
                 detail=f"指定された AIVM ファイルの形式が正しくありません。({e})",
             )
 
+        # すでに同一 UUID のファイルがインストール済みかどうかのチェック
+        if str(aivm_manifest.uuid) in self.get_installed_aivm_infos():
+            raise HTTPException(
+                status_code=422,
+                detail=f"音声合成モデル {aivm_manifest.uuid} は既にインストールされています。",
+            )
+
         # マニフェストバージョンのバリデーション
         if aivm_manifest.manifest_version not in self.SUPPORTED_MANIFEST_VERSIONS:  # fmt: skip
             raise HTTPException(
@@ -366,6 +383,32 @@ class AivmManager:
         aivm_file_path = self.installed_aivm_dir / f"{aivm_manifest.uuid}.aivm"
         with open(aivm_file_path, mode="wb") as f:
             f.write(file.read())
+
+    def install_aivm_from_url(self, url: str) -> None:
+        """
+        指定された URL から音声合成モデルパッケージファイル (`.aivm`) をダウンロードしてインストールする
+
+        Parameters
+        ----------
+        url : str
+            AIVM ファイルの URL
+        """
+
+        # URL から AIVM ファイルをダウンロード
+        try:
+            response = httpx.get(
+                url, headers={"User-Agent": f"AivisSpeech-Engine/{__version__}"}
+            )
+            response.raise_for_status()
+        except httpx.HTTPError as e:
+            logger.error(f"Failed to download AIVM file from {url}: {e}")
+            raise HTTPException(
+                status_code=500,
+                detail=f"AIVM ファイルのダウンロードに失敗しました。({e})",
+            )
+
+        # ダウンロードした AIVM ファイルをインストール
+        self.install_aivm(BytesIO(response.content))
 
     def uninstall_aivm(self, aivm_uuid: str) -> None:
         """
