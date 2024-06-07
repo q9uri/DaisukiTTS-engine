@@ -73,7 +73,7 @@ jaconv = "^0.3.4"
 # aivmlib は AIVM ファイルのメタデータ読み取りに必要
 aivmlib = { git = "git@github.com:Aivis-Project/aivmlib.git", rev = "ea71cdff9e76bc99ed19769aa06d41a7d63146bb" }
 # AivisSpeech-Engine にはカスタマイズされた Style-Bert-VITS2 が必要
-style-bert-vits2 = { git = "https://github.com/tsukumijima/Style-Bert-VITS2", rev = "1f94d39f035bddb0c691f9ceb52733b04fcb005c" }
+style-bert-vits2 = { git = "https://github.com/tsukumijima/Style-Bert-VITS2", rev = "689ead82b97ebd9c2f0710e8fca08ac09e7ed3c2" }
 # アーキテクチャに応じて適切な PyTorch をインストール
 # ref: https://tech.layerx.co.jp/entry/2023/07/28/184937
 torch = [
