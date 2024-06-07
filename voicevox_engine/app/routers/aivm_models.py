@@ -48,7 +48,7 @@ def generate_aivm_models_router(aivm_manager: AivmManager) -> APIRouter:
     @router.get(
         "/{aivm_uuid}",
     )
-    def get_aivm_manifest(
+    def get_aivm_info(
         aivm_uuid: Annotated[str, Path(description="AIVM ファイルの UUID")]
     ) -> AivmInfo:
         """
