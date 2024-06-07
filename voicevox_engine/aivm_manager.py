@@ -56,6 +56,10 @@ class AivmManager:
         self.installed_aivm_dir = installed_aivm_dir
         self.installed_aivm_dir.mkdir(exist_ok=True)
 
+        logger.info("Installed AIVM models:")
+        for aivm_info in self.get_installed_aivm_infos().values():
+            logger.info(f"- {aivm_info.manifest.name} ({aivm_info.manifest.uuid})")
+
     def get_speakers(self) -> list[Speaker]:
         """
         すべてのインストール済み音声合成モデル内の話者の一覧を取得する
