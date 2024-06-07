@@ -2,12 +2,15 @@
 
 import copy
 import time
+from io import BytesIO
 from typing import Literal
 
+import aivmlib
 import jaconv
 import numpy as np
 import torch
 import torch.version
+from fastapi import HTTPException
 from numpy.typing import NDArray
 from style_bert_vits2.constants import (
     DEFAULT_SDP_RATIO,
@@ -15,6 +18,7 @@ from style_bert_vits2.constants import (
     Languages,
 )
 from style_bert_vits2.logging import logger as style_bert_vits2_logger
+from style_bert_vits2.models.hyper_parameters import HyperParameters
 from style_bert_vits2.nlp import bert_models
 from style_bert_vits2.nlp.japanese.g2p_utils import g2kata_tone, kata_tone2phone_tone
 from style_bert_vits2.nlp.japanese.normalizer import normalize_text
@@ -130,12 +134,36 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         if aivm_uuid in self.tts_models:
             return self.tts_models[aivm_uuid]
 
-        # モデルをロードする
-        aivm_dir = self.aivm_manager.installed_aivm_dir / f"aivm_{aivm_uuid}"
+        # AIVM メタデータを読み込む
+        aivm_info = self.aivm_manager.get_aivm_info(aivm_uuid)
+        try:
+            with open(aivm_info.file_path, mode="rb") as f:
+                aivm_metadata = aivmlib.read_aivm_metadata(f)
+        except aivmlib.AivmValidationError as e:
+            logger.error(f"{aivm_info.file_path}: Failed to read AIVM metadata. ({e})")
+            raise HTTPException(
+                status_code=500,
+                detail="Failed to read AIVM metadata.",
+            )
+
+        # ハイパーパラメータを読み込む
+        hyper_parameters = HyperParameters.model_validate(
+            aivm_metadata.hyper_parameters.model_dump()
+        )
+
+        # スタイルベクトルを読み込む
+        assert aivm_metadata.style_vectors is not None
+        style_vectors = np.load(BytesIO(aivm_metadata.style_vectors))
+
+        # 音声合成モデルをロード
         tts_model = TTSModel(
-            model_path=aivm_dir / "model.safetensors",
-            config_path=aivm_dir / "config.json",
-            style_vec_path=aivm_dir / "style_vectors.npy",
+            # 音声合成モデルのパスとして、AIVM ファイル (Safetensors 互換) のパスを指定
+            model_path=aivm_info.file_path,
+            # config_path とあるが、HyperParameters の Pydantic モデルを直接指定できる
+            config_path=hyper_parameters,
+            # style_vec_path とあるが、style_vectors の NDArray を直接指定できる
+            style_vec_path=style_vectors,
+            # 音声合成モデルのロード先の GPU デバイスを指定
             device=self.device,
         )  # fmt: skip
         logger.info("Loading model...")
