@@ -33,7 +33,11 @@ def configure_middlewares(
     compiled_localhost_regex = re.compile(localhost_regex)
     allowed_origins = ["*"]
     if cors_policy_mode == "localapps":
-        allowed_origins = ["app://."]
+        allowed_origins = [
+            "app://.",
+            "https://hub.aivis-project.com",
+            "https://aivm-generator.aivis-project.com",
+        ]
         if allow_origin is not None:
             allowed_origins += allow_origin
             if "*" in allow_origin:
