@@ -122,7 +122,7 @@ class AivmManager:
 
         aivm_infos = self.get_installed_aivm_infos()
         for aivm_info in aivm_infos.values():
-            if aivm_info.manifest.uuid == aivm_uuid:
+            if str(aivm_info.manifest.uuid) == aivm_uuid:
                 return aivm_info
 
         raise HTTPException(
@@ -161,7 +161,7 @@ class AivmManager:
                         aivm_manifest = aivm_info.manifest
                         for aivm_manifest_speaker in aivm_manifest.speakers:
                             # ここでスタイル ID が示す話者に対応する AivmManifestSpeaker を特定
-                            if aivm_manifest_speaker.uuid == aivm_info_speaker.speaker.speaker_uuid:
+                            if str(aivm_manifest_speaker.uuid) == aivm_info_speaker.speaker.speaker_uuid:
                                 for aivm_manifest_style in aivm_manifest_speaker.styles:
                                     # ここでスタイル ID が示すスタイルに対応する AivmManifestSpeakerStyle を特定
                                     local_style_id = self.style_id_to_local_style_id(style_id)

@@ -209,7 +209,7 @@ def generate_speaker_router(
         # AivisSpeech Engine ではスタイル ID に対応する AivmManifest を取得後、
         # AIVM マニフェスト記載の UUID に対応する音声合成モデルをロードする
         aivm_manifest, _, _ = aivm_manager.get_aivm_manifest_from_style_id(style_id)
-        tts_engine.load_model(aivm_manifest.uuid)
+        tts_engine.load_model(str(aivm_manifest.uuid))
 
     @router.get("/is_initialized_speaker")
     def is_initialized_speaker(
@@ -229,6 +229,6 @@ def generate_speaker_router(
         # AivisSpeech Engine ではスタイル ID に対応する AivmManifest を取得後、
         # AIVM マニフェスト記載の UUID に対応する音声合成モデルがロードされているかどうかを返す
         aivm_manifest, _, _ = aivm_manager.get_aivm_manifest_from_style_id(style_id)
-        return tts_engine.is_model_loaded(aivm_manifest.uuid)
+        return tts_engine.is_model_loaded(str(aivm_manifest.uuid))
 
     return router
