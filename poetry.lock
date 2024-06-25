@@ -3337,7 +3337,7 @@ full = ["httpx (>=0.22.0)", "itsdangerous", "jinja2", "python-multipart (>=0.0.7
 
 [[package]]
 name = "style-bert-vits2"
-version = "2.5.0"
+version = "2.6.0"
 description = "Style-Bert-VITS2: Bert-VITS2 with more controllable voice styles."
 optional = false
 python-versions = ">=3.9"
@@ -3364,8 +3364,8 @@ transformers = "*"
 [package.source]
 type = "git"
 url = "https://github.com/tsukumijima/Style-Bert-VITS2"
-reference = "689ead82b97ebd9c2f0710e8fca08ac09e7ed3c2"
-resolved_reference = "689ead82b97ebd9c2f0710e8fca08ac09e7ed3c2"
+reference = "398ffbb2fb91fa7597fb6d6d680b465df50178a0"
+resolved_reference = "398ffbb2fb91fa7597fb6d6d680b465df50178a0"
 
 [[package]]
 name = "sympy"
@@ -4159,4 +4159,4 @@ test = ["big-O", "importlib-resources", "jaraco.functools", "jaraco.itertools", 
 [metadata]
 lock-version = "2.0"
 python-versions = "~3.11"
-content-hash = "d53e23c4006e01e3a79f6062e6e3fbc889035db9822a3773cc75bcb15379b8d5"
+content-hash = "ab61a4bfe63c880bc9cfaf2b7e10b2da68d10bdd37091dfce59cfc439c961b83"
