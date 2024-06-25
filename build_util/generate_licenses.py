@@ -180,7 +180,7 @@ def generate_licenses() -> list[License]:
         ),
         License(
             package_name="PyTorch",
-            package_version="2.2.2",
+            package_version="2.3.1",
             license_name="BSD-style license",
             license_text="https://raw.githubusercontent.com/pytorch/pytorch/master/LICENSE",
             license_text_type="remote_address",
