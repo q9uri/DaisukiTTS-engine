@@ -305,15 +305,31 @@
       "Body_install_aivm_aivm_models_install_post": {
         "properties": {
           "file": {
+            "anyOf": [
+              {
+                "format": "binary",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "description": "音声合成モデルパッケージファイル (`.aivm`)",
-            "format": "binary",
-            "title": "File",
-            "type": "string"
+            "title": "File"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "音声合成モデルパッケージファイルの URL",
+            "title": "Url"
           }
         },
-        "required": [
-          "file"
-        ],
         "title": "Body_install_aivm_aivm_models_install_post",
         "type": "object"
       },
@@ -1457,17 +1473,21 @@
     },
     "/aivm_models/install": {
       "post": {
-        "description": "音声合成モデルをインストールします。",
+        "description": "音声合成モデルをインストールします。\nファイルからインストールする場合は `file` を指定してください。\nURL からインストールする場合は `url` を指定してください。",
         "operationId": "install_aivm_aivm_models_install_post",
         "requestBody": {
           "content": {
             "multipart/form-data": {
               "schema": {
-                "$ref": "#/components/schemas/Body_install_aivm_aivm_models_install_post"
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/Body_install_aivm_aivm_models_install_post"
+                  }
+                ],
+                "title": "Body"
               }
             }
-          },
-          "required": true
+          }
         },
         "responses": {
           "204": {
@@ -1493,7 +1513,7 @@
     "/aivm_models/{aivm_uuid}": {
       "get": {
         "description": "指定された音声合成モデルの情報を取得します。",
-        "operationId": "get_aivm_manifest_aivm_models__aivm_uuid__get",
+        "operationId": "get_aivm_info_aivm_models__aivm_uuid__get",
         "parameters": [
           {
             "description": "AIVM ファイルの UUID",
@@ -1529,7 +1549,7 @@
             "description": "Validation Error"
           }
         },
-        "summary": "Get Aivm Manifest",
+        "summary": "Get Aivm Info",
         "tags": [
           "音声合成モデル管理"
         ]

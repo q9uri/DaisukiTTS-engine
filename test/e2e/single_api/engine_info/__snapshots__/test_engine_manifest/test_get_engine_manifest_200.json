@@ -30,7 +30,7 @@
       "license": "BSD-style license",
       "name": "PyTorch",
       "text": "MD5:5c853508d63a8090fa952ff1af58217d",
-      "version": "2.2.2"
+      "version": "2.3.1"
     },
     {
       "license": "Python Software Foundation License",
@@ -42,7 +42,7 @@
       "license": "BSD License",
       "name": "Authlib",
       "text": "MD5:ec053ca028e37ec79d3da3af34976d48",
-      "version": "1.3.0"
+      "version": "1.3.1"
     },
     {
       "license": "Apache Software License",
@@ -138,7 +138,7 @@
       "license": "Mozilla Public License 2.0 (MPL 2.0)",
       "name": "certifi",
       "text": "This package contains a modified version of ca-bundle.crt:\n\nca-bundle.crt -- Bundle of CA Root Certificates\n\nThis is a bundle of X.509 certificates of public Certificate Authorities\n(CA). These were automatically extracted from Mozilla's root certificates\nfile (certdata.txt).  This file can be found in the mozilla source tree:\nhttps://hg.mozilla.org/mozilla-central/file/tip/security/nss/lib/ckfw/builtins/certdata.txt\nIt contains the certificates in PEM format and therefore\ncan be directly used with curl / libcurl / php_curl, or with\nan Apache+mod_ssl webserver for SSL client authentication.\nJust configure this file as the SSLCACertificateFile.#\n\n***** BEGIN LICENSE BLOCK *****\nThis Source Code Form is subject to the terms of the Mozilla Public License,\nv. 2.0. If a copy of the MPL was not distributed with this file, You can obtain\none at http://mozilla.org/MPL/2.0/.\n\n***** END LICENSE BLOCK *****\n@(#) $RCSfile: certdata.txt,v $ $Revision: 1.80 $ $Date: 2011/11/03 15:11:58 $\n",
-      "version": "2024.2.2"
+      "version": "2024.6.2"
     },
     {
       "license": "MIT License",
@@ -174,7 +174,7 @@
       "license": "GNU General Public License v3 or later (GPLv3+)",
       "name": "cmudict",
       "text": "MD5:9461bd113012f497ef5a0987ab6db68c",
-      "version": "1.0.23"
+      "version": "1.0.24"
     },
     {
       "license": "MIT License",
@@ -216,7 +216,7 @@
       "license": "Apache Software License; BSD License",
       "name": "cryptography",
       "text": "This software is made available under the terms of *either* of the licenses\nfound in LICENSE.APACHE or LICENSE.BSD. Contributions to cryptography are made\nunder the terms of *both* these licenses.\n",
-      "version": "42.0.7"
+      "version": "42.0.8"
     },
     {
       "license": "MIT License",
@@ -258,19 +258,19 @@
       "license": "BSD License",
       "name": "fastjsonschema",
       "text": "MD5:6ddb48173ae95b92910c0f4d45b6d875",
-      "version": "2.19.1"
+      "version": "2.20.0"
     },
     {
       "license": "The Unlicense (Unlicense)",
       "name": "filelock",
       "text": "MD5:911690f51af322440237a253d695d19f",
-      "version": "3.14.0"
+      "version": "3.15.4"
     },
     {
       "license": "MIT License",
       "name": "flake8",
       "text": "MD5:75b26781f1adf1aa310bda6098937878",
-      "version": "7.0.0"
+      "version": "7.1.0"
     },
     {
       "license": "MIT License",
@@ -282,7 +282,7 @@
       "license": "BSD License",
       "name": "fsspec",
       "text": "MD5:b38a11bf4dcdfc66307f8515ce1fbaa6",
-      "version": "2024.5.0"
+      "version": "2024.6.0"
     },
     {
       "license": "Apache Software License",
@@ -318,7 +318,7 @@
       "license": "Apache Software License",
       "name": "huggingface-hub",
       "text": "MD5:86d3f3a95c324c9479bd8986968f4327",
-      "version": "0.23.2"
+      "version": "0.23.4"
     },
     {
       "license": "MIT License",
@@ -336,7 +336,7 @@
       "license": "Apache Software License",
       "name": "importlib_metadata",
       "text": "MD5:3b83ef96387f14655fc854ddc3c6bd57",
-      "version": "7.1.0"
+      "version": "7.2.1"
     },
     {
       "license": "Apache Software License",
@@ -348,7 +348,7 @@
       "license": "MIT License",
       "name": "inflect",
       "text": "MD5:141643e11c48898150daa83802dbc65f",
-      "version": "7.2.1"
+      "version": "7.3.0"
     },
     {
       "license": "MIT License",
@@ -402,7 +402,7 @@
       "license": "BSD",
       "name": "llvmlite",
       "text": "MD5:a15ea9843f27327e08f3c5fbf8043a2b",
-      "version": "0.42.0"
+      "version": "0.43.0"
     },
     {
       "license": "MIT License",
@@ -426,7 +426,7 @@
       "license": "MIT License",
       "name": "marshmallow",
       "text": "MD5:27586b20700d7544c06933afe56f7df4",
-      "version": "3.21.2"
+      "version": "3.21.3"
     },
     {
       "license": "MIT License",
@@ -444,7 +444,7 @@
       "license": "MIT License",
       "name": "more-itertools",
       "text": "MD5:3396ea30f9d21389d7857719816f83b5",
-      "version": "10.2.0"
+      "version": "10.3.0"
     },
     {
       "license": "BSD License",
@@ -461,8 +461,8 @@
     {
       "license": "MIT License",
       "name": "mypy",
-      "text": "MD5:8d62fd8f8648cb018e52857347e340b9",
-      "version": "1.10.0"
+      "text": "MD5:cbbd27594afd089daa160d3a16dd515a",
+      "version": "1.10.1"
     },
     {
       "license": "MIT License",
@@ -486,7 +486,7 @@
       "license": "BSD License",
       "name": "nodeenv",
       "text": "MD5:a9e238ffae5bb6447dbac6291e1dc3a3",
-      "version": "1.9.0"
+      "version": "1.9.1"
     },
     {
       "license": "GNU Library or Lesser General Public License (LGPL)",
@@ -498,7 +498,7 @@
       "license": "BSD License",
       "name": "numba",
       "text": "MD5:d9bed34136e8491d5d792c7efc17f10c",
-      "version": "0.59.1"
+      "version": "0.60.0"
     },
     {
       "license": "BSD License",
@@ -510,7 +510,7 @@
       "license": "Apache Software License; BSD License",
       "name": "packaging",
       "text": "This software is made available under the terms of *either* of the licenses\nfound in LICENSE.APACHE or LICENSE.BSD. Contributions to this software is made\nunder the terms of *both* these licenses.\n",
-      "version": "24.0"
+      "version": "24.1"
     },
     {
       "license": "Mozilla Public License 2.0 (MPL 2.0)",
@@ -528,7 +528,7 @@
       "license": "MIT License",
       "name": "pkginfo",
       "text": "MD5:6fc86b61c6077306ca1f5edc8edcc490",
-      "version": "1.10.0"
+      "version": "1.11.1"
     },
     {
       "license": "MIT License",
@@ -588,7 +588,7 @@
       "license": "MIT License",
       "name": "pycodestyle",
       "text": "MD5:a8546d0e77f416fb05a26acd89c8b3bd",
-      "version": "2.11.1"
+      "version": "2.12.0"
     },
     {
       "license": "BSD License",
@@ -600,13 +600,13 @@
       "license": "MIT License",
       "name": "pydantic",
       "text": "MD5:09280955509d1c4ca14bae02f21d49a6",
-      "version": "2.7.2"
+      "version": "2.7.4"
     },
     {
       "license": "MIT License",
       "name": "pydantic_core",
       "text": "MD5:ab599c188b4a314d2856b3a55030c75c",
-      "version": "2.18.3"
+      "version": "2.18.4"
     },
     {
       "license": "MIT License",
@@ -623,8 +623,8 @@
     {
       "license": "Apache Software License; GNU General Public License v2 (GPLv2)",
       "name": "pyinstaller-hooks-contrib",
-      "text": "============================================\nPyInstaller Community Hooks: License details\n============================================\n\nThis software is made available under the terms of the licenses\nfound in LICENSE.APL.txt or LICENSE.GPL.txt. Contributions to the Community Hooks are made\nunder the terms of the license that covers that type of hook/file. (See below)\n\n\nStandard hooks and files\n------------------------\n\nThese are all hooks/files except runtime hooks. (See below)\nThese files are licensed under the terms found in LICENSE.GPL.txt.\n\n\nRuntime hooks\n-------------\n\nThese are runtime hooks, bundled with complete pyinstaller executables.\nThese files are licensed under the terms found in LICENSE.APL.txt.\n\nThese generally reside in \"src/_pyinstaller_hooks_contrib/hooks/rthooks\".\n",
-      "version": "2024.6"
+      "text": "MD5:bfb031309b6e103744af33e1ea571042",
+      "version": "2024.7"
     },
     {
       "license": "MIT License",
@@ -654,7 +654,7 @@
       "license": "MIT License",
       "name": "pytest",
       "text": "MD5:bd27e41b6550fe0fc45356d1d81ee37c",
-      "version": "8.2.1"
+      "version": "8.2.2"
     },
     {
       "license": "Apache Software License",
@@ -672,7 +672,7 @@
       "license": "MIT License",
       "name": "rapidfuzz",
       "text": "MD5:dcd1023081943827dd63f01dc3fda218",
-      "version": "3.9.2"
+      "version": "3.9.3"
     },
     {
       "license": "Apache Software License",
@@ -720,7 +720,7 @@
       "license": "MIT License",
       "name": "safety",
       "text": "MD5:099fc3870abf45d87b724566807229dd",
-      "version": "3.2.0"
+      "version": "3.2.3"
     },
     {
       "license": "MIT License",
@@ -780,7 +780,7 @@
       "license": "UNKNOWN",
       "name": "style-bert-vits2",
       "text": "MD5:4ae09d45eac4aa08d013b5f2e01c67f6",
-      "version": "2.5.0"
+      "version": "2.6.0"
     },
     {
       "license": "BSD License",
@@ -798,7 +798,7 @@
       "license": "MIT License",
       "name": "taskipy",
       "text": "MD5:a005c1d96f118fa7d76f0d3728b05c88",
-      "version": "1.12.2"
+      "version": "1.13.0"
     },
     {
       "license": "Apache Software License",
@@ -821,14 +821,14 @@
     {
       "license": "BSD License",
       "name": "torch",
-      "text": "MD5:dc3304f91c1c03a0aaa8eca9ef057bed",
-      "version": "2.2.2"
+      "text": "MD5:5dc165ddd6a4a861c049614f696ed71d",
+      "version": "2.3.1"
     },
     {
       "license": "BSD License",
       "name": "torchaudio",
       "text": "MD5:570eef9ba0d4b42e6e7be2b2ca31f13c",
-      "version": "2.2.2"
+      "version": "2.3.1"
     },
     {
       "license": "MIT License; Mozilla Public License 2.0 (MPL 2.0)",
@@ -870,7 +870,7 @@
       "license": "Python Software Foundation License",
       "name": "typing_extensions",
       "text": "MD5:fcf6b249c2641540219a727f35d8d2c2",
-      "version": "4.12.0"
+      "version": "4.12.2"
     },
     {
       "license": "MIT",
@@ -882,7 +882,7 @@
       "license": "MIT License",
       "name": "urllib3",
       "text": "MD5:52d273a3054ced561275d4d15260ecda",
-      "version": "2.2.1"
+      "version": "2.2.2"
     },
     {
       "license": "BSD License",
@@ -894,7 +894,7 @@
       "license": "MIT License",
       "name": "virtualenv",
       "text": "MD5:0ce089158cf60a8ab6abb452b6405538",
-      "version": "20.26.2"
+      "version": "20.26.3"
     },
     {
       "license": "MIT License",
@@ -906,7 +906,7 @@
       "license": "MIT License",
       "name": "zipp",
       "text": "MD5:141643e11c48898150daa83802dbc65f",
-      "version": "3.19.0"
+      "version": "3.19.2"
     }
   ],
   "frame_rate": 172.265625,
