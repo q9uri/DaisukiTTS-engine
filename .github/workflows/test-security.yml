@@ -4,8 +4,9 @@
 name: test-security
 
 on:
-  schedule:
-    - cron: "00 04 15 * *" # 毎月15日 13:00 JST
+  # schedule:
+  #   - cron: "00 04 15 * *" # 毎月15日 13:00 JST
+  workflow_dispatch:
 
 env:
   PYTHON_VERSION: "3.11.9"
