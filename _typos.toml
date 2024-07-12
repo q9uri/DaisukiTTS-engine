@@ -5,4 +5,9 @@
 datas="datas" # PyInstallerの引数
 
 [files]
-extend-exclude = ["resources", "poetry.*", "requirements*.txt"]
+extend-exclude = [
+    "resources",
+    "test/e2e/single_api/engine_info/__snapshots__/test_engine_manifest/test_get_engine_manifest_200.json",
+    "poetry.*",
+    "requirements*.txt",
+]
