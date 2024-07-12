@@ -1,6 +1,6 @@
 # Github Issue が停滞状態になっていないか確認する
 
-name: "Test issue freshness"
+name: "Test Issue Freshness"
 on:
   # schedule:
   #   - cron: "0 3 * * *"

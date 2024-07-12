@@ -1,4 +1,4 @@
-name: Release latest dev build
+name: Release Latest Dev Build
 
 # masterブランチが更新されるたびに開発版をビルドしてデプロイする。
 # バージョン（タグ）は最新リリースのバージョンを`X.Y.Z`としたときの`X.Y+1.0-dev`。
