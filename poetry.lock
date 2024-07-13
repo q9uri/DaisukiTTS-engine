@@ -15,7 +15,7 @@ typer = {version = "^0.12.3", extras = ["all"]}
 
 [package.source]
 type = "git"
-url = "git@github.com:Aivis-Project/aivmlib.git"
+url = "https://x-access-token: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@github.com/Aivis-Project/aivmlib.git"
 reference = "ea71cdff9e76bc99ed19769aa06d41a7d63146bb"
 resolved_reference = "ea71cdff9e76bc99ed19769aa06d41a7d63146bb"
 
@@ -4235,4 +4235,4 @@ test = ["big-O", "importlib-resources", "jaraco.functools", "jaraco.itertools", 
 [metadata]
 lock-version = "2.0"
 python-versions = "~3.11"
-content-hash = "063c6a00e630b8eb07063a0541a19bd0bfbe1804cf43e72de33acad50aa0cfed"
+content-hash = "f55aacba4bd8b103264d6b5447c5b5b3ca53806a3ad14ec6d441784b1f9fc2a7"
