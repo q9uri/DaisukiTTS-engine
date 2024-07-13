@@ -41,7 +41,7 @@ jobs:
           git diff --exit-code
 
       - name: <Test> Check format
-        run: poetry run task lint
+        run: PYTHONUTF8=1 poetry run task lint
 
       - name: <Test> Test codes and coverage
         run: poetry run coverage run --omit=test/* -m pytest
