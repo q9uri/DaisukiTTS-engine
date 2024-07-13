@@ -53,7 +53,7 @@ def get_save_dir() -> Path:
         app_name = "AivisSpeech-Engine-Dev"
     else:
         app_name = "AivisSpeech-Engine"
-    return Path(user_data_dir(app_name))
+    return Path(user_data_dir(app_name, appauthor=False, roaming=True))
 
 
 def delete_file(file_path: str) -> None:
