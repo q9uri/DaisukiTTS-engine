@@ -40,8 +40,8 @@ jobs:
       - name: <Setup> Check out the repository
         uses: actions/checkout@v4
 
-      - name: Install Poetry
-        run: pipx install poetry
+      - name: <Setup> Install Poetry
+        run: pipx install poetry==1.8.3
 
       - name: <Setup> Set up Python
         uses: actions/setup-python@v5

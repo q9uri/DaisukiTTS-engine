@@ -95,8 +95,8 @@ jobs:
         if: startsWith(matrix.os, 'windows-')
         uses: ilammy/msvc-dev-cmd@v1
 
-      - name: Install Poetry
-        run: pipx install poetry
+      - name: <Setup> Install Poetry
+        run: pipx install poetry==1.8.3
 
       # Python install path of windows: C:/hostedtoolcache/windows/Python
       - name: <Setup> Set up Python
