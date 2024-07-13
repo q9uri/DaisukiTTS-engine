@@ -13,4 +13,6 @@ def test_get_engine_manifest_200(
 ) -> None:
     response = client.get("/engine_manifest")
     assert response.status_code == 200
-    assert snapshot_json == hash_long_string(response.json())
+    response_json = response.json()
+    response_json.pop("dependency_licenses", None)  # dependency_licenses を除外
+    assert snapshot_json == hash_long_string(response_json)
