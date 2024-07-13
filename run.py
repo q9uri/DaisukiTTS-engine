@@ -272,6 +272,8 @@ def main() -> None:
         set_output_log_utf8()
 
     logger.info(f"AivisSpeech Engine version {__version__}")
+    logger.info(f"Engine root directory: {engine_root()}")
+    logger.info(f"User data directory: {get_save_dir()}")
 
     # Synthesis Engine
     use_gpu: bool = args.use_gpu
