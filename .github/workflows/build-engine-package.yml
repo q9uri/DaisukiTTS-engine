@@ -96,7 +96,7 @@ jobs:
         uses: ilammy/msvc-dev-cmd@v1
 
       - name: <Setup> Install Poetry
-        run: pipx install poetry==1.8.3
+        run: pipx install poetry --python 3.11
 
       # Python install path of windows: C:/hostedtoolcache/windows/Python
       - name: <Setup> Set up Python

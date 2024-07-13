@@ -23,7 +23,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: <Setup> Install Poetry
-        run: pipx install poetry==1.8.3
+        run: pipx install poetry --python 3.11
 
       - name: <Setup> Set up Python
         uses: actions/setup-python@v5
