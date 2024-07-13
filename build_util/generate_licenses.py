@@ -71,6 +71,9 @@ def generate_licenses() -> list[License]:
         if license_json["LicenseText"] == "UNKNOWN":
             if package_name == "core" and license_json["Version"] == "0.0.0":
                 continue
+            # NVIDIA ランタイムはライセンス生成をスキップ
+            if package_name.startswith("nvidia-"):
+                continue
             elif package_name == "future":
                 text_url = "https://raw.githubusercontent.com/PythonCharmers/python-future/master/LICENSE.txt"  # noqa: B950
                 license_json["LicenseText"] = get_license_text(text_url)
@@ -124,6 +127,9 @@ def generate_licenses() -> list[License]:
                 license_json["LicenseText"] = get_license_text(text_url)
             elif package_name == "tokenizers":
                 text_url = "https://raw.githubusercontent.com/huggingface/tokenizers/v0.19.1/LICENSE"  # noqa: B950
+                license_json["LicenseText"] = get_license_text(text_url)
+            elif package_name == "triton":
+                text_url = "https://raw.githubusercontent.com/triton-lang/triton/v2.1.0/LICENSE"  # noqa: B950
                 license_json["LicenseText"] = get_license_text(text_url)
             elif package_name == "types-pyyaml":
                 text_url = "https://raw.githubusercontent.com/python/typeshed/57f3dcac8dbed008479b251512975901a0206deb/LICENSE"  # noqa: B950
