@@ -138,7 +138,7 @@
       "license": "Mozilla Public License 2.0 (MPL 2.0)",
       "name": "certifi",
       "text": "This package contains a modified version of ca-bundle.crt:\n\nca-bundle.crt -- Bundle of CA Root Certificates\n\nThis is a bundle of X.509 certificates of public Certificate Authorities\n(CA). These were automatically extracted from Mozilla's root certificates\nfile (certdata.txt).  This file can be found in the mozilla source tree:\nhttps://hg.mozilla.org/mozilla-central/file/tip/security/nss/lib/ckfw/builtins/certdata.txt\nIt contains the certificates in PEM format and therefore\ncan be directly used with curl / libcurl / php_curl, or with\nan Apache+mod_ssl webserver for SSL client authentication.\nJust configure this file as the SSLCACertificateFile.#\n\n***** BEGIN LICENSE BLOCK *****\nThis Source Code Form is subject to the terms of the Mozilla Public License,\nv. 2.0. If a copy of the MPL was not distributed with this file, You can obtain\none at http://mozilla.org/MPL/2.0/.\n\n***** END LICENSE BLOCK *****\n@(#) $RCSfile: certdata.txt,v $ $Revision: 1.80 $ $Date: 2011/11/03 15:11:58 $\n",
-      "version": "2024.6.2"
+      "version": "2024.7.4"
     },
     {
       "license": "MIT License",
@@ -174,7 +174,7 @@
       "license": "GNU General Public License v3 or later (GPLv3+)",
       "name": "cmudict",
       "text": "MD5:9461bd113012f497ef5a0987ab6db68c",
-      "version": "1.0.24"
+      "version": "1.0.26"
     },
     {
       "license": "MIT License",
@@ -282,7 +282,7 @@
       "license": "BSD License",
       "name": "fsspec",
       "text": "MD5:b38a11bf4dcdfc66307f8515ce1fbaa6",
-      "version": "2024.6.0"
+      "version": "2024.6.1"
     },
     {
       "license": "Apache Software License",
@@ -324,7 +324,7 @@
       "license": "MIT License",
       "name": "identify",
       "text": "MD5:bbdc006359f3157660173ec7f133a80e",
-      "version": "2.5.36"
+      "version": "2.6.0"
     },
     {
       "license": "BSD License",
@@ -336,7 +336,7 @@
       "license": "Apache Software License",
       "name": "importlib_metadata",
       "text": "MD5:3b83ef96387f14655fc854ddc3c6bd57",
-      "version": "7.2.1"
+      "version": "8.0.0"
     },
     {
       "license": "Apache Software License",
@@ -348,7 +348,7 @@
       "license": "MIT License",
       "name": "inflect",
       "text": "MD5:141643e11c48898150daa83802dbc65f",
-      "version": "7.3.0"
+      "version": "7.3.1"
     },
     {
       "license": "MIT License",
@@ -600,13 +600,13 @@
       "license": "MIT License",
       "name": "pydantic",
       "text": "MD5:09280955509d1c4ca14bae02f21d49a6",
-      "version": "2.7.4"
+      "version": "2.8.2"
     },
     {
       "license": "MIT License",
       "name": "pydantic_core",
       "text": "MD5:ab599c188b4a314d2856b3a55030c75c",
-      "version": "2.18.4"
+      "version": "2.20.1"
     },
     {
       "license": "MIT License",
@@ -672,7 +672,7 @@
       "license": "MIT License",
       "name": "rapidfuzz",
       "text": "MD5:dcd1023081943827dd63f01dc3fda218",
-      "version": "3.9.3"
+      "version": "3.9.4"
     },
     {
       "license": "Apache Software License",
@@ -786,7 +786,7 @@
       "license": "BSD License",
       "name": "sympy",
       "text": "MD5:b70381bd640070cb20be9d6f93f47036",
-      "version": "1.12.1"
+      "version": "1.13.0"
     },
     {
       "license": "Apache Software License",
@@ -808,15 +808,9 @@
     },
     {
       "license": "MIT License",
-      "name": "tomli",
-      "text": "MD5:aaaaf0879d17df0110d1aa8c8c9f46f5",
-      "version": "2.0.1"
-    },
-    {
-      "license": "MIT License",
       "name": "tomlkit",
       "text": "MD5:31aac0dbc1babd278d5386dadb7f8e82",
-      "version": "0.12.5"
+      "version": "0.13.0"
     },
     {
       "license": "BSD License",
@@ -840,13 +834,13 @@
       "license": "Apache Software License",
       "name": "transformers",
       "text": "MD5:d15f16de23b5d7f8e28dd073d2ed8b28",
-      "version": "4.41.2"
+      "version": "4.42.4"
     },
     {
       "license": "Apache Software License",
       "name": "trove-classifiers",
       "text": "MD5:86d3f3a95c324c9479bd8986968f4327",
-      "version": "2024.5.22"
+      "version": "2024.7.2"
     },
     {
       "license": "MIT License",
