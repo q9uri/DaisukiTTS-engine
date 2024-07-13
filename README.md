@@ -79,6 +79,15 @@ poetry run task update-licenses
 poetry run task build
 ```
 
+# 音声合成 API の利用
+
+以下のワンライナーを実行すると、`audio.wav` に音声合成した WAV ファイルが出力されます。
+事前に AivisSpeech Engine が起動していて、かつログで提示される `User Data Directory:` 以下の `aivm_models` ディレクトリに AIVM 音声合成モデルが格納されていることが前提です。
+
+```bash
+SPEAKER_ID=(音声合成対象の話者 ID 、API から別途取得する必要がある) && echo -n "こんにちは、音声合成の世界へようこそ！" > text.txt && curl -s -X POST "127.0.0.1:10101/audio_query?speaker=$SPEAKER_ID" --get --data-urlencode text@text.txt > query.json && curl -s -H "Content-Type: application/json" -X POST -d @query.json "127.0.0.1:10101/synthesis?speaker=$SPEAKER_ID" > audio.wav && rm text.txt query.json
+```
+
 -----
 
 以下はオリジナルの VOICEVOX ENGINE の README です。
