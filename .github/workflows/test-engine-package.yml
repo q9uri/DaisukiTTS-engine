@@ -42,7 +42,7 @@ jobs:
             target: windows-x64
           - os: macos-12
             target: macos-x64
-          - os: macos-12
+          - os: macos-14
             target: macos-arm64
           - os: ubuntu-20.04
             target: linux-x64

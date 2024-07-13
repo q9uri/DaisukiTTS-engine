@@ -61,7 +61,7 @@ jobs:
             architecture: "x64"
             target: macos-x64
           # macOS arm64 (Apple Silicon Mac)
-          - os: macos-12
+          - os: macos-14
             architecture: "arm64"
             target: macos-arm64
           # Linux x64
