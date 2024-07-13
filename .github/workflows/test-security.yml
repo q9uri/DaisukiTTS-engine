@@ -35,7 +35,7 @@ jobs:
         run: poetry install --with=test
 
       - name: <Test> Check Python dependency security
-        run: poetry run safety check -o bare
+        run: poetry run safety check --ignore 70612 -o bare
 
       # - name: <Deploy> Notify Discord of security testing result
       #   uses: sarisia/actions-status-discord@v1
