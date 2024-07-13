@@ -53,7 +53,7 @@ jobs:
       matrix:
         include:
           # Windows x64
-          - os: windows-2019
+          - os: windows-2022
             architecture: "x64"
             target: windows-x64
           # macOS x64 (Intel Mac)
@@ -96,12 +96,7 @@ jobs:
         uses: ilammy/msvc-dev-cmd@v1
 
       - name: <Setup> Install Poetry
-        if: (startsWith(matrix.os, 'windows'))
-        run: pipx install poetry --python 3.11
-
-      - name: <Setup> Install Poetry
-        if: (!startsWith(matrix.os, 'windows'))
-        run: pipx install poetry
+        run: python -m pip install poetry
 
       # Python install path of windows: C:/hostedtoolcache/windows/Python
       - name: <Setup> Set up Python

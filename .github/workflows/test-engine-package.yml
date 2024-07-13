@@ -38,7 +38,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: windows-2019
+          - os: windows-2022
             target: windows-x64
           - os: macos-12
             target: macos-x64
@@ -60,12 +60,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: <Setup> Install Poetry
-        if: (startsWith(matrix.os, 'windows'))
-        run: pipx install poetry --python 3.11
-
-      - name: <Setup> Install Poetry
-        if: (!startsWith(matrix.os, 'windows'))
-        run: pipx install poetry
+        run: python -m pip install poetry
 
       - name: <Setup> Set up Python
         uses: actions/setup-python@v5
