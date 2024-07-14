@@ -20,7 +20,10 @@ block_cipher = None
 from pathlib import Path
 import sys
 base_prefix = getattr(sys, 'base_prefix', sys.prefix)
-dataclasses_path = Path(base_prefix) / 'lib' / f'python{sys.version_info.major}.{sys.version_info.minor}' / 'dataclasses.py'
+if sys.platform == 'win32':
+    dataclasses_path = Path(base_prefix) / 'Lib' / 'dataclasses.py'
+else:
+    dataclasses_path = Path(base_prefix) / 'lib' / f'python{sys.version_info.major}.{sys.version_info.minor}' / 'dataclasses.py'
 try:
     with dataclasses_path.open('a') as file:
         file.write('\n__version__ = "1.0"')
