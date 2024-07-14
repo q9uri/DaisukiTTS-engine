@@ -70,6 +70,8 @@ jobs:
             target: linux-x64
 
     runs-on: ${{ matrix.os }}
+    permissions:
+      contents: write
 
     env:
       # GNUコマンド
