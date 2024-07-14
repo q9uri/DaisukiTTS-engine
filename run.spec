@@ -1,6 +1,6 @@
 # -*- mode: python ; coding: utf-8 -*-
 # このファイルはPyInstallerによって自動生成されたもので、それをカスタマイズして使用しています。
-from PyInstaller.utils.hooks import collect_data_files
+from PyInstaller.utils.hooks import collect_data_files, collect_dynamic_libs
 
 datas = [
     ('resources', 'resources'),
@@ -10,6 +10,8 @@ datas = [
 datas += collect_data_files('pyopenjtalk')
 datas += collect_data_files('style_bert_vits2')
 
+# functorch のバイナリを収集
+binaries = collect_dynamic_libs('functorch')
 
 block_cipher = None
 
@@ -35,7 +37,7 @@ except Exception as e:
 a = Analysis(
     ['run.py'],
     pathex=[],
-    binaries=[],
+    binaries=binaries,
     datas=datas,
     hiddenimports=[
         # ref: https://github.com/pypa/setuptools/issues/4374
