@@ -76,8 +76,12 @@ jobs:
       - name: <Setup> Download ENGINE package
         run: |
           mkdir -p download
-          curl -L -H "Authorization: Bearer ${{ github.token }}" -o "download/list.txt" "${{ steps.vars.outputs.release_url }}/${{ steps.vars.outputs.package_name }}.7z.txt"
-          <download/list.txt xargs -I '%' curl -L -H "Authorization: Bearer ${{ github.token }}" -o "download/%" "${{ steps.vars.outputs.release_url }}/%"
+          release_url="${{ steps.vars.outputs.release_url }}"
+          package_name="${{ steps.vars.outputs.package_name }}"
+          curl -L -H "Authorization: Bearer ${{ github.token }}" -o "download/list.txt" "${release_url}/${package_name}.7z.txt"
+          while IFS= read -r file; do
+            curl -L -H "Authorization: Bearer ${{ github.token }}" -o "download/${file}" "${release_url}/${file}"
+          done < download/list.txt
           7z x "download/$(head -n1 download/list.txt)"
           mv "${{ matrix.target }}" dist/
 
