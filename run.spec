@@ -1,6 +1,5 @@
 # -*- mode: python ; coding: utf-8 -*-
 # このファイルは元々 PyInstaller によって自動生成されたもので、それをカスタマイズして使用しています。
-from PyInstaller import compat
 from PyInstaller.utils.hooks import collect_data_files, collect_dynamic_libs
 from pathlib import Path
 import re
@@ -20,7 +19,7 @@ binaries = collect_dynamic_libs('functorch')
 # Windows: Intel MKL 関連の DLL を収集
 # これをやらないと PyTorch が CPU 版か CUDA 版かに関わらずクラッシュする…
 if sys.platform == 'win32':
-    lib_dir_path = Path(compat.base_prefix) / 'Library' / 'bin'
+    lib_dir_path = Path(sys.prefix) / 'Library' / 'bin'
     if lib_dir_path.exists():
         mkl_dlls = list(lib_dir_path.glob('mkl_*.dll'))
         for dll in mkl_dlls:
