@@ -91,20 +91,6 @@ torch = [
   # Linux (ARM): CPU only
   { url = "https://download.pytorch.org/whl/cpu/torch-2.3.1-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", markers = "sys_platform == 'linux' and platform_machine == 'aarch64'" },
 ]
-torchaudio = [
-  # Windows: CUDA 12.1
-  { url = "https://download.pytorch.org/whl/cu121/torchaudio-2.3.1%2Bcu121-cp311-cp311-win_amd64.whl", markers = "sys_platform == 'win32'" },
-  # macOS (Intel): CPU only
-  # PyTorch 2.3 系では Intel Mac のサポートが廃止されたため、Intel Mac のみ 2.2.2 固定としている
-  # ref: https://github.com/pytorch/pytorch/issues/114602
-  { url = "https://download.pytorch.org/whl/cpu/torchaudio-2.2.2-cp311-cp311-macosx_10_13_x86_64.whl", markers = "sys_platform == 'darwin' and platform_machine == 'x86_64'" },
-  # macOS (Apple Silicon): CPU only
-  { url = "https://download.pytorch.org/whl/cpu/torchaudio-2.3.1-cp311-cp311-macosx_11_0_arm64.whl", markers = "sys_platform == 'darwin' and platform_machine == 'arm64'" },
-  # Linux: CUDA 12.1
-  { url = "https://download.pytorch.org/whl/cu121/torchaudio-2.3.1%2Bcu121-cp311-cp311-linux_x86_64.whl", markers = "sys_platform == 'linux' and platform_machine == 'x86_64'" },
-  # Linux (ARM): CPU only
-  { url = "https://download.pytorch.org/whl/cpu/torchaudio-2.3.1-cp311-cp311-linux_aarch64.whl", markers = "sys_platform == 'linux' and platform_machine == 'aarch64'" },
-]
 
 [tool.poetry.group.test.dependencies]
 pysen = "^0.11.0"

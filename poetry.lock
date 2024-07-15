@@ -3790,91 +3790,6 @@ type = "url"
 url = "https://download.pytorch.org/whl/cu121/torch-2.3.1%2Bcu121-cp311-cp311-win_amd64.whl"
 
 [[package]]
-name = "torchaudio"
-version = "2.2.2"
-description = "An audio package for PyTorch"
-optional = false
-python-versions = "*"
-files = [
-    {file = "torchaudio-2.2.2-cp311-cp311-macosx_10_13_x86_64.whl", hash = "sha256:f1a81a518a3e86c004125eb891fc433ce8fb2343295b5d612d0f37b24e131efd"},
-]
-
-[package.dependencies]
-torch = "2.2.2"
-
-[package.source]
-type = "url"
-url = "https://download.pytorch.org/whl/cpu/torchaudio-2.2.2-cp311-cp311-macosx_10_13_x86_64.whl"
-
-[[package]]
-name = "torchaudio"
-version = "2.3.1"
-description = "An audio package for PyTorch"
-optional = false
-python-versions = "*"
-files = [
-    {file = "torchaudio-2.3.1-cp311-cp311-linux_aarch64.whl", hash = "sha256:c8c727c8341825bd18d91017c4c00f36b53b08f2176cdb9bdcb0def1c450b21d"},
-]
-
-[package.dependencies]
-torch = "2.3.1"
-
-[package.source]
-type = "url"
-url = "https://download.pytorch.org/whl/cpu/torchaudio-2.3.1-cp311-cp311-linux_aarch64.whl"
-
-[[package]]
-name = "torchaudio"
-version = "2.3.1"
-description = "An audio package for PyTorch"
-optional = false
-python-versions = "*"
-files = [
-    {file = "torchaudio-2.3.1-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:01984f38398ca5e98ecfbfeafb72ae5b2131d0bb8aa464b5777addb3e4826877"},
-]
-
-[package.dependencies]
-torch = "2.3.1"
-
-[package.source]
-type = "url"
-url = "https://download.pytorch.org/whl/cpu/torchaudio-2.3.1-cp311-cp311-macosx_11_0_arm64.whl"
-
-[[package]]
-name = "torchaudio"
-version = "2.3.1+cu121"
-description = "An audio package for PyTorch"
-optional = false
-python-versions = "*"
-files = [
-    {file = "torchaudio-2.3.1+cu121-cp311-cp311-linux_x86_64.whl", hash = "sha256:2d9136bf3c9b6ab96dc42f26f6cb836d45d115f5766e16aff52835c8e7cde565"},
-]
-
-[package.dependencies]
-torch = "2.3.1"
-
-[package.source]
-type = "url"
-url = "https://download.pytorch.org/whl/cu121/torchaudio-2.3.1%2Bcu121-cp311-cp311-linux_x86_64.whl"
-
-[[package]]
-name = "torchaudio"
-version = "2.3.1+cu121"
-description = "An audio package for PyTorch"
-optional = false
-python-versions = "*"
-files = [
-    {file = "torchaudio-2.3.1+cu121-cp311-cp311-win_amd64.whl", hash = "sha256:bc16945ceb5b24c627f72d5eabb6fa3cfeb8af98de41154c8f37aa63fb736f04"},
-]
-
-[package.dependencies]
-torch = "2.3.1+cu121"
-
-[package.source]
-type = "url"
-url = "https://download.pytorch.org/whl/cu121/torchaudio-2.3.1%2Bcu121-cp311-cp311-win_amd64.whl"
-
-[[package]]
 name = "tqdm"
 version = "4.66.4"
 description = "Fast, Extensible Progress Meter"
@@ -4235,4 +4150,4 @@ test = ["big-O", "importlib-resources", "jaraco.functools", "jaraco.itertools", 
 [metadata]
 lock-version = "2.0"
 python-versions = "~3.11"
-content-hash = "f55aacba4bd8b103264d6b5447c5b5b3ca53806a3ad14ec6d441784b1f9fc2a7"
+content-hash = "94407bc7218513011b592f297bd6c53ef10053241371caeb916f09c857d02264"
