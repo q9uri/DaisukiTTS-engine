@@ -21,7 +21,7 @@ binaries = collect_dynamic_libs('functorch')
 if sys.platform == 'win32':
     lib_dir_path = Path(sys.prefix) / 'Library' / 'bin'
     if lib_dir_path.exists():
-        mkl_dlls = list(lib_dir_path.glob('mkl_*.dll'))
+        mkl_dlls = list(lib_dir_path.glob('*.dll'))
         for dll in mkl_dlls:
             binaries.append((str(dll), '.'))
 
