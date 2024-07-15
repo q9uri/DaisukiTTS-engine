@@ -1,6 +1,10 @@
 # -*- mode: python ; coding: utf-8 -*-
-# このファイルはPyInstallerによって自動生成されたもので、それをカスタマイズして使用しています。
+# このファイルは元々 PyInstaller によって自動生成されたもので、それをカスタマイズして使用しています。
+from PyInstaller import compat
 from PyInstaller.utils.hooks import collect_data_files, collect_dynamic_libs
+from pathlib import Path
+import re
+import sys
 
 datas = [
     ('resources', 'resources'),
@@ -13,14 +17,20 @@ datas += collect_data_files('style_bert_vits2')
 # functorch のバイナリを収集
 binaries = collect_dynamic_libs('functorch')
 
-block_cipher = None
+# Windows: Intel MKL 関連の DLL を収集
+# これをやらないと PyTorch が CPU 版か CUDA 版かに関わらずクラッシュする…
+if sys.platform == 'win32':
+    lib_dir_path = Path(compat.base_prefix) / 'Library' / 'bin'
+    if lib_dir_path.exists():
+        mkl_dlls = list(lib_dir_path.glob('mkl_*.dll'))
+        for dll in mkl_dlls:
+            binaries.append((str(dll), '.'))
 
+block_cipher = None
 
 # ライブラリの噛み合わせが悪いのかなぜか標準ライブラリの dataclasses に __version__ 変数が存在しないと PyInstaller ビルドに失敗する
 # 大昔 dataclasses が標準ライブラリで存在しなかった頃の名残なのか…？
 # これをどうにか回避するため、苦肉の策ではあるがビルド時だけ dataclasses.py の場所を探して追記する
-from pathlib import Path
-import sys
 base_prefix = getattr(sys, 'base_prefix', sys.prefix)
 if sys.platform == 'win32':
     dataclasses_path = Path(base_prefix) / 'Lib' / 'dataclasses.py'
@@ -32,7 +42,6 @@ try:
     print(f'Added __version__ to {dataclasses_path}')
 except Exception as e:
     print(f'Error while writing to dataclasses.py: {e}')
-
 
 a = Analysis(
     ['run.py'],
@@ -89,7 +98,6 @@ coll = COLLECT(
 )
 
 # ビルド時だけ追記した __version__ を削除
-import re
 try:
     with open(dataclasses_path, 'r+') as file:
         content = file.read()
