@@ -50,7 +50,7 @@
   ],
   "intonationScale": 1.2,
   "kana": "テストです",
-  "outputSamplingRate": 44100,
+  "outputSamplingRate": 24000,
   "outputStereo": false,
   "pauseLength": 15.0,
   "pauseLengthScale": 1.4,

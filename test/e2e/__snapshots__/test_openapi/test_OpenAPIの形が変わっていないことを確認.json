@@ -24,12 +24,9 @@
             "type": "array"
           },
           "pause_mora": {
-            "anyOf": [
+            "allOf": [
               {
                 "$ref": "#/components/schemas/Mora"
-              },
-              {
-                "type": "null"
               }
             ],
             "description": "後ろに無音を付けるかどうか",
@@ -231,11 +228,10 @@
         "description": "音声合成用のクエリ",
         "properties": {
           "accent_phrases": {
-            "description": "アクセント句のリスト",
             "items": {
               "$ref": "#/components/schemas/AccentPhrase"
             },
-            "title": "Accent Phrases",
+            "title": "アクセント句のリスト",
             "type": "array"
           },
           "intonationScale": {
@@ -244,25 +240,16 @@
             "type": "number"
           },
           "kana": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
             "description": "読み上げるテキストを指定する。\nVOICEVOX ENGINE では AquesTalk 風記法テキストが入る読み取り専用フィールドだが (音声合成時には無視される) 、AivisSpeech Engine では音声合成時に漢字や記号が含まれた通常の読み上げテキストも必要なため、苦肉の策で読み上げテキスト指定用のフィールドとして転用した。\nVOICEVOX ENGINE との互換性のため None や空文字列が指定された場合も動作するが、その場合はアクセント句から自動生成されたひらがな文字列が読み上げテキストになるため、不自然なイントネーションになってしまう。\n可能な限り kana に通常の読み上げテキストを指定した上で音声合成 API に渡すことを推奨する。",
-            "title": "読み上げるテキスト (「読みの AquesTalk 風記法テキスト」ではない点で VOICEVOX ENGINE と異なる)"
+            "title": "読み上げるテキスト (「読みの AquesTalk 風記法テキスト」ではない点で VOICEVOX ENGINE と異なる)",
+            "type": "string"
           },
           "outputSamplingRate": {
-            "description": "音声データの出力サンプリングレート",
-            "title": "Outputsamplingrate",
+            "title": "音声データの出力サンプリングレート",
             "type": "integer"
           },
           "outputStereo": {
-            "description": "音声データをステレオ出力するか否か",
-            "title": "Outputstereo",
+            "title": "音声データをステレオ出力するか否か",
             "type": "boolean"
           },
           "pauseLength": {
@@ -274,13 +261,13 @@
                 "type": "null"
               }
             ],
-            "description": "句読点などの無音時間。nullのときは無視される。デフォルト値はnull",
-            "title": "Pauselength"
+            "description": "句読点などの無音時間。null のときは無視される。デフォルト値は null 。",
+            "title": "AivisSpeech Engine ではサポートされていないフィールドです (常に無視されます)"
           },
           "pauseLengthScale": {
             "default": 1,
-            "description": "句読点などの無音時間（倍率）。デフォルト値は1",
-            "title": "Pauselengthscale",
+            "description": "句読点などの無音時間（倍率）。デフォルト値は 1 。",
+            "title": "AivisSpeech Engine ではサポートされていないフィールドです (常に無視されます)",
             "type": "number"
           },
           "pitchScale": {
@@ -361,15 +348,8 @@
       "Body_setting_post_setting_post": {
         "properties": {
           "allow_origin": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Allow Origin"
+            "title": "Allow Origin",
+            "type": "string"
           },
           "cors_policy_mode": {
             "$ref": "#/components/schemas/CorsPolicyMode"
@@ -456,15 +436,9 @@
             "description": "エンジンが持つ機能"
           },
           "supported_vvlib_manifest_version": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "エンジンが対応するvvlibのバージョン"
+            "description": "エンジンが対応するvvlibのバージョン",
+            "title": "Supported Vvlib Manifest Version",
+            "type": "string"
           },
           "terms_of_service": {
             "description": "エンジンの利用規約",
@@ -616,15 +590,9 @@
         "description": "依存ライブラリのライセンス情報",
         "properties": {
           "license": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "依存ライブラリのライセンス名"
+            "description": "依存ライブラリのライセンス名",
+            "title": "License",
+            "type": "string"
           },
           "name": {
             "description": "依存ライブラリ名",
@@ -637,15 +605,9 @@
             "type": "string"
           },
           "version": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "依存ライブラリのバージョン"
+            "description": "依存ライブラリのバージョン",
+            "title": "Version",
+            "type": "string"
           }
         },
         "required": [
@@ -667,26 +629,14 @@
         "description": "モーラ（子音＋母音）ごとの情報",
         "properties": {
           "consonant": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "子音の音素"
+            "description": "子音の音素",
+            "title": "Consonant",
+            "type": "string"
           },
           "consonant_length": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "子音の音長"
+            "description": "子音の音長",
+            "title": "Consonant Length",
+            "type": "number"
           },
           "pitch": {
             "description": "音高",
@@ -741,15 +691,9 @@
             "type": "integer"
           },
           "key": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "音階"
+            "description": "音階",
+            "title": "Key",
+            "type": "integer"
           },
           "lyric": {
             "description": "音符の歌詞",
@@ -806,19 +750,18 @@
             "type": "number"
           },
           "name": {
-            "description": "プリセット名",
-            "title": "Name",
+            "title": "プリセット名",
             "type": "string"
           },
           "pauseLength": {
             "description": "句読点などの無音時間",
-            "title": "Pauselength",
+            "title": "AivisSpeech Engine ではサポートされていないフィールドです (常に無視されます)",
             "type": "number"
           },
           "pauseLengthScale": {
             "default": 1,
             "description": "句読点などの無音時間（倍率）",
-            "title": "Pauselengthscale",
+            "title": "AivisSpeech Engine ではサポートされていないフィールドです (常に無視されます)",
             "type": "number"
           },
           "pitchScale": {
@@ -835,7 +778,7 @@
             "type": "number"
           },
           "speaker_uuid": {
-            "title": "話者の UUID",
+            "title": "キャラクターの UUID",
             "type": "string"
           },
           "speedScale": {
@@ -901,7 +844,7 @@
             "type": "string"
           },
           "speaker_uuid": {
-            "description": "キャラクターのUUID",
+            "description": "キャラクターの UUID",
             "title": "Speaker Uuid",
             "type": "string"
           },
@@ -945,7 +888,7 @@
             "type": "string"
           },
           "portrait": {
-            "description": "立ち絵画像をbase64エンコードしたもの、あるいはURL",
+            "description": "アイコンを base64 エンコードしたもの、あるいは URL (「立ち絵画像を base64 エンコードしたもの」ではない点で VOICEVOX ENGINE と異なる)",
             "title": "Portrait",
             "type": "string"
           },
@@ -970,7 +913,7 @@
         "description": "キャラクターのスタイル情報",
         "properties": {
           "id": {
-            "description": "スタイルID",
+            "description": "スタイル ID",
             "title": "Id",
             "type": "integer"
           },
@@ -980,22 +923,16 @@
             "type": "string"
           },
           "type": {
-            "anyOf": [
-              {
-                "enum": [
-                  "talk",
-                  "singing_teacher",
-                  "frame_decode",
-                  "sing"
-                ],
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
             "default": "talk",
-            "title": "スタイルの種類。talk: 音声合成クエリの作成と音声合成が可能。singing_teacher: 歌唱音声合成用のクエリの作成が可能。frame_decode: 歌唱音声合成が可能。sing: 歌唱音声合成用のクエリの作成と歌唱音声合成が可能。"
+            "description": "スタイルの種類。talk: 音声合成クエリの作成と音声合成が可能。singing_teacher: 歌唱音声合成用のクエリの作成が可能。frame_decode: 歌唱音声合成が可能。sing: 歌唱音声合成用のクエリの作成と歌唱音声合成が可能。",
+            "enum": [
+              "talk",
+              "singing_teacher",
+              "frame_decode",
+              "sing"
+            ],
+            "title": "Type",
+            "type": "string"
           }
         },
         "required": [
@@ -1004,15 +941,6 @@
         ],
         "title": "SpeakerStyle",
         "type": "object"
-      },
-      "SpeakerSupportPermittedSynthesisMorphing": {
-        "enum": [
-          "ALL",
-          "SELF_ONLY",
-          "NOTHING"
-        ],
-        "title": "SpeakerSupportPermittedSynthesisMorphing",
-        "type": "string"
       },
       "SpeakerSupportedFeatures": {
         "description": "キャラクターの対応機能の情報",
@@ -1036,40 +964,35 @@
         "description": "スタイルの追加情報",
         "properties": {
           "icon": {
-            "description": "このスタイルのアイコンをbase64エンコードしたもの、あるいはURL",
+            "description": "このスタイルのアイコンを base64 エンコードしたもの、あるいは URL",
             "title": "Icon",
             "type": "string"
           },
           "id": {
-            "description": "スタイルID",
+            "description": "スタイル ID",
             "title": "Id",
             "type": "integer"
           },
           "portrait": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "当該スタイルのportrait.pngをbase64エンコードしたもの"
+            "description": "AivisSpeech Engine では常に None を返す (「このスタイルの立ち絵画像を base64 エンコードしたもの」ではない点で VOICEVOX ENGINE と異なる)",
+            "title": "Portrait",
+            "type": "string"
           },
           "voice_sample_transcripts": {
             "default": [],
+            "description": "ボイスサンプルの書き起こしテキスト (voice_samples の配列インデックスと対応し、存在しない場合は空文字列)",
             "items": {
               "type": "string"
             },
-            "title": "ボイスサンプルの書き起こしテキスト (voice_samples の配列インデックスと対応し、存在しない場合は空文字列)",
+            "title": "Voice Sample Transcripts",
             "type": "array"
           },
           "voice_samples": {
-            "description": "サンプル音声をbase64エンコードしたもの、あるいはURL",
+            "description": "ボイスサンプルの音声データを base64 エンコードしたもの、あるいは URL",
             "items": {
               "type": "string"
             },
-            "title": "ボイスサンプルの音声ファイルをbase64エンコードしたもの",
+            "title": "Voice Samples",
             "type": "array"
           }
         },
@@ -1085,17 +1008,17 @@
         "description": "対応しているデバイスの情報",
         "properties": {
           "cpu": {
-            "description": "CPUに対応しているか",
+            "description": "CPU に対応しているか",
             "title": "Cpu",
             "type": "boolean"
           },
           "cuda": {
-            "description": "CUDA(Nvidia GPU)に対応しているか",
+            "description": "CUDA (NVIDIA GPU) に対応しているか",
             "title": "Cuda",
             "type": "boolean"
           },
           "dml": {
-            "description": "DirectML(Nvidia GPU/Radeon GPU等)に対応しているか",
+            "description": "DirectML (NVIDIA GPU/Radeon GPU 等) に対応しているか",
             "title": "Dml",
             "type": "boolean"
           }
@@ -1152,26 +1075,19 @@
             "type": "boolean"
           },
           "manage_library": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "音声ライブラリのインストール・アンインストール"
+            "description": "音声ライブラリのインストール・アンインストール",
+            "title": "Manage Library",
+            "type": "boolean"
+          },
+          "return_resource_url": {
+            "description": "speaker_info・singer_info のリソースを URL で返送",
+            "title": "Return Resource Url",
+            "type": "boolean"
           },
           "sing": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "歌唱音声合成"
+            "description": "歌唱音声合成",
+            "title": "Sing",
+            "type": "boolean"
           },
           "synthesis_morphing": {
             "description": "2種類のスタイルでモーフィングした音声を合成",
@@ -1196,7 +1112,7 @@
         "description": "エンジンのアップデート情報",
         "properties": {
           "contributors": {
-            "default": [],
+            "description": "貢献者名",
             "items": {
               "type": "string"
             },
@@ -1254,15 +1170,9 @@
             "type": "string"
           },
           "mora_count": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "モーラ数"
+            "description": "モーラ数",
+            "title": "Mora Count",
+            "type": "integer"
           },
           "part_of_speech": {
             "description": "品詞",
@@ -1445,16 +1355,9 @@
             "name": "core_version",
             "required": false,
             "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
               "description": "AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。",
-              "title": "Core Version"
+              "title": "Core Version",
+              "type": "string"
             }
           }
         ],
@@ -1726,16 +1629,9 @@
             "name": "core_version",
             "required": false,
             "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
               "description": "AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。",
-              "title": "Core Version"
+              "title": "Core Version",
+              "type": "string"
             }
           }
         ],
@@ -1796,16 +1692,9 @@
             "name": "core_version",
             "required": false,
             "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
               "description": "AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。",
-              "title": "Core Version"
+              "title": "Core Version",
+              "type": "string"
             }
           }
         ],
@@ -1856,16 +1745,9 @@
             "name": "core_version",
             "required": false,
             "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
               "description": "AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。",
-              "title": "Core Version"
+              "title": "Core Version",
+              "type": "string"
             }
           }
         ],
@@ -2060,16 +1942,9 @@
             "name": "core_version",
             "required": false,
             "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
               "description": "AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。",
-              "title": "Core Version"
+              "title": "Core Version",
+              "type": "string"
             }
           }
         ],
@@ -2197,16 +2072,9 @@
             "name": "core_version",
             "required": false,
             "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
               "description": "AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。",
-              "title": "Core Version"
+              "title": "Core Version",
+              "type": "string"
             }
           }
         ],
@@ -2251,16 +2119,9 @@
             "name": "core_version",
             "required": false,
             "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
               "description": "AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。",
-              "title": "Core Version"
+              "title": "Core Version",
+              "type": "string"
             }
           }
         ],
@@ -2312,16 +2173,9 @@
             "name": "core_version",
             "required": false,
             "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
               "description": "AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。",
-              "title": "Core Version"
+              "title": "Core Version",
+              "type": "string"
             }
           }
         ],
@@ -2390,16 +2244,9 @@
             "name": "core_version",
             "required": false,
             "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
               "description": "AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。",
-              "title": "Core Version"
+              "title": "Core Version",
+              "type": "string"
             }
           }
         ],
@@ -2468,16 +2315,9 @@
             "name": "core_version",
             "required": false,
             "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
               "description": "AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。",
-              "title": "Core Version"
+              "title": "Core Version",
+              "type": "string"
             }
           }
         ],
@@ -2529,7 +2369,7 @@
     },
     "/morphable_targets": {
       "post": {
-        "description": "指定されたベーススタイルに対してエンジン内の各話者がモーフィング機能を利用可能か返します。\nモーフィングの許可/禁止は `/speakers `の `speaker.supported_features.synthesis_morphing` に記載されています。\nプロパティが存在しない場合は、モーフィングが許可されているとみなします。\n返り値のスタイル ID は string 型なので注意。\nAivisSpeech Engine では話者ごとに発声タイミングが異なる関係で実装不可能なため (動作こそするが聴くに耐えない) 、\n全ての話者でモーフィングが禁止されています。",
+        "description": "指定されたベーススタイルに対してエンジン内の各キャラクターがモーフィング機能を利用可能か返します。\nモーフィングの許可/禁止は `/speakers `の `speaker.supported_features.synthesis_morphing` に記載されています。\nプロパティが存在しない場合は、モーフィングが許可されているとみなします。\n返り値のスタイル ID は string 型なので注意。\nAivisSpeech Engine では話者ごとに発声タイミングが異なる関係で実装不可能なため (動作こそするが聴くに耐えない) 、\n全ての話者でモーフィングが禁止されています。",
         "operationId": "morphable_targets_morphable_targets_post",
         "parameters": [
           {
@@ -2538,16 +2378,9 @@
             "name": "core_version",
             "required": false,
             "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
               "description": "AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。",
-              "title": "Core Version"
+              "title": "Core Version",
+              "type": "string"
             }
           }
         ],
@@ -2619,16 +2452,9 @@
             "name": "core_version",
             "required": false,
             "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
               "description": "AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。",
-              "title": "Core Version"
+              "title": "Core Version",
+              "type": "string"
             }
           }
         ],
@@ -2768,16 +2594,9 @@
             "name": "core_version",
             "required": false,
             "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
               "description": "AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。",
-              "title": "Core Version"
+              "title": "Core Version",
+              "type": "string"
             }
           }
         ],
@@ -2838,16 +2657,9 @@
             "name": "core_version",
             "required": false,
             "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
               "description": "AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。",
-              "title": "Core Version"
+              "title": "Core Version",
+              "type": "string"
             }
           }
         ],
@@ -2898,18 +2710,15 @@
         "operationId": "singer_info_singer_info_get",
         "parameters": [
           {
-            "description": "話者の UUID 。",
             "in": "query",
             "name": "speaker_uuid",
             "required": true,
             "schema": {
-              "description": "話者の UUID 。",
               "title": "Speaker Uuid",
               "type": "string"
             }
           },
           {
-            "description": "AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。",
             "in": "query",
             "name": "resource_format",
             "required": false,
@@ -2924,20 +2733,14 @@
             }
           },
           {
+            "description": "AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。",
             "in": "query",
             "name": "core_version",
             "required": false,
             "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
               "description": "AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。",
-              "title": "Core Version"
+              "title": "Core Version",
+              "type": "string"
             }
           }
         ],
@@ -2979,16 +2782,9 @@
             "name": "core_version",
             "required": false,
             "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
               "description": "AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。",
-              "title": "Core Version"
+              "title": "Core Version",
+              "type": "string"
             }
           }
         ],
@@ -3030,18 +2826,15 @@
         "operationId": "speaker_info_speaker_info_get",
         "parameters": [
           {
-            "description": "話者の UUID 。",
             "in": "query",
             "name": "speaker_uuid",
             "required": true,
             "schema": {
-              "description": "話者の UUID 。",
               "title": "Speaker Uuid",
               "type": "string"
             }
           },
           {
-            "description": "AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。",
             "in": "query",
             "name": "resource_format",
             "required": false,
@@ -3056,20 +2849,14 @@
             }
           },
           {
+            "description": "AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。",
             "in": "query",
             "name": "core_version",
             "required": false,
             "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
               "description": "AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。",
-              "title": "Core Version"
+              "title": "Core Version",
+              "type": "string"
             }
           }
         ],
@@ -3112,16 +2899,9 @@
             "name": "core_version",
             "required": false,
             "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
               "description": "AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。",
-              "title": "Core Version"
+              "title": "Core Version",
+              "type": "string"
             }
           }
         ],
@@ -3168,16 +2948,9 @@
             "name": "core_version",
             "required": false,
             "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
               "description": "AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。",
-              "title": "Core Version"
+              "title": "Core Version",
+              "type": "string"
             }
           }
         ],
@@ -3240,16 +3013,9 @@
             "name": "core_version",
             "required": false,
             "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
               "description": "AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。",
-              "title": "Core Version"
+              "title": "Core Version",
+              "type": "string"
             }
           }
         ],
@@ -3332,16 +3098,9 @@
             "name": "core_version",
             "required": false,
             "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
               "description": "AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。",
-              "title": "Core Version"
+              "title": "Core Version",
+              "type": "string"
             }
           }
         ],
@@ -3503,12 +3262,9 @@
             "name": "word_type",
             "required": false,
             "schema": {
-              "anyOf": [
+              "allOf": [
                 {
                   "$ref": "#/components/schemas/WordTypes"
-                },
-                {
-                  "type": "null"
                 }
               ],
               "description": "PROPER_NOUN（固有名詞）、COMMON_NOUN（普通名詞）、VERB（動詞）、ADJECTIVE（形容詞）、SUFFIX（語尾）のいずれか",
@@ -3521,18 +3277,13 @@
             "name": "priority",
             "required": false,
             "schema": {
-              "anyOf": [
-                {
-                  "maximum": 10,
-                  "minimum": 0,
-                  "type": "integer"
-                },
-                {
-                  "type": "null"
-                }
-              ],
               "description": "単語の優先度（0から10までの整数）。数字が大きいほど優先度が高くなる。1から9までの値を指定することを推奨",
-              "title": "Priority"
+              "ge": 0,
+              "le": 10,
+              "maximum": 10,
+              "minimum": 0,
+              "title": "Priority",
+              "type": "integer"
             }
           }
         ],
@@ -3656,12 +3407,9 @@
             "name": "word_type",
             "required": false,
             "schema": {
-              "anyOf": [
+              "allOf": [
                 {
                   "$ref": "#/components/schemas/WordTypes"
-                },
-                {
-                  "type": "null"
                 }
               ],
               "description": "PROPER_NOUN（固有名詞）、COMMON_NOUN（普通名詞）、VERB（動詞）、ADJECTIVE（形容詞）、SUFFIX（語尾）のいずれか",
@@ -3674,18 +3422,13 @@
             "name": "priority",
             "required": false,
             "schema": {
-              "anyOf": [
-                {
-                  "maximum": 10,
-                  "minimum": 0,
-                  "type": "integer"
-                },
-                {
-                  "type": "null"
-                }
-              ],
               "description": "単語の優先度（0から10までの整数）。数字が大きいほど優先度が高くなる。1から9までの値を指定することを推奨。",
-              "title": "Priority"
+              "ge": 0,
+              "le": 10,
+              "maximum": 10,
+              "minimum": 0,
+              "title": "Priority",
+              "type": "integer"
             }
           }
         ],
