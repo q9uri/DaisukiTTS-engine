@@ -61,30 +61,48 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         self.tts_models: dict[str, TTSModel] = {}
 
         # PyTorch での推論に利用するデバイスを選択
-        self.device: Literal["cpu", "cuda", "mps"]
-        if use_gpu is True:
-            # NVIDIA GPU が接続されているなら CUDA (Compute Unified Device Architecture) を利用できる
-            if torch.backends.cuda.is_built() and torch.cuda.is_available():
+        self.device: Literal["cpu", "cuda", "mps"] = "cpu"
+        self.is_gpu_available: bool = False
+        # NVIDIA GPU が接続されているなら CUDA (Compute Unified Device Architecture) を利用できる
+        if torch.backends.cuda.is_built() and torch.cuda.is_available():
+            self.is_gpu_available = True
+            # GPU モード指定時
+            if use_gpu is True:
                 self.device = "cuda"
-                # AMD ROCm は PyTorch 上において CUDA デバイスとして認識されるらしい
+                # AMD ROCm は PyTorch 上において CUDA デバイスとして認識される
                 ## torch.version.hip が None でなければ CUDA ではなく ROCm が利用されていると判断できるらしい
                 ## ref: https://pytorch.org/docs/stable/notes/hip.html
                 if torch.version.hip is not None:
                     logger.info("Using GPU (AMD ROCm) for inference.")
                 else:
                     logger.info("Using GPU (NVIDIA CUDA) for inference.")
-            # Mac なら基本 Apple MPS (Metal Performance Shaders) が利用できる
-            # FIXME: SDP Ratio の値次第で話速が遅くなる謎の問題がある上 CPU と推論速度が然程変わらないため、当面コメントアウト
-            # elif torch.backends.mps.is_built() and torch.backends.mps.is_available():
-            #     self.device = "mps"
-            #     logger.info("Using GPU (Apple MPS) for inference.")
-            # それ以外の環境では CPU にフォールバック
+            # CPU モード指定時
             else:
-                logger.warning("GPU is not available. Using CPU instead.")
-                self.device = "cpu"
+                if torch.version.hip is not None:
+                    logger.info("Using CPU for inference. (but AMD ROCm is available!)")
+                else:
+                    logger.info("Using CPU for inference. (but NVIDIA CUDA is available!)")  # fmt: skip
+        # Mac なら基本 Apple MPS (Metal Performance Shaders) が利用できる
+        # FIXME: SDP Ratio の値次第で話速が遅くなる謎の問題がある上 CPU と推論速度が然程変わらないため、当面コメントアウト
+        # elif torch.backends.mps.is_built() and torch.backends.mps.is_available():
+        #     self.is_gpu_available = True
+        #     # GPU モード指定時
+        #     if use_gpu is True:
+        #         self.device = "mps"
+        #         logger.info("Using GPU (Apple MPS) for inference.")
+        #     # CPU モード指定時
+        #     else:
+        #         logger.info("Using CPU for inference. (but Apple MPS is available!)")
+        # それ以外の環境では CPU にフォールバック
         else:
-            self.device = "cpu"
-            logger.info("Using CPU for inference.")
+            self.is_gpu_available = False
+            # GPU モード指定時
+            if use_gpu is True:
+                self.device = "cpu"
+                logger.warning("GPU is not available. Using CPU instead.")
+            # CPU モード指定時
+            else:
+                logger.info("Using CPU for inference.")
 
         # Style-Bert-VITS2 本体のロガーを抑制
         style_bert_vits2_logger.remove()
@@ -132,8 +150,8 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         return DeviceSupport(
             # CPU: 常にサポートされる
             cpu=True,
-            # CUDA: CPU 以外の推論デバイスが設定されている場合は True (MPS も含む)
-            cuda=True if self.device != "cpu" else False,
+            # CUDA: GPU が利用可能な場合は True (CUDA 以外の GPU も含む)
+            cuda=True if self.is_gpu_available else False,
             # DirectML: 常にサポートされない
             dml=False,
         )
