@@ -17,8 +17,8 @@ on:
         required: true
 
 env:
-  IMAGE_NAME: ${{ vars.DOCKERHUB_USERNAME }}/aivisspeech-engine
   PYTHON_VERSION: "3.11.9"
+  IMAGE_NAME: ${{ vars.DOCKERHUB_USERNAME }}/aivisspeech-engine
   VERSION: |- # version指定時はversionを、それ以外はタグ名を使用
     ${{ (github.event.inputs || inputs).version }}
 
@@ -40,8 +40,8 @@ jobs:
       - name: <Setup> Check out the repository
         uses: actions/checkout@v4
 
-      - name: <Setup> Set up Python
-        uses: actions/setup-python@v5
+      - name: <Setup> Prepare Python Runtime / Python Dependencies
+        uses: ./.github/actions/prepare_python
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
@@ -55,7 +55,7 @@ jobs:
           key: ${{ runner.os }}-${{ runner.arch }}-poetry-${{ hashFiles('**/poetry.lock') }}
 
       - name: <Setup> Install Python dependencies
-        run: poetry install --with=test
+        run: poetry install --with=dev
 
       - name: <Setup> Declare variables
         id: docker_vars
@@ -97,4 +97,4 @@ jobs:
           exit 1
 
       - name: <Test> Test ENGINE application docker container
-        run: poetry run python build_util/check_release_build.py --skip_run_process --dist_dir dist/
+        run: poetry run python tools/check_release_build.py --skip_run_process --dist_dir dist/

@@ -1,5 +1,7 @@
 # syntax=docker/dockerfile:1.4
 
+# TODO: build-arg と target のドキュメントをこのファイルに書く
+
 ARG BASE_IMAGE=ubuntu:20.04
 ARG BASE_RUNTIME_IMAGE=$BASE_IMAGE
 
@@ -104,8 +106,8 @@ ADD ./aivisspeech-engine /opt/aivisspeech-engine/aivisspeech-engine
 ADD ./docs /opt/aivisspeech-engine/docs
 ADD ./run.py ./presets.yaml ./engine_manifest.json /opt/aivisspeech-engine/
 ADD ./resources /opt/aivisspeech-engine/resources
-ADD ./build_util/generate_licenses.py /opt/aivisspeech-engine/build_util/
-ADD ./build_util/licenses /opt/aivisspeech-engine/build_util/licenses
+ADD ./tools/generate_licenses.py /opt/aivisspeech-engine/tools/
+ADD ./tools/licenses /opt/aivisspeech-engine/tools/licenses
 
 # Replace version
 ARG AIVISSPEECH_ENGINE_VERSION=latest

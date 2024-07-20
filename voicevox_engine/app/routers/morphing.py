@@ -6,24 +6,25 @@ from typing import Annotated
 
 import soundfile
 from fastapi import APIRouter, HTTPException, Query
+from pydantic.json_schema import SkipJsonSchema
 from starlette.background import BackgroundTask
 from starlette.responses import FileResponse
 
 from voicevox_engine.aivm_manager import AivmManager
-from voicevox_engine.core.core_initializer import CoreManager
 from voicevox_engine.metas.Metas import StyleId
-from voicevox_engine.metas.MetasStore import construct_lookup
-from voicevox_engine.model import AudioQuery, MorphableTargetInfo, StyleIdNotFoundError
-from voicevox_engine.morphing import (
+from voicevox_engine.model import AudioQuery
+from voicevox_engine.morphing.model import MorphableTargetInfo
+from voicevox_engine.morphing.morphing import (
+    StyleIdNotFoundError,
     get_morphable_targets,
-    is_synthesis_morphing_permitted,
-    synthesis_morphing,
+    is_morphable,
 )
-from voicevox_engine.morphing import (
+from voicevox_engine.morphing.morphing import (
     synthesis_morphing_parameter as _synthesis_morphing_parameter,
 )
-from voicevox_engine.tts_pipeline.tts_engine import TTSEngineManager
-from voicevox_engine.utility.path_utility import delete_file
+from voicevox_engine.morphing.morphing import synthesize_morphed_wave
+from voicevox_engine.tts_pipeline.tts_engine import LATEST_VERSION, TTSEngineManager
+from voicevox_engine.utility.file_utility import try_delete_file
 
 # キャッシュを有効化
 # モジュール側でlru_cacheを指定するとキャッシュを制御しにくいため、HTTPサーバ側で指定する
@@ -34,45 +35,40 @@ synthesis_morphing_parameter = lru_cache(maxsize=4)(_synthesis_morphing_paramete
 def generate_morphing_router(
     tts_engines: TTSEngineManager,
     aivm_manager: AivmManager,
-    core_manager: CoreManager,
 ) -> APIRouter:
     """モーフィング API Router を生成する"""
     router = APIRouter(tags=["音声合成"])
 
     @router.post(
         "/morphable_targets",
-        summary="指定したスタイルに対してエンジン内の話者がモーフィングが可能か判定する",
+        summary="指定したスタイルに対してエンジン内のキャラクターがモーフィングが可能か判定する",
     )
     def morphable_targets(
         base_style_ids: list[StyleId],
-        core_version: Annotated[str | None, Query(description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。")] = None,  # fmt: skip # noqa
+        core_version: Annotated[
+            str | SkipJsonSchema[None],
+            Query(description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。"),
+        ] = None,  # fmt: skip # noqa
     ) -> list[dict[str, MorphableTargetInfo]]:
         """
-        指定されたベーススタイルに対してエンジン内の各話者がモーフィング機能を利用可能か返します。
+        指定されたベーススタイルに対してエンジン内の各キャラクターがモーフィング機能を利用可能か返します。
         モーフィングの許可/禁止は `/speakers `の `speaker.supported_features.synthesis_morphing` に記載されています。
         プロパティが存在しない場合は、モーフィングが許可されているとみなします。
         返り値のスタイル ID は string 型なので注意。
         AivisSpeech Engine では話者ごとに発声タイミングが異なる関係で実装不可能なため (動作こそするが聴くに耐えない) 、
         全ての話者でモーフィングが禁止されています。
         """
-        # core = core_manager.get_core(core_version)
-
+        characters = aivm_manager.get_characters()
         try:
-            # speakers = metas_store.load_combined_metas(core=core)
-            speakers = aivm_manager.get_speakers()
-            morphable_targets = get_morphable_targets(
-                speakers=speakers, base_style_ids=base_style_ids
-            )
-            # jsonはint型のキーを持てないので、string型に変換する
-            return [
-                {str(k): v for k, v in morphable_target.items()}
-                for morphable_target in morphable_targets
-            ]
+            morphable_targets = get_morphable_targets(characters, base_style_ids)
         except StyleIdNotFoundError as e:
-            raise HTTPException(
-                status_code=404,
-                detail=f"該当するスタイル(style_id={e.style_id})が見つかりません",
-            )
+            msg = f"該当するスタイル(style_id={e.style_id})が見つかりません"
+            raise HTTPException(status_code=404, detail=msg)
+        # NOTE: jsonはint型のキーを持てないので、string型に変換する
+        return [
+            {str(k): v for k, v in morphable_target.items()}
+            for morphable_target in morphable_targets
+        ]
 
     @router.post(
         "/synthesis_morphing",
@@ -91,7 +87,10 @@ def generate_morphing_router(
         base_style_id: Annotated[StyleId, Query(alias="base_speaker")],
         target_style_id: Annotated[StyleId, Query(alias="target_speaker")],
         morph_rate: Annotated[float, Query(ge=0.0, le=1.0)],
-        core_version: Annotated[str | None, Query(description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。")] = None,  # fmt: skip # noqa
+        core_version: Annotated[
+            str | SkipJsonSchema[None],
+            Query(description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。"),
+        ] = None,  # fmt: skip # noqa
     ) -> FileResponse:
         """
         指定された 2 種類のスタイルで音声を合成、指定した割合でモーフィングした音声を得ます。
@@ -99,37 +98,29 @@ def generate_morphing_router(
         AivisSpeech Engine では話者ごとに発声タイミングが異なる関係で実装不可能なため (動作こそするが聴くに耐えない) 、
         常に 400 Bad Request を返します。
         """
-        engine = tts_engines.get_engine(core_version)
-        core = core_manager.get_core(core_version)
+        version = core_version or LATEST_VERSION
+        engine = tts_engines.get_engine(version)
 
+        # モーフィングが許可されないキャラクターペアを拒否する
+        characters = aivm_manager.get_characters()
         try:
-            # speakers = metas_store.load_combined_metas(core=core)
-            speakers = aivm_manager.get_speakers()
-            speaker_lookup = construct_lookup(speakers=speakers)
-            is_permitted = is_synthesis_morphing_permitted(
-                speaker_lookup, base_style_id, target_style_id
-            )
-            if not is_permitted:
-                raise HTTPException(
-                    status_code=400,
-                    detail="指定されたスタイルペアでのモーフィングはできません",
-                )
+            morphable = is_morphable(characters, base_style_id, target_style_id)
         except StyleIdNotFoundError as e:
-            raise HTTPException(
-                status_code=404,
-                detail=f"該当するスタイル(style_id={e.style_id})が見つかりません",
-            )
+            msg = f"該当するスタイル(style_id={e.style_id})が見つかりません"
+            raise HTTPException(status_code=404, detail=msg)
+        if not morphable:
+            msg = "指定されたスタイルペアでのモーフィングはできません"
+            raise HTTPException(status_code=400, detail=msg)
 
         # 生成したパラメータはキャッシュされる
         morph_param = synthesis_morphing_parameter(
             engine=engine,
-            core=core,
             query=query,
             base_style_id=base_style_id,
             target_style_id=target_style_id,
         )
 
-        morph_wave = synthesis_morphing(
+        morph_wave = synthesize_morphed_wave(
             morph_param=morph_param,
             morph_rate=morph_rate,
             output_fs=query.outputSamplingRate,
@@ -147,7 +138,7 @@ def generate_morphing_router(
         return FileResponse(
             f.name,
             media_type="audio/wav",
-            background=BackgroundTask(delete_file, f.name),
+            background=BackgroundTask(try_delete_file, f.name),
         )
 
     return router

@@ -7,15 +7,17 @@
   "name": "AivisSpeech Engine",
   "supported_features": {
     "adjust_intonation_scale": true,
-    "adjust_mora_pitch": false,
-    "adjust_phoneme_length": false,
+    "adjust_mora_pitch": true,
+    "adjust_pause_length": true,
+    "adjust_phoneme_length": true,
     "adjust_pitch_scale": true,
     "adjust_speed_scale": true,
     "adjust_volume_scale": true,
-    "interrogative_upspeak": false,
-    "manage_library": false,
-    "sing": false,
-    "synthesis_morphing": false
+    "interrogative_upspeak": true,
+    "manage_library": true,
+    "return_resource_url": true,
+    "sing": true,
+    "synthesis_morphing": true
   },
   "supported_vvlib_manifest_version": null,
   "terms_of_service": "MD5:5802e1b6e37cf8b1bcf6d10849cf51f2",

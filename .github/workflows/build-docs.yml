@@ -25,8 +25,8 @@ jobs:
       - name: <Setup> Check out the repository
         uses: actions/checkout@v4
 
-      - name: <Setup> Set up Python
-        uses: actions/setup-python@v5
+      - name: <Setup> Prepare Python Runtime / Python Dependencies
+        uses: ./.github/actions/prepare_python
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
@@ -43,7 +43,7 @@ jobs:
         run: poetry install --only=main
 
       - name: <Build> Make documents
-        run: PYTHONPATH=. poetry run python build_util/make_docs.py
+        run: PYTHONPATH=. poetry run python tools/make_docs.py
 
       - name: <Deploy> Deploy documents to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4

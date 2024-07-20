@@ -13,8 +13,8 @@ on:
         required: true
 
 env:
-  IMAGE_NAME: ${{ vars.DOCKERHUB_USERNAME }}/aivisspeech-engine
   PYTHON_VERSION: "3.11.9"
+  IMAGE_NAME: ${{ vars.DOCKERHUB_USERNAME }}/aivisspeech-engine
 
 defaults:
   run:
@@ -64,6 +64,12 @@ jobs:
     steps:
       - name: <Setup> Check out the repository
         uses: actions/checkout@v4
+
+      - name: <Setup> Prepare Python version
+        id: prepare-python
+        uses: ./.github/actions/prepare_python
+        with:
+          only-export-python-version: true
 
       - name: <Setup> Set up QEMU
         uses: docker/setup-qemu-action@v3

@@ -23,10 +23,10 @@ from voicevox_engine.metas.Metas import (
     SpeakerInfo,
     SpeakerStyle,
     SpeakerSupportedFeatures,
-    SpeakerSupportPermittedSynthesisMorphing,
     StyleId,
     StyleInfo,
 )
+from voicevox_engine.metas.MetasStore import Character
 from voicevox_engine.model import AivmInfo, LibrarySpeaker
 
 __all__ = ["AivmManager"]
@@ -35,7 +35,7 @@ __all__ = ["AivmManager"]
 class AivmManager:
     """
     AIVM (Aivis Voice Model) ファイルフォーマットの音声合成モデルを管理するクラス
-    VOICEVOX ENGINE の LibraryManager がベースだが、AivisSpeech Engine 向けに大幅に改変されている
+    VOICEVOX ENGINE における MetasStore の役割を代替する (AivisSpeech Engine では MetasStore は無効化されている)
     """
 
     # AivisSpeech でサポートされているマニフェストバージョン
@@ -62,6 +62,34 @@ class AivmManager:
         logger.info("Installed AIVM models:")
         for aivm_info in self.get_installed_aivm_infos().values():
             logger.info(f"- {aivm_info.manifest.name} ({aivm_info.manifest.uuid})")
+
+    def get_characters(self) -> list[Character]:
+        """
+        すべてのインストール済み音声合成モデル内の話者の一覧を Character 型で取得する (MetasStore 互換用)
+
+        Returns
+        -------
+        characters : list[Character]
+            インストール済み音声合成モデル内の話者の一覧
+        """
+
+        speakers = self.get_speakers()
+        characters: list[Character] = []
+        for speaker in speakers:
+            character = Character(
+                name=speaker.name,
+                uuid=speaker.speaker_uuid,
+                # AivisSpeech Engine では talk スタイルのみがサポートされる
+                talk_styles=speaker.styles,
+                # AivisSpeech Engine では歌唱音声合成はサポートされていない
+                sing_styles=[],
+                version=speaker.version,
+                supported_features=speaker.supported_features,
+            )
+            characters.append(character)
+
+        # 既に get_speakers() で話者名でソートされているのでそのまま返す
+        return characters
 
     def get_speakers(self) -> list[Speaker]:
         """
@@ -312,7 +340,7 @@ class AivmManager:
                         # AivisSpeech Engine では全話者に対し常にモーフィング機能を無効化する
                         ## Style-Bert-VITS2 の仕様上音素長を一定にできず、話者ごとに発話タイミングがずれてまともに合成できないため
                         supported_features=SpeakerSupportedFeatures(
-                            permitted_synthesis_morphing=SpeakerSupportPermittedSynthesisMorphing.NOTHING,
+                            permitted_synthesis_morphing="NOTHING",
                         ),
                     ),
                     # 追加の話者情報
@@ -453,7 +481,7 @@ class AivmManager:
 
         # AIVM マニフェスト内のスタイル ID は、話者ごとにローカルな 0 から始まる連番になっている
         # この値は config.json に記述されているハイパーパラメータの data.style2id の値と一致する
-        # 一方 VOICEVOX ENGINE は互換性問題？による歴史的事情でスタイル ID を音声合成 API に渡す形となっており、
+        # 一方 VOICEVOX ENGINE は互換性問題？による歴史的経緯でスタイル ID を音声合成 API に渡す形となっており、
         # スタイル ID がグローバルに一意になっていなければならない
         # そこで、話者の UUID とローカルなスタイル ID を組み合わせて、
         # グローバルに一意なスタイル ID (符号付き 32bit 整数) に変換する

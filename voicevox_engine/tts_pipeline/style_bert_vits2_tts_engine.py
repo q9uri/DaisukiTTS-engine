@@ -26,11 +26,12 @@ from style_bert_vits2.nlp.symbols import PUNCTUATIONS
 from style_bert_vits2.tts_model import TTSModel
 
 from ..aivm_manager import AivmManager
-from ..core.core_adapter import CoreAdapter
+from ..core.core_adapter import CoreAdapter, DeviceSupport
 from ..dev.core.mock import MockCoreWrapper
 from ..logging import logger
 from ..metas.Metas import StyleId
-from ..model import AccentPhrase, AudioQuery, Mora
+from ..model import AudioQuery
+from ..tts_pipeline.model import AccentPhrase, Mora
 from ..tts_pipeline.mora_mapping import mora_kana_to_mora_phonemes
 from ..tts_pipeline.tts_engine import (
     TTSEngine,
@@ -119,10 +120,29 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         ## 継承元の TTSEngine は self._core に CoreWrapper を入れた CoreAdapter のインスタンスがないと動作しない
         self._core = CoreAdapter(MockCoreWrapper())
 
+    @property
+    def default_sampling_rate(self) -> int:
+        """合成される音声波形のデフォルトサンプリングレートを取得する。"""
+        # Style-Bert-VITS2 の出力サンプリング周波数 (44.1KHz) に合わせる
+        return 44100
+
+    @property
+    def supported_devices(self) -> DeviceSupport | None:
+        """合成時に各デバイスが利用可能か否かの一覧を取得する。"""
+        return DeviceSupport(
+            # CPU: 常にサポートされる
+            cpu=True,
+            # CUDA: CPU 以外の推論デバイスが設定されている場合は True (MPS も含む)
+            cuda=True if self.device != "cpu" else False,
+            # DirectML: 常にサポートされない
+            dml=False,
+        )
+
     def load_model(self, aivm_uuid: str) -> TTSModel:
         """
         Style-Bert-VITS2 の音声合成モデルをロードする
         StyleBertVITS2TTSEngine の初期化時に use_gpu=True が指定されている場合、モデルは GPU にロードされる
+        継承元の TTSEngine には存在しない、StyleBertVITS2TTSEngine 固有のメソッド
 
         Parameters
         ----------
@@ -180,6 +200,7 @@ class StyleBertVITS2TTSEngine(TTSEngine):
     def is_model_loaded(self, aivm_uuid: str) -> bool:
         """
         指定された AIVM の UUID に対応する音声合成モデルがロード済みかどうかを返す
+        継承元の TTSEngine には存在しない、StyleBertVITS2TTSEngine 固有のメソッド
 
         Parameters
         ----------
@@ -589,3 +610,18 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         # 生成した音声の音量調整/サンプルレート変更/ステレオ化を行ってから返す
         wave = raw_wave_to_output_wave(query, raw_wave, raw_sample_rate)
         return wave
+
+    def initialize_synthesis(self, style_id: StyleId, skip_reinit: bool) -> None:
+        """指定されたスタイル ID に関する合成機能を初期化する。既に初期化されていた場合は引数に応じて再初期化する。"""
+        # スタイル ID に対応する AivmManifest を取得後、
+        # AIVM マニフェスト記載の UUID に対応する音声合成モデルをロードする
+        ## FIXME: StyleBertVITS2TTSEngine の内部実装上、当面 skip_reinit 引数は無視して必要なときのみロードする
+        aivm_manifest, _, _ = self.aivm_manager.get_aivm_manifest_from_style_id(style_id)  # fmt: skip
+        self.load_model(str(aivm_manifest.uuid))
+
+    def is_synthesis_initialized(self, style_id: StyleId) -> bool:
+        """指定されたスタイル ID に関する合成機能が初期化済みか否かを取得する。"""
+        # スタイル ID に対応する AivmManifest を取得後、
+        # AIVM マニフェスト記載の UUID に対応する音声合成モデルがロードされているかどうかを返す
+        aivm_manifest, _, _ = self.aivm_manager.get_aivm_manifest_from_style_id(style_id)  # fmt: skip
+        return self.is_model_loaded(str(aivm_manifest.uuid))

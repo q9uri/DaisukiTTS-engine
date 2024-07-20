@@ -5,7 +5,7 @@ lint = "pysen run lint"
 typos = "typos"
 test = "pytest"
 update-snapshots = "pytest --snapshot-update"
-update-licenses = "bash build_util/create_venv_and_generate_licenses.bash"
+update-licenses = "bash tools/create_venv_and_generate_licenses.bash"
 build = "poetry run task update-licenses && pyinstaller --noconfirm run.spec"
 
 [tool.pysen]
@@ -50,6 +50,16 @@ use_parentheses = true
 [tool.pytest.ini_options]
 filterwarnings = ["ignore::pydantic.warnings.PydanticDeprecatedSince20"]
 
+[tool.typos.default.extend-words]
+datas = "datas" # PyInstaller's argument
+
+[tool.typos.files]
+extend-exclude = [
+  "resources",
+  "test/e2e/single_api/engine_info/__snapshots__/test_engine_manifest/test_get_engine_manifest_200.json",
+  "poetry.*",
+]
+
 [tool.poetry]
 package-mode = false
 
@@ -57,17 +67,17 @@ package-mode = false
 python = "~3.11"
 numpy = "^1.26.0"
 fastapi-slim = "^0.111.0"
-python-multipart = "^0.0.9" # NOTE: required by fastapi
+jinja2 = "^3.1.3" # NOTE: required by fastapi.templating.Jinja2Templates (fastapi-slim's unmanaged dependency)
+python-multipart = "^0.0.9" # NOTE: required by fastapi.Form (fastapi-slim's unmanaged dependency)
 uvicorn = "^0.29.0"
 soundfile = "^0.12.1"
 pyyaml = "^6.0.1"
 pyworld-prebuilt = "^0.3.4.1"
-jinja2 = "^3.1.3" # NOTE: required by fastapi
 pyopenjtalk-dict = "^0.3.4.dev2"
 semver = "^3.0.0"
 platformdirs = "^4.2.0"
 soxr = "^0.3.6"
-pydantic = "^2.7.2"
+pydantic = "^2.7.3"
 starlette = "^0.37.0"
 jaconv = "^0.3.4"
 httpx = "^0.27.0"
@@ -92,7 +102,7 @@ torch = [
   { url = "https://download.pytorch.org/whl/cpu/torch-2.3.1-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", markers = "sys_platform == 'linux' and platform_machine == 'aarch64'" },
 ]
 
-[tool.poetry.group.test.dependencies]
+[tool.poetry.group.dev.dependencies]
 pysen = "^0.11.0"
 black = "^24.4.0"
 flake8-bugbear = "^24.4.26"
@@ -103,10 +113,11 @@ pytest = "^8.2.0"
 coveralls = "^3.2.0"
 poetry = "1.8.2"
 poetry-plugin-export = "^1.8.0"
-httpx = "^0.27.0" # NOTE: required by fastapi.testclient.TestClient
+httpx = "^0.27.0" # NOTE: required by fastapi.testclient.TestClient (fastapi-slim's unmanaged dependency)
 syrupy = "^4.6.1"
 types-pyyaml = "^6.0.12"
 safety = "^3.1.0"
+pip-licenses = "4.4.0" # NOTE: must be specified exactly (c.f. #1281)
 pre-commit = "^2.16.0"
 
 [tool.poetry.group.build.dependencies]
@@ -114,9 +125,6 @@ pyinstaller = "^5.13"
 poetry = "1.8.2"
 poetry-plugin-export = "^1.8.0"
 taskipy = "^1.12.2"
-
-[tool.poetry.group.license.dependencies]
-pip-licenses = "^4.4.0"
 
 [build-system]
 requires = ["poetry-core"]

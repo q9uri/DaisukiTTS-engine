@@ -7,10 +7,13 @@ from fastapi import APIRouter, Depends, File, Form, HTTPException, Path, UploadF
 from voicevox_engine.aivm_manager import AivmManager
 from voicevox_engine.model import AivmInfo
 
-from ..dependencies import check_disabled_mutable_api
+from ..dependencies import VerifyMutabilityAllowed
 
 
-def generate_aivm_models_router(aivm_manager: AivmManager) -> APIRouter:
+def generate_aivm_models_router(
+    aivm_manager: AivmManager,
+    verify_mutability: VerifyMutabilityAllowed,
+) -> APIRouter:
     """音声合成モデル管理 API Router を生成する"""
 
     router = APIRouter(
@@ -32,7 +35,7 @@ def generate_aivm_models_router(aivm_manager: AivmManager) -> APIRouter:
     @router.post(
         "/install",
         status_code=204,
-        dependencies=[Depends(check_disabled_mutable_api)],
+        dependencies=[Depends(verify_mutability)],
     )
     def install_aivm(
         file: Annotated[
@@ -74,7 +77,7 @@ def generate_aivm_models_router(aivm_manager: AivmManager) -> APIRouter:
     @router.delete(
         "/{aivm_uuid}/uninstall",
         status_code=204,
-        dependencies=[Depends(check_disabled_mutable_api)],
+        dependencies=[Depends(verify_mutability)],
     )
     def uninstall_aivm(
         aivm_uuid: Annotated[str, Path(description="AIVM ファイルの UUID")]

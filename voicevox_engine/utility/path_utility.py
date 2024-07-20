@@ -1,19 +1,20 @@
-import os
+"""パスに関する utility"""
+
 import sys
 from pathlib import Path
 
 from platformdirs import user_data_dir
 
+from voicevox_engine.utility.runtime_utility import is_development
+
 
 def engine_root() -> Path:
     """エンジンのルートディレクトリを指すパスを取得する。"""
-    if _is_development():
+    if is_development():
         # git レポジトリのルートを指している
         root_dir = Path(__file__).parents[2]
-
-    # Nuitka/Pyinstallerでビルドされている場合
     else:
-        root_dir = Path(sys.argv[0]).parent
+        root_dir = Path(sys.executable).parent
 
     return root_dir.resolve(strict=True)
 
@@ -29,38 +30,12 @@ def engine_manifest_path() -> Path:
     return engine_root() / "engine_manifest.json"
 
 
-def _is_development() -> bool:
-    """
-    動作環境が開発版であるか否かを返す。
-    Nuitka/Pyinstallerでコンパイルされていない場合は開発環境とする。
-    """
-    # nuitkaビルドをした際はグローバルに__compiled__が含まれる
-    if "__compiled__" in globals():
-        return False
-
-    # pyinstallerでビルドをした際はsys.frozenが設定される
-    elif getattr(sys, "frozen", False):
-        return False
-
-    return True
-
-
 def get_save_dir() -> Path:
     """ファイルの保存先ディレクトリを指すパスを取得する。"""
 
     # FIXME: ファイル保存場所をエンジン固有のIDが入ったものにする
-    if _is_development():
+    if is_development():
         app_name = "AivisSpeech-Engine-Dev"
     else:
         app_name = "AivisSpeech-Engine"
     return Path(user_data_dir(app_name, appauthor=False, roaming=True))
-
-
-def delete_file(file_path: str) -> None:
-    """指定されたファイルを削除する。"""
-    try:
-        os.remove(file_path)
-    except OSError:
-        from ..logging import logger
-
-        logger.error(f"Failed to delete file: {file_path}")

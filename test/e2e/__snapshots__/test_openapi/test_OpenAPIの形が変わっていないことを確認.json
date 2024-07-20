@@ -5,19 +5,22 @@
         "description": "アクセント句ごとの情報",
         "properties": {
           "accent": {
-            "title": "アクセント箇所",
+            "description": "アクセント箇所",
+            "title": "Accent",
             "type": "integer"
           },
           "is_interrogative": {
             "default": false,
-            "title": "疑問系かどうか",
+            "description": "疑問系かどうか",
+            "title": "Is Interrogative",
             "type": "boolean"
           },
           "moras": {
+            "description": "モーラのリスト",
             "items": {
               "$ref": "#/components/schemas/Mora"
             },
-            "title": "モーラのリスト",
+            "title": "Moras",
             "type": "array"
           },
           "pause_mora": {
@@ -29,7 +32,8 @@
                 "type": "null"
               }
             ],
-            "title": "後ろに無音を付けるかどうか"
+            "description": "後ろに無音を付けるかどうか",
+            "title": "Pause Mora"
           }
         },
         "required": [
@@ -227,10 +231,11 @@
         "description": "音声合成用のクエリ",
         "properties": {
           "accent_phrases": {
+            "description": "アクセント句のリスト",
             "items": {
               "$ref": "#/components/schemas/AccentPhrase"
             },
-            "title": "アクセント句のリスト",
+            "title": "Accent Phrases",
             "type": "array"
           },
           "intonationScale": {
@@ -251,12 +256,32 @@
             "title": "読み上げるテキスト (「読みの AquesTalk 風記法テキスト」ではない点で VOICEVOX ENGINE と異なる)"
           },
           "outputSamplingRate": {
-            "title": "音声データの出力サンプリングレート",
+            "description": "音声データの出力サンプリングレート",
+            "title": "Outputsamplingrate",
             "type": "integer"
           },
           "outputStereo": {
-            "title": "音声データをステレオ出力するか否か",
+            "description": "音声データをステレオ出力するか否か",
+            "title": "Outputstereo",
             "type": "boolean"
+          },
+          "pauseLength": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "句読点などの無音時間。nullのときは無視される。デフォルト値はnull",
+            "title": "Pauselength"
+          },
+          "pauseLengthScale": {
+            "default": 1,
+            "description": "句読点などの無音時間（倍率）。デフォルト値は1",
+            "title": "Pauselengthscale",
+            "type": "number"
           },
           "pitchScale": {
             "description": "全体の音高を -0.15 ~ 0.15 の範囲で指定する (デフォルト: 0.0) 。\n値が大きいほど高い声になる。\nVOICEVOX ENGINE と異なり、この値を 0.0 から変更すると音質が劣化するため注意が必要。",
@@ -385,34 +410,41 @@
         "description": "エンジン自体に関する情報",
         "properties": {
           "brand_name": {
-            "title": "ブランド名",
+            "description": "ブランド名",
+            "title": "Brand Name",
             "type": "string"
           },
           "default_sampling_rate": {
-            "title": "デフォルトのサンプリング周波数",
+            "description": "デフォルトのサンプリング周波数",
+            "title": "Default Sampling Rate",
             "type": "integer"
           },
           "dependency_licenses": {
+            "description": "依存関係のライセンス情報",
             "items": {
               "$ref": "#/components/schemas/LicenseInfo"
             },
-            "title": "依存関係のライセンス情報",
+            "title": "Dependency Licenses",
             "type": "array"
           },
           "frame_rate": {
-            "title": "エンジンのフレームレート",
+            "description": "エンジンのフレームレート",
+            "title": "Frame Rate",
             "type": "number"
           },
           "icon": {
-            "title": "エンジンのアイコンをBASE64エンコードしたもの",
+            "description": "エンジンのアイコンをBASE64エンコードしたもの",
+            "title": "Icon",
             "type": "string"
           },
           "manifest_version": {
-            "title": "マニフェストのバージョン",
+            "description": "マニフェストのバージョン",
+            "title": "Manifest Version",
             "type": "string"
           },
           "name": {
-            "title": "エンジン名",
+            "description": "エンジン名",
+            "title": "Name",
             "type": "string"
           },
           "supported_features": {
@@ -421,7 +453,7 @@
                 "$ref": "#/components/schemas/SupportedFeatures"
               }
             ],
-            "title": "エンジンが持つ機能"
+            "description": "エンジンが持つ機能"
           },
           "supported_vvlib_manifest_version": {
             "anyOf": [
@@ -435,22 +467,26 @@
             "title": "エンジンが対応するvvlibのバージョン"
           },
           "terms_of_service": {
-            "title": "エンジンの利用規約",
+            "description": "エンジンの利用規約",
+            "title": "Terms Of Service",
             "type": "string"
           },
           "update_infos": {
+            "description": "エンジンのアップデート情報",
             "items": {
               "$ref": "#/components/schemas/UpdateInfo"
             },
-            "title": "エンジンのアップデート情報",
+            "title": "Update Infos",
             "type": "array"
           },
           "url": {
-            "title": "エンジンのURL",
+            "description": "エンジンのURL",
+            "title": "Url",
             "type": "string"
           },
           "uuid": {
-            "title": "エンジンのUUID",
+            "description": "エンジンのUUID",
+            "title": "Uuid",
             "type": "string"
           }
         },
@@ -475,36 +511,42 @@
         "description": "フレームごとの音声合成用のクエリ",
         "properties": {
           "f0": {
+            "description": "フレームごとの基本周波数",
             "items": {
               "type": "number"
             },
-            "title": "フレームごとの基本周波数",
+            "title": "F0",
             "type": "array"
           },
           "outputSamplingRate": {
-            "title": "音声データの出力サンプリングレート",
+            "description": "音声データの出力サンプリングレート",
+            "title": "Outputsamplingrate",
             "type": "integer"
           },
           "outputStereo": {
-            "title": "音声データをステレオ出力するか否か",
+            "description": "音声データをステレオ出力するか否か",
+            "title": "Outputstereo",
             "type": "boolean"
           },
           "phonemes": {
+            "description": "音素のリスト",
             "items": {
               "$ref": "#/components/schemas/FramePhoneme"
             },
-            "title": "音素のリスト",
+            "title": "Phonemes",
             "type": "array"
           },
           "volume": {
+            "description": "フレームごとの音量",
             "items": {
               "type": "number"
             },
-            "title": "フレームごとの音量",
+            "title": "Volume",
             "type": "array"
           },
           "volumeScale": {
-            "title": "全体の音量",
+            "description": "全体の音量",
+            "title": "Volumescale",
             "type": "number"
           }
         },
@@ -523,11 +565,13 @@
         "description": "音素の情報",
         "properties": {
           "frame_length": {
-            "title": "音素のフレーム長",
+            "description": "音素のフレーム長",
+            "title": "Frame Length",
             "type": "integer"
           },
           "phoneme": {
-            "title": "音素",
+            "description": "音素",
+            "title": "Phoneme",
             "type": "string"
           }
         },
@@ -552,23 +596,13 @@
         "type": "object"
       },
       "LibrarySpeaker": {
-        "description": "音声ライブラリに含まれる話者の情報",
+        "description": "音声ライブラリに含まれるキャラクターの情報",
         "properties": {
           "speaker": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Speaker"
-              }
-            ],
-            "title": "話者情報"
+            "$ref": "#/components/schemas/Speaker"
           },
           "speaker_info": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/SpeakerInfo"
-              }
-            ],
-            "title": "話者の追加情報"
+            "$ref": "#/components/schemas/SpeakerInfo"
           }
         },
         "required": [
@@ -593,11 +627,13 @@
             "title": "依存ライブラリのライセンス名"
           },
           "name": {
-            "title": "依存ライブラリ名",
+            "description": "依存ライブラリ名",
+            "title": "Name",
             "type": "string"
           },
           "text": {
-            "title": "依存ライブラリのライセンス本文",
+            "description": "依存ライブラリのライセンス本文",
+            "title": "Text",
             "type": "string"
           },
           "version": {
@@ -653,19 +689,23 @@
             "title": "子音の音長"
           },
           "pitch": {
-            "title": "音高",
+            "description": "音高",
+            "title": "Pitch",
             "type": "number"
           },
           "text": {
-            "title": "文字",
+            "description": "文字",
+            "title": "Text",
             "type": "string"
           },
           "vowel": {
-            "title": "母音の音素",
+            "description": "母音の音素",
+            "title": "Vowel",
             "type": "string"
           },
           "vowel_length": {
-            "title": "母音の音長",
+            "description": "母音の音長",
+            "title": "Vowel Length",
             "type": "number"
           }
         },
@@ -681,7 +721,8 @@
       "MorphableTargetInfo": {
         "properties": {
           "is_morphable": {
-            "title": "指定した話者に対してモーフィングの可否",
+            "description": "指定したキャラクターに対してモーフィングの可否",
+            "title": "Is Morphable",
             "type": "boolean"
           }
         },
@@ -695,7 +736,8 @@
         "description": "音符ごとの情報",
         "properties": {
           "frame_length": {
-            "title": "音符のフレーム長",
+            "description": "音符のフレーム長",
+            "title": "Frame Length",
             "type": "integer"
           },
           "key": {
@@ -710,7 +752,8 @@
             "title": "音階"
           },
           "lyric": {
-            "title": "音符の歌詞",
+            "description": "音符の歌詞",
+            "title": "Lyric",
             "type": "string"
           }
         },
@@ -727,16 +770,18 @@
             "additionalProperties": {
               "type": "string"
             },
-            "title": "エラーを起こした箇所",
+            "description": "エラーを起こした箇所",
+            "title": "Error Args",
             "type": "object"
           },
           "error_name": {
-            "description": "|name|description|\n|---|---|\n| UNKNOWN_TEXT | 判別できない読み仮名があります: {text} |\n| ACCENT_TOP | 句頭にアクセントは置けません: {text} |\n| ACCENT_TWICE | 1つのアクセント句に二つ以上のアクセントは置けません: {text} |\n| ACCENT_NOTFOUND | アクセントを指定していないアクセント句があります: {text} |\n| EMPTY_PHRASE | {position}番目のアクセント句が空白です |\n| INTERROGATION_MARK_NOT_AT_END | アクセント句末以外に「？」は置けません: {text} |\n| INFINITE_LOOP | 処理時に無限ループになってしまいました...バグ報告をお願いします。 |",
-            "title": "エラー名",
+            "description": "エラー名\n\n|name|description|\n|---|---|\n| UNKNOWN_TEXT | 判別できない読み仮名があります: {text} |\n| ACCENT_TOP | 句頭にアクセントは置けません: {text} |\n| ACCENT_TWICE | 1つのアクセント句に二つ以上のアクセントは置けません: {text} |\n| ACCENT_NOTFOUND | アクセントを指定していないアクセント句があります: {text} |\n| EMPTY_PHRASE | {position}番目のアクセント句が空白です |\n| INTERROGATION_MARK_NOT_AT_END | アクセント句末以外に「？」は置けません: {text} |\n| INFINITE_LOOP | 処理時に無限ループになってしまいました...バグ報告をお願いします。 |",
+            "title": "Error Name",
             "type": "string"
           },
           "text": {
-            "title": "エラーメッセージ",
+            "description": "エラーメッセージ",
+            "title": "Text",
             "type": "string"
           }
         },
@@ -761,8 +806,20 @@
             "type": "number"
           },
           "name": {
-            "title": "プリセット名",
+            "description": "プリセット名",
+            "title": "Name",
             "type": "string"
+          },
+          "pauseLength": {
+            "description": "句読点などの無音時間",
+            "title": "Pauselength",
+            "type": "number"
+          },
+          "pauseLengthScale": {
+            "default": 1,
+            "description": "句読点などの無音時間（倍率）",
+            "title": "Pauselengthscale",
+            "type": "number"
           },
           "pitchScale": {
             "description": "全体の音高を -0.15 ~ 0.15 の範囲で指定する (デフォルト: 0.0) 。\n値が大きいほど高い声になる。\nVOICEVOX ENGINE と異なり、この値を 0.0 から変更すると音質が劣化するため注意が必要。",
@@ -821,10 +878,11 @@
         "description": "楽譜情報",
         "properties": {
           "notes": {
+            "description": "音符のリスト",
             "items": {
               "$ref": "#/components/schemas/Note"
             },
-            "title": "音符のリスト",
+            "title": "Notes",
             "type": "array"
           }
         },
@@ -835,21 +893,24 @@
         "type": "object"
       },
       "Speaker": {
-        "description": "話者情報",
+        "description": "キャラクター情報",
         "properties": {
           "name": {
-            "title": "名前",
+            "description": "名前",
+            "title": "Name",
             "type": "string"
           },
           "speaker_uuid": {
-            "title": "話者のUUID",
+            "description": "キャラクターのUUID",
+            "title": "Speaker Uuid",
             "type": "string"
           },
           "styles": {
+            "description": "スタイルの一覧",
             "items": {
               "$ref": "#/components/schemas/SpeakerStyle"
             },
-            "title": "スタイルの一覧",
+            "title": "Styles",
             "type": "array"
           },
           "supported_features": {
@@ -858,10 +919,10 @@
                 "$ref": "#/components/schemas/SpeakerSupportedFeatures"
               }
             ],
-            "title": "話者の対応機能"
+            "description": "キャラクターの対応機能"
           },
           "version": {
-            "default": "話者のバージョン",
+            "description": "キャラクターのバージョン",
             "title": "Version",
             "type": "string"
           }
@@ -869,27 +930,31 @@
         "required": [
           "name",
           "speaker_uuid",
-          "styles"
+          "styles",
+          "version"
         ],
         "title": "Speaker",
         "type": "object"
       },
       "SpeakerInfo": {
-        "description": "話者の追加情報",
+        "description": "キャラクターの追加情報",
         "properties": {
           "policy": {
-            "title": "policy.md",
+            "description": "policy.md",
+            "title": "Policy",
             "type": "string"
           },
           "portrait": {
-            "title": "portrait.pngをbase64エンコードしたもの",
+            "description": "立ち絵画像をbase64エンコードしたもの、あるいはURL",
+            "title": "Portrait",
             "type": "string"
           },
           "style_infos": {
+            "description": "スタイルの追加情報",
             "items": {
               "$ref": "#/components/schemas/StyleInfo"
             },
-            "title": "スタイルの追加情報",
+            "title": "Style Infos",
             "type": "array"
           }
         },
@@ -902,14 +967,16 @@
         "type": "object"
       },
       "SpeakerStyle": {
-        "description": "話者のスタイル情報",
+        "description": "キャラクターのスタイル情報",
         "properties": {
           "id": {
-            "title": "スタイルID",
+            "description": "スタイルID",
+            "title": "Id",
             "type": "integer"
           },
           "name": {
-            "title": "スタイル名",
+            "description": "スタイル名",
+            "title": "Name",
             "type": "string"
           },
           "type": {
@@ -948,16 +1015,18 @@
         "type": "string"
       },
       "SpeakerSupportedFeatures": {
-        "description": "話者の対応機能の情報",
+        "description": "キャラクターの対応機能の情報",
         "properties": {
           "permitted_synthesis_morphing": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/SpeakerSupportPermittedSynthesisMorphing"
-              }
-            ],
             "default": "ALL",
-            "title": "モーフィング機能への対応"
+            "description": "モーフィング機能への対応。'ALL' は「全て許可」、'SELF_ONLY' は「同じキャラクター内でのみ許可」、'NOTHING' は「全て禁止」",
+            "enum": [
+              "ALL",
+              "SELF_ONLY",
+              "NOTHING"
+            ],
+            "title": "Permitted Synthesis Morphing",
+            "type": "string"
           }
         },
         "title": "SpeakerSupportedFeatures",
@@ -967,11 +1036,13 @@
         "description": "スタイルの追加情報",
         "properties": {
           "icon": {
-            "title": "当該スタイルのアイコンをbase64エンコードしたもの",
+            "description": "このスタイルのアイコンをbase64エンコードしたもの、あるいはURL",
+            "title": "Icon",
             "type": "string"
           },
           "id": {
-            "title": "スタイルID",
+            "description": "スタイルID",
+            "title": "Id",
             "type": "integer"
           },
           "portrait": {
@@ -994,6 +1065,7 @@
             "type": "array"
           },
           "voice_samples": {
+            "description": "サンプル音声をbase64エンコードしたもの、あるいはURL",
             "items": {
               "type": "string"
             },
@@ -1013,15 +1085,18 @@
         "description": "対応しているデバイスの情報",
         "properties": {
           "cpu": {
-            "title": "CPUに対応しているか",
+            "description": "CPUに対応しているか",
+            "title": "Cpu",
             "type": "boolean"
           },
           "cuda": {
-            "title": "CUDA(Nvidia GPU)に対応しているか",
+            "description": "CUDA(Nvidia GPU)に対応しているか",
+            "title": "Cuda",
             "type": "boolean"
           },
           "dml": {
-            "title": "DirectML(Nvidia GPU/Radeon GPU等)に対応しているか",
+            "description": "DirectML(Nvidia GPU/Radeon GPU等)に対応しているか",
+            "title": "Dml",
             "type": "boolean"
           }
         },
@@ -1037,31 +1112,43 @@
         "description": "エンジンが持つ機能の一覧",
         "properties": {
           "adjust_intonation_scale": {
-            "title": "全体の抑揚の調整",
+            "description": "全体の抑揚の調整",
+            "title": "Adjust Intonation Scale",
             "type": "boolean"
           },
           "adjust_mora_pitch": {
-            "title": "モーラごとの音高の調整",
+            "description": "モーラごとの音高の調整",
+            "title": "Adjust Mora Pitch",
+            "type": "boolean"
+          },
+          "adjust_pause_length": {
+            "description": "句読点などの無音時間の調整",
+            "title": "Adjust Pause Length",
             "type": "boolean"
           },
           "adjust_phoneme_length": {
-            "title": "音素ごとの長さの調整",
+            "description": "音素ごとの長さの調整",
+            "title": "Adjust Phoneme Length",
             "type": "boolean"
           },
           "adjust_pitch_scale": {
-            "title": "全体の音高の調整",
+            "description": "全体の音高の調整",
+            "title": "Adjust Pitch Scale",
             "type": "boolean"
           },
           "adjust_speed_scale": {
-            "title": "全体の話速の調整",
+            "description": "全体の話速の調整",
+            "title": "Adjust Speed Scale",
             "type": "boolean"
           },
           "adjust_volume_scale": {
-            "title": "全体の音量の調整",
+            "description": "全体の音量の調整",
+            "title": "Adjust Volume Scale",
             "type": "boolean"
           },
           "interrogative_upspeak": {
-            "title": "疑問文の自動調整",
+            "description": "疑問文の自動調整",
+            "title": "Interrogative Upspeak",
             "type": "boolean"
           },
           "manage_library": {
@@ -1087,7 +1174,8 @@
             "title": "歌唱音声合成"
           },
           "synthesis_morphing": {
-            "title": "2種類のスタイルでモーフィングした音声を合成",
+            "description": "2種類のスタイルでモーフィングした音声を合成",
+            "title": "Synthesis Morphing",
             "type": "boolean"
           }
         },
@@ -1112,18 +1200,20 @@
             "items": {
               "type": "string"
             },
-            "title": "貢献者名",
+            "title": "Contributors",
             "type": "array"
           },
           "descriptions": {
+            "description": "アップデートの詳細についての説明",
             "items": {
               "type": "string"
             },
-            "title": "アップデートの詳細についての説明",
+            "title": "Descriptions",
             "type": "array"
           },
           "version": {
-            "title": "エンジンのバージョン名",
+            "description": "エンジンのバージョン名",
+            "title": "Version",
             "type": "string"
           }
         },
@@ -1138,24 +1228,29 @@
         "description": "辞書のコンパイルに使われる情報",
         "properties": {
           "accent_associative_rule": {
-            "title": "アクセント結合規則",
+            "description": "アクセント結合規則",
+            "title": "Accent Associative Rule",
             "type": "string"
           },
           "accent_type": {
-            "title": "アクセント型",
+            "description": "アクセント型",
+            "title": "Accent Type",
             "type": "integer"
           },
           "context_id": {
             "default": 1348,
-            "title": "文脈ID",
+            "description": "文脈ID",
+            "title": "Context Id",
             "type": "integer"
           },
           "inflectional_form": {
-            "title": "活用形",
+            "description": "活用形",
+            "title": "Inflectional Form",
             "type": "string"
           },
           "inflectional_type": {
-            "title": "活用型",
+            "description": "活用型",
+            "title": "Inflectional Type",
             "type": "string"
           },
           "mora_count": {
@@ -1170,41 +1265,50 @@
             "title": "モーラ数"
           },
           "part_of_speech": {
-            "title": "品詞",
+            "description": "品詞",
+            "title": "Part Of Speech",
             "type": "string"
           },
           "part_of_speech_detail_1": {
-            "title": "品詞細分類1",
+            "description": "品詞細分類1",
+            "title": "Part Of Speech Detail 1",
             "type": "string"
           },
           "part_of_speech_detail_2": {
-            "title": "品詞細分類2",
+            "description": "品詞細分類2",
+            "title": "Part Of Speech Detail 2",
             "type": "string"
           },
           "part_of_speech_detail_3": {
-            "title": "品詞細分類3",
+            "description": "品詞細分類3",
+            "title": "Part Of Speech Detail 3",
             "type": "string"
           },
           "priority": {
+            "description": "優先度",
             "maximum": 10.0,
             "minimum": 0.0,
-            "title": "優先度",
+            "title": "Priority",
             "type": "integer"
           },
           "pronunciation": {
-            "title": "発音",
+            "description": "発音",
+            "title": "Pronunciation",
             "type": "string"
           },
           "stem": {
-            "title": "原形",
+            "description": "原形",
+            "title": "Stem",
             "type": "string"
           },
           "surface": {
-            "title": "表層形",
+            "description": "表層形",
+            "title": "Surface",
             "type": "string"
           },
           "yomi": {
-            "title": "読み",
+            "description": "読み",
+            "title": "Yomi",
             "type": "string"
           }
         },
@@ -1260,7 +1364,7 @@
         "type": "object"
       },
       "WordTypes": {
-        "description": "fastapiでword_type引数を検証する時に使用するクラス",
+        "description": "品詞",
         "enum": [
           "PROPER_NOUN",
           "COMMON_NOUN",
@@ -2490,7 +2594,7 @@
             "description": "Validation Error"
           }
         },
-        "summary": "指定したスタイルに対してエンジン内の話者がモーフィングが可能か判定する",
+        "summary": "指定したスタイルに対してエンジン内のキャラクターがモーフィングが可能か判定する",
         "tags": [
           "音声合成"
         ]
@@ -2807,6 +2911,20 @@
           {
             "description": "AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。",
             "in": "query",
+            "name": "resource_format",
+            "required": false,
+            "schema": {
+              "default": "base64",
+              "enum": [
+                "base64",
+                "url"
+              ],
+              "title": "Resource Format",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
             "name": "core_version",
             "required": false,
             "schema": {
@@ -2908,7 +3026,7 @@
     },
     "/speaker_info": {
       "get": {
-        "description": "指定されたspeaker_uuidの話者に関する情報をjson形式で返します。\n画像や音声はbase64エンコードされたものが返されます。",
+        "description": "UUID で指定された喋れるキャラクターの情報を返します。\n画像や音声はresource_formatで指定した形式で返されます。",
         "operationId": "speaker_info_speaker_info_get",
         "parameters": [
           {
@@ -2924,6 +3042,20 @@
           },
           {
             "description": "AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。",
+            "in": "query",
+            "name": "resource_format",
+            "required": false,
+            "schema": {
+              "default": "base64",
+              "enum": [
+                "base64",
+                "url"
+              ],
+              "title": "Resource Format",
+              "type": "string"
+            }
+          },
+          {
             "in": "query",
             "name": "core_version",
             "required": false,
@@ -2971,7 +3103,7 @@
     },
     "/speakers": {
       "get": {
-        "description": "話者情報の一覧を取得します。",
+        "description": "喋れるキャラクターの情報の一覧を返します。",
         "operationId": "speakers_speakers_get",
         "parameters": [
           {

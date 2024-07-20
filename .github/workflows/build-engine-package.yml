@@ -97,9 +97,8 @@ jobs:
         if: startsWith(matrix.os, 'windows-')
         uses: ilammy/msvc-dev-cmd@v1
 
-      # Python install path of windows: C:/hostedtoolcache/windows/Python
-      - name: <Setup> Set up Python
-        uses: actions/setup-python@v5
+      - name: <Setup> Prepare Python Runtime / Python Dependencies
+        uses: ./.github/actions/prepare_python
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           architecture: ${{ matrix.architecture }}
@@ -118,7 +117,7 @@ jobs:
 
       - name: <Setup> Prepare custom PyInstaller
         if: startsWith(matrix.os, 'windows-')
-        run: ./build_util/modify_pyinstaller.bash
+        run: ./tools/modify_pyinstaller.bash
 
       - name: <Setup> Download pyopenjtalk dictionary
         run: |
@@ -143,7 +142,7 @@ jobs:
 
       # Build
       - name: <Build> Generate licenses.json
-        run: bash build_util/create_venv_and_generate_licenses.bash
+        run: bash tools/create_venv_and_generate_licenses.bash
 
       - name: <Build> Build AivisSpeech Engine run.py
         run: |
@@ -157,13 +156,9 @@ jobs:
 
           poetry run task build
 
-      - name: <Setup> Set @rpath to @executable_path
-        if: startsWith(matrix.os, 'macos-')
-        run: install_name_tool -add_rpath @executable_path/. dist/run/run
-
       - name: <Build> Code signing
         if: github.event.inputs.code_signing == 'true' && startsWith(matrix.os, 'windows-')
-        run: bash build_util/codesign.bash "dist/run/run.exe"
+        run: bash tools/codesign.bash "dist/run/run.exe"
         env:
           ESIGNERCKA_USERNAME: ${{ secrets.ESIGNERCKA_USERNAME }}
           ESIGNERCKA_PASSWORD: ${{ secrets.ESIGNERCKA_PASSWORD }}
@@ -184,9 +179,9 @@ jobs:
 
       - name: <Deploy> Upload 7z archives to artifact
         if: github.event.inputs.upload_artifact == 'true'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: ${{ steps.vars.outputs.package_name }}
+          name: ${{ steps.vars.outputs.package_name }}-7z
           path: |
             ${{ steps.vars.outputs.package_name }}.7z.*
 
@@ -229,9 +224,9 @@ jobs:
 
       - name: <Deploy> Upload VVPP archives to artifact
         if: github.event.inputs.upload_artifact == 'true'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: ${{ steps.vars.outputs.package_name }}
+          name: ${{ steps.vars.outputs.package_name }}-vvpp
           path: |
             ${{ steps.vars.outputs.package_name }}.vvpp
             ${{ steps.vars.outputs.package_name }}*.vvppp
@@ -250,6 +245,14 @@ jobs:
             ${{ steps.vars.outputs.package_name }}*.vvppp,
             ${{ steps.vars.outputs.package_name }}.vvpp.txt
           commit: ${{ github.sha }}
+
+      - name: <Deploy> Merge artifacts
+        if: github.event.inputs.upload_artifact == 'true'
+        uses: actions/upload-artifact/merge@v4
+        with:
+          name: ${{ steps.vars.outputs.package_name }}
+          pattern: ${{ steps.vars.outputs.package_name }}-*
+          delete-merged: true
 
   update-tag-to-current-commit:
     if: needs.config.outputs.version != ''
