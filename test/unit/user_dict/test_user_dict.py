@@ -1,4 +1,5 @@
 import json
+import sys
 from copy import deepcopy
 from pathlib import Path
 
@@ -297,31 +298,33 @@ def test_import_invalid_word(tmp_path: Path) -> None:
         )
 
 
-def test_update_dict(tmp_path: Path) -> None:
-    user_dict_path = tmp_path / "test_update_dict.json"
-    compiled_dict_path = tmp_path / "test_update_dict.dic"
-    user_dict = UserDictionary(
-        user_dict_path=user_dict_path, compiled_dict_path=compiled_dict_path
-    )
-    user_dict.update_dict()
-    test_text = "テスト用の文字列"
-    success_pronunciation = "デフォルトノジショデハゼッタイニセイセイサレナイヨミ"
-
-    # 既に辞書に登録されていないか確認する
-    assert g2p(text=test_text, kana=True) != success_pronunciation
-
-    user_dict.apply_word(
-        WordProperty(
-            surface=test_text,
-            pronunciation=success_pronunciation,
-            accent_type=1,
-            priority=10,
+# Windows では pytest 下での辞書の更新ができないためテストをスキップする
+if sys.platform != "win32":
+    def test_update_dict(tmp_path: Path) -> None:
+        user_dict_path = tmp_path / "test_update_dict.json"
+        compiled_dict_path = tmp_path / "test_update_dict.dic"
+        user_dict = UserDictionary(
+            user_dict_path=user_dict_path, compiled_dict_path=compiled_dict_path
         )
-    )
-    assert g2p(text=test_text, kana=True) == success_pronunciation
+        user_dict.update_dict()
+        test_text = "テスト用の文字列"
+        success_pronunciation = "デフォルトノジショデハゼッタイニセイセイサレナイヨミ"
 
-    # 疑似的にエンジンを再起動する
-    unset_user_dict()
-    user_dict.update_dict()
+        # 既に辞書に登録されていないか確認する
+        assert g2p(text=test_text, kana=True) != success_pronunciation
 
-    assert g2p(text=test_text, kana=True) == success_pronunciation
+        user_dict.apply_word(
+            WordProperty(
+                surface=test_text,
+                pronunciation=success_pronunciation,
+                accent_type=1,
+                priority=10,
+            )
+        )
+        assert g2p(text=test_text, kana=True) == success_pronunciation
+
+        # 疑似的にエンジンを再起動する
+        unset_user_dict()
+        user_dict.update_dict()
+
+        assert g2p(text=test_text, kana=True) == success_pronunciation
