@@ -59,6 +59,10 @@ class AivmManager:
         self.installed_aivm_dir = installed_aivm_dir
         self.installed_aivm_dir.mkdir(exist_ok=True)
 
+        # self.get_installed_aivm_infos() の実行結果のキャッシュ
+        # すべてのインストール済み音声合成モデルの情報が保持される
+        self._installed_aivm_infos: dict[str, AivmInfo] | None = None
+
         logger.info("Installed AIVM models:")
         for aivm_info in self.get_installed_aivm_infos().values():
             logger.info(f"- {aivm_info.manifest.name} ({aivm_info.manifest.uuid})")
@@ -205,15 +209,24 @@ class AivmManager:
             detail=f"スタイル {style_id} は存在しません。",
         )
 
-    def get_installed_aivm_infos(self) -> dict[str, AivmInfo]:
+    def get_installed_aivm_infos(self, force: bool = False) -> dict[str, AivmInfo]:
         """
         すべてのインストール済み音声合成モデルの情報を取得する
+
+        Parameters
+        ----------
+        force : bool, default False
+            強制的に再取得するかどうか
 
         Returns
         -------
         aivm_infos : dict[str, AivmInfo]
             インストール済み音声合成モデルの情報 (キー: AIVM ファイルの UUID, 値: AivmInfo)
         """
+
+        # 既に取得済みかつ再取得が強制されていない場合は高速化のためキャッシュを返す
+        if self._installed_aivm_infos is not None and not force:
+            return self._installed_aivm_infos
 
         # AIVM ファイルのインストール先ディレクトリ内に配置されている .aivm ファイルのパスを取得
         aivm_file_paths = glob.glob(str(self.installed_aivm_dir / "*.aivm"))
@@ -362,7 +375,9 @@ class AivmManager:
             aivm_infos[aivm_uuid] = aivm_info
 
         # 音声合成モデル名でソートしてから返す
-        return dict(sorted(aivm_infos.items(), key=lambda x: x[1].manifest.name))
+        # 実行結果はキャッシュとして保持する
+        self._installed_aivm_infos = dict(sorted(aivm_infos.items(), key=lambda x: x[1].manifest.name))  # fmt: skip
+        return self._installed_aivm_infos
 
     def install_aivm(self, file: BinaryIO) -> None:
         """
@@ -412,6 +427,9 @@ class AivmManager:
         with open(aivm_file_path, mode="wb") as f:
             f.write(file.read())
 
+        # すべてのインストール済み音声合成モデルの情報のキャッシュを再生成
+        self.get_installed_aivm_infos(force=True)
+
     def install_aivm_from_url(self, url: str) -> None:
         """
         指定された URL から音声合成モデルパッケージファイル (`.aivm`) をダウンロードしてインストールする
@@ -460,6 +478,9 @@ class AivmManager:
         ## AIVM ファイルのファイル名は必ずしも "(AIVM ファイルの UUID).aivm" になるとは限らないため、
         ## AivmInfo 内に格納されているファイルパスを使って削除する
         installed_aivm_infos[aivm_uuid].file_path.unlink()
+
+        # すべてのインストール済み音声合成モデルの情報のキャッシュを再生成
+        self.get_installed_aivm_infos(force=True)
 
     @staticmethod
     def local_style_id_to_style_id(local_style_id: int, speaker_uuid: str) -> StyleId:
