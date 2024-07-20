@@ -2,6 +2,7 @@
 
 import json
 import threading
+import sys
 from collections.abc import Callable
 from pathlib import Path
 from typing import Any, TypeVar
@@ -86,6 +87,8 @@ class UserDictionary:
         self._default_dict_dir_path = default_dict_dir_path
         self._user_dict_path = user_dict_path
         self._compiled_dict_path = compiled_dict_path
+        # pytest から実行されているかどうか
+        self._is_pytest = "pytest" in sys.argv[0] or "py.test" in sys.argv[0]
         self.update_dict()
 
     @mutex_wrapper(mutex_user_dict)
@@ -117,7 +120,12 @@ class UserDictionary:
             csv_text = ""
 
             # デフォルト辞書データの追加
-            default_dict_files = sorted(default_dict_dir_path.glob("*.csv"))
+            # pytest から実行されている場合は毎回全辞書を追加すると時間がかかりすぎるため、デフォルト辞書のみ追加する
+            if self._is_pytest:
+                default_dict_files = [default_dict_dir_path / "01_default.csv"]
+                logger.info("Using only default dictionary for pytest.")
+            else:
+                default_dict_files = sorted(default_dict_dir_path.glob("*.csv"))
             if len(default_dict_files) == 0:
                 logger.warning("Cannot find default dictionary.")
                 return
