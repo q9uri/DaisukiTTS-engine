@@ -1,8 +1,8 @@
 "ユーザー辞書関連の処理"
 
 import json
-import threading
 import sys
+import threading
 from collections.abc import Callable
 from pathlib import Path
 from typing import Any, TypeVar
