@@ -68,7 +68,7 @@ def generate_app(
     app = configure_global_exception_handlers(app)
 
     resource_manager = ResourceManager(is_development())
-    resource_manager.register_dir(character_info_dir)
+    # resource_manager.register_dir(character_info_dir)
 
     core_version_list = core_manager.versions()
 

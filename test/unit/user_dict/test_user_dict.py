@@ -300,6 +300,7 @@ def test_import_invalid_word(tmp_path: Path) -> None:
 
 # Windows では pytest 下での辞書の更新ができないためテストをスキップする
 if sys.platform != "win32":
+
     def test_update_dict(tmp_path: Path) -> None:
         user_dict_path = tmp_path / "test_update_dict.json"
         compiled_dict_path = tmp_path / "test_update_dict.dic"
