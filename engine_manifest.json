@@ -73,7 +73,7 @@
         "return_resource_url": {
             "type": "bool",
             "value": false,
-            "name": "speaker_info・singer_info のリソースを URL で返送"
+            "name": "キャラクター情報のリソースを URL で返送"
         }
     }
 }
