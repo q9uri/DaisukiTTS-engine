@@ -73,7 +73,7 @@ uvicorn = "^0.29.0"
 soundfile = "^0.12.1"
 pyyaml = "^6.0.1"
 pyworld-prebuilt = "^0.3.4.1"
-pyopenjtalk-dict = "^0.3.4.dev2"
+pyopenjtalk-plus = "^0.3.4.post3"
 semver = "^3.0.0"
 platformdirs = "^4.2.0"
 soxr = "^0.3.6"
@@ -84,7 +84,7 @@ httpx = "^0.27.0"
 # aivmlib は AIVM ファイルのメタデータ読み取りに必要
 aivmlib = { git = "https://x-access-token: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@github.com/Aivis-Project/aivmlib.git", rev = "ea71cdff9e76bc99ed19769aa06d41a7d63146bb" }
 # AivisSpeech-Engine にはカスタマイズされた Style-Bert-VITS2 が必要
-style-bert-vits2 = { git = "https://github.com/tsukumijima/Style-Bert-VITS2", rev = "2cdeaf782674616cadc5de81d993dea33f40337b" }
+style-bert-vits2 = { git = "https://github.com/tsukumijima/Style-Bert-VITS2", rev = "50352ce4dd0b7a28670b7305580aae08a666f2ef" }
 # アーキテクチャに応じて適切な PyTorch をインストール
 # ref: https://tech.layerx.co.jp/entry/2023/07/28/184937
 torch = [

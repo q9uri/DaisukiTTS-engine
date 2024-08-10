@@ -110,9 +110,10 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         # 音声合成に必要な BERT モデル・トークナイザーを読み込む
         ## 一度ロードすればプロセス内でグローバルに保持される
         logger.info("Loading BERT model and tokenizer...")
-        bert_model = bert_models.load_model(
+        bert_models.load_model(
             language=Languages.JP,
             pretrained_model_name_or_path="ku-nlp/deberta-v2-large-japanese-char-wwm",
+            device_map=self.device,
             cache_dir=str(self.BERT_MODEL_CACHE_DIR),
         )
         bert_models.load_tokenizer(
@@ -121,11 +122,6 @@ class StyleBertVITS2TTSEngine(TTSEngine):
             cache_dir=str(self.BERT_MODEL_CACHE_DIR),
         )
         logger.info("BERT model and tokenizer loaded.")
-
-        # 読み込んだ BERT モデルを CPU or GPU に移動
-        logger.info(f"Moving BERT model to {self.device.upper()}...")
-        bert_model.to(self.device)  # type: ignore
-        logger.info(f"BERT model moved to {self.device.upper()}.")
 
         # load_all_models が True の場合は全ての音声合成モデルをロードしておく
         if load_all_models is True:

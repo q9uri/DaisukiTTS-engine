@@ -125,6 +125,9 @@ def generate_licenses() -> list[License]:
             elif package_name == "sentencepiece":
                 text_url = "https://raw.githubusercontent.com/google/sentencepiece/v0.2.0/LICENSE"  # noqa: B950
                 license_json["LicenseText"] = get_license_text(text_url)
+            elif package_name == "sudachipy":
+                text_url = "https://raw.githubusercontent.com/WorksApplications/sudachi.rs/v0.6.8/LICENSE"  # noqa: B950
+                license_json["LicenseText"] = get_license_text(text_url)
             elif package_name == "tokenizers":
                 text_url = "https://raw.githubusercontent.com/huggingface/tokenizers/v0.19.1/LICENSE"  # noqa: B950
                 license_json["LicenseText"] = get_license_text(text_url)
