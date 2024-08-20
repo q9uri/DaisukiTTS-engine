@@ -54,13 +54,13 @@
     }
   },
   {
-    "accent": 1,
+    "accent": 4,
     "is_interrogative": false,
     "moras": [
       {
         "consonant": "h",
         "consonant_length": 2.19,
-        "pitch": 3.69,
+        "pitch": 3.56,
         "text": "ヒ",
         "vowel": "i",
         "vowel_length": 2.31
@@ -68,7 +68,7 @@
       {
         "consonant": "h",
         "consonant_length": 2.19,
-        "pitch": 4.06,
+        "pitch": 4.12,
         "text": "ホ",
         "vowel": "o",
         "vowel_length": 2.88
