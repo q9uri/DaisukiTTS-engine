@@ -444,13 +444,13 @@ colorama = {version = "*", markers = "platform_system == \"Windows\""}
 
 [[package]]
 name = "cmudict"
-version = "1.0.28"
+version = "1.0.29"
 description = "A versioned python wrapper package for The CMU Pronouncing Dictionary data files."
 optional = false
 python-versions = "<4.0,>=3.8"
 files = [
-    {file = "cmudict-1.0.28-py3-none-any.whl", hash = "sha256:9d22524ee1bd48bdd25f3e47cbf4b6cd04bfee6f121df0208b2216becc1dda10"},
-    {file = "cmudict-1.0.28.tar.gz", hash = "sha256:57bc4a0e209cbf1d3e32be6b7e2af0e619797b8f6ea6d23982d46e9d7f90ec61"},
+    {file = "cmudict-1.0.29-py3-none-any.whl", hash = "sha256:9f16385b9a99100dc754bd49879e28fff076632693ee2a876c7f4fe088a7e415"},
+    {file = "cmudict-1.0.29.tar.gz", hash = "sha256:da9527a6ed4e63d816d1665720dd9c91b956573030dead90a24f0af86c6475ca"},
 ]
 
 [package.dependencies]
@@ -1142,13 +1142,13 @@ license = ["ukkonen"]
 
 [[package]]
 name = "idna"
-version = "3.7"
+version = "3.8"
 description = "Internationalized Domain Names in Applications (IDNA)"
 optional = false
-python-versions = ">=3.5"
+python-versions = ">=3.6"
 files = [
-    {file = "idna-3.7-py3-none-any.whl", hash = "sha256:82fee1fc78add43492d3a1898bfa6d8a904cc97d8427f683ed8e798d07761aa0"},
-    {file = "idna-3.7.tar.gz", hash = "sha256:028ff3aadf0609c1fd278d8ea3089299412a7a8b9bd005dd08b9f8285bcb5cfc"},
+    {file = "idna-3.8-py3-none-any.whl", hash = "sha256:050b4e5baadcd44d760cedbd2b8e639f2ff89bbc7a5730fcc662954303377aac"},
+    {file = "idna-3.8.tar.gz", hash = "sha256:d838c2c0ed6fced7693d5e8ab8e734d5f8fda53a039c0164afb0b82e771e3603"},
 ]
 
 [[package]]
@@ -1172,18 +1172,22 @@ test = ["flufl.flake8", "importlib-resources (>=1.3)", "jaraco.test (>=5.4)", "p
 
 [[package]]
 name = "importlib-resources"
-version = "6.4.3"
+version = "6.4.4"
 description = "Read resources from Python packages"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "importlib_resources-6.4.3-py3-none-any.whl", hash = "sha256:2d6dfe3b9e055f72495c2085890837fc8c758984e209115c8792bddcb762cd93"},
-    {file = "importlib_resources-6.4.3.tar.gz", hash = "sha256:4a202b9b9d38563b46da59221d77bb73862ab5d79d461307bcb826d725448b98"},
+    {file = "importlib_resources-6.4.4-py3-none-any.whl", hash = "sha256:dda242603d1c9cd836c3368b1174ed74cb4049ecd209e7a1a0104620c18c5c11"},
+    {file = "importlib_resources-6.4.4.tar.gz", hash = "sha256:20600c8b7361938dc0bb2d5ec0297802e575df486f5a544fa414da65e13721f7"},
 ]
 
 [package.extras]
+check = ["pytest-checkdocs (>=2.4)", "pytest-ruff (>=0.2.1)"]
+cover = ["pytest-cov"]
 doc = ["furo", "jaraco.packaging (>=9.3)", "jaraco.tidelift (>=1.4)", "rst.linker (>=1.9)", "sphinx (>=3.5)", "sphinx-lint"]
-test = ["jaraco.test (>=5.4)", "pytest (>=6,!=8.1.*)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-enabler (>=2.2)", "pytest-mypy", "pytest-ruff (>=0.2.1)", "zipp (>=3.17)"]
+enabler = ["pytest-enabler (>=2.2)"]
+test = ["jaraco.test (>=5.4)", "pytest (>=6,!=8.1.*)", "zipp (>=3.17)"]
+type = ["pytest-mypy"]
 
 [[package]]
 name = "inflect"
@@ -2505,52 +2509,52 @@ setuptools = ">=42.0.0"
 
 [[package]]
 name = "pyopenjtalk-plus"
-version = "0.3.4.post3"
+version = "0.3.4.post4"
 description = "A Python wrapper for OpenJTalk with additional improvements"
 optional = false
 python-versions = "*"
 files = [
-    {file = "pyopenjtalk-plus-0.3.4.post3.tar.gz", hash = "sha256:a0ebf9867cb939ed556ca2702c35cb7431f2d72caccd46c1e9547ec5132a3dc3"},
-    {file = "pyopenjtalk_plus-0.3.4.post3-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:fc789a413a8e8a1a13aa6d046c021dd23975c24803306febb4316eb9e38702df"},
-    {file = "pyopenjtalk_plus-0.3.4.post3-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:2d50fc504df2ffedb51828daf683514ebdf5227bcc8c5729f888bc7a1d766773"},
-    {file = "pyopenjtalk_plus-0.3.4.post3-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:ee42e183726f0f182daa7cac5d35c9e851de8d867754cc483a86dcc426b1d237"},
-    {file = "pyopenjtalk_plus-0.3.4.post3-cp310-cp310-manylinux_2_12_i686.manylinux2010_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:8cfb34bdc124716e23e12c40ffa4013c51a458c3f1ba1568d12ebd209afa3bac"},
-    {file = "pyopenjtalk_plus-0.3.4.post3-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:530da76634b5fac1946b5c0d747d21f374daf3d4416017aa4e4c5fe4996acbb8"},
-    {file = "pyopenjtalk_plus-0.3.4.post3-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:16edbf5cd00285976286e118131ed0bd65b077ddc41de490980abedeb2d82576"},
-    {file = "pyopenjtalk_plus-0.3.4.post3-cp310-cp310-win32.whl", hash = "sha256:a3533634705bb09e629219052b37306437c4dafd0240a1e3c914baffa86aee28"},
-    {file = "pyopenjtalk_plus-0.3.4.post3-cp310-cp310-win_amd64.whl", hash = "sha256:ec3a4c47c165a09cfa76e2ed51b8eaecce8c1ccaad58973b771b93e644a4f922"},
-    {file = "pyopenjtalk_plus-0.3.4.post3-cp311-cp311-macosx_10_9_universal2.whl", hash = "sha256:efcd1bfdeaeb7d390e6513717dc259b811a9476f70ecad51168a0fed137eaea9"},
-    {file = "pyopenjtalk_plus-0.3.4.post3-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:70467235e83c41425e7d6a0e2a94edcfd7e68f4968807721b25e3d14ecb24651"},
-    {file = "pyopenjtalk_plus-0.3.4.post3-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:53819768c80354f5942d1256e96ed9a7e75eaa988289228a61a189adc51b0f71"},
-    {file = "pyopenjtalk_plus-0.3.4.post3-cp311-cp311-manylinux_2_12_i686.manylinux2010_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:16f16dec405c53957fbf0e16244dda276161c8059c96edee0faac8aa5a16c3a5"},
-    {file = "pyopenjtalk_plus-0.3.4.post3-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:23367033c94669b4594e0bd2d746684fb83cc3dfd0275c9d4bf98b15becdd5a2"},
-    {file = "pyopenjtalk_plus-0.3.4.post3-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:7e898b3ff2c996f37bc47b0733c575629d7a98933d30b125a7b2f5605f5d2054"},
-    {file = "pyopenjtalk_plus-0.3.4.post3-cp311-cp311-win32.whl", hash = "sha256:99b6bec025d9f81adb5d59d9c5fecf862f6958c2248955d00b7173efc6944e41"},
-    {file = "pyopenjtalk_plus-0.3.4.post3-cp311-cp311-win_amd64.whl", hash = "sha256:cd07349d01af3ed8824233139cb2aaa2e759058f96bfa70199cafc7786ea6352"},
-    {file = "pyopenjtalk_plus-0.3.4.post3-cp312-cp312-macosx_10_9_universal2.whl", hash = "sha256:2f1c46ba509ec9cbfc721ef8bb9d6d151bd91603cd0cfe9a753a3f25f7395b0c"},
-    {file = "pyopenjtalk_plus-0.3.4.post3-cp312-cp312-macosx_10_9_x86_64.whl", hash = "sha256:299e7c4b6fcf5a9ee72cfc3c776663aafbc73778e3e03d3811723d306acdd413"},
-    {file = "pyopenjtalk_plus-0.3.4.post3-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:871f31f6149df91fbbec0a5b7c4104e9e1f1537c4316f5ffa73e6dce6b32c7a8"},
-    {file = "pyopenjtalk_plus-0.3.4.post3-cp312-cp312-manylinux_2_12_i686.manylinux2010_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:39e5af52407c3e88a643f98c4d5b7b5bf14655b5e8ecf599294fd54317da445b"},
-    {file = "pyopenjtalk_plus-0.3.4.post3-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:7b6cf4836404a46e951739d8d4e225bba82340e38e8de25f9129f871629bdac7"},
-    {file = "pyopenjtalk_plus-0.3.4.post3-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:f2505805632fa4ab93cd5f1e0c0bb3ec1e82e674791ca1c293df6f5df9adf310"},
-    {file = "pyopenjtalk_plus-0.3.4.post3-cp312-cp312-win32.whl", hash = "sha256:20e6c094a31cfbe22dcf32b9ed170e2fcad1291b5f32ce1da8fb6eaabfdb3392"},
-    {file = "pyopenjtalk_plus-0.3.4.post3-cp312-cp312-win_amd64.whl", hash = "sha256:e311e00b96e5752fe2a05e251939e0ad7d87ad92cf12f2b502a3a7130d0918e5"},
-    {file = "pyopenjtalk_plus-0.3.4.post3-cp38-cp38-macosx_10_9_universal2.whl", hash = "sha256:7d8a1797dbd67da4ca6a574426f35ebd730c8f1c5ab093deab8b46f48c2ac9df"},
-    {file = "pyopenjtalk_plus-0.3.4.post3-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:241058814a079a3e0feeeff4fc7d0805c6888d7eab3c8a64949d26e0e65e3a0e"},
-    {file = "pyopenjtalk_plus-0.3.4.post3-cp38-cp38-macosx_11_0_arm64.whl", hash = "sha256:ec527e9a3dfd8308a980753ec938e21ea00f0b1c03077063011e3794d7b59016"},
-    {file = "pyopenjtalk_plus-0.3.4.post3-cp38-cp38-manylinux_2_12_i686.manylinux2010_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:8144042983aee6d2837414f1ba51cb53a19aae7af714c474eb62219111df6372"},
-    {file = "pyopenjtalk_plus-0.3.4.post3-cp38-cp38-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:b4614e13fd68755853966987c3bb2596e8dc073c3e247dd375135b268c74c045"},
-    {file = "pyopenjtalk_plus-0.3.4.post3-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:8165e4ab2a71b4c580f5ec8137c9d288247e88e1f7710716c214f0e598fe0ba4"},
-    {file = "pyopenjtalk_plus-0.3.4.post3-cp38-cp38-win32.whl", hash = "sha256:823bf4b175c1dfcf67f16cddde4cd0f4fb153ebc20259d9f4ea203fa936b88d0"},
-    {file = "pyopenjtalk_plus-0.3.4.post3-cp38-cp38-win_amd64.whl", hash = "sha256:2ed7711461be503d7b4def1129f7874caae18e652bba90855c418ba671e080d9"},
-    {file = "pyopenjtalk_plus-0.3.4.post3-cp39-cp39-macosx_10_9_universal2.whl", hash = "sha256:f616061517e73cacde47a7fe504d4956b350aa4d8afdefb0b888d6b6ab5e615c"},
-    {file = "pyopenjtalk_plus-0.3.4.post3-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:7400a8cd4f4033bc543c0cf82281c90d9ed214233ee618d619642973403a93da"},
-    {file = "pyopenjtalk_plus-0.3.4.post3-cp39-cp39-macosx_11_0_arm64.whl", hash = "sha256:5416b08cef11eb7f7dac4ea598d7afca882d9f1922eeabcdc9b16c02a60b4fb8"},
-    {file = "pyopenjtalk_plus-0.3.4.post3-cp39-cp39-manylinux_2_12_i686.manylinux2010_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:9dbe2b0d0e496725608cbb4e7793b0db02239ca1a52579faa9c863d603de1535"},
-    {file = "pyopenjtalk_plus-0.3.4.post3-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:7ef833f9dfea74dcf82249988aa1cfe1c2c784bc8c953d4f3be388de7f6691c4"},
-    {file = "pyopenjtalk_plus-0.3.4.post3-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:0e08e137e527b7e5698063be975540c62e7ed5a6aed9962822a0dc7fb68e66b8"},
-    {file = "pyopenjtalk_plus-0.3.4.post3-cp39-cp39-win32.whl", hash = "sha256:e925f408ecc9d51711b1582a2dff4b2bfaa1612d5f0b2f0f9efa61a442f032ba"},
-    {file = "pyopenjtalk_plus-0.3.4.post3-cp39-cp39-win_amd64.whl", hash = "sha256:64d26de10df5cf5fa29d0daca14fe8853ed13caf1e28c6d4dcd28914d0910473"},
+    {file = "pyopenjtalk-plus-0.3.4.post4.tar.gz", hash = "sha256:415de843ac31b77015751c57db241f169cc360c0640b7809b1c36ab4c78b16f9"},
+    {file = "pyopenjtalk_plus-0.3.4.post4-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:5475c45223fdfe3800d9dd7d4d6e8c33151f4edbeba9d6ff2e9a2697c8e2631e"},
+    {file = "pyopenjtalk_plus-0.3.4.post4-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:1467cec28bdc2f329e99430f08b987fe66718df805fc22a6f413171a061f875a"},
+    {file = "pyopenjtalk_plus-0.3.4.post4-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:b3b0962b9166c662497e57e6530852db7f0061320ef3613062cf4dc8cf765c12"},
+    {file = "pyopenjtalk_plus-0.3.4.post4-cp310-cp310-manylinux_2_12_i686.manylinux2010_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:c7bae3e63ba23c8172e2c00b6fa6f00890147e91413bd825c05f2400caf17ddc"},
+    {file = "pyopenjtalk_plus-0.3.4.post4-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:7d7e51fb564b1a43f24402ce60728a7069010f5d107b7caf01eed84520475a96"},
+    {file = "pyopenjtalk_plus-0.3.4.post4-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:ea5ca8fa6b5d7a8b96770bc3409f4c185ec8e1a5c8f6f4af5520525e2c87af2c"},
+    {file = "pyopenjtalk_plus-0.3.4.post4-cp310-cp310-win32.whl", hash = "sha256:865bd2741439e8a25b124c9a4d1e616d22bf673bedc633efcf98b429e90b5d6f"},
+    {file = "pyopenjtalk_plus-0.3.4.post4-cp310-cp310-win_amd64.whl", hash = "sha256:7ee4321414e62d0e3c3ae529138c09c9a54285362b47a10327da3c27f79d1307"},
+    {file = "pyopenjtalk_plus-0.3.4.post4-cp311-cp311-macosx_10_9_universal2.whl", hash = "sha256:ad4bd578850535210465d1af72fad33b20d78023d1976d951e7b9c48a6e3f0ea"},
+    {file = "pyopenjtalk_plus-0.3.4.post4-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:9911f3c43990572381e3c571872906ba2f4e562cb416a4dc217f8e1a8aed3d3e"},
+    {file = "pyopenjtalk_plus-0.3.4.post4-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:368df0dd93cc75ae1e5ef86b97e77edf2dd6220789de22a4c65fde0d22d33719"},
+    {file = "pyopenjtalk_plus-0.3.4.post4-cp311-cp311-manylinux_2_12_i686.manylinux2010_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:bb0e0cc12d6c9e60a5e54777994a4474733031b98e9590ee575a95629a81cea1"},
+    {file = "pyopenjtalk_plus-0.3.4.post4-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:52466478e13154447c736aebea922c9166c77bcaafca7abda5d01911c6c3cb69"},
+    {file = "pyopenjtalk_plus-0.3.4.post4-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:8d50db39bd8b27b988a8cefa6101182e93bcbb961b48ea3cd1edf830b72bd61c"},
+    {file = "pyopenjtalk_plus-0.3.4.post4-cp311-cp311-win32.whl", hash = "sha256:029f502708a56829913605a0764b45f36ab83182f7e62a536dd65820a56c91cc"},
+    {file = "pyopenjtalk_plus-0.3.4.post4-cp311-cp311-win_amd64.whl", hash = "sha256:ffeeb68c27caf78d205ab9e029aec07647707d78d5758a5403235594418cd062"},
+    {file = "pyopenjtalk_plus-0.3.4.post4-cp312-cp312-macosx_10_9_universal2.whl", hash = "sha256:92b55af80b85f0649550c466ca5bc4be4238e4bd97f4cae3b5097babb8f9a3d6"},
+    {file = "pyopenjtalk_plus-0.3.4.post4-cp312-cp312-macosx_10_9_x86_64.whl", hash = "sha256:05a34fdb1aa2bb0e45ec6b6f64e898bac087547d90478613a42bce047860365e"},
+    {file = "pyopenjtalk_plus-0.3.4.post4-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:8021d7f40c0f93879aaf9fd1b09ccb2167d2d422d4b490840103ee228367a5a1"},
+    {file = "pyopenjtalk_plus-0.3.4.post4-cp312-cp312-manylinux_2_12_i686.manylinux2010_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:2c3320da67b7ac43e98644de1fee0640eaeb595308ed540520e03bb0fbe01beb"},
+    {file = "pyopenjtalk_plus-0.3.4.post4-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:6d266e50ddc87b81f90f56ebc6323047702a4636c55b835fe43d322a13241eb8"},
+    {file = "pyopenjtalk_plus-0.3.4.post4-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:805f08bdc968773575498255e94db0629f145c73bf9d81bb1c6ea5206acafda5"},
+    {file = "pyopenjtalk_plus-0.3.4.post4-cp312-cp312-win32.whl", hash = "sha256:e06f4123804b2a930f08f71c55edd6078ce10f1d7e29987b4acf9cf592617a4b"},
+    {file = "pyopenjtalk_plus-0.3.4.post4-cp312-cp312-win_amd64.whl", hash = "sha256:38d2461b4d1215fbab59f705b71cc5b43b765a49e6d5d4ceeb86d8aaabc1680e"},
+    {file = "pyopenjtalk_plus-0.3.4.post4-cp38-cp38-macosx_10_9_universal2.whl", hash = "sha256:3dda45128deb81afdc81ce41e59b40b0864f3df0e4282783c8876827129556cd"},
+    {file = "pyopenjtalk_plus-0.3.4.post4-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:c89e6b031c7d391f726ac60d472f9022d099bd1236fb8f81951b60c23a707187"},
+    {file = "pyopenjtalk_plus-0.3.4.post4-cp38-cp38-macosx_11_0_arm64.whl", hash = "sha256:20ef8940c445fb172e7263b96c38f80e0c2aafcb6423d534e965b8ee909f4633"},
+    {file = "pyopenjtalk_plus-0.3.4.post4-cp38-cp38-manylinux_2_12_i686.manylinux2010_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:a3c1ee7f20bc3edb0604a26c9525be266b78ece2ca4921496ab3bf3d4a09b327"},
+    {file = "pyopenjtalk_plus-0.3.4.post4-cp38-cp38-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:96a5f7bdb896a7c5850c7cc5ff7f7e1bcb9d86e605451fdb45b3597332c6c5e1"},
+    {file = "pyopenjtalk_plus-0.3.4.post4-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:fb7022401a37609fa19a1be61e47c70fb1976c88b1005e60af4aa52cc9703dff"},
+    {file = "pyopenjtalk_plus-0.3.4.post4-cp38-cp38-win32.whl", hash = "sha256:0695b78130a64c4b3aa1d3539a08d0c32f5ceb39ce8c6e57a83cbe65a092ea40"},
+    {file = "pyopenjtalk_plus-0.3.4.post4-cp38-cp38-win_amd64.whl", hash = "sha256:8f55d7d2abd055961bbe401371952fee84b071bf44dbe6c520e39d1bf60ef58f"},
+    {file = "pyopenjtalk_plus-0.3.4.post4-cp39-cp39-macosx_10_9_universal2.whl", hash = "sha256:dd1c1f0d99608f303d1cfb1d7b170f19ada2128382ec91f10c68e4423b946761"},
+    {file = "pyopenjtalk_plus-0.3.4.post4-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:68546b2097cb08ca967ef50d23897c4f94c9ec928317192f811648affc379662"},
+    {file = "pyopenjtalk_plus-0.3.4.post4-cp39-cp39-macosx_11_0_arm64.whl", hash = "sha256:abaaceb22635317a117337b016c0dc705492eba101384a21baa797b5084e1534"},
+    {file = "pyopenjtalk_plus-0.3.4.post4-cp39-cp39-manylinux_2_12_i686.manylinux2010_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:bece4303628150a0b35565b3e2e8316f546c53cbd20243e1ca9ec42cf71e9ed9"},
+    {file = "pyopenjtalk_plus-0.3.4.post4-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:5295732817dd7f723d5473d122e5b10ba8597ba88e4eed9abdfb8972726da493"},
+    {file = "pyopenjtalk_plus-0.3.4.post4-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:6bc8f781b4dda168ceb7a4f84c8c5e1cacc16f9571a371c016c522e9fc2ee872"},
+    {file = "pyopenjtalk_plus-0.3.4.post4-cp39-cp39-win32.whl", hash = "sha256:16ab904d6c1b4135d6e4da9b1e9765f37c98303607a0a611f45a1a9815095e84"},
+    {file = "pyopenjtalk_plus-0.3.4.post4-cp39-cp39-win_amd64.whl", hash = "sha256:eddc26c0729f554c9ec7448f95af5bc80a97ad2823e2c9e77528d41981ed66ba"},
 ]
 
 [package.dependencies]
@@ -3277,13 +3281,13 @@ spdx = ["spdx-tools (>=0.8.2)"]
 
 [[package]]
 name = "safety-schemas"
-version = "0.0.4"
+version = "0.0.5"
 description = "Schemas for Safety tools"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "safety_schemas-0.0.4-py3-none-any.whl", hash = "sha256:b8b93e447bbffe62e4bd4364877f8ac0dc9688056911b2618d6f48773f9c9011"},
-    {file = "safety_schemas-0.0.4.tar.gz", hash = "sha256:5ec6a8e2a80620a829a9d236165cce9d9e864b0345345d1fc983397eb5d2ac65"},
+    {file = "safety_schemas-0.0.5-py3-none-any.whl", hash = "sha256:6ac9eb71e60f0d4e944597c01dd48d6d8cd3d467c94da4aba3702a05a3a6ab4f"},
+    {file = "safety_schemas-0.0.5.tar.gz", hash = "sha256:0de5fc9a53d4423644a8ce9a17a2e474714aa27e57f3506146e95a41710ff104"},
 ]
 
 [package.dependencies]
@@ -3552,13 +3556,13 @@ dev = ["hypothesis (>=6.70.0)", "pytest (>=7.1.0)"]
 
 [[package]]
 name = "syrupy"
-version = "4.6.4"
+version = "4.7.1"
 description = "Pytest Snapshot Test Utility"
 optional = false
 python-versions = ">=3.8.1"
 files = [
-    {file = "syrupy-4.6.4-py3-none-any.whl", hash = "sha256:5a0e47b187d32b58555b0de6d25bc7bb875e7d60c7a41bd2721f5d44975dcf85"},
-    {file = "syrupy-4.6.4.tar.gz", hash = "sha256:a6facc6a45f1cff598adacb030d9573ed62863521755abd5c5d6d665f848d6cc"},
+    {file = "syrupy-4.7.1-py3-none-any.whl", hash = "sha256:be002267a512a4bedddfae2e026c93df1ea928ae10baadc09640516923376d41"},
+    {file = "syrupy-4.7.1.tar.gz", hash = "sha256:f9d4485f3f27d0e5df6ed299cac6fa32eb40a441915d988e82be5a4bdda335c8"},
 ]
 
 [package.dependencies]
@@ -3924,13 +3928,13 @@ telegram = ["requests"]
 
 [[package]]
 name = "transformers"
-version = "4.44.1"
+version = "4.44.2"
 description = "State-of-the-art Machine Learning for JAX, PyTorch and TensorFlow"
 optional = false
 python-versions = ">=3.8.0"
 files = [
-    {file = "transformers-4.44.1-py3-none-any.whl", hash = "sha256:bd2642da18b4e6d29b135c17650cd7ca8e874f2d092d2eddd3ed6b71a93a155c"},
-    {file = "transformers-4.44.1.tar.gz", hash = "sha256:3b9a1a07ca65c665c7bf6109b7da76182184d10bb58d9ab14e6892e7b9e073a2"},
+    {file = "transformers-4.44.2-py3-none-any.whl", hash = "sha256:1c02c65e7bfa5e52a634aff3da52138b583fc6f263c1f28d547dc144ba3d412d"},
+    {file = "transformers-4.44.2.tar.gz", hash = "sha256:36aa17cc92ee154058e426d951684a2dab48751b35b49437896f898931270826"},
 ]
 
 [package.dependencies]
@@ -4263,4 +4267,4 @@ test = ["big-O", "importlib-resources", "jaraco.functools", "jaraco.itertools", 
 [metadata]
 lock-version = "2.0"
 python-versions = "~3.11"
-content-hash = "ba3bb68f0d160c66214742ff7b3e605d548780f063f01b25da24306de2824485"
+content-hash = "b451fc4dbde65522b4256df170e94dde8757f052f0f00406866511392c45c0f6"
