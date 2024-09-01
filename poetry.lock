@@ -3494,8 +3494,8 @@ transformers = "*"
 [package.source]
 type = "git"
 url = "https://github.com/tsukumijima/Style-Bert-VITS2"
-reference = "e487898a9f63ea1486536b5aeb102e464039d406"
-resolved_reference = "e487898a9f63ea1486536b5aeb102e464039d406"
+reference = "4e6d5b19c87bfcfdb52aab9e8901c3fe97ea6b79"
+resolved_reference = "4e6d5b19c87bfcfdb52aab9e8901c3fe97ea6b79"
 
 [[package]]
 name = "sudachidict-core"
@@ -4276,4 +4276,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.0"
 python-versions = "~3.11"
-content-hash = "3059420adb4937f1a500a82a0df56b746c0505cff9003523de845f0bdd242ede"
+content-hash = "d97814a4002368b8331017dbe2b699fe2ce0d2455aa3a6d2ad6ee20418ef3f11"
