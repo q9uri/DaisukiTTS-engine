@@ -20,7 +20,12 @@ from style_bert_vits2.constants import (
 from style_bert_vits2.logging import logger as style_bert_vits2_logger
 from style_bert_vits2.models.hyper_parameters import HyperParameters
 from style_bert_vits2.nlp import bert_models
+from style_bert_vits2.nlp.japanese.g2p import g2p
 from style_bert_vits2.nlp.japanese.g2p_utils import g2kata_tone, kata_tone2phone_tone
+from style_bert_vits2.nlp.japanese.mora_list import (
+    CONSONANTS,
+    MORA_PHONEMES_TO_MORA_KATA,
+)
 from style_bert_vits2.nlp.japanese.normalizer import normalize_text
 from style_bert_vits2.nlp.symbols import PUNCTUATIONS
 from style_bert_vits2.tts_model import TTSModel
@@ -32,7 +37,6 @@ from ..logging import logger
 from ..metas.Metas import StyleId
 from ..model import AudioQuery
 from ..tts_pipeline.model import AccentPhrase, Mora
-from ..tts_pipeline.mora_mapping import mora_kana_to_mora_phonemes
 from ..tts_pipeline.tts_engine import (
     TTSEngine,
     raw_wave_to_output_wave,
@@ -235,7 +239,7 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         継承元の TTSEngine.create_accent_phrases() をオーバーライドし、Style-Bert-VITS2 に適したアクセント句系列生成処理に差し替えている
 
         Style-Bert-VITS2 は同じ pyopenjtalk ベースの自然言語処理でありながら VOICEVOX ENGINE とアクセント関連の実装が異なるため、
-        VOICEVOX ENGINE 本来のアクセント句系列生成処理は利用せず、代わりに g2kana_tone() から取得したカタカナ化されたモーラと音高のリストから
+        VOICEVOX ENGINE 本来のアクセント句系列生成処理は利用せず、代わりに g2p() から取得したモーラ情報と音高のリストから
         擬似的にアクセント句系列 AccentPhrase を生成する形で実装している
         こうすることで、VOICEVOX ENGINE (pyopenjtalk) では一律削除されてしまう句読点や記号を保持した状態でアクセント句系列を生成できる
         VOICEVOX ENGINE と異なりスタイル ID に基づいてその音素長・モーラ音高を更新することは原理上不可能なため、
@@ -254,79 +258,140 @@ class StyleBertVITS2TTSEngine(TTSEngine):
             アクセント句系列
         """
 
+        def phone_tone2mora_tone(
+            phone_tone: list[tuple[str, int]]
+        ) -> list[tuple[Mora, int]]:
+            """
+            phone_tone の phone 部分を VOICEVOX ENGINE の Mora 型に変換する。ただし最初と最後の ("_", 0) は無視する。
+            style_bert_vits2.nlp.japanese.g2p_utils.phone_tone2kata_tone() をベースに改変したもの。
+
+            Args:
+                phone_tone: 音素と音高のリスト。
+
+            Returns:
+                カタカナと音高のリスト。
+            """
+
+            phone_tone = phone_tone[1:]  # 最初の("_", 0)を無視
+            phones = [phone for phone, _ in phone_tone]
+            tones = [tone for _, tone in phone_tone]
+            result: list[tuple[Mora, int]] = []
+            current_consonant: str | None = None
+            for phone, _, tone, next_tone in zip(phones, phones[1:], tones, tones[1:]):
+                # zip の関係で最後の ("_", 0) は無視されている
+                # "!", "?", "…", ",", ".", "'", "-" の場合
+                if phone in PUNCTUATIONS:
+                    # VOICEVOX ENGINE の Mora に変換
+                    mora = Mora(
+                        text=phone,  # 記号をそのままテキスト (カナ) とする
+                        consonant=None,
+                        consonant_length=None,  # AivisSpeech Engine では常にダミー値
+                        vowel="pau",  # VOICEVOX ENGINE では記号は pau として扱われる
+                        vowel_length=0.0,  # AivisSpeech Engine では常にダミー値
+                        pitch=0.0,  # AivisSpeech Engine では常にダミー値
+                    )
+                    result.append((mora, tone))
+                    continue
+                # n 以外の子音の場合
+                if phone in CONSONANTS:
+                    assert current_consonant is None, f"Unexpected {phone} after {current_consonant}"  # fmt: skip
+                    assert tone == next_tone, f"Unexpected {phone} tone {tone} != {next_tone}"  # fmt: skip
+                    # 現在の子音を保持しておく
+                    current_consonant = phone
+                # phone が母音もしくは「N」の場合
+                else:
+                    # 母音を取得
+                    current_vowel = phone
+                    # VOICEVOX ENGINE の Mora に変換
+                    mora = Mora(
+                        # 子音 (あれば) と母音を結合して取得した、対応するカタカナ表記のモーラを設定
+                        text=MORA_PHONEMES_TO_MORA_KATA[
+                            ("" if current_consonant is None else current_consonant)
+                            + current_vowel
+                        ],
+                        consonant=current_consonant,
+                        consonant_length=(
+                            None if current_consonant is None else 0.0
+                        ),  # AivisSpeech Engine では常にダミー値
+                        vowel=current_vowel,
+                        vowel_length=0.0,  # AivisSpeech Engine では常にダミー値
+                        pitch=0.0,  # AivisSpeech Engine では常にダミー値
+                    )
+                    result.append((mora, tone))
+                    current_consonant = None
+
+            return result
+
         # 入力テキストを Style-Bert-VITS2 の基準で正規化
         ## Style-Bert-VITS2 では「〜」などの伸ばす棒も長音記号として扱うため、normalize_text() でそれらを統一する
         normalized_text = normalize_text(text)
 
-        # g2p 処理を行い、テキストからカタカナ化されたモーラと音高 (0 or 1) のリストを取得
+        # g2p 処理を行い、テキストからモーラ情報と音高 (0 or 1) のリストを取得
         ## Style-Bert-VITS2 側では、pyopenjtalk_g2p_prosody() から取得したアクセント情報が含まれるモーラのリストを
-        ## モーラと音高のリストに変換し (句読点や記号は失われている) 、後付けで失われた句読点や記号のモーラを適切な位置に追加する形で実装されている
-        ## VOICEVOX ENGINE 側のアクセント句系列生成処理は使わない
-        kata_tone_list: list[tuple[str, int]] = g2kata_tone(normalized_text)
+        ## モーラ情報と音高のリストに変換し (句読点や記号は失われている) 、後付けで失われた句読点や記号のモーラを適切な位置に追加する形で実装されている
+        ## VOICEVOX ENGINE 側のアクセント句系列生成処理は微妙に互換性がないため使っていない
+        phones, tones, _ = g2p(normalized_text, use_jp_extra=True, raise_yomi_error=False)  # fmt: skip
+        mora_tone_list = phone_tone2mora_tone(list(zip(phones, tones)))
 
-        # kata_tone_list を、まず記号から通常のモーラに変わったタイミングで区切ってグループ化
+        # mora_tone_list を、まず記号から通常のモーラに変わったタイミングで区切ってグループ化
         # 通常のモーラから記号に変わったタイミングでは区切らない
         ## 例: 「...私は,,そう思うよ...?どうかな.」 -> [["..."], ["私", "は", ",", ","], ["そう", "思う", "よ", "...", "?"], ["どう", "か", "な", "."]]
-        kata_tone_groups: list[list[tuple[str, int]]] = []
-        current_group: list[tuple[str, int]] = []
-        for index, (kata, tone) in enumerate(kata_tone_list):
+        mora_tone_groups: list[list[tuple[Mora, int]]] = []
+        current_group: list[tuple[Mora, int]] = []
+        for index, (mora, tone) in enumerate(mora_tone_list):
             if index == 0 or (
-                kata not in PUNCTUATIONS
-                and kata_tone_list[index - 1][0] in PUNCTUATIONS
+                mora.text not in PUNCTUATIONS
+                and mora_tone_list[index - 1][0].text in PUNCTUATIONS
             ):
                 if current_group:
-                    kata_tone_groups.append(current_group)
+                    mora_tone_groups.append(current_group)
                     current_group = []
-                current_group.append((kata, tone))
+                current_group.append((mora, tone))
             else:
-                current_group.append((kata, tone))
-        if current_group:
-            kata_tone_groups.append(current_group)
+                current_group.append((mora, tone))
+        if current_group:  # 最後のグループがあれば追加
+            mora_tone_groups.append(current_group)
 
         # さらにグループごとに、アクセントが変わるタイミングで区切って再グループ化
         # 音高が 前: 1, 現在: 0, 次: 1 の場合、前と現在の間で区切る
         # 音高が 前: 0, 現在: 0, 次: 1 の場合、前と現在の間で区切る
-        re_grouped_kata_tone_groups: list[list[list[tuple[str, int]]]] = []
-        for group in kata_tone_groups:
-            re_grouped_group: list[list[tuple[str, int]]] = []
-            current_group: list[tuple[str, int]] = []
-            for index, (kata, tone) in enumerate(group):
+        re_grouped_mora_tone_groups: list[list[list[tuple[Mora, int]]]] = []
+        for group in mora_tone_groups:
+            re_grouped_group: list[list[tuple[Mora, int]]] = []
+            current_re_group: list[tuple[Mora, int]] = []
+            for index, (mora, tone) in enumerate(group):
+                # 前の音高を取得 (最初のモーラの場合は None)
+                previous_tone = group[index - 1][1] if index > 0 else None
+                # 後続の音高を取得 (最後のモーラの場合は None)
+                next_tone = group[index + 1][1] if index < len(group) - 1 else None
                 # 音高が 前: 1, 現在: 0, 次: 1 の場合、前と現在の間で区切る
-                if (
-                    (index > 0 and group[index - 1][1] == 1)
-                    and (tone == 0)
-                    and (index < len(group) - 1 and group[index + 1][1] == 1)
-                ):
-                    re_grouped_group.append(current_group)
-                    current_group = [(kata, tone)]
+                if (previous_tone == 1) and (tone == 0) and (next_tone == 1):
+                    re_grouped_group.append(current_re_group)
+                    current_re_group = [(mora, tone)]
                 # 音高が 前: 0, 現在: 0, 次: 1 の場合、前と現在の間で区切る
-                elif (
-                    (index > 0 and group[index - 1][1] == 0)
-                    and (tone == 0)
-                    and (index < len(group) - 1 and group[index + 1][1] == 1)
-                ):
-                    re_grouped_group.append(current_group)
-                    current_group = [(kata, tone)]
+                elif (previous_tone == 0) and (tone == 0) and (next_tone == 1):
+                    re_grouped_group.append(current_re_group)
+                    current_re_group = [(mora, tone)]
                 # それ以外の場合はグループに追加
                 else:
-                    current_group.append((kata, tone))
-            if current_group:
-                re_grouped_group.append(current_group)
-            re_grouped_kata_tone_groups.append(re_grouped_group)
+                    current_re_group.append((mora, tone))
+            if current_re_group:  # 最後のグループがあれば追加
+                re_grouped_group.append(current_re_group)
+            re_grouped_mora_tone_groups.append(re_grouped_group)
 
         # グループのグループのようにネスト構造になっているので、flatten する
-        kata_tone_groups = [
-            item for sublist in re_grouped_kata_tone_groups for item in sublist
+        mora_tone_groups = [
+            item for sublist in re_grouped_mora_tone_groups for item in sublist
         ]
 
-        # kata_tone_groups を AccentPhrase に変換
+        # mora_tone_groups を AccentPhrase に変換
         accent_phrases: list[AccentPhrase] = []
-        for group in kata_tone_groups:
+        for group in mora_tone_groups:
 
             # グループ内で次のモーラで音高が 1 から 0 に下がるモーラをアクセント核のインデックスとする
             # 1-indexed なので 1 から始まるインデックスに変換
             accent_index = None
-            for index, (kata, tone) in enumerate(group):
+            for index, (mora, tone) in enumerate(group):
                 if tone == 1 and index < len(group) - 1 and group[index + 1][1] == 0:
                     accent_index = index + 1
                     break
@@ -335,34 +400,15 @@ class StyleBertVITS2TTSEngine(TTSEngine):
             if accent_index is None:
                 accent_index = len(group)
 
-            # グループ内のカタカナ化されたモーラを Mora に変換
+            # グループ内のモーラをリストに変換
             moras: list[Mora] = []
-            for kata, _ in group:
-                # 記号の場合
-                if kata in PUNCTUATIONS:
-                    consonant = None
-                    vowel = "pau"  # VOICEVOX ENGINE では記号は pau として扱われる
-                # 通常のモーラの場合
-                else:
-                    # モーラのカタカナ表記と音素の対応表から対応する音素を取得
-                    ## mora_kana_to_mora_phonemes には Style-Bert-VITS2 のではなく VOICEVOX ENGINE のを使うのが大変重要
-                    ## Style-Bert-VITS2 の mora_list は VOICEVOX ENGINE のコードが若干改変された上で利用されているが、
-                    ## 一部音素の記述表現が異なる (例えば "ッ" (促音) が Style-Bert-VITS2 版では cl から q に変わっている) ため、
-                    ## 後述の update_length_and_pitch() 実行時に失敗しうる
-                    ## どのみち音声合成時にこの値は利用されないが、互換性向上のため VOICEVOX ENGINE のを使っている
-                    consonant, vowel = mora_kana_to_mora_phonemes[kata]  # type: ignore
-                moras.append(
-                    Mora(
-                        text=kata,
-                        consonant=consonant,
-                        consonant_length=(
-                            None if consonant is None else 0.0
-                        ),  # AivisSpeech Engine では常にダミー値
-                        vowel=vowel,
-                        vowel_length=0.0,  # AivisSpeech Engine では常にダミー値
-                        pitch=0.0,  # AivisSpeech Engine では常にダミー値
-                    )
-                )
+            for mora, _ in group:
+                # Style-Bert-VITS2 にある mora_list.py では VOICEVOX ENGINE のコードが若干改変された上で利用されているが、
+                # "ッ" (促音) が Style-Bert-VITS2 版では cl から q に変わっているため、後述の update_length_and_pitch() 実行時に失敗しうる
+                # これより前のコードで既に子音/母音が必要な処理は終えているため、ここで VOICEVOX ENGINE 向けに q を cl に修正する
+                if mora.vowel == "q":
+                    mora.vowel = "cl"
+                moras.append(mora)
 
             # アクセント句を生成
             accent_phrases.append(
