@@ -45,20 +45,20 @@ AudioQuery 型は、テキストや音素列を指定して音声合成を行う
 Mora 型は、音声合成時に反映されるモーラを表すデータ構造です。  
 AudioQuery.accent_phrases 内に含まれますが、Mora 型単独で API リクエスト・レスポンスに使われることはありません。
 
-変更点の詳細は、[model.py](./voicevox_engine/tts_pipeline/model.py) を参照してください。
+変更点の詳細は、[tts_pipeline/model.py](./voicevox_engine/tts_pipeline/model.py) を参照してください。
 
 #### Preset 型の仕様変更
 
 Preset 型は、エディタ側で音声合成クエリの初期値を決定するためのプリセット情報です。
 
-変更点の詳細は、[preset.py](./voicevox_engine/preset/model.py) を参照してください。
+変更点の詳細は、[preset/model.py](./voicevox_engine/preset/model.py) を参照してください。
 
 #### **AivisSpeech Engine ではサポートされていない API エンドポイント**
 
 > [!WARNING]  
 > VOICEVOX ENGINE のソング系 API と、キャンセル可能音声合成 API はサポートされていません。  
 > 互換性のためエンドポイントとして存在はしますが、常に `501 Not Implemented` を返します。  
-> 詳細は [character.py](./voicevox_engine/app/routers/character.py), [tts_pipeline.py](./voicevox_engine/app/routers/tts_pipeline.py) を確認してください。
+> 詳細は [app/routers/character.py](./voicevox_engine/app/routers/character.py) / [app/routers/tts_pipeline.py](./voicevox_engine/app/routers/tts_pipeline.py) を確認してください。
 
   - GET `/singers`
   - GET `/singer_info`
@@ -71,7 +71,7 @@ Preset 型は、エディタ側で音声合成クエリの初期値を決定す�
 
 > [!WARNING]  
 > 互換性のためパラメータとして存在はしますが、常に無視されます。  
-> 詳細は [character.py](./voicevox_engine/app/routers/character.py), [tts_pipeline.py](./voicevox_engine/app/routers/tts_pipeline.py) を確認してください。
+> 詳細は [app/routers/character.py](./voicevox_engine/app/routers/character.py) / [app/routers/tts_pipeline.py](./voicevox_engine/app/routers/tts_pipeline.py) を確認してください。
 
 - `core_version` パラメータ
   - VOICEVOX CORE のバージョンを指定するパラメータです。
@@ -80,6 +80,20 @@ Preset 型は、エディタ側で音声合成クエリの初期値を決定す�
   - 疑問系のテキストが与えられたら語尾を自動調整するかのパラメータです。
   - AivisSpeech Engine では、常に「！」「？」「…」「〜」などのテキストに含まれる記号に対応した、自然な抑揚で読み上げられます。
   - したがって、`どうですか…？` のように読み上げテキストの末尾に「？」を付与するだけで、疑問系の抑揚で読み上げることができます。
+
+## 音声合成 API の利用
+
+以下のワンライナーを実行すると、`audio.wav` に音声合成した WAV ファイルが出力されます。
+
+事前に AivisSpeech Engine が起動していて、かつログに表示される `User Data Directory:` 以下にある `aivm_models` ディレクトリに、AIVM 音声合成モデルが格納されていることが前提です。
+
+```bash
+STYLE_ID=(音声合成対象のスタイル ID 、別途 /speakers API から取得が必要) && \
+echo -n "こんにちは、音声合成の世界へようこそ！" > text.txt && \
+curl -s -X POST "127.0.0.1:10101/audio_query?speaker=$STYLE_ID" --get --data-urlencode text@text.txt > query.json && \
+curl -s -H "Content-Type: application/json" -X POST -d @query.json "127.0.0.1:10101/synthesis?speaker=$STYLE_ID" > audio.wav && \
+rm text.txt query.json
+```
 
 ## 開発方針
 
@@ -152,20 +166,6 @@ poetry run task update-licenses
 
 # AivisSpeech Engine をビルド
 poetry run task build
-```
-
-## 音声合成 API の利用
-
-以下のワンライナーを実行すると、`audio.wav` に音声合成した WAV ファイルが出力されます。
-
-事前に AivisSpeech Engine が起動していて、かつログに表示される `User Data Directory:` 以下にある `aivm_models` ディレクトリに、AIVM 音声合成モデルが格納されていることが前提です。
-
-```bash
-STYLE_ID=(音声合成対象のスタイル ID 、別途 API から取得する必要がある) && \
-echo -n "こんにちは、音声合成の世界へようこそ！" > text.txt && \
-curl -s -X POST "127.0.0.1:10101/audio_query?speaker=$STYLE_ID" --get --data-urlencode text@text.txt > query.json && \
-curl -s -H "Content-Type: application/json" -X POST -d @query.json "127.0.0.1:10101/synthesis?speaker=$STYLE_ID" > audio.wav && \
-rm text.txt query.json
 ```
 
 -----
