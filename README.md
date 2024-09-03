@@ -60,12 +60,12 @@ Preset 型は、エディタ側で音声合成クエリの初期値を決定す�
 > 互換性のためエンドポイントとして存在はしますが、常に `501 Not Implemented` を返します。  
 > 詳細は [app/routers/character.py](./voicevox_engine/app/routers/character.py) / [app/routers/tts_pipeline.py](./voicevox_engine/app/routers/tts_pipeline.py) を確認してください。
 
-  - GET `/singers`
-  - GET `/singer_info`
-  - POST `/cancellable_synthesis`
-  - POST `/sing_frame_audio_query`
-  - POST `/sing_frame_volume`
-  - POST `/frame_synthesis`
+  - **GET `/singers`**
+  - **GET `/singer_info`**
+  - **POST `/cancellable_synthesis`**
+  - **POST `/sing_frame_audio_query`**
+  - **POST `/sing_frame_volume`**
+  - **POST `/frame_synthesis`**
 
 #### **AivisSpeech Engine ではサポートされていない API パラメータ**
 
@@ -73,10 +73,10 @@ Preset 型は、エディタ側で音声合成クエリの初期値を決定す�
 > 互換性のためパラメータとして存在はしますが、常に無視されます。  
 > 詳細は [app/routers/character.py](./voicevox_engine/app/routers/character.py) / [app/routers/tts_pipeline.py](./voicevox_engine/app/routers/tts_pipeline.py) を確認してください。
 
-- `core_version` パラメータ
+- **`core_version` パラメータ**
   - VOICEVOX CORE のバージョンを指定するパラメータです。
   - AivisSpeech Engine では VOICEVOX CORE に対応するコンポーネントがないため、常に無視されます。
-- `enable_interrogative_upspeak` パラメータ
+- **`enable_interrogative_upspeak` パラメータ**
   - 疑問系のテキストが与えられたら語尾を自動調整するかのパラメータです。
   - AivisSpeech Engine では、常に「！」「？」「…」「〜」などのテキストに含まれる記号に対応した、自然な抑揚で読み上げられます。
   - したがって、`どうですか…？` のように読み上げテキストの末尾に「？」を付与するだけで、疑問系の抑揚で読み上げることができます。
