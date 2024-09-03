@@ -4,15 +4,25 @@
 💠 **AivisSpeech Engine:** **AI** **V**oice **I**mitation **S**ystem - Text to **Speech** **Engine**
 
 AivisSpeech Engine は、[VOICEVOX ENGINE](https://github.com/VOICEVOX/voicevox_engine) をベースにした、日本語音声合成エンジンです。  
-日本語音声合成ソフトウェアの [AivisSpeech](https://github.com/Aivis-Project/AivisSpeech-Engine) に組み込まれており、簡単にとても抑揚豊かな音声を生成できます。  
+日本語音声合成ソフトウェアの [AivisSpeech](https://github.com/Aivis-Project/AivisSpeech) に組み込まれており、簡単にとても抑揚豊かな音声を生成できます。  
 
 ## サポートされている音声合成モデル
 
 **[AIVM](https://github.com/Aivis-Project/aivmlib)** (**Ai**vis **V**oice **M**odel) 形式の音声合成モデルファイルに対応しています。  
 AivisSpeech Engine では、以下のモデルアーキテクチャの AIVM 音声合成モデルを利用できます。
 
-- Style-Bert-VITS2
-- Style-Bert-VITS2 (JP-Extra)
+- `Style-Bert-VITS2`
+- `Style-Bert-VITS2 (JP-Extra)`
+
+各 OS ごとの、AIVM ファイルの配置先フォルダパスは次のとおりです。  
+起動直後のログに表示される `User Data Directory:` 以下の `aivm_models` から、実際のフォルダパスを確認できます。
+
+- **Windows:** `C:\Users\(ユーザー名)\AppData\Roaming\AivisSpeech-Engine\aivm_models`
+- **macOS:** `~/Library/Application Support/AivisSpeech-Engine/aivm_models`
+- **Linux:** `~/.local/share/AivisSpeech-Engine/aivm_models`
+
+> [!IMPORTANT]
+> (PyInstaller で実行ファイル化されていない) 開発版の AivisSpeech Engine のユーザーデータフォルダは、`AivisSpeech-Engine-Dev` 以下になります。
 
 > [!TIP]  
 > [AIVM Generator](https://aivm-generator.aivis-project.com/) を使うと、既存の音声合成モデルから AIVM ファイルを生成したり、既存の AIVM ファイルのメタデータを編集できます。
@@ -21,10 +31,10 @@ AivisSpeech Engine では、以下のモデルアーキテクチャの AIVM 音�
 
 概ね VOICEVOX ENGINE の API と互換性があります。
 
-VOICEVOX ENGINE の API に対応したソフトウェアであれば、API URL を `http://127.0.0.1:10101` に差し替えるだけで、AivisSpeech Engine に対応できるはずです。
+VOICEVOX ENGINE の API に対応したソフトウェアであれば、**API URL を `http://127.0.0.1:10101` に差し替えるだけで、AivisSpeech Engine に対応できるはずです。**
 
 > [!IMPORTANT]  
-> ただし、API クライアント側で `/audio_query` API から取得した `AudioQuery` の内容を編集してから `/synthesis` API に渡している場合は、正常に音声合成ができない可能性があります (後述) 。
+> **ただし、API クライアント側で `/audio_query` API から取得した `AudioQuery` の内容を編集してから `/synthesis` API に渡している場合は、仕様差異により正常に音声合成できない場合があります (後述) 。**
 
 ### VOICEVOX ENGINE からの変更点
 
@@ -32,31 +42,38 @@ VOICEVOX ENGINE からの API 仕様の変更点は次のとおりです。
 
 > [!NOTE]  
 > 一般的な API ユースケースにおいては概ね互換性があるはずですが、根本的に異なるモデルアーキテクチャの音声合成システムを強引に同一 API 仕様に収めている関係で、下記以外にも互換性のない API があるかもしれません。  
-Issue にて報告頂ければ、互換性改善が可能なものに関しては修正いたします。
+> Issue にて報告頂ければ、互換性改善が可能なものに関しては修正いたします。
 
-#### AudioQuery 型の仕様変更
+#### AivisSpeech Engine におけるスタイル ID
 
-AudioQuery 型は、テキストや音素列を指定して音声合成を行うためのクエリです。
+TODO...
+
+#### **`AudioQuery` 型の仕様変更**
+
+`AudioQuery` 型は、テキストや音素列を指定して音声合成を行うためのクエリです。
 
 変更点の詳細は、[model.py](./voicevox_engine/model.py) を参照してください。
 
-#### Mora 型の仕様変更
+#### `Mora` 型の仕様変更
 
-Mora 型は、音声合成時に反映されるモーラを表すデータ構造です。  
-AudioQuery.accent_phrases 内に含まれますが、Mora 型単独で API リクエスト・レスポンスに使われることはありません。
+`Mora` 型は、読み上げテキストのモーラを表すデータ構造です。
+
+> [!TIP]  
+> モーラとは、実際に発音される際の音のまとまりの最小単位（「あ」「か」「を」など）のことです。  
+> `Mora` 型単独で API リクエスト・レスポンスに使われることはなく、常に `AudioQuery.accent_phrases[n].moras` または `AudioQuery.accent_phrases[n].pause_mora` を通して間接的に利用されます。
 
 変更点の詳細は、[tts_pipeline/model.py](./voicevox_engine/tts_pipeline/model.py) を参照してください。
 
-#### Preset 型の仕様変更
+#### `Preset` 型の仕様変更
 
-Preset 型は、エディタ側で音声合成クエリの初期値を決定するためのプリセット情報です。
+`Preset` 型は、エディタ側で音声合成クエリの初期値を決定するためのプリセット情報です。
 
 変更点の詳細は、[preset/model.py](./voicevox_engine/preset/model.py) を参照してください。
 
 #### **AivisSpeech Engine ではサポートされていない API エンドポイント**
 
 > [!WARNING]  
-> VOICEVOX ENGINE のソング系 API と、キャンセル可能音声合成 API はサポートされていません。  
+> 歌声合成系 API と、キャンセル可能な音声合成 API はサポートされていません。  
 > 互換性のためエンドポイントとして存在はしますが、常に `501 Not Implemented` を返します。  
 > 詳細は [app/routers/character.py](./voicevox_engine/app/routers/character.py) / [app/routers/tts_pipeline.py](./voicevox_engine/app/routers/tts_pipeline.py) を確認してください。
 
@@ -83,9 +100,10 @@ Preset 型は、エディタ側で音声合成クエリの初期値を決定す�
 
 ## 音声合成 API の利用
 
-以下のワンライナーを実行すると、`audio.wav` に音声合成した WAV ファイルが出力されます。
+Bash で以下のワンライナーを実行すると、`audio.wav` に音声合成した WAV ファイルが出力されます。
 
-事前に AivisSpeech Engine が起動していて、かつログに表示される `User Data Directory:` 以下にある `aivm_models` ディレクトリに、AIVM 音声合成モデルが格納されていることが前提です。
+> [!IMPORTANT]  
+> 事前に AivisSpeech Engine が起動していて、かつログに表示される `User Data Directory:` 以下にある `aivm_models` ディレクトリに、スタイル ID に対応する AIVM 音声合成モデルが格納されていることが前提です。
 
 ```bash
 STYLE_ID=(音声合成対象のスタイル ID 、別途 /speakers API から取得が必要) && \
