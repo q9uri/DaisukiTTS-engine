@@ -537,6 +537,9 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         if text != "":
             # 事前にカタカナ表記でない音素と音高のリストに変換するのが大変重要
             ## これをやらないと InvalidToneError が発生する
+            ## Mora.consonant / Mora.vowel に入れられた子音/母音は VOICEVOX ENGINE 互換の表現で Style-Bert-VITS2 とは
+            ## 微妙に異なるため採用せず、常に Mora.text に記載のカタカナのみから音素と音高を取得する
+            ## VOICEVOX ENGINE 互換にする際に記号モーラの Mora.vowel が "pau" に統一されてしまう兼ね合いもある
             phone_tone_list = kata_tone2phone_tone(kata_tone_list)
             given_phone_list = [phone for phone, _ in phone_tone_list]
             given_tone_list = [tone for _, tone in phone_tone_list]
@@ -685,7 +688,7 @@ def _phone_tone2mora_tone(phone_tone: list[tuple[str, int]]) -> list[tuple[Mora,
     current_consonant: str | None = None
     for phone, _, tone, next_tone in zip(phones, phones[1:], tones, tones[1:]):
         # zip の関係で最後の ("_", 0) は無視されている
-        # "!", "?", "…", ",", ".", "'", "-" の場合
+        # 記号モーラの場合
         if phone in PUNCTUATIONS:
             # VOICEVOX ENGINE の Mora に変換
             mora = Mora(
@@ -754,7 +757,7 @@ def _sep_kata_with_joshi2sep_phonemes_with_joshi(
         # モーラごとに子音と母音に分割
         sep_phonemes_with_joshi_element: list[tuple[str | None, str]] = []
         for mora in moras:
-            # "!", "?", "…", ",", ".", "'", "-" の場合は単独で追加
+            # 記号モーラの場合は単独で追加
             if mora in PUNCTUATIONS:
                 sep_phonemes_with_joshi_element.append((None, mora))
             # $ が含まれていれば子音と母音に分割
