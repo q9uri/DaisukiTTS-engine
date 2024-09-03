@@ -4,7 +4,60 @@
 💠 **AivisSpeech Engine:** **AI** **V**oice **I**mitation **S**ystem - Text to **Speech** **Engine**
 
 AivisSpeech Engine は、[VOICEVOX ENGINE](https://github.com/VOICEVOX/voicevox_engine) をベースにした、日本語音声合成エンジンです。  
-日本語音声合成ソフトウェアの [AivisSpeech](https://github.com/Aivis-Project/AivisSpeech-Engine) に組み込まれており、簡単にとても抑揚豊かな音声を生成できます。
+日本語音声合成ソフトウェアの [AivisSpeech](https://github.com/Aivis-Project/AivisSpeech-Engine) に組み込まれており、簡単にとても抑揚豊かな音声を生成できます。  
+
+## 対応音声合成モデル形式
+
+**[AIVM](https://github.com/Aivis-Project/aivmlib)** (**Ai**vis **V**oice **M**odel) 形式の音声合成モデルファイルに対応しています。  
+AivisSpeech Engine では、以下のモデルアーキテクチャの AIVM 音声合成モデルを利用できます。
+
+- Style-Bert-VITS2
+- Style-Bert-VITS2 (JP-Extra)
+
+> [!TIP]  
+> [AIVM Generator](https://aivm-generator.aivis-project.com/) を使うと、既存の音声合成モデルから AIVM ファイルを生成したり、既存の AIVM ファイルのメタデータを編集できます。
+
+## API 互換性
+
+概ね VOICEVOX ENGINE の API と互換性があります。
+
+VOICEVOX ENGINE の API に対応したソフトウェアであれば、API URL を `http://127.0.0.1:10101` に差し替えるだけで、AivisSpeech Engine に対応できるはずです。
+
+> [!IMPORTANT]  
+> ただし、API クライアント側で `/audio_query` API から取得した `AudioQuery` の内容を編集してから `/synthesis` API に渡している場合は、正常に音声合成ができない可能性があります (後述) 。
+
+### VOICEVOX ENGINE からの変更点
+
+VOICEVOX ENGINE からの API 仕様の変更点は次のとおりです。
+
+> [!NOTE]  
+> 一般的な API ユースケースにおいては概ね互換性があるはずですが、根本的に異なるモデルアーキテクチャの音声合成システムを強引に同一 API 仕様に収めている関係で、下記以外にも互換性のない API があるかもしれません。  
+Issue にて報告頂ければ、互換性改善が可能なものに関しては修正いたします。
+
+- **AivisSpeech Engine ではサポートされていない API**  
+  VOICEVOX ENGINE の API に実装されているが、AivisSpeech Engine ではサポートされていない API のリストです。  
+  VOICEVOX ENGINE のソング系 API と、キャンセル可能音声合成 API はサポートされていません。  
+  互換性のためエンドポイントとして存在はしますが、常に `501 Not Implemented` を返します。  
+  詳細は [character.py](./voicevox_engine/app/routers/character.py), [tts_pipeline.py](./voicevox_engine/app/routers/tts_pipeline.py) を確認してください。
+  - GET `/singers`
+  - GET `/singer_info`
+  - POST `/cancellable_synthesis`
+  - POST `/sing_frame_audio_query`
+  - POST `/sing_frame_volume`
+  - POST `/frame_synthesis`
+- **AivisSpeech Engine ではサポートされていない API パラメータ**  
+  VOICEVOX ENGINE の API に実装されているが、AivisSpeech Engine ではサポートされていない API パラメータのリストです。  
+  互換性のためパラメータとしては存在しますが、常に無視されます。  
+  詳細は [character.py](./voicevox_engine/app/routers/character.py), [tts_pipeline.py](./voicevox_engine/app/routers/tts_pipeline.py) を確認してください。
+  - `core_version` パラメータ
+    - VOICEVOX CORE のバージョンを指定するパラメータです。  
+      AivisSpeech Engine では VOICEVOX CORE に対応するコンポーネントがないため、常に無視されます。
+  - `enable_interrogative_upspeak` パラメータ
+    - 疑問系のテキストが与えられたら語尾を自動調整するかのパラメータです。  
+      AivisSpeech Engine では、常に「！」「？」「…」「〜」などのテキストに含まれる記号に対応する自然な抑揚で読み上げられます。
+
+
+
 
 ## 開発方針
 
@@ -82,7 +135,8 @@ poetry run task build
 ## 音声合成 API の利用
 
 以下のワンライナーを実行すると、`audio.wav` に音声合成した WAV ファイルが出力されます。
-事前に AivisSpeech Engine が起動していて、かつログで提示される `User Data Directory:` 以下の `aivm_models` ディレクトリに AIVM 音声合成モデルが格納されていることが前提です。
+
+事前に AivisSpeech Engine が起動していて、かつログに表示される `User Data Directory:` 以下にある `aivm_models` ディレクトリに、AIVM 音声合成モデルが格納されていることが前提です。
 
 ```bash
 STYLE_ID=(音声合成対象のスタイル ID 、別途 API から取得する必要がある) && \
