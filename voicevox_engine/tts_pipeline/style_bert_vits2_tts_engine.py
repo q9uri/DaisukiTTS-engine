@@ -331,7 +331,7 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         ## モーラ情報と音高のリストに変換し (句読点や記号は失われている) 、後付けで失われた句読点や記号のモーラを適切な位置に追加する形で実装されている
         ## VOICEVOX ENGINE 側のアクセント句系列生成処理は微妙に互換性がないため使っていない
         ## VOICEVOX ENGINE では「ん」の音素を「N」としているので、use_jp_extra (「ん」の音素を「n」」とする) は常に False に設定している
-        phones, tones, _ = g2p(normalized_text, use_jp_extra=False, raise_yomi_error=False)  # fmt: skip
+        phones, tones, _, sep_kata_with_joshi = g2p(normalized_text, use_jp_extra=False, raise_yomi_error=False)  # fmt: skip
         mora_tone_list = phone_tone2mora_tone(list(zip(phones, tones)))
 
         # mora_tone_list を、まず記号から通常のモーラに変わったタイミングで区切ってグループ化
