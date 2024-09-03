@@ -34,7 +34,11 @@ VOICEVOX ENGINE からの API 仕様の変更点は次のとおりです。
 > 一般的な API ユースケースにおいては概ね互換性があるはずですが、根本的に異なるモデルアーキテクチャの音声合成システムを強引に同一 API 仕様に収めている関係で、下記以外にも互換性のない API があるかもしれません。  
 Issue にて報告頂ければ、互換性改善が可能なものに関しては修正いたします。
 
-### **AivisSpeech Engine ではサポートされていない API エンドポイント**  
+
+
+
+
+#### **AivisSpeech Engine ではサポートされていない API エンドポイント**  
 
 VOICEVOX ENGINE の API に実装されているが、AivisSpeech Engine ではサポートされていない API エンドポイントのリストです。  
 
@@ -50,7 +54,7 @@ VOICEVOX ENGINE の API に実装されているが、AivisSpeech Engine では�
   - POST `/sing_frame_volume`
   - POST `/frame_synthesis`
 
-### **AivisSpeech Engine ではサポートされていない API パラメータ**
+#### **AivisSpeech Engine ではサポートされていない API パラメータ**
 
 VOICEVOX ENGINE の API に実装されているが、AivisSpeech Engine ではサポートされていない API パラメータのリストです。
 
@@ -65,9 +69,6 @@ VOICEVOX ENGINE の API に実装されているが、AivisSpeech Engine では�
   - 疑問系のテキストが与えられたら語尾を自動調整するかのパラメータです。
   - AivisSpeech Engine では、常に「！」「？」「…」「〜」などのテキストに含まれる記号に対応した、自然な抑揚で読み上げられます。
   - したがって、`どうですか…？` のように読み上げテキストの末尾に「？」を付与するだけで、疑問系の抑揚で読み上げることができます。
-
-
-
 
 ## 開発方針
 
