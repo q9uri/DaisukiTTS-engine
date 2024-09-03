@@ -4,7 +4,7 @@ import glob
 import hashlib
 from io import BytesIO
 from pathlib import Path
-from typing import BinaryIO
+from typing import BinaryIO, Final
 
 import aivmlib
 import httpx
@@ -39,9 +39,9 @@ class AivmManager:
     """
 
     # AivisSpeech でサポートされているマニフェストバージョン
-    SUPPORTED_MANIFEST_VERSIONS: list[str] = ["1.0"]
+    SUPPORTED_MANIFEST_VERSIONS: Final[list[str]] = ["1.0"]
     # AivisSpeech でサポートされている音声合成モデルのアーキテクチャ
-    SUPPORTED_MODEL_ARCHITECTURES: list[ModelArchitecture] = [
+    SUPPORTED_MODEL_ARCHITECTURES: Final[list[ModelArchitecture]] = [
         ModelArchitecture.StyleBertVITS2,
         ModelArchitecture.StyleBertVITS2JPExtra,
     ]
