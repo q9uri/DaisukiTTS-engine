@@ -437,11 +437,7 @@ def main() -> None:
 
     # AivisSpeech Engine サーバーを起動
     # NOTE: デフォルトは ASGI に準拠した HTTP/1.1 サーバー
-    try:
-        uvicorn.run(app, host=args.host, port=args.port, log_config=LOGGING_CONFIG)
-    except KeyboardInterrupt:
-        logger.info("KeyboardInterrupt detected, stopping the engine.")
-        pass
+    uvicorn.run(app, host=args.host, port=args.port, log_config=LOGGING_CONFIG)
 
 
 if __name__ == "__main__":
