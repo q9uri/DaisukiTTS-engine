@@ -24,11 +24,7 @@
             "type": "array"
           },
           "pause_mora": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Mora"
-              }
-            ],
+            "$ref": "#/components/schemas/Mora",
             "description": "後ろに無音を付けるかどうか",
             "title": "Pause Mora"
           }
@@ -49,11 +45,7 @@
             "type": "string"
           },
           "manifest": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/AivmManifest"
-              }
-            ],
+            "$ref": "#/components/schemas/AivmManifest",
             "title": "AIVM マニフェスト"
           },
           "speakers": {
@@ -428,11 +420,7 @@
             "type": "string"
           },
           "supported_features": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/SupportedFeatures"
-              }
-            ],
+            "$ref": "#/components/schemas/SupportedFeatures",
             "description": "エンジンが持つ機能"
           },
           "supported_vvlib_manifest_version": {
@@ -881,11 +869,7 @@
             "type": "array"
           },
           "supported_features": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/SpeakerSupportedFeatures"
-              }
-            ],
+            "$ref": "#/components/schemas/SpeakerSupportedFeatures",
             "description": "キャラクターの対応機能"
           },
           "version": {
@@ -1435,13 +1419,8 @@
           "content": {
             "application/json": {
               "schema": {
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/Preset"
-                  }
-                ],
-                "description": "新しいプリセット。プリセットIDが既存のものと重複している場合は、新規のプリセットIDが採番されます。",
-                "title": "Preset"
+                "$ref": "#/components/schemas/Preset",
+                "description": "新しいプリセット。プリセットIDが既存のものと重複している場合は、新規のプリセットIDが採番されます。"
               }
             }
           },
@@ -1510,12 +1489,7 @@
           "content": {
             "multipart/form-data": {
               "schema": {
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/Body_install_aivm_aivm_models_install_post"
-                  }
-                ],
-                "title": "Body"
+                "$ref": "#/components/schemas/Body_install_aivm_aivm_models_install_post"
               }
             }
           }
@@ -3175,13 +3149,8 @@
           "content": {
             "application/json": {
               "schema": {
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/Preset"
-                  }
-                ],
-                "description": "更新するプリセット。プリセットIDが更新対象と一致している必要があります。",
-                "title": "Preset"
+                "$ref": "#/components/schemas/Preset",
+                "description": "更新するプリセット。プリセットIDが更新対象と一致している必要があります。"
               }
             }
           },
@@ -3286,13 +3255,8 @@
             "name": "word_type",
             "required": false,
             "schema": {
-              "allOf": [
-                {
-                  "$ref": "#/components/schemas/WordTypes"
-                }
-              ],
-              "description": "PROPER_NOUN（固有名詞）、COMMON_NOUN（普通名詞）、VERB（動詞）、ADJECTIVE（形容詞）、SUFFIX（語尾）のいずれか",
-              "title": "Word Type"
+              "$ref": "#/components/schemas/WordTypes",
+              "description": "PROPER_NOUN（固有名詞）、COMMON_NOUN（普通名詞）、VERB（動詞）、ADJECTIVE（形容詞）、SUFFIX（語尾）のいずれか"
             }
           },
           {
@@ -3302,8 +3266,6 @@
             "required": false,
             "schema": {
               "description": "単語の優先度（0から10までの整数）。数字が大きいほど優先度が高くなる。1から9までの値を指定することを推奨",
-              "ge": 0,
-              "le": 10,
               "maximum": 10,
               "minimum": 0,
               "title": "Priority",
@@ -3431,13 +3393,8 @@
             "name": "word_type",
             "required": false,
             "schema": {
-              "allOf": [
-                {
-                  "$ref": "#/components/schemas/WordTypes"
-                }
-              ],
-              "description": "PROPER_NOUN（固有名詞）、COMMON_NOUN（普通名詞）、VERB（動詞）、ADJECTIVE（形容詞）、SUFFIX（語尾）のいずれか",
-              "title": "Word Type"
+              "$ref": "#/components/schemas/WordTypes",
+              "description": "PROPER_NOUN（固有名詞）、COMMON_NOUN（普通名詞）、VERB（動詞）、ADJECTIVE（形容詞）、SUFFIX（語尾）のいずれか"
             }
           },
           {
@@ -3447,8 +3404,6 @@
             "required": false,
             "schema": {
               "description": "単語の優先度（0から10までの整数）。数字が大きいほど優先度が高くなる。1から9までの値を指定することを推奨。",
-              "ge": 0,
-              "le": 10,
               "maximum": 10,
               "minimum": 0,
               "title": "Priority",

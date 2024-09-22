@@ -451,7 +451,7 @@ def generate_tts_pipeline_router(
     @router.post(
         "/sing_frame_volume",
         tags=["クエリ編集"],
-        # summary="スコア・歌唱音声合成用のクエリからフレームごとの音量を得る",
+        # summary="楽譜・歌唱音声合成用のクエリからフレームごとの音量を得る",
         summary="AivisSpeech Engine ではサポートされていない API です (常に 501 Not Implemented を返します)",
     )
     def sing_frame_volume(
