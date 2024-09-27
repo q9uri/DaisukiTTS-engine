@@ -423,6 +423,10 @@ class AivmManager:
                 detail=f'モデルアーキテクチャ "{aivm_manifest.model_architecture}" には対応していません。',
             )
 
+        # BinaryIO のシークをリセット
+        # ここでリセットしないとファイルの内容を読み込めない
+        file.seek(0)
+
         # AIVM ファイルをインストール
         ## 通常は重複防止のため "(AIVM ファイルの UUID).aivm" のフォーマットのファイル名でインストールされるが、
         ## 手動で .aivm ファイルをインストール先ディレクトリにコピーしても一通り動作するように考慮している
