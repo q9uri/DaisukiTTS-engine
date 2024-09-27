@@ -477,7 +477,8 @@ class AivmManager:
         # AIVM ファイルをアンインストール
         ## AIVM ファイルのファイル名は必ずしも "(AIVM ファイルの UUID).aivm" になるとは限らないため、
         ## AivmInfo 内に格納されているファイルパスを使って削除する
-        installed_aivm_infos[aivm_uuid].file_path.unlink()
+        ## 万が一 AIVM ファイルが存在しない場合は無視する
+        installed_aivm_infos[aivm_uuid].file_path.unlink(missing_ok=True)
 
         # すべてのインストール済み音声合成モデルの情報のキャッシュを再生成
         self.get_installed_aivm_infos(force=True)
