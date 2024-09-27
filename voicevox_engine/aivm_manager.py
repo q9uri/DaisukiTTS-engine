@@ -399,12 +399,15 @@ class AivmManager:
                 detail=f"指定された AIVM ファイルの形式が正しくありません。({e})",
             )
 
-        # すでに同一 UUID のファイルがインストール済みかどうかのチェック
+        # すでに同一 UUID のファイルがインストール済みの場合、同じファイルを更新する
+        ## 手動で .aivm ファイルをインストール先ディレクトリにコピーしていた (ファイル名が UUID と一致しない) 場合も更新できるよう、
+        ## この場合のみ特別に更新先ファイル名を現在保存されているファイル名に変更する
+        aivm_file_path = self.installed_aivm_dir / f"{aivm_manifest.uuid}.aivm"
         if str(aivm_manifest.uuid) in self.get_installed_aivm_infos():
-            raise HTTPException(
-                status_code=422,
-                detail=f"音声合成モデル {aivm_manifest.uuid} は既にインストールされています。",
-            )
+            logger.info(f"AIVM model {aivm_manifest.uuid} is already installed. Updating...")  # fmt: skip
+            previous_aivm_info = self.get_installed_aivm_infos()[str(aivm_manifest.uuid)]  # fmt: skip
+            # aivm_file_path を現在保存されているファイル名に変更
+            aivm_file_path = previous_aivm_info.file_path
 
         # マニフェストバージョンのバリデーション
         if aivm_manifest.manifest_version not in self.SUPPORTED_MANIFEST_VERSIONS:  # fmt: skip
@@ -423,7 +426,6 @@ class AivmManager:
         # AIVM ファイルをインストール
         ## 通常は重複防止のため "(AIVM ファイルの UUID).aivm" のフォーマットのファイル名でインストールされるが、
         ## 手動で .aivm ファイルをインストール先ディレクトリにコピーしても一通り動作するように考慮している
-        aivm_file_path = self.installed_aivm_dir / f"{aivm_manifest.uuid}.aivm"
         with open(aivm_file_path, mode="wb") as f:
             f.write(file.read())
 
