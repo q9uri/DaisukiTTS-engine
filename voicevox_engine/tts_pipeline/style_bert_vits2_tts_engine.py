@@ -672,7 +672,7 @@ class StyleBertVITS2TTSEngine(TTSEngine):
 __MORA_PATTERN: Final[re.Pattern[str]] = re.compile(
     "|".join(map(re.escape, sorted(MORA_KATA_TO_MORA_PHONEMES.keys(), key=len, reverse=True)))  # fmt: skip
 )
-__LONG_PATTERN = re.compile(r"(\w)(ー*)")
+__LONG_PATTERN: Final[re.Pattern[str]] = re.compile(r"(\w)(ー*)")
 
 
 def _phone_tone2mora_tone(phone_tone: list[tuple[str, int]]) -> list[tuple[Mora, int]]:
@@ -749,6 +749,13 @@ def _sep_kata_with_joshi2sep_phonemes_with_joshi(
     # 一度モーラ単位で分割した後、その後子音と母音を分割して音素に変換
     sep_phonemes_with_joshi: list[list[tuple[str | None, str]]] = []
     for sep_kata_with_joshi_element in sep_kata_with_joshi:
+        # 記号の場合は1文字ずつ分割して処理
+        if all(char in PUNCTUATIONS for char in sep_kata_with_joshi_element):
+            sep_phonemes_with_joshi.append(
+                [(None, char) for char in sep_kata_with_joshi_element]
+            )
+            continue
+
         spaced_moras = __MORA_PATTERN.sub(lambda m: mora2phonemes(m.group()), sep_kata_with_joshi_element)  # fmt: skip
         # 長音記号「ー」の処理
         long_replacement = lambda m: m.group(1) + (" " + m.group(1)) * len(m.group(2))  # type: ignore # fmt: skip
