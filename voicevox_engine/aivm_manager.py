@@ -430,8 +430,10 @@ class AivmManager:
         # AIVM ファイルをインストール
         ## 通常は重複防止のため "(AIVM ファイルの UUID).aivm" のフォーマットのファイル名でインストールされるが、
         ## 手動で .aivm ファイルをインストール先ディレクトリにコピーしても一通り動作するように考慮している
+        logger.info(f"Installing AIVM file to {aivm_file_path}...")
         with open(aivm_file_path, mode="wb") as f:
             f.write(file.read())
+        logger.info(f"Installed AIVM file to {aivm_file_path}.")
 
         # すべてのインストール済み音声合成モデルの情報のキャッシュを再生成
         self.get_installed_aivm_infos(force=True)
@@ -448,10 +450,12 @@ class AivmManager:
 
         # URL から AIVM ファイルをダウンロード
         try:
+            logger.info(f"Downloading AIVM file from {url}...")
             response = httpx.get(
                 url, headers={"User-Agent": f"AivisSpeech-Engine/{__version__}"}
             )
             response.raise_for_status()
+            logger.info(f"Downloaded AIVM file from {url}.")
         except httpx.HTTPError as e:
             logger.error(f"Failed to download AIVM file from {url}: {e}")
             raise HTTPException(
@@ -484,7 +488,9 @@ class AivmManager:
         ## AIVM ファイルのファイル名は必ずしも "(AIVM ファイルの UUID).aivm" になるとは限らないため、
         ## AivmInfo 内に格納されているファイルパスを使って削除する
         ## 万が一 AIVM ファイルが存在しない場合は無視する
+        logger.info(f"Uninstalling AIVM file from {installed_aivm_infos[aivm_uuid].file_path}...")  # fmt: skip
         installed_aivm_infos[aivm_uuid].file_path.unlink(missing_ok=True)
+        logger.info(f"Uninstalled AIVM file from {installed_aivm_infos[aivm_uuid].file_path}.")  # fmt: skip
 
         # すべてのインストール済み音声合成モデルの情報のキャッシュを再生成
         self.get_installed_aivm_infos(force=True)
