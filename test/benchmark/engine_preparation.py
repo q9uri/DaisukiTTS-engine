@@ -20,7 +20,7 @@ from voicevox_engine.utility.path_utility import engine_manifest_path, get_save_
 
 
 def _generate_engine_fake_server(root_dir: Path) -> TestClient:
-    aivm_manager = AivmManager(get_save_dir() / "aivm_models")
+    aivm_manager = AivmManager(get_save_dir() / "voice_models")
     core_manager = initialize_cores(
         voicevox_dir=root_dir, use_gpu=False, enable_mock=False
     )

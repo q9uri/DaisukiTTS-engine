@@ -34,7 +34,7 @@ def _copy_under_dir(file_path: Path, dir_path: Path) -> Path:
 
 @pytest.fixture()
 def app_params(tmp_path: Path) -> dict[str, Any]:
-    aivm_manager = AivmManager(get_save_dir() / "aivm_models")
+    aivm_manager = AivmManager(get_save_dir() / "voice_models")
     core_manager = initialize_cores(use_gpu=False, enable_mock=True)
     tts_engines = make_tts_engines_from_cores(core_manager)
     setting_loader = SettingHandler(tmp_path / "not_exist.yaml")

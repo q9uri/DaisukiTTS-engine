@@ -15,11 +15,11 @@ AivisSpeech Engine では、以下のモデルアーキテクチャの AIVM 音�
 - `Style-Bert-VITS2 (JP-Extra)`
 
 各 OS ごとの、AIVM ファイルの配置先フォルダパスは次のとおりです。  
-起動直後のログに表示される `User Data Directory:` 以下の `aivm_models` から、実際のフォルダパスを確認できます。
+起動直後のログに表示される `Voice Models Directory:` から、実際のフォルダパスを確認できます。
 
-- **Windows:** `C:\Users\(ユーザー名)\AppData\Roaming\AivisSpeech-Engine\aivm_models`
-- **macOS:** `~/Library/Application Support/AivisSpeech-Engine/aivm_models`
-- **Linux:** `~/.local/share/AivisSpeech-Engine/aivm_models`
+- **Windows:** `C:\Users\(ユーザー名)\AppData\Roaming\AivisSpeech-Engine\voice_models`
+- **macOS:** `~/Library/Application Support/AivisSpeech-Engine/voice_models`
+- **Linux:** `~/.local/share/AivisSpeech-Engine/voice_models`
 
 > [!IMPORTANT]
 > (PyInstaller で実行ファイル化されていない) 開発版の AivisSpeech Engine のユーザーデータフォルダは、`AivisSpeech-Engine-Dev` 以下になります。
@@ -103,7 +103,7 @@ TODO...
 Bash で以下のワンライナーを実行すると、`audio.wav` に音声合成した WAV ファイルが出力されます。
 
 > [!IMPORTANT]  
-> 事前に AivisSpeech Engine が起動していて、かつログに表示される `User Data Directory:` 以下にある `aivm_models` ディレクトリに、スタイル ID に対応する AIVM 音声合成モデルが格納されていることが前提です。
+> 事前に AivisSpeech Engine が起動していて、かつログに表示される `User Data Directory:` 以下にある `voice_models` ディレクトリに、スタイル ID に対応する AIVM 音声合成モデルが格納されていることが前提です。
 
 ```bash
 STYLE_ID=(音声合成対象のスタイル ID 、別途 /speakers API から取得が必要) && \

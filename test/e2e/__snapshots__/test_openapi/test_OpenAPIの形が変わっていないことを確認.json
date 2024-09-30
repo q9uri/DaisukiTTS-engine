@@ -306,7 +306,7 @@
         "title": "AudioQuery",
         "type": "object"
       },
-      "Body_install_aivm_aivm_models_install_post": {
+      "Body_install_aivm_voice_models_install_post": {
         "properties": {
           "file": {
             "anyOf": [
@@ -334,7 +334,7 @@
             "title": "Url"
           }
         },
-        "title": "Body_install_aivm_aivm_models_install_post",
+        "title": "Body_install_aivm_voice_models_install_post",
         "type": "object"
       },
       "Body_setting_post_setting_post": {
@@ -1452,149 +1452,6 @@
         "summary": "Add Preset",
         "tags": [
           "その他"
-        ]
-      }
-    },
-    "/aivm_models": {
-      "get": {
-        "description": "インストールした音声合成モデルの情報を返します。",
-        "operationId": "get_installed_aivm_infos_aivm_models_get",
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "additionalProperties": {
-                    "$ref": "#/components/schemas/AivmInfo"
-                  },
-                  "title": "Response Get Installed Aivm Infos Aivm Models Get",
-                  "type": "object"
-                }
-              }
-            },
-            "description": "インストールした音声合成モデルの情報"
-          }
-        },
-        "summary": "Get Installed Aivm Infos",
-        "tags": [
-          "音声合成モデル管理"
-        ]
-      }
-    },
-    "/aivm_models/install": {
-      "post": {
-        "description": "音声合成モデルをインストールします。\nファイルからインストールする場合は `file` を指定してください。\nURL からインストールする場合は `url` を指定してください。",
-        "operationId": "install_aivm_aivm_models_install_post",
-        "requestBody": {
-          "content": {
-            "multipart/form-data": {
-              "schema": {
-                "$ref": "#/components/schemas/Body_install_aivm_aivm_models_install_post"
-              }
-            }
-          }
-        },
-        "responses": {
-          "204": {
-            "description": "Successful Response"
-          },
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            },
-            "description": "Validation Error"
-          }
-        },
-        "summary": "Install Aivm",
-        "tags": [
-          "音声合成モデル管理"
-        ]
-      }
-    },
-    "/aivm_models/{aivm_uuid}": {
-      "get": {
-        "description": "指定された音声合成モデルの情報を取得します。",
-        "operationId": "get_aivm_info_aivm_models__aivm_uuid__get",
-        "parameters": [
-          {
-            "description": "AIVM ファイルの UUID",
-            "in": "path",
-            "name": "aivm_uuid",
-            "required": true,
-            "schema": {
-              "description": "AIVM ファイルの UUID",
-              "title": "Aivm Uuid",
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AivmInfo"
-                }
-              }
-            },
-            "description": "Successful Response"
-          },
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            },
-            "description": "Validation Error"
-          }
-        },
-        "summary": "Get Aivm Info",
-        "tags": [
-          "音声合成モデル管理"
-        ]
-      }
-    },
-    "/aivm_models/{aivm_uuid}/uninstall": {
-      "delete": {
-        "description": "指定された音声合成モデルをアンインストールします。",
-        "operationId": "uninstall_aivm_aivm_models__aivm_uuid__uninstall_delete",
-        "parameters": [
-          {
-            "description": "AIVM ファイルの UUID",
-            "in": "path",
-            "name": "aivm_uuid",
-            "required": true,
-            "schema": {
-              "description": "AIVM ファイルの UUID",
-              "title": "Aivm Uuid",
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "Successful Response"
-          },
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            },
-            "description": "Validation Error"
-          }
-        },
-        "summary": "Uninstall Aivm",
-        "tags": [
-          "音声合成モデル管理"
         ]
       }
     },
@@ -3508,6 +3365,149 @@
         "summary": "Version",
         "tags": [
           "その他"
+        ]
+      }
+    },
+    "/voice_models": {
+      "get": {
+        "description": "インストールした音声合成モデルの情報を返します。",
+        "operationId": "get_installed_aivm_infos_voice_models_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "$ref": "#/components/schemas/AivmInfo"
+                  },
+                  "title": "Response Get Installed Aivm Infos Voice Models Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "インストールした音声合成モデルの情報"
+          }
+        },
+        "summary": "Get Installed Aivm Infos",
+        "tags": [
+          "音声合成モデル管理"
+        ]
+      }
+    },
+    "/voice_models/install": {
+      "post": {
+        "description": "音声合成モデルをインストールします。\nファイルからインストールする場合は `file` を指定してください。\nURL からインストールする場合は `url` を指定してください。",
+        "operationId": "install_aivm_voice_models_install_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_install_aivm_voice_models_install_post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Install Aivm",
+        "tags": [
+          "音声合成モデル管理"
+        ]
+      }
+    },
+    "/voice_models/{aivm_uuid}": {
+      "get": {
+        "description": "指定された音声合成モデルの情報を取得します。",
+        "operationId": "get_aivm_info_voice_models__aivm_uuid__get",
+        "parameters": [
+          {
+            "description": "AIVM ファイルの UUID",
+            "in": "path",
+            "name": "aivm_uuid",
+            "required": true,
+            "schema": {
+              "description": "AIVM ファイルの UUID",
+              "title": "Aivm Uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AivmInfo"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Aivm Info",
+        "tags": [
+          "音声合成モデル管理"
+        ]
+      }
+    },
+    "/voice_models/{aivm_uuid}/uninstall": {
+      "delete": {
+        "description": "指定された音声合成モデルをアンインストールします。",
+        "operationId": "uninstall_aivm_voice_models__aivm_uuid__uninstall_delete",
+        "parameters": [
+          {
+            "description": "AIVM ファイルの UUID",
+            "in": "path",
+            "name": "aivm_uuid",
+            "required": true,
+            "schema": {
+              "description": "AIVM ファイルの UUID",
+              "title": "Aivm Uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Uninstall Aivm",
+        "tags": [
+          "音声合成モデル管理"
         ]
       }
     }
