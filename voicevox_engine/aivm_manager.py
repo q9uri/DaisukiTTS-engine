@@ -58,7 +58,7 @@ class AivmManager:
 
         self.installed_aivm_dir = installed_aivm_dir
         self.installed_aivm_dir.mkdir(exist_ok=True)
-        logger.info(f"Voice Models Directory: {self.installed_aivm_dir}")
+        logger.info(f"Voice models directory: {self.installed_aivm_dir}")
 
         # self.get_installed_aivm_infos() の実行結果のキャッシュ
         # すべてのインストール済み音声合成モデルの情報が保持される

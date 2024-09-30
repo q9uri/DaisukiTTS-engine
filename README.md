@@ -15,7 +15,7 @@ AivisSpeech Engine では、以下のモデルアーキテクチャの AIVM 音�
 - `Style-Bert-VITS2 (JP-Extra)`
 
 各 OS ごとの、AIVM ファイルの配置先フォルダパスは次のとおりです。  
-起動直後のログに表示される `Voice Models Directory:` から、実際のフォルダパスを確認できます。
+起動直後のログに表示される `Voice models directory:` から、実際のフォルダパスを確認できます。
 
 - **Windows:** `C:\Users\(ユーザー名)\AppData\Roaming\AivisSpeech-Engine\voice_models`
 - **macOS:** `~/Library/Application Support/AivisSpeech-Engine/voice_models`
