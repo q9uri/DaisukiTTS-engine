@@ -349,7 +349,8 @@ class AivmManager:
                         # 話者スタイル情報
                         styles=speaker_styles,
                         # 話者のバージョン
-                        version=speaker_manifest.version,
+                        ## 音声合成モデルのバージョンを話者のバージョンとして設定する
+                        version=aivm_manifest.version,
                         # AivisSpeech Engine では全話者に対し常にモーフィング機能を無効化する
                         ## Style-Bert-VITS2 の仕様上音素長を一定にできず、話者ごとに発話タイミングがずれてまともに合成できないため
                         supported_features=SpeakerSupportedFeatures(
@@ -361,7 +362,7 @@ class AivmManager:
                         # 利用規約 (Markdown)
                         ## 同一 AIVM ファイル内のすべての話者は同一の利用規約を持つ
                         policy=aivm_manifest.terms_of_use,
-                        # アイコン画像を Base64 エンコードして文字列化
+                        # アイコン画像
                         ## 最初のスタイルのアイコンをこの話者全体のアイコンとして設定する
                         ## VOICEVOX ENGINE 本家では portrait に立ち絵が入るが、AivisSpeech Engine では敢えてアイコン画像を設定する
                         portrait=style_infos[0].icon,
