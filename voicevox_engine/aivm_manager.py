@@ -265,11 +265,27 @@ class AivmManager:
                 continue
 
             # マニフェストバージョンのバリデーション
-            if aivm_manifest.manifest_version not in self.SUPPORTED_MANIFEST_VERSIONS:  # fmt: skip
+            # バージョン文字列をメジャー・マイナーに分割
+            manifest_version_parts = aivm_manifest.manifest_version.split(".")
+            if len(manifest_version_parts) != 2:
                 logger.warning(
-                    f"{aivm_file_path}: AIVM manifest version {aivm_manifest.manifest_version} is not supported."
+                    f"{aivm_file_path}: Invalid AIVM manifest version format: {aivm_manifest.manifest_version}"
                 )
                 continue
+            manifest_major, _ = map(int, manifest_version_parts)
+            # サポート済みバージョンのメジャーバージョンを取得
+            supported_major = int(self.SUPPORTED_MANIFEST_VERSIONS[0].split(".")[0])
+            if manifest_major != supported_major:
+                # メジャーバージョンが異なる場合はスキップ
+                logger.warning(
+                    f"{aivm_file_path}: AIVM manifest version {aivm_manifest.manifest_version} is not supported (different major version)."
+                )
+                continue
+            elif aivm_manifest.manifest_version not in self.SUPPORTED_MANIFEST_VERSIONS:
+                # 同じメジャーバージョンで、より新しいマイナーバージョンの場合は警告を出して続行
+                logger.warning(
+                    f"{aivm_file_path}: AIVM manifest version {aivm_manifest.manifest_version} is newer than supported versions. Trying to load anyway..."
+                )
 
             # 音声合成モデルのアーキテクチャのバリデーション
             if aivm_manifest.model_architecture not in self.SUPPORTED_MODEL_ARCHITECTURES:  # fmt: skip
