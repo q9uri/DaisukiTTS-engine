@@ -294,7 +294,10 @@ class AivmManager:
 
                 # AivisSpeech Engine は日本語のみをサポートするため、日本語をサポートしない話者は除外
                 ## 念のため小文字に変換してから比較
-                if "ja" not in [lang.lower() for lang in speaker_manifest.supported_languages]:  # fmt: skip
+                supported_langs = [
+                    lang.lower() for lang in speaker_manifest.supported_languages
+                ]
+                if not any(lang in supported_langs for lang in ['ja', 'ja-jp']):  # fmt: skip
                     logger.warning(f"{aivm_file_path}: Speaker {speaker_uuid} does not support Japanese. Ignoring.")  # fmt: skip
                     continue
 
