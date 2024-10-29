@@ -2,9 +2,9 @@
 # AivisSpeech Engine
 
 [![Releases](https://img.shields.io/github/v/release/Aivis-Project/AivisSpeech-Engine?label=Release)](https://github.com/Aivis-Project/AivisSpeech-Engine/releases)
-[![Build CI](https://github.com/Aivis-Project/AivisSpeech-Engine/actions/workflows/build-engine-package.yml/badge.svg)](https://github.com/Aivis-Project/AivisSpeech-Engine/actions/workflows/build-engine-package.yml)
-[![Test CI](https://github.com/Aivis-Project/AivisSpeech-Engine/actions/workflows/test.yml/badge.svg)](https://github.com/Aivis-Project/AivisSpeech-Engine/actions/workflows/test.yml)
-![License: LGPL-3.0](https://img.shields.io/badge/License-LGPL3-blue.svg)
+[![License: LGPL-3.0](https://img.shields.io/badge/License-LGPL3-blue.svg)](LICENSE)
+[![CI: Build](https://github.com/Aivis-Project/AivisSpeech-Engine/actions/workflows/build-engine-package.yml/badge.svg)](https://github.com/Aivis-Project/AivisSpeech-Engine/actions/workflows/build-engine-package.yml)
+[![CI: Test](https://github.com/Aivis-Project/AivisSpeech-Engine/actions/workflows/test.yml/badge.svg)](https://github.com/Aivis-Project/AivisSpeech-Engine/actions/workflows/test.yml)
 
 💠 **AivisSpeech Engine:** **AI** **V**oice **I**mitation **S**ystem - Text to **Speech** **Engine**
 
@@ -31,6 +31,7 @@
 - [開発方針](#開発方針)
 - [開発環境の構築](#開発環境の構築)
 - [開発](#開発)
+- [ライセンス](#ライセンス)
 
 ## サポートされている音声合成モデル
 
@@ -241,11 +242,13 @@ poetry run task update-licenses
 poetry run task build
 ```
 
+## ライセンス
+
+ベースである VOICEVOX ENGINE のデュアルライセンスのうち、[LGPL-3.0](LICENSE) のみを単独で継承します。
+
+下記ならびに [docs/](docs/) 以下のドキュメントは、[VOICEVOX ENGINE](https://github.com/VOICEVOX/voicevox_engine) 本家のドキュメントを改変なしでそのまま引き継いでいます。これらのドキュメントの内容が AivisSpeech Engine にも通用するかは保証されません。
+
 -----
-
-以下はオリジナルの VOICEVOX ENGINE の README です。
-
-<br>
 
 # VOICEVOX ENGINE
 
