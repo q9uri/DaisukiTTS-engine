@@ -15,6 +15,23 @@
 
 #### [💠 AivisSpeech をダウンロード](https://aivis-project.com/speech/) ／ [💠 AivisSpeech Engine をダウンロード](https://github.com/Aivis-Project/AivisSpeech-Engine/releases)
 
+-----
+
+- [サポートされている音声合成モデル](#サポートされている音声合成モデル)
+  - [対応モデルアーキテクチャ](#対応モデルアーキテクチャ)
+  - [モデルファイルの配置場所](#モデルファイルの配置場所)
+- [音声合成 API を使う](#音声合成-api-を使う)
+- [VOICEVOX API との互換性について](#voicevox-api-との互換性について)
+  - [AivisSpeech Engine におけるスタイル ID](#aivisspeech-engine-におけるスタイル-id)
+  - [`AudioQuery` 型の仕様変更](#audioquery-型の仕様変更)
+  - [`Mora` 型の仕様変更](#mora-型の仕様変更)
+  - [`Preset` 型の仕様変更](#preset-型の仕様変更)
+  - [AivisSpeech Engine ではサポートされていない API エンドポイント](#aivisspeech-engine-ではサポートされていない-api-エンドポイント)
+  - [AivisSpeech Engine ではサポートされていない API パラメータ](#aivisspeech-engine-ではサポートされていない-api-パラメータ)
+- [開発方針](#開発方針)
+- [開発環境の構築](#開発環境の構築)
+- [開発](#開発)
+
 ## サポートされている音声合成モデル
 
 **AivisSpeech Engine は、[AIVMX (**Ai**vis **V**oice **M**odel for ONN**X**)](https://github.com/Aivis-Project/aivmlib#aivmx-file-format-specification) (拡張子 `.aivmx`) フォーマットの音声合成モデルファイルをサポートしています。**
@@ -63,80 +80,13 @@ AIVMX ファイルは、OS ごとに以下のフォルダに配置してくだ�
 > [!IMPORTANT]
 > 開発版 (PyInstaller でビルドされていない状態で実行している場合) の配置フォルダは、`AivisSpeech-Engine` 以下ではなく `AivisSpeech-Engine-Dev` 以下となります。
 
-## API 互換性
+## 音声合成 API を使う
 
-概ね VOICEVOX ENGINE の API と互換性があります。
+Bash で以下のワンライナーを実行すると、`audio.wav` に音声合成した WAV ファイルが出力されます。  
+詳細な API リクエスト・レスポンスの仕様は、API ドキュメントや [VOICEVOX API との互換性](#voicevox-api-との互換性) をご参照ください。
 
-VOICEVOX ENGINE の API に対応したソフトウェアであれば、**API URL を `http://127.0.0.1:10101` に差し替えるだけで、AivisSpeech Engine に対応できるはずです。**
-
-> [!IMPORTANT]  
-> **ただし、API クライアント側で `/audio_query` API から取得した `AudioQuery` の内容を編集してから `/synthesis` API に渡している場合は、仕様差異により正常に音声合成できない場合があります (後述) 。**
-
-### VOICEVOX ENGINE からの変更点
-
-VOICEVOX ENGINE からの API 仕様の変更点は次のとおりです。
-
-> [!NOTE]  
-> 一般的な API ユースケースにおいては概ね互換性があるはずですが、根本的に異なるモデルアーキテクチャの音声合成システムを強引に同一 API 仕様に収めている関係で、下記以外にも互換性のない API があるかもしれません。  
-> Issue にて報告頂ければ、互換性改善が可能なものに関しては修正いたします。
-
-#### AivisSpeech Engine におけるスタイル ID
-
-TODO...
-
-#### **`AudioQuery` 型の仕様変更**
-
-`AudioQuery` 型は、テキストや音素列を指定して音声合成を行うためのクエリです。
-
-変更点の詳細は、[model.py](./voicevox_engine/model.py) を参照してください。
-
-#### `Mora` 型の仕様変更
-
-`Mora` 型は、読み上げテキストのモーラを表すデータ構造です。
-
-> [!TIP]  
-> モーラとは、実際に発音される際の音のまとまりの最小単位（「あ」「か」「を」など）のことです。  
-> `Mora` 型単独で API リクエスト・レスポンスに使われることはなく、常に `AudioQuery.accent_phrases[n].moras` または `AudioQuery.accent_phrases[n].pause_mora` を通して間接的に利用されます。
-
-変更点の詳細は、[tts_pipeline/model.py](./voicevox_engine/tts_pipeline/model.py) を参照してください。
-
-#### `Preset` 型の仕様変更
-
-`Preset` 型は、エディタ側で音声合成クエリの初期値を決定するためのプリセット情報です。
-
-変更点の詳細は、[preset/model.py](./voicevox_engine/preset/model.py) を参照してください。
-
-#### **AivisSpeech Engine ではサポートされていない API エンドポイント**
-
-> [!WARNING]  
-> 歌声合成系 API と、キャンセル可能な音声合成 API はサポートされていません。  
-> 互換性のためエンドポイントとして存在はしますが、常に `501 Not Implemented` を返します。  
-> 詳細は [app/routers/character.py](./voicevox_engine/app/routers/character.py) / [app/routers/tts_pipeline.py](./voicevox_engine/app/routers/tts_pipeline.py) を確認してください。
-
-  - **GET `/singers`**
-  - **GET `/singer_info`**
-  - **POST `/cancellable_synthesis`**
-  - **POST `/sing_frame_audio_query`**
-  - **POST `/sing_frame_volume`**
-  - **POST `/frame_synthesis`**
-
-#### **AivisSpeech Engine ではサポートされていない API パラメータ**
-
-> [!WARNING]  
-> 互換性のためパラメータとして存在はしますが、常に無視されます。  
-> 詳細は [app/routers/character.py](./voicevox_engine/app/routers/character.py) / [app/routers/tts_pipeline.py](./voicevox_engine/app/routers/tts_pipeline.py) を確認してください。
-
-- **`core_version` パラメータ**
-  - VOICEVOX CORE のバージョンを指定するパラメータです。
-  - AivisSpeech Engine では VOICEVOX CORE に対応するコンポーネントがないため、常に無視されます。
-- **`enable_interrogative_upspeak` パラメータ**
-  - 疑問系のテキストが与えられたら語尾を自動調整するかのパラメータです。
-  - AivisSpeech Engine では、常に「！」「？」「…」「〜」などのテキストに含まれる記号に対応した、自然な抑揚で読み上げられます。
-  - したがって、`どうですか…？` のように読み上げテキストの末尾に「？」を付与するだけで、疑問系の抑揚で読み上げることができます。
-
-## 音声合成 API の利用
-
-Bash で以下のワンライナーを実行すると、`audio.wav` に音声合成した WAV ファイルが出力されます。
+> [!TIP]
+> **AivisSpeech Engine の API ドキュメントは、AivisSpeech Engine もしくは AivisSpeech エディタを起動した状態で、http://127.0.0.1:10101/docs にアクセスすると確認できます。**
 
 > [!IMPORTANT]  
 > 事前に AivisSpeech Engine が起動していて、かつログに表示される `User Data Directory:` 以下にある `voice_models` ディレクトリに、スタイル ID に対応する音声合成モデル (.aivmx) が格納されていることが前提です。
@@ -148,6 +98,75 @@ curl -s -X POST "127.0.0.1:10101/audio_query?speaker=$STYLE_ID" --get --data-url
 curl -s -H "Content-Type: application/json" -X POST -d @query.json "127.0.0.1:10101/synthesis?speaker=$STYLE_ID" > audio.wav && \
 rm text.txt query.json
 ```
+
+## VOICEVOX API との互換性について
+
+AivisSpeech Engine は、概ね VOICEVOX ENGINE の HTTP API と互換性があります。
+
+**VOICEVOX ENGINE の HTTP API に対応したソフトウェアであれば、API URL を `http://127.0.0.1:10101` に差し替えるだけで、AivisSpeech Engine に対応できるはずです。**
+
+> [!IMPORTANT]  
+> **ただし、API クライアント側で `/audio_query` API から取得した `AudioQuery` の内容を編集してから `/synthesis` API に渡している場合は、仕様差異により正常に音声合成できない場合があります (後述) 。**
+
+> [!NOTE]  
+> 一般的な API ユースケースにおいては概ね互換性があるはずですが、**根本的に異なるモデルアーキテクチャの音声合成システムを強引に同一の API 仕様に収めている関係で、下記以外にも互換性のない API があるかもしれません。**  
+> Issue にて報告頂ければ、互換性改善が可能なものに関しては修正いたします。
+
+VOICEVOX ENGINE からの API 仕様の変更点は次のとおりです。
+
+### AivisSpeech Engine におけるスタイル ID
+
+TODO...
+
+### `AudioQuery` 型の仕様変更
+
+`AudioQuery` 型は、テキストや音素列を指定して音声合成を行うためのクエリです。
+
+変更点の詳細は、[model.py](./voicevox_engine/model.py) を参照してください。
+
+### `Mora` 型の仕様変更
+
+`Mora` 型は、読み上げテキストのモーラを表すデータ構造です。
+
+> [!TIP]  
+> モーラとは、実際に発音される際の音のまとまりの最小単位（「あ」「か」「を」など）のことです。  
+> `Mora` 型単独で API リクエスト・レスポンスに使われることはなく、常に `AudioQuery.accent_phrases[n].moras` または `AudioQuery.accent_phrases[n].pause_mora` を通して間接的に利用されます。
+
+変更点の詳細は、[tts_pipeline/model.py](./voicevox_engine/tts_pipeline/model.py) を参照してください。
+
+### `Preset` 型の仕様変更
+
+`Preset` 型は、エディタ側で音声合成クエリの初期値を決定するためのプリセット情報です。
+
+変更点の詳細は、[preset/model.py](./voicevox_engine/preset/model.py) を参照してください。
+
+### AivisSpeech Engine ではサポートされていない API エンドポイント
+
+> [!WARNING]  
+> **歌声合成系 API と、キャンセル可能な音声合成 API はサポートされていません。**  
+> 互換性のためエンドポイントとして存在はしますが、常に `501 Not Implemented` を返します。  
+> 詳細は [app/routers/character.py](./voicevox_engine/app/routers/character.py) / [app/routers/tts_pipeline.py](./voicevox_engine/app/routers/tts_pipeline.py) を確認してください。
+
+  - **GET `/singers`**
+  - **GET `/singer_info`**
+  - **POST `/cancellable_synthesis`**
+  - **POST `/sing_frame_audio_query`**
+  - **POST `/sing_frame_volume`**
+  - **POST `/frame_synthesis`**
+
+### AivisSpeech Engine ではサポートされていない API パラメータ
+
+> [!WARNING]  
+> **互換性のためパラメータとして存在はしますが、常に無視されます。**  
+> 詳細は [app/routers/character.py](./voicevox_engine/app/routers/character.py) / [app/routers/tts_pipeline.py](./voicevox_engine/app/routers/tts_pipeline.py) を確認してください。
+
+- **`core_version` パラメータ**
+  - VOICEVOX CORE のバージョンを指定するパラメータです。
+  - AivisSpeech Engine では VOICEVOX CORE に対応するコンポーネントがないため、常に無視されます。
+- **`enable_interrogative_upspeak` パラメータ**
+  - 疑問系のテキストが与えられたら語尾を自動調整するかのパラメータです。
+  - AivisSpeech Engine では、常に「！」「？」「…」「〜」などのテキストに含まれる記号に対応した、自然な抑揚で読み上げられます。
+  - したがって、`どうですか…？` のように読み上げテキストの末尾に「？」を付与するだけで、疑問系の抑揚で読み上げることができます。
 
 ## 開発方針
 
@@ -226,7 +245,7 @@ poetry run task build
 
 以下はオリジナルの VOICEVOX ENGINE の README です。
 
-<br><br>
+<br>
 
 # VOICEVOX ENGINE
 
