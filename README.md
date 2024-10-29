@@ -1,10 +1,10 @@
 
 # AivisSpeech Engine
 
-[![build](https://github.com/Aivis-Project/AivisSpeech-Engine/actions/workflows/build-engine-package.yml/badge.svg)](https://github.com/Aivis-Project/AivisSpeech-Engine/actions/workflows/build-engine-package.yml)
-[![releases](https://img.shields.io/github/v/release/Aivis-Project/AivisSpeech-Engine)](https://github.com/Aivis-Project/AivisSpeech-Engine/releases)
-[![test](https://github.com/Aivis-Project/AivisSpeech-Engine/actions/workflows/test.yml/badge.svg)](https://github.com/Aivis-Project/AivisSpeech-Engine/actions/workflows/test.yml)
-[![build-docker](https://github.com/Aivis-Project/AivisSpeech-Engine/actions/workflows/build-engine-container.yml/badge.svg)](https://github.com/Aivis-Project/AivisSpeech-Engine/actions/workflows/build-engine-container.yml)
+[![Releases](https://img.shields.io/github/v/release/Aivis-Project/AivisSpeech-Engine?label=Release)](https://github.com/Aivis-Project/AivisSpeech-Engine/releases)
+[![Build CI](https://github.com/Aivis-Project/AivisSpeech-Engine/actions/workflows/build-engine-package.yml/badge.svg)](https://github.com/Aivis-Project/AivisSpeech-Engine/actions/workflows/build-engine-package.yml)
+[![Test CI](https://github.com/Aivis-Project/AivisSpeech-Engine/actions/workflows/test.yml/badge.svg)](https://github.com/Aivis-Project/AivisSpeech-Engine/actions/workflows/test.yml)
+![License: LGPL-3.0](https://img.shields.io/badge/License-LGPL3-blue.svg)
 
 💠 **AivisSpeech Engine:** **AI** **V**oice **I**mitation **S**ystem - Text to **Speech** **Engine**
 
