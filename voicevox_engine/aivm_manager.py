@@ -317,7 +317,10 @@ class AivmManager:
                     logger.warning(f"{aivm_file_path}: Speaker {speaker_uuid} does not support Japanese. Ignoring.")  # fmt: skip
                     continue
 
-                # スタイルごとにアセットを取得
+                # 話者アイコンを Base64 文字列に変換
+                speaker_icon = self.extract_base64_from_data_url(speaker_manifest.icon)
+
+                # スタイルごとのメタデータを取得
                 speaker_styles: list[SpeakerStyle] = []
                 style_infos: list[StyleInfo] = []
                 for style_manifest in speaker_manifest.styles:
@@ -341,7 +344,8 @@ class AivmManager:
                         # VOICEVOX ENGINE 互換のスタイル ID
                         id=style_id,
                         # アイコン画像
-                        icon=self.extract_base64_from_data_url(style_manifest.icon),
+                        ## 未指定時は話者のアイコン画像がスタイルのアイコン画像として使われる
+                        icon=self.extract_base64_from_data_url(style_manifest.icon) if style_manifest.icon else speaker_icon,
                         # 立ち絵を省略
                         ## VOICEVOX ENGINE 本家では portrait に立ち絵が入るが、AivisSpeech Engine では敢えてアイコン画像のみを設定する
                         portrait=None,
@@ -359,6 +363,7 @@ class AivmManager:
                     style_infos.append(style_info)
 
                 # LibrarySpeaker の作成
+                ## 事前に取得・生成した SpeakerStyle / StyleInfo をそれぞれ Speaker / SpeakerInfo に設定する
                 aivm_info_speaker = LibrarySpeaker(
                     # 話者情報
                     speaker=Speaker(
@@ -366,8 +371,6 @@ class AivmManager:
                         speaker_uuid=speaker_uuid,
                         # 話者名
                         name=speaker_manifest.name,
-                        # 話者スタイル情報
-                        styles=speaker_styles,
                         # 話者のバージョン
                         ## 音声合成モデルのバージョンを話者のバージョンとして設定する
                         version=aivm_manifest.version,
@@ -376,16 +379,17 @@ class AivmManager:
                         supported_features=SpeakerSupportedFeatures(
                             permitted_synthesis_morphing="NOTHING",
                         ),
+                        # 話者スタイル情報
+                        styles=speaker_styles,
                     ),
                     # 追加の話者情報
                     speaker_info=SpeakerInfo(
-                        # 利用規約 (Markdown)
-                        ## 同一 AIVM ファイル内のすべての話者は同一の利用規約を持つ
-                        policy=aivm_manifest.terms_of_use,
+                        # ライセンス (Markdown またはプレーンテキスト)
+                        ## 同一 AIVM / AIVMX ファイル内のすべての話者は同一のライセンスを持つ
+                        policy=aivm_manifest.license if aivm_manifest.license else "",
                         # アイコン画像
-                        ## 最初のスタイルのアイコンをこの話者全体のアイコンとして設定する
                         ## VOICEVOX ENGINE 本家では portrait に立ち絵が入るが、AivisSpeech Engine では敢えてアイコン画像を設定する
-                        portrait=style_infos[0].icon,
+                        portrait=speaker_icon,
                         # 追加の話者スタイル情報
                         style_infos=style_infos,
                     ),

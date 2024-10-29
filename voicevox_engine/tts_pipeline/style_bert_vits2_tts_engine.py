@@ -556,7 +556,7 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         # 音声合成モデルをロード (初回のみ)
         model = self.load_model(str(aivm_manifest.uuid))
         logger.info(f"Model: {aivm_manifest.name} / Version {aivm_manifest.version}")  # fmt: skip
-        logger.info(f"Speaker: {aivm_manifest_speaker.name} / Style: {aivm_manifest_speaker_style.name} / Version {aivm_manifest_speaker.version}")  # fmt: skip
+        logger.info(f"Speaker: {aivm_manifest_speaker.name} / Style: {aivm_manifest_speaker_style.name}")  # fmt: skip
 
         # ローカルな話者 ID・スタイル ID を取得
         ## 現在の Style-Bert-VITS2 の API ではスタイル ID ではなくスタイル名を指定する必要があるため、
