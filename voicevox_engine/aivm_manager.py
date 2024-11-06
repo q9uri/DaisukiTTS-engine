@@ -34,8 +34,10 @@ __all__ = ["AivmManager"]
 
 class AivmManager:
     """
-    AIVM (Aivis Voice Model) ファイルフォーマットの音声合成モデルを管理するクラス
+    AIVM (Aivis Voice Model) 仕様に準拠した音声合成モデルと AIVM マニフェストを管理するクラス
     VOICEVOX ENGINE における MetasStore の役割を代替する (AivisSpeech Engine では MetasStore は無効化されている)
+    AivisSpeech はインストールサイズを削減するため、AIVMX ファイルにのみ対応する
+    ref: https://github.com/Aivis-Project/aivmlib#aivm-specification
     """
 
     # AivisSpeech でサポートされているマニフェストバージョン
@@ -53,7 +55,7 @@ class AivmManager:
         Parameters
         ----------
         installed_aivm_dir : Path
-            AIVM ファイルのインストール先ディレクトリ
+            AIVMX ファイルのインストール先ディレクトリ
         """
 
         self.installed_aivm_dir = installed_aivm_dir
@@ -143,7 +145,7 @@ class AivmManager:
 
     def get_aivm_info(self, aivm_uuid: str) -> AivmInfo:
         """
-        AIVM ファイルの UUID から AIVM ファイルの情報を取得する
+        AIVMX ファイルの UUID から AIVMX ファイルの情報を取得する
 
         Parameters
         ----------
@@ -153,7 +155,7 @@ class AivmManager:
         Returns
         -------
         aivm_info : AivmInfo
-            AIVM ファイルの情報
+            AIVMX ファイルの情報
         """
 
         aivm_infos = self.get_installed_aivm_infos()
@@ -222,17 +224,17 @@ class AivmManager:
         Returns
         -------
         aivm_infos : dict[str, AivmInfo]
-            インストール済み音声合成モデルの情報 (キー: AIVM ファイルの UUID, 値: AivmInfo)
+            インストール済み音声合成モデルの情報 (キー: AIVMX ファイルの UUID, 値: AivmInfo)
         """
 
         # 既に取得済みかつ再取得が強制されていない場合は高速化のためキャッシュを返す
         if self._installed_aivm_infos is not None and not force:
             return self._installed_aivm_infos
 
-        # AIVM ファイルのインストール先ディレクトリ内に配置されている .aivm ファイルのパスを取得
-        aivm_file_paths = glob.glob(str(self.installed_aivm_dir / "*.aivm"))
+        # AIVMX ファイルのインストール先ディレクトリ内に配置されている .aivmx ファイルのパスを取得
+        aivm_file_paths = glob.glob(str(self.installed_aivm_dir / "*.aivmx"))
 
-        # 各 AIVM ファイルごとに
+        # 各 AIVMX ファイルごとに
         aivm_infos: dict[str, AivmInfo] = {}
         for aivm_file_path in aivm_file_paths:
 
@@ -254,7 +256,7 @@ class AivmManager:
                 logger.warning(f"{aivm_file_path}: Failed to read AIVM metadata. ({e})")
                 continue
 
-            # AIVM ファイルの UUID
+            # AIVMX ファイルの UUID
             aivm_uuid = str(aivm_manifest.uuid)
 
             # すでに同一 UUID のファイルがインストール済みかどうかのチェック
@@ -296,7 +298,7 @@ class AivmManager:
 
             # 仮の AivmInfo モデルを作成
             aivm_info = AivmInfo(
-                # AIVM ファイルのインストール先パス
+                # AIVMX ファイルのインストール先パス
                 file_path=aivm_file_path,
                 # AIVM マニフェスト
                 manifest=aivm_manifest,
@@ -406,28 +408,28 @@ class AivmManager:
 
     def install_aivm(self, file: BinaryIO) -> None:
         """
-        音声合成モデルパッケージファイル (`.aivm`) をインストールする
+        AIVMX (Aivis Voice Model for ONNX) ファイル (`.aivmx`) をインストールする
 
         Parameters
         ----------
         file : BinaryIO
-            AIVM ファイルのバイナリ
+            AIVMX ファイルのバイナリ
         """
 
-        # AIVM ファイルからから AIVM メタデータを取得
+        # AIVMX ファイルからから AIVM メタデータを取得
         try:
             aivm_metadata = aivmlib.read_aivm_metadata(file)
             aivm_manifest = aivm_metadata.manifest
         except aivmlib.AivmValidationError as e:
             raise HTTPException(
                 status_code=422,
-                detail=f"指定された AIVM ファイルの形式が正しくありません。({e})",
+                detail=f"指定された AIVMX ファイルの形式が正しくありません。({e})",
             )
 
         # すでに同一 UUID のファイルがインストール済みの場合、同じファイルを更新する
-        ## 手動で .aivm ファイルをインストール先ディレクトリにコピーしていた (ファイル名が UUID と一致しない) 場合も更新できるよう、
+        ## 手動で .aivmx ファイルをインストール先ディレクトリにコピーしていた (ファイル名が UUID と一致しない) 場合も更新できるよう、
         ## この場合のみ特別に更新先ファイル名を現在保存されているファイル名に変更する
-        aivm_file_path = self.installed_aivm_dir / f"{aivm_manifest.uuid}.aivm"
+        aivm_file_path = self.installed_aivm_dir / f"{aivm_manifest.uuid}.aivmx"
         if str(aivm_manifest.uuid) in self.get_installed_aivm_infos():
             logger.info(f"AIVM model {aivm_manifest.uuid} is already installed. Updating...")  # fmt: skip
             previous_aivm_info = self.get_installed_aivm_infos()[str(aivm_manifest.uuid)]  # fmt: skip
@@ -452,9 +454,9 @@ class AivmManager:
         # ここでリセットしないとファイルの内容を読み込めない
         file.seek(0)
 
-        # AIVM ファイルをインストール
-        ## 通常は重複防止のため "(AIVM ファイルの UUID).aivm" のフォーマットのファイル名でインストールされるが、
-        ## 手動で .aivm ファイルをインストール先ディレクトリにコピーしても一通り動作するように考慮している
+        # AIVMX ファイルをインストール
+        ## 通常は重複防止のため "(AIVMX ファイルの UUID).aivmx" のフォーマットのファイル名でインストールされるが、
+        ## 手動で .aivmx ファイルをインストール先ディレクトリにコピーしても一通り動作するように考慮している
         logger.info(f"Installing AIVM file to {aivm_file_path}...")
         with open(aivm_file_path, mode="wb") as f:
             f.write(file.read())
@@ -465,15 +467,15 @@ class AivmManager:
 
     def install_aivm_from_url(self, url: str) -> None:
         """
-        指定された URL から音声合成モデルパッケージファイル (`.aivm`) をダウンロードしてインストールする
+        指定された URL から AIVMX (Aivis Voice Model for ONNX) ファイル (`.aivmx`) をダウンロードしてインストールする
 
         Parameters
         ----------
         url : str
-            AIVM ファイルの URL
+            AIVMX ファイルの URL
         """
 
-        # URL から AIVM ファイルをダウンロード
+        # URL から AIVMX ファイルをダウンロード
         try:
             logger.info(f"Downloading AIVM file from {url}...")
             response = httpx.get(
@@ -485,10 +487,10 @@ class AivmManager:
             logger.error(f"Failed to download AIVM file from {url}: {e}")
             raise HTTPException(
                 status_code=500,
-                detail=f"AIVM ファイルのダウンロードに失敗しました。({e})",
+                detail=f"AIVMX ファイルのダウンロードに失敗しました。({e})",
             )
 
-        # ダウンロードした AIVM ファイルをインストール
+        # ダウンロードした AIVMX ファイルをインストール
         self.install_aivm(BytesIO(response.content))
 
     def uninstall_aivm(self, aivm_uuid: str) -> None:
@@ -509,10 +511,10 @@ class AivmManager:
                 detail=f"音声合成モデル {aivm_uuid} はインストールされていません。",
             )
 
-        # AIVM ファイルをアンインストール
-        ## AIVM ファイルのファイル名は必ずしも "(AIVM ファイルの UUID).aivm" になるとは限らないため、
+        # AIVMX ファイルをアンインストール
+        ## AIVMX ファイルのファイル名は必ずしも "(AIVMX ファイルの UUID).aivmx" になるとは限らないため、
         ## AivmInfo 内に格納されているファイルパスを使って削除する
-        ## 万が一 AIVM ファイルが存在しない場合は無視する
+        ## 万が一 AIVMX ファイルが存在しない場合は無視する
         logger.info(f"Uninstalling AIVM file from {installed_aivm_infos[aivm_uuid].file_path}...")  # fmt: skip
         installed_aivm_infos[aivm_uuid].file_path.unlink(missing_ok=True)
         logger.info(f"Uninstalled AIVM file from {installed_aivm_infos[aivm_uuid].file_path}.")  # fmt: skip

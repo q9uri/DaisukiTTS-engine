@@ -81,7 +81,7 @@ pydantic = "^2.7.3"
 starlette = "^0.38.4"
 jaconv = "^0.3.4"
 httpx = "^0.27.0"
-# aivmlib は AIVM ファイルのメタデータ読み取りに必要
+# aivmlib は AIVMX ファイルのメタデータ読み取りに必要
 aivmlib = { git = "https://x-access-token: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@github.com/Aivis-Project/aivmlib.git", rev = "6cd92e859228554cb4be4e16595d87365f519e17" }
 # AivisSpeech-Engine にはカスタマイズされた Style-Bert-VITS2 が必要
 style-bert-vits2 = { git = "https://github.com/tsukumijima/Style-Bert-VITS2", rev = "5aece3cc7d28c3137222c69752916cc8876da1b8" }

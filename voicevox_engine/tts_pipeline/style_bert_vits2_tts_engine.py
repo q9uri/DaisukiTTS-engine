@@ -203,7 +203,7 @@ class StyleBertVITS2TTSEngine(TTSEngine):
 
         # 音声合成モデルをロード
         tts_model = TTSModel(
-            # 音声合成モデルのパスとして、AIVM ファイル (Safetensors 互換) のパスを指定
+            # 音声合成モデルのパスとして、AIVMX ファイル (Safetensors 互換) のパスを指定
             model_path=aivm_info.file_path,
             # config_path とあるが、HyperParameters の Pydantic モデルを直接指定できる
             config_path=hyper_parameters,

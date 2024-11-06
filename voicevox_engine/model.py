@@ -93,13 +93,13 @@ class AudioQuery(BaseModel):
 
 class AivmInfo(BaseModel):
     """
-    AIVM (Aivis Voice Model) ファイルフォーマットの音声合成モデルの情報
-    AIVM マニフェストには音声合成モデルに関連するほぼ全てのメタデータが含まれる
-    speakers フィールド内の話者情報は、VOICEVOX ENGINE との API 互換性のため
+    AIVM (Aivis Voice Model) 仕様に準拠した音声合成モデルのメタデータ情報
+    AIVM マニフェストには、音声合成モデルに関連する全てのメタデータが含まれる
+    speakers フィールド内の話者情報は、VOICEVOX ENGINE との API 互換性のために
     AIVM マニフェストを元に Speaker / SpeakerStyle / SpeakerInfo / StyleInfo モデルに変換したもの
     """
 
-    file_path: Path = Field(title="AIVM ファイルのインストール先パス")
+    file_path: Path = Field(title="AIVMX ファイルのインストール先パス")
     manifest: AivmManifest = Field(title="AIVM マニフェスト")
     speakers: list[LibrarySpeaker] = Field(
         title="話者情報のリスト (VOICEVOX ENGINE 互換)"

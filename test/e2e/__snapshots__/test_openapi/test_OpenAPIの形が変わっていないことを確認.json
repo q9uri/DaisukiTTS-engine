@@ -37,11 +37,11 @@
         "type": "object"
       },
       "AivmInfo": {
-        "description": "AIVM (Aivis Voice Model) ファイルフォーマットの音声合成モデルの情報\nAIVM マニフェストには音声合成モデルに関連するほぼ全てのメタデータが含まれる\nspeakers フィールド内の話者情報は、VOICEVOX ENGINE との API 互換性のため\nAIVM マニフェストを元に Speaker / SpeakerStyle / SpeakerInfo / StyleInfo モデルに変換したもの",
+        "description": "AIVM (Aivis Voice Model) 仕様に準拠した音声合成モデルのメタデータ情報\nAIVM マニフェストには、音声合成モデルに関連する全てのメタデータが含まれる\nspeakers フィールド内の話者情報は、VOICEVOX ENGINE との API 互換性のために\nAIVM マニフェストを元に Speaker / SpeakerStyle / SpeakerInfo / StyleInfo モデルに変換したもの",
         "properties": {
           "file_path": {
             "format": "path",
-            "title": "AIVM ファイルのインストール先パス",
+            "title": "AIVMX ファイルのインストール先パス",
             "type": "string"
           },
           "manifest": {
@@ -386,7 +386,7 @@
                 "type": "null"
               }
             ],
-            "description": "音声合成モデルパッケージファイル (`.aivm`)",
+            "description": "AIVMX (Aivis Voice Model for ONNX) ファイル (`.aivmx`)",
             "title": "File"
           },
           "url": {
@@ -398,7 +398,7 @@
                 "type": "null"
               }
             ],
-            "description": "音声合成モデルパッケージファイルの URL",
+            "description": "AIVMX (Aivis Voice Model for ONNX) ファイルの URL",
             "title": "Url"
           }
         },
@@ -3510,12 +3510,12 @@
         "operationId": "get_aivm_info_voice_models__aivm_uuid__get",
         "parameters": [
           {
-            "description": "AIVM ファイルの UUID",
+            "description": "AIVMX ファイルの UUID",
             "in": "path",
             "name": "aivm_uuid",
             "required": true,
             "schema": {
-              "description": "AIVM ファイルの UUID",
+              "description": "AIVMX ファイルの UUID",
               "title": "Aivm Uuid",
               "type": "string"
             }
@@ -3555,12 +3555,12 @@
         "operationId": "uninstall_aivm_voice_models__aivm_uuid__uninstall_delete",
         "parameters": [
           {
-            "description": "AIVM ファイルの UUID",
+            "description": "AIVMX ファイルの UUID",
             "in": "path",
             "name": "aivm_uuid",
             "required": true,
             "schema": {
-              "description": "AIVM ファイルの UUID",
+              "description": "AIVMX ファイルの UUID",
               "title": "Aivm Uuid",
               "type": "string"
             }
