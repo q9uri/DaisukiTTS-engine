@@ -40,11 +40,11 @@ def generate_aivm_models_router(
     def install_aivm(
         file: Annotated[
             UploadFile | None,
-            File(description="AIVMX (Aivis Voice Model for ONNX) ファイル (`.aivmx`)"),
+            File(description="AIVMX ファイル (`.aivmx`)"),
         ] = None,
         url: Annotated[
             str | None,
-            Form(description="AIVMX (Aivis Voice Model for ONNX) ファイルの URL"),
+            Form(description="AIVMX ファイルの URL"),
         ] = None,
     ) -> None:
         """
@@ -67,7 +67,7 @@ def generate_aivm_models_router(
         "/{aivm_uuid}",
     )
     def get_aivm_info(
-        aivm_uuid: Annotated[str, Path(description="AIVMX ファイルの UUID")]
+        aivm_uuid: Annotated[str, Path(description="音声合成モデルの UUID")]
     ) -> AivmInfo:
         """
         指定された音声合成モデルの情報を取得します。
@@ -81,7 +81,7 @@ def generate_aivm_models_router(
         dependencies=[Depends(verify_mutability)],
     )
     def uninstall_aivm(
-        aivm_uuid: Annotated[str, Path(description="AIVMX ファイルの UUID")]
+        aivm_uuid: Annotated[str, Path(description="音声合成モデルの UUID")]
     ) -> None:
         """
         指定された音声合成モデルをアンインストールします。

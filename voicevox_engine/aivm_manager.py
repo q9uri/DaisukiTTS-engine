@@ -145,7 +145,7 @@ class AivmManager:
 
     def get_aivm_info(self, aivm_uuid: str) -> AivmInfo:
         """
-        AIVMX ファイルの UUID から AIVMX ファイルの情報を取得する
+        音声合成モデルの UUID から AIVMX ファイルの情報を取得する
 
         Parameters
         ----------
@@ -224,7 +224,7 @@ class AivmManager:
         Returns
         -------
         aivm_infos : dict[str, AivmInfo]
-            インストール済み音声合成モデルの情報 (キー: AIVMX ファイルの UUID, 値: AivmInfo)
+            インストール済み音声合成モデルの情報 (キー: 音声合成モデルの UUID, 値: AivmInfo)
         """
 
         # 既に取得済みかつ再取得が強制されていない場合は高速化のためキャッシュを返す
@@ -256,7 +256,7 @@ class AivmManager:
                 logger.warning(f"{aivm_file_path}: Failed to read AIVM metadata. ({e})")
                 continue
 
-            # AIVMX ファイルの UUID
+            # 音声合成モデルの UUID
             aivm_uuid = str(aivm_manifest.uuid)
 
             # すでに同一 UUID のファイルがインストール済みかどうかのチェック
@@ -455,7 +455,7 @@ class AivmManager:
         file.seek(0)
 
         # AIVMX ファイルをインストール
-        ## 通常は重複防止のため "(AIVMX ファイルの UUID).aivmx" のフォーマットのファイル名でインストールされるが、
+        ## 通常は重複防止のため "(音声合成モデルの UUID).aivmx" のフォーマットのファイル名でインストールされるが、
         ## 手動で .aivmx ファイルをインストール先ディレクトリにコピーしても一通り動作するように考慮している
         logger.info(f"Installing AIVM file to {aivm_file_path}...")
         with open(aivm_file_path, mode="wb") as f:
@@ -519,7 +519,7 @@ class AivmManager:
             )
 
         # AIVMX ファイルをアンインストール
-        ## AIVMX ファイルのファイル名は必ずしも "(AIVMX ファイルの UUID).aivmx" になるとは限らないため、
+        ## AIVMX ファイルのファイル名は必ずしも "(音声合成モデルの UUID).aivmx" になるとは限らないため、
         ## AivmInfo 内に格納されているファイルパスを使って削除する
         ## 万が一 AIVMX ファイルが存在しない場合は無視する
         logger.info(f"Uninstalling AIVM file from {installed_aivm_infos[aivm_uuid].file_path}...")  # fmt: skip

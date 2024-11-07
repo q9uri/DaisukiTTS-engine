@@ -1597,12 +1597,12 @@
         "operationId": "get_aivm_info_aivm_models__aivm_uuid__get",
         "parameters": [
           {
-            "description": "AIVMX ファイルの UUID",
+            "description": "音声合成モデルの UUID",
             "in": "path",
             "name": "aivm_uuid",
             "required": true,
             "schema": {
-              "description": "AIVMX ファイルの UUID",
+              "description": "音声合成モデルの UUID",
               "title": "Aivm Uuid",
               "type": "string"
             }
@@ -1642,12 +1642,12 @@
         "operationId": "uninstall_aivm_aivm_models__aivm_uuid__uninstall_delete",
         "parameters": [
           {
-            "description": "AIVMX ファイルの UUID",
+            "description": "音声合成モデルの UUID",
             "in": "path",
             "name": "aivm_uuid",
             "required": true,
             "schema": {
-              "description": "AIVMX ファイルの UUID",
+              "description": "音声合成モデルの UUID",
               "title": "Aivm Uuid",
               "type": "string"
             }
