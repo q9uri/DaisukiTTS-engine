@@ -82,24 +82,14 @@ starlette = "^0.38.4"
 jaconv = "^0.3.4"
 httpx = "^0.27.0"
 # aivmlib は AIVMX ファイルのメタデータ読み取りに必要
-aivmlib = { git = "https://x-access-token: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@github.com/Aivis-Project/aivmlib.git", rev = "6cd92e859228554cb4be4e16595d87365f519e17" }
+aivmlib = { git = "https://x-access-token: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@github.com/Aivis-Project/aivmlib.git", rev = "9731dc6f20c2282e09fa870790043a20b2662c16" }
 # AivisSpeech-Engine にはカスタマイズされた Style-Bert-VITS2 が必要
 style-bert-vits2 = { git = "https://github.com/tsukumijima/Style-Bert-VITS2", rev = "5aece3cc7d28c3137222c69752916cc8876da1b8" }
-# アーキテクチャに応じて適切な PyTorch をインストール
-# ref: https://tech.layerx.co.jp/entry/2023/07/28/184937
-torch = [
-  # Windows: CUDA 12.1
-  { url = "https://download.pytorch.org/whl/cu121/torch-2.3.1%2Bcu121-cp311-cp311-win_amd64.whl", markers = "sys_platform == 'win32'" },
-  # macOS (Intel): CPU only
-  # PyTorch 2.3 系では Intel Mac のサポートが廃止されたため、Intel Mac のみ 2.2.2 固定としている
-  # ref: https://github.com/pytorch/pytorch/issues/114602
-  { url = "https://download.pytorch.org/whl/cpu/torch-2.2.2-cp311-none-macosx_10_9_x86_64.whl", markers = "sys_platform == 'darwin' and platform_machine == 'x86_64'" },
-  # macOS (Apple Silicon): CPU only
-  { url = "https://download.pytorch.org/whl/cpu/torch-2.3.1-cp311-none-macosx_11_0_arm64.whl", markers = "sys_platform == 'darwin' and platform_machine == 'arm64'" },
-  # Linux: CUDA 12.1
-  { url = "https://download.pytorch.org/whl/cu121/torch-2.3.1%2Bcu121-cp311-cp311-linux_x86_64.whl", markers = "sys_platform == 'linux' and platform_machine == 'x86_64'" },
-  # Linux (ARM): CPU only
-  { url = "https://download.pytorch.org/whl/cpu/torch-2.3.1-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", markers = "sys_platform == 'linux' and platform_machine == 'aarch64'" },
+# OS に応じて適切な ONNX Runtime プラグインをインストール
+onnxruntime-directml = { version = "^1.20.0", platform = "windows" }
+onnxruntime-gpu = [
+  { version = "^1.20.0", platform = "windows" },
+  { version = "^1.20.0", platform = "linux" },
 ]
 
 [tool.poetry.group.dev.dependencies]

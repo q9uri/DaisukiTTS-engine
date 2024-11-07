@@ -5,13 +5,12 @@ import re
 import time
 from io import BytesIO
 from pathlib import Path
-from typing import Final, Literal
+from typing import Any, Final, Sequence
 
 import aivmlib
 import jaconv
 import numpy as np
-import torch
-import torch.version
+import onnxruntime
 from fastapi import HTTPException
 from numpy.typing import NDArray
 from style_bert_vits2.constants import (
@@ -21,7 +20,7 @@ from style_bert_vits2.constants import (
 )
 from style_bert_vits2.logging import logger as style_bert_vits2_logger
 from style_bert_vits2.models.hyper_parameters import HyperParameters
-from style_bert_vits2.nlp import bert_models
+from style_bert_vits2.nlp import onnx_bert_models
 from style_bert_vits2.nlp.japanese.g2p import g2p
 from style_bert_vits2.nlp.japanese.g2p_utils import g2kata_tone, kata_tone2phone_tone
 from style_bert_vits2.nlp.japanese.mora_list import (
@@ -67,49 +66,50 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         # ロード済みモデルのキャッシュ
         self.tts_models: dict[str, TTSModel] = {}
 
-        # PyTorch での推論に利用するデバイスを選択
-        self.device: Literal["cpu", "cuda", "mps"] = "cpu"
+        # ONNX Runtime での推論に利用するデバイスを選択
+        self.onnx_providers: Sequence[str | tuple[str, dict[str, Any]]] = [
+            ("CPUExecutionProvider", {}),
+        ]
         self.is_gpu_available: bool = False
-        # NVIDIA GPU が接続されているなら CUDA (Compute Unified Device Architecture) を利用できる
-        if torch.backends.cuda.is_built() and torch.cuda.is_available():
+        available_onnx_providers: list[str] = onnxruntime.get_available_providers()
+
+        # NVIDIA GPU が接続されていて CUDA がインストールされていれば、CUDAExecutionProvider が利用できる
+        ## DirectML よりも CUDA の方が推論速度が速いため優先的に利用する
+        ## ただし NVIDIA GPU が必要な上に CUDA 自体のファイルサイズが大きいため、CUDA 自体は同梱していない
+        if use_gpu is True and "CUDAExecutionProvider" in available_onnx_providers:
             self.is_gpu_available = True
-            # GPU モード指定時
-            if use_gpu is True:
-                self.device = "cuda"
-                # AMD ROCm は PyTorch 上において CUDA デバイスとして認識される
-                ## torch.version.hip が None でなければ CUDA ではなく ROCm が利用されていると判断できるらしい
-                ## ref: https://pytorch.org/docs/stable/notes/hip.html
-                if torch.version.hip is not None:
-                    logger.info("Using GPU (AMD ROCm) for inference.")
-                else:
-                    logger.info("Using GPU (NVIDIA CUDA) for inference.")
-            # CPU モード指定時
-            else:
-                if torch.version.hip is not None:
-                    logger.info("Using CPU for inference. (but AMD ROCm is available!)")
-                else:
-                    logger.info("Using CPU for inference. (but NVIDIA CUDA is available!)")  # fmt: skip
-        # Mac なら基本 Apple MPS (Metal Performance Shaders) が利用できる
-        # FIXME: SDP Ratio の値次第で話速が遅くなる謎の問題がある上 CPU と推論速度が然程変わらないため、当面コメントアウト
-        # elif torch.backends.mps.is_built() and torch.backends.mps.is_available():
-        #     self.is_gpu_available = True
-        #     # GPU モード指定時
-        #     if use_gpu is True:
-        #         self.device = "mps"
-        #         logger.info("Using GPU (Apple MPS) for inference.")
-        #     # CPU モード指定時
-        #     else:
-        #         logger.info("Using CPU for inference. (but Apple MPS is available!)")
-        # それ以外の環境では CPU にフォールバック
+            self.onnx_providers = [
+                # cudnn_conv_algo_search を DEFAULT にすると推論速度が大幅に向上する
+                # ref: https://medium.com/neuml/debug-onnx-gpu-performance-c9290fe07459
+                ("CUDAExecutionProvider", {"cudnn_conv_algo_search": "DEFAULT"}),
+                # フォールバックとして CPUExecutionProvider も指定する
+                ("CPUExecutionProvider", {}),
+            ]
+            logger.info("Using GPU (NVIDIA CUDA) for inference.")
+
+        # Windows なら DirectML (DmlExecutionProvider) を利用できる
+        ## iGPU でも利用できるが、大半のケースで CPU 推論よりも大幅に遅くなる
+        elif use_gpu is True and "DmlExecutionProvider" in available_onnx_providers:
+            self.is_gpu_available = True
+            self.onnx_providers = [
+                ## TODO: より適した Direct3D 上のデバイス ID を指定できるようにする
+                ("DmlExecutionProvider", {"device_id": 0}),
+                # フォールバックとして CPUExecutionProvider も指定する
+                ("CPUExecutionProvider", {}),
+            ]
+            logger.info("Using GPU (DirectML) for inference.")
+
+        # GPU モードが指定されているが GPU が利用できない場合は CPU にフォールバック
+        elif use_gpu is True:
+            self.is_gpu_available = False
+            self.onnx_providers = [("CPUExecutionProvider", {})]
+            logger.warning("GPU is not available. Using CPU instead.")
+
+        # CPU モード指定時
         else:
             self.is_gpu_available = False
-            # GPU モード指定時
-            if use_gpu is True:
-                self.device = "cpu"
-                logger.warning("GPU is not available. Using CPU instead.")
-            # CPU モード指定時
-            else:
-                logger.info("Using CPU for inference.")
+            self.onnx_providers = [("CPUExecutionProvider", {})]
+            logger.info("Using CPU for inference.")
 
         # Style-Bert-VITS2 本体のロガーを抑制
         style_bert_vits2_logger.remove()
@@ -117,15 +117,15 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         # 音声合成に必要な BERT モデル・トークナイザーを読み込む
         ## 一度ロードすればプロセス内でグローバルに保持される
         logger.info("Loading BERT model and tokenizer...")
-        bert_models.load_model(
+        onnx_bert_models.load_model(
             language=Languages.JP,
-            pretrained_model_name_or_path="ku-nlp/deberta-v2-large-japanese-char-wwm",
-            device_map=self.device,
+            pretrained_model_name_or_path="tsukumijima/deberta-v2-large-japanese-char-wwm-onnx",
+            onnx_providers=self.onnx_providers,
             cache_dir=str(self.BERT_MODEL_CACHE_DIR),
         )
-        bert_models.load_tokenizer(
+        onnx_bert_models.load_tokenizer(
             language=Languages.JP,
-            pretrained_model_name_or_path="ku-nlp/deberta-v2-large-japanese-char-wwm",
+            pretrained_model_name_or_path="tsukumijima/deberta-v2-large-japanese-char-wwm-onnx",
             cache_dir=str(self.BERT_MODEL_CACHE_DIR),
         )
         logger.info("BERT model and tokenizer loaded.")
@@ -184,7 +184,7 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         aivm_info = self.aivm_manager.get_aivm_info(aivm_uuid)
         try:
             with open(aivm_info.file_path, mode="rb") as f:
-                aivm_metadata = aivmlib.read_aivm_metadata(f)
+                aivm_metadata = aivmlib.read_aivmx_metadata(f)
         except aivmlib.AivmValidationError as e:
             logger.error(f"{aivm_info.file_path}: Failed to read AIVM metadata. ({e})")
             raise HTTPException(
@@ -203,14 +203,14 @@ class StyleBertVITS2TTSEngine(TTSEngine):
 
         # 音声合成モデルをロード
         tts_model = TTSModel(
-            # 音声合成モデルのパスとして、AIVMX ファイル (Safetensors 互換) のパスを指定
+            # 音声合成モデルのパスとして、AIVMX ファイル (ONNX 互換) のパスを指定
             model_path=aivm_info.file_path,
             # config_path とあるが、HyperParameters の Pydantic モデルを直接指定できる
             config_path=hyper_parameters,
             # style_vec_path とあるが、style_vectors の NDArray を直接指定できる
             style_vec_path=style_vectors,
-            # 音声合成モデルのロード先の GPU デバイスを指定
-            device=self.device,
+            # ONNX 推論で利用する ExecutionProvider を指定
+            onnx_providers=self.onnx_providers,
         )  # fmt: skip
         tts_model.load()
         logger.info(f"{aivm_info.manifest.name} ({aivm_uuid}) loaded.")

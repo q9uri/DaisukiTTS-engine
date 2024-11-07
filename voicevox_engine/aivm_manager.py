@@ -250,7 +250,7 @@ class AivmManager:
             # AIVM メタデータの読み込み
             try:
                 with open(aivm_file_path, mode="rb") as f:
-                    aivm_metadata = aivmlib.read_aivm_metadata(f)
+                    aivm_metadata = aivmlib.read_aivmx_metadata(f)
                     aivm_manifest = aivm_metadata.manifest
             except aivmlib.AivmValidationError as e:
                 logger.warning(f"{aivm_file_path}: Failed to read AIVM metadata. ({e})")
@@ -418,7 +418,7 @@ class AivmManager:
 
         # AIVMX ファイルからから AIVM メタデータを取得
         try:
-            aivm_metadata = aivmlib.read_aivm_metadata(file)
+            aivm_metadata = aivmlib.read_aivmx_metadata(file)
             aivm_manifest = aivm_metadata.manifest
         except aivmlib.AivmValidationError as e:
             raise HTTPException(
