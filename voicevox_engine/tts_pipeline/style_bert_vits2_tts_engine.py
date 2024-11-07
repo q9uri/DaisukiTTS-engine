@@ -5,7 +5,7 @@ import re
 import time
 from io import BytesIO
 from pathlib import Path
-from typing import Any, Final, Sequence
+from typing import Any, Final, Literal, Sequence
 
 import aivmlib
 import jaconv
@@ -71,6 +71,7 @@ class StyleBertVITS2TTSEngine(TTSEngine):
             ("CPUExecutionProvider", {}),
         ]
         self.is_gpu_available: bool = False
+        self.gpu_type: Literal["CUDA", "DirectML"] | None = None
         available_onnx_providers: list[str] = onnxruntime.get_available_providers()
 
         # NVIDIA GPU が接続されていて CUDA がインストールされていれば、CUDAExecutionProvider が利用できる
@@ -78,6 +79,7 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         ## ただし NVIDIA GPU が必要な上に CUDA 自体のファイルサイズが大きいため、CUDA 自体は同梱していない
         if use_gpu is True and "CUDAExecutionProvider" in available_onnx_providers:
             self.is_gpu_available = True
+            self.gpu_type = "CUDA"
             self.onnx_providers = [
                 # cudnn_conv_algo_search を DEFAULT にすると推論速度が大幅に向上する
                 # ref: https://medium.com/neuml/debug-onnx-gpu-performance-c9290fe07459
@@ -91,6 +93,7 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         ## iGPU でも利用できるが、大半のケースで CPU 推論よりも大幅に遅くなる
         elif use_gpu is True and "DmlExecutionProvider" in available_onnx_providers:
             self.is_gpu_available = True
+            self.gpu_type = "DirectML"
             self.onnx_providers = [
                 ## TODO: より適した Direct3D 上のデバイス ID を指定できるようにする
                 ("DmlExecutionProvider", {"device_id": 0}),
@@ -101,14 +104,10 @@ class StyleBertVITS2TTSEngine(TTSEngine):
 
         # GPU モードが指定されているが GPU が利用できない場合は CPU にフォールバック
         elif use_gpu is True:
-            self.is_gpu_available = False
-            self.onnx_providers = [("CPUExecutionProvider", {})]
             logger.warning("GPU is not available. Using CPU instead.")
 
         # CPU モード指定時
         else:
-            self.is_gpu_available = False
-            self.onnx_providers = [("CPUExecutionProvider", {})]
             logger.info("Using CPU for inference.")
 
         # Style-Bert-VITS2 本体のロガーを抑制
@@ -144,7 +143,7 @@ class StyleBertVITS2TTSEngine(TTSEngine):
     @property
     def default_sampling_rate(self) -> int:
         """合成される音声波形のデフォルトサンプリングレートを取得する。"""
-        # Style-Bert-VITS2 の出力サンプリング周波数 (44.1KHz) に合わせる
+        # Style-Bert-VITS2 の出力サンプリング周波数 (44.1kHz) に合わせる
         return 44100
 
     @property
@@ -153,10 +152,10 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         return DeviceSupport(
             # CPU: 常にサポートされる
             cpu=True,
-            # CUDA: GPU が利用可能な場合は True (CUDA 以外の GPU も含む)
-            cuda=True if self.is_gpu_available else False,
-            # DirectML: 常にサポートされない
-            dml=False,
+            # CUDA: CUDA 推論が利用可能な場合は True
+            cuda=True if self.is_gpu_available and self.gpu_type == "CUDA" else False,
+            # DirectML: DirectML 推論が利用可能な場合は True
+            dml=True if self.is_gpu_available and self.gpu_type == "DirectML" else False,  # fmt: skip
         )
 
     def load_model(self, aivm_uuid: str) -> TTSModel:
