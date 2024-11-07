@@ -511,6 +511,13 @@ class AivmManager:
                 detail=f"音声合成モデル {aivm_uuid} はインストールされていません。",
             )
 
+        # インストール済みの音声合成モデルの数を確認
+        if len(installed_aivm_infos) <= 1:
+            raise HTTPException(
+                status_code=400,
+                detail="AivisSpeech Engine には必ず 1 つ以上の音声合成モデルがインストールされている必要があります。",
+            )
+
         # AIVMX ファイルをアンインストール
         ## AIVMX ファイルのファイル名は必ずしも "(AIVMX ファイルの UUID).aivmx" になるとは限らないため、
         ## AivmInfo 内に格納されているファイルパスを使って削除する
