@@ -61,7 +61,7 @@ if __name__ == "__main__":
     # FastAPI の機能を用いて OpenAPI schema を生成する
     app = generate_app(
         tts_engines=tts_engines,
-        aivm_manager=AivmManager(get_save_dir() / "voice_models"),
+        aivm_manager=AivmManager(get_save_dir() / "Models"),
         core_manager=core_manager,
         setting_loader=SettingHandler(USER_SETTING_PATH),
         preset_manager=PresetManager(  # FIXME: impl MockPresetManager

@@ -345,7 +345,7 @@ def main() -> None:
     # assert len(tts_engines.versions()) != 0, "音声合成エンジンがありません。"
 
     # AivmManager を初期化
-    aivm_manager = AivmManager(get_save_dir() / "voice_models")
+    aivm_manager = AivmManager(get_save_dir() / "Models")
 
     # StyleBertVITS2TTSEngine を通常の TTSEngine の代わりに利用
     tts_engines = TTSEngineManager()

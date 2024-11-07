@@ -10,6 +10,7 @@ from voicevox_engine.app.dependencies import generate_mutability_allowed_verifie
 from voicevox_engine.app.global_exceptions import configure_global_exception_handlers
 from voicevox_engine.app.middlewares import configure_middlewares
 from voicevox_engine.app.openapi_schema import configure_openapi_schema
+from voicevox_engine.app.routers.aivm_models import generate_aivm_models_router
 from voicevox_engine.app.routers.character import generate_character_router
 from voicevox_engine.app.routers.engine_info import generate_engine_info_router
 from voicevox_engine.app.routers.library import generate_library_router
@@ -19,7 +20,6 @@ from voicevox_engine.app.routers.preset import generate_preset_router
 from voicevox_engine.app.routers.setting import generate_setting_router
 from voicevox_engine.app.routers.tts_pipeline import generate_tts_pipeline_router
 from voicevox_engine.app.routers.user_dict import generate_user_dict_router
-from voicevox_engine.app.routers.voice_models import generate_voice_models_router
 from voicevox_engine.cancellable_engine import CancellableEngine
 from voicevox_engine.core.core_adapter import CoreCharacter
 from voicevox_engine.core.core_initializer import CoreManager
@@ -95,8 +95,8 @@ def generate_app(
         app.include_router(
             generate_library_router(library_manager, verify_mutability_allowed)
         )
-    # generate_voice_models_router() は AivisSpeech Engine 独自追加ルーター
-    app.include_router(generate_voice_models_router(aivm_manager, verify_mutability_allowed))  # noqa # fmt: skip
+    # generate_aivm_models_router() は AivisSpeech Engine 独自追加ルーター
+    app.include_router(generate_aivm_models_router(aivm_manager, verify_mutability_allowed))  # noqa # fmt: skip
     app.include_router(generate_user_dict_router(user_dict, verify_mutability_allowed))
     app.include_router(generate_engine_info_router(core_version_list, engine_manifest))
     app.include_router(

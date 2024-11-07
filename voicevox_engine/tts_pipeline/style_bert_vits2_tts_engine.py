@@ -51,7 +51,7 @@ class StyleBertVITS2TTSEngine(TTSEngine):
     """Style-Bert-VITS2 TTS Engine"""
 
     # BERT モデルのキャッシュディレクトリ
-    BERT_MODEL_CACHE_DIR: Final[Path] = get_save_dir() / "bert_model_caches"
+    BERT_MODEL_CACHE_DIR: Final[Path] = get_save_dir() / "BertModelCaches"
 
     def __init__(
         self,

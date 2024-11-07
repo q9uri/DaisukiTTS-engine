@@ -10,14 +10,14 @@ from voicevox_engine.model import AivmInfo
 from ..dependencies import VerifyMutabilityAllowed
 
 
-def generate_voice_models_router(
+def generate_aivm_models_router(
     aivm_manager: AivmManager,
     verify_mutability: VerifyMutabilityAllowed,
 ) -> APIRouter:
     """音声合成モデル管理 API Router を生成する"""
 
     router = APIRouter(
-        prefix="/voice_models",
+        prefix="/aivm_models",
         tags=["音声合成モデル管理"],
     )
 
