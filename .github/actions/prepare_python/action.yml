@@ -18,6 +18,9 @@ outputs:
   python-version:
     description: "Python version"
     value: ${{ steps.export-python-version.outputs.python-version }}
+  architecture:
+    description: "Architecture"
+    value: ${{ runner.arch }}
 
 runs:
   using: "composite"
@@ -27,6 +30,7 @@ runs:
       uses: actions/setup-python@v5
       with:
         python-version: ${{ inputs.python-version }}
+        architecture: ${{ inputs.architecture }}
         cache: pip
 
     # - name: <Setup> Install Python dependencies
