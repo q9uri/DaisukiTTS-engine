@@ -39,13 +39,13 @@ jobs:
       matrix:
         include:
           - os: windows-2022
-            target: windows-x64
+            target: Windows-x64
           - os: macos-13
-            target: macos-x64
+            target: macOS-x64
           - os: macos-14
-            target: macos-arm64
+            target: macOS-arm64
           - os: ubuntu-20.04
-            target: linux-x64
+            target: Linux-x64
 
     runs-on: ${{ matrix.os }}
 
@@ -54,7 +54,7 @@ jobs:
         id: vars
         run: |
           echo "release_url=${{ env.REPO_URL }}/releases/download/${{ env.VERSION }}" >> "$GITHUB_OUTPUT"
-          echo "package_name=aivisspeech-engine-${{ matrix.target }}-${{ env.VERSION }}" >> "$GITHUB_OUTPUT"
+          echo "package_name=AivisSpeech-Engine-${{ matrix.target }}-${{ env.VERSION }}" >> "$GITHUB_OUTPUT"
 
       - name: <Setup> Check out the repository
         uses: actions/checkout@v4

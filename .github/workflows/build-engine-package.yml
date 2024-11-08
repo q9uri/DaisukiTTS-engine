@@ -55,19 +55,19 @@ jobs:
           # Windows x64
           - os: windows-2022
             architecture: "x64"
-            target: windows-x64
+            target: Windows-x64
           # macOS x64 (Intel Mac)
           - os: macos-13
             architecture: "x64"
-            target: macos-x64
+            target: macOS-x64
           # macOS arm64 (Apple Silicon Mac)
           - os: macos-14
             architecture: "arm64"
-            target: macos-arm64
+            target: macOS-arm64
           # Linux x64
           - os: ubuntu-20.04
             architecture: "x64"
-            target: linux-x64
+            target: Linux-x64
 
     runs-on: ${{ matrix.os }}
     permissions:
@@ -81,7 +81,7 @@ jobs:
     steps:
       - name: <Setup> Declare variables
         id: vars
-        run: echo "package_name=aivisspeech-engine-${{ matrix.target }}-${{ needs.config.outputs.version }}" >> "$GITHUB_OUTPUT"
+        run: echo "package_name=AivisSpeech-Engine-${{ matrix.target }}-${{ needs.config.outputs.version }}" >> "$GITHUB_OUTPUT"
 
       - name: <Setup> Check out the repository
         uses: actions/checkout@v4
