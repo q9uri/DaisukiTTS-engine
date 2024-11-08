@@ -66,9 +66,13 @@ class AivmManager:
         # すべてのインストール済み音声合成モデルの情報が保持される
         self._installed_aivm_infos: dict[str, AivmInfo] | None = None
 
-        logger.info("Installed AIVM models:")
-        for aivm_info in self.get_installed_aivm_infos().values():
-            logger.info(f"- {aivm_info.manifest.name} ({aivm_info.manifest.uuid})")
+        current_installed_aivm_infos = self.get_installed_aivm_infos()
+        if len(current_installed_aivm_infos) == 0:
+            logger.warning("No AIVM models are installed.")
+        else:
+            logger.info("Installed AIVM models:")
+            for aivm_info in current_installed_aivm_infos.values():
+                logger.info(f"- {aivm_info.manifest.name} ({aivm_info.manifest.uuid})")
 
     def get_characters(self) -> list[Character]:
         """
