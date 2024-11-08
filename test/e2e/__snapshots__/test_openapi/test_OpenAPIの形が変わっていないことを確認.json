@@ -386,7 +386,7 @@
                 "type": "null"
               }
             ],
-            "description": "AIVMX (Aivis Voice Model for ONNX) ファイル (`.aivmx`)",
+            "description": "AIVMX ファイル (`.aivmx`)",
             "title": "File"
           },
           "url": {
@@ -398,7 +398,7 @@
                 "type": "null"
               }
             ],
-            "description": "AIVMX (Aivis Voice Model for ONNX) ファイルの URL",
+            "description": "AIVMX ファイルの URL",
             "title": "Url"
           }
         },
