@@ -14,7 +14,8 @@ datas += collect_data_files('pyopenjtalk')
 datas += collect_data_files('style_bert_vits2')
 
 # functorch のバイナリを収集
-# binaries = collect_dynamic_libs('functorch')
+# ONNX に移行したため不要なはずだが、念のため
+binaries = collect_dynamic_libs('functorch')
 
 # Windows: Intel MKL 関連の DLL を収集
 # これをやらないと PyTorch が CPU 版か CUDA 版かに関わらずクラッシュする…
