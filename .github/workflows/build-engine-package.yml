@@ -57,7 +57,7 @@ jobs:
             architecture: "x64"
             target: windows-x64
           # macOS x64 (Intel Mac)
-          - os: macos-12
+          - os: macos-13
             architecture: "x64"
             target: macos-x64
           # macOS arm64 (Apple Silicon Mac)
