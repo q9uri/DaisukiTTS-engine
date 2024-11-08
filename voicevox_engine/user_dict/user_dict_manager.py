@@ -9,6 +9,7 @@ from typing import Any, TypeVar
 from uuid import UUID, uuid4
 
 import pyopenjtalk
+import zstandard
 from pydantic import TypeAdapter
 
 from ..logging import logger
@@ -129,12 +130,18 @@ class UserDictionary:
                 default_dict_files = [default_dict_dir_path / "01_default.csv"]
                 logger.info("Using only default dictionary for pytest.")
             else:
-                default_dict_files = sorted(default_dict_dir_path.glob("*.csv"))
+                default_dict_files = sorted(default_dict_dir_path.glob("*.csv.zst"))
             if len(default_dict_files) == 0:
                 logger.warning("Cannot find default dictionary.")
                 return
+
+            # ZStandard デコーダーの初期化
+            decompressor = zstandard.ZstdDecompressor()
+
             for file_path in default_dict_files:
-                default_dict_content = file_path.read_text(encoding="utf-8")
+                with file_path.open("rb") as f:
+                    with decompressor.stream_reader(f) as reader:
+                        default_dict_content = reader.read().decode("utf-8")
                 if not default_dict_content.endswith("\n"):
                     default_dict_content += "\n"
                 csv_text += default_dict_content

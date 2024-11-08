@@ -6,7 +6,9 @@ import re
 import sys
 
 datas = [
-    ('resources', 'resources'),
+    ('resources/dictionaries/*.csv.zst', 'resources/dictionaries'),
+    ('resources/engine_manifest_assets', 'resources/engine_manifest_assets'),
+    ('resources/setting_ui_template.html', 'resources'),
     ('engine_manifest.json', '.'),
     ('presets.yaml', '.'),
 ]

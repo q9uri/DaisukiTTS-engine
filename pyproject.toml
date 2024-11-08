@@ -6,6 +6,7 @@ typos = "typos"
 test = "pytest"
 update-snapshots = "pytest --snapshot-update"
 update-licenses = "bash tools/create_venv_and_generate_licenses.bash"
+compress-dictionaries = "poetry run python tools/compress_dictionaries.py"
 build = "poetry run task update-licenses && pyinstaller --noconfirm run.spec"
 
 [tool.pysen]
@@ -81,6 +82,7 @@ pydantic = "^2.7.3"
 starlette = "^0.38.4"
 jaconv = "^0.3.4"
 httpx = "^0.27.0"
+zstandard = "^0.23.0"
 # aivmlib は AIVMX ファイルのメタデータ読み取りに必要
 aivmlib = { git = "https://x-access-token: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@github.com/Aivis-Project/aivmlib.git", rev = "9731dc6f20c2282e09fa870790043a20b2662c16" }
 # AivisSpeech-Engine にはカスタマイズされた Style-Bert-VITS2 が必要
