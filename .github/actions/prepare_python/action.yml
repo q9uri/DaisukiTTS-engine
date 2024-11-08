@@ -14,13 +14,14 @@ inputs:
     description: "インストールされる Python ランタイムのバージョン。デフォルト値はこのリポジトリが想定する Python バージョン。"
     required: false
     default: "3.11.9"
+  architecture:
+    description: "Python のアーキテクチャ"
+    required: false
+    default: "x64"
 outputs:
   python-version:
     description: "Python version"
     value: ${{ steps.export-python-version.outputs.python-version }}
-  architecture:
-    description: "Architecture"
-    value: ${{ runner.arch }}
 
 runs:
   using: "composite"
