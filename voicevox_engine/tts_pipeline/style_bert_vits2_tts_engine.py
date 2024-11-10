@@ -75,18 +75,22 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         available_onnx_providers: list[str] = onnxruntime.get_available_providers()
 
         # NVIDIA GPU が接続されていて CUDA がインストールされていれば、CUDAExecutionProvider が利用できる
-        ## DirectML よりも CUDA の方が推論速度が速いため優先的に利用する
-        ## ただし NVIDIA GPU が必要な上に CUDA 自体のファイルサイズが大きいため、CUDA 自体は同梱していない
+        ## DirectML よりも CUDA の方が推論速度が速いため、優先的に利用する
+        ## Windows では若干速度は落ちるが onnxruntime-directml で代用できるのとファイルサイズが 700MB 以上あるため、
+        ## onnxruntime-gpu は既定でインストールされない (Windows で CUDA 推論したいなら各自でインストールが必要)
+        ## Windows / Linux 共に NVIDIA GPU が必要な上に CUDA 自体のサイズが巨大なため、CUDA 自体は同梱していない
         if use_gpu is True and "CUDAExecutionProvider" in available_onnx_providers:
             self.is_gpu_available = True
             self.gpu_type = "CUDA"
-            self.onnx_providers = [
-                # cudnn_conv_algo_search を DEFAULT にすると推論速度が大幅に向上する
-                # ref: https://medium.com/neuml/debug-onnx-gpu-performance-c9290fe07459
-                ("CUDAExecutionProvider", {"cudnn_conv_algo_search": "DEFAULT"}),
-                # フォールバックとして CPUExecutionProvider も指定する
-                ("CPUExecutionProvider", {}),
-            ]
+            self.onnx_providers = []
+            # cudnn_conv_algo_search を DEFAULT にすると推論速度が大幅に向上する
+            # ref: https://medium.com/neuml/debug-onnx-gpu-performance-c9290fe07459
+            self.onnx_providers.append(("CUDAExecutionProvider", {"cudnn_conv_algo_search": "DEFAULT"}))
+            # DirectML が利用可能なら、フォールバックとして DmlExecutionProvider も指定する
+            if "DmlExecutionProvider" in available_onnx_providers:
+                self.onnx_providers.append(("DmlExecutionProvider", {"device_id": 0}))
+            # フォールバックとして CPUExecutionProvider も指定する
+            self.onnx_providers.append(("CPUExecutionProvider", {}))
             logger.info("Using GPU (NVIDIA CUDA) for inference.")
 
         # Windows なら DirectML (DmlExecutionProvider) を利用できる
@@ -94,12 +98,11 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         elif use_gpu is True and "DmlExecutionProvider" in available_onnx_providers:
             self.is_gpu_available = True
             self.gpu_type = "DirectML"
-            self.onnx_providers = [
-                ## TODO: より適した Direct3D 上のデバイス ID を指定できるようにする
-                ("DmlExecutionProvider", {"device_id": 0}),
-                # フォールバックとして CPUExecutionProvider も指定する
-                ("CPUExecutionProvider", {}),
-            ]
+            self.onnx_providers = []
+            ## TODO: より適した Direct3D 上のデバイス ID を指定できるようにする
+            self.onnx_providers.append(("DmlExecutionProvider", {"device_id": 0}))
+            # フォールバックとして CPUExecutionProvider も指定する
+            self.onnx_providers.append(("CPUExecutionProvider", {}))
             logger.info("Using GPU (DirectML) for inference.")
 
         # GPU モードが指定されているが GPU が利用できない場合は CPU にフォールバック
