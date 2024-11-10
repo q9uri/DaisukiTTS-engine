@@ -3499,8 +3499,8 @@ torch = ["accelerate", "torch (>=2.1)"]
 [package.source]
 type = "git"
 url = "https://github.com/tsukumijima/Style-Bert-VITS2"
-reference = "25b67ed9c44fc2b55e619a8d2ba24e49fee04029"
-resolved_reference = "25b67ed9c44fc2b55e619a8d2ba24e49fee04029"
+reference = "55a7b2213011525c05f79aa52097c6367999c6b0"
+resolved_reference = "55a7b2213011525c05f79aa52097c6367999c6b0"
 
 [[package]]
 name = "sudachidict-core"
@@ -4202,4 +4202,4 @@ cffi = ["cffi (>=1.11)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "~3.11"
-content-hash = "799a4423d57cf7430e400b749734dcdb7311e0a0c9133ca29c65f8c9a6bc7c99"
+content-hash = "a0c515d8da263ea9b3769ddb9a0feaaa9e0df2b5109828cc0a37b5a3ad15e3ab"
