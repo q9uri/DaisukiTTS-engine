@@ -89,10 +89,10 @@ aivmlib = { git = "https://x-access-token:github_pat_11AJLTV7Q0LW9wXdYid0Oa_nHO4
 style-bert-vits2 = { git = "https://github.com/tsukumijima/Style-Bert-VITS2", rev = "25b67ed9c44fc2b55e619a8d2ba24e49fee04029" }
 # OS に応じて適切な ONNX Runtime プラグインをインストール
 onnxruntime = "^1.20.0"
-onnxruntime-directml = { version = "^1.20.0", platform = "windows" }
+onnxruntime-directml = { version = "^1.20.0", markers = "sys_platform == 'win32' and (platform_machine == 'x86_64' or platform_machine == 'AMD64')" }
 onnxruntime-gpu = [
-  { version = "^1.20.0", platform = "windows" },
-  { version = "^1.20.0", platform = "linux" },
+  { version = "^1.20.0", markers = "sys_platform == 'win32' and (platform_machine == 'x86_64' or platform_machine == 'AMD64')" },
+  { version = "^1.20.0", markers = "sys_platform == 'linux' and platform_machine == 'x86_64'" },
 ]
 
 [tool.poetry.group.dev.dependencies]
