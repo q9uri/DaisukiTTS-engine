@@ -112,6 +112,7 @@ class StyleBertVITS2TTSEngine(TTSEngine):
 
         # 音声合成に必要な BERT モデル・トークナイザーを読み込む
         ## 一度ロードすればプロセス内でグローバルに保持される
+        start_time = time.time()
         logger.info("Loading BERT model and tokenizer...")
         onnx_bert_models.load_model(
             language=Languages.JP,
@@ -124,7 +125,7 @@ class StyleBertVITS2TTSEngine(TTSEngine):
             pretrained_model_name_or_path="tsukumijima/deberta-v2-large-japanese-char-wwm-onnx",
             cache_dir=str(self.BERT_MODEL_CACHE_DIR),
         )
-        logger.info("BERT model and tokenizer loaded.")
+        logger.info(f"BERT model and tokenizer loaded. ({time.time() - start_time:.2f}s)")
 
         # load_all_models が True の場合は全ての音声合成モデルをロードしておく
         if load_all_models is True:
@@ -208,8 +209,9 @@ class StyleBertVITS2TTSEngine(TTSEngine):
             # ONNX 推論で利用する ExecutionProvider を指定
             onnx_providers=self.onnx_providers,
         )  # fmt: skip
+        start_time = time.time()
         tts_model.load()
-        logger.info(f"{aivm_info.manifest.name} ({aivm_uuid}) loaded.")
+        logger.info(f"{aivm_info.manifest.name} ({aivm_uuid}) loaded. ({time.time() - start_time:.2f}s)")
 
         self.tts_models[aivm_uuid] = tts_model
         return tts_model
