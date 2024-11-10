@@ -5,7 +5,7 @@ import re
 import time
 from io import BytesIO
 from pathlib import Path
-from typing import Any, Final, Literal, Sequence
+from typing import Any, Final, Sequence
 
 import aivmlib
 import jaconv
@@ -67,27 +67,23 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         self.tts_models: dict[str, TTSModel] = {}
 
         # ONNX Runtime での推論に利用するデバイスを選択
+        self.available_onnx_providers: list[str] = onnxruntime.get_available_providers()
         self.onnx_providers: Sequence[str | tuple[str, dict[str, Any]]] = [
             ("CPUExecutionProvider", {}),
         ]
-        self.is_gpu_available: bool = False
-        self.gpu_type: Literal["CUDA", "DirectML"] | None = None
-        available_onnx_providers: list[str] = onnxruntime.get_available_providers()
 
         # NVIDIA GPU が接続されていて CUDA がインストールされていれば、CUDAExecutionProvider が利用できる
         ## DirectML よりも CUDA の方が推論速度が速いため、優先的に利用する
         ## Windows では若干速度は落ちるが onnxruntime-directml で代用できるのとファイルサイズが 700MB 以上あるため、
         ## onnxruntime-gpu は既定でインストールされない (Windows で CUDA 推論したいなら各自でインストールが必要)
         ## Windows / Linux 共に NVIDIA GPU が必要な上に CUDA 自体のサイズが巨大なため、CUDA 自体は同梱していない
-        if use_gpu is True and "CUDAExecutionProvider" in available_onnx_providers:
-            self.is_gpu_available = True
-            self.gpu_type = "CUDA"
+        if use_gpu is True and "CUDAExecutionProvider" in self.available_onnx_providers:
             self.onnx_providers = []
             # cudnn_conv_algo_search を DEFAULT にすると推論速度が大幅に向上する
             # ref: https://medium.com/neuml/debug-onnx-gpu-performance-c9290fe07459
             self.onnx_providers.append(("CUDAExecutionProvider", {"cudnn_conv_algo_search": "DEFAULT"}))
             # DirectML が利用可能なら、フォールバックとして DmlExecutionProvider も指定する
-            if "DmlExecutionProvider" in available_onnx_providers:
+            if "DmlExecutionProvider" in self.available_onnx_providers:
                 self.onnx_providers.append(("DmlExecutionProvider", {"device_id": 0}))
             # フォールバックとして CPUExecutionProvider も指定する
             self.onnx_providers.append(("CPUExecutionProvider", {}))
@@ -95,9 +91,7 @@ class StyleBertVITS2TTSEngine(TTSEngine):
 
         # Windows なら DirectML (DmlExecutionProvider) を利用できる
         ## iGPU でも利用できるが、大半のケースで CPU 推論よりも大幅に遅くなる
-        elif use_gpu is True and "DmlExecutionProvider" in available_onnx_providers:
-            self.is_gpu_available = True
-            self.gpu_type = "DirectML"
+        elif use_gpu is True and "DmlExecutionProvider" in self.available_onnx_providers:
             self.onnx_providers = []
             ## TODO: より適した Direct3D 上のデバイス ID を指定できるようにする
             self.onnx_providers.append(("DmlExecutionProvider", {"device_id": 0}))
@@ -156,9 +150,9 @@ class StyleBertVITS2TTSEngine(TTSEngine):
             # CPU: 常にサポートされる
             cpu=True,
             # CUDA: CUDA 推論が利用可能な場合は True
-            cuda=True if self.is_gpu_available and self.gpu_type == "CUDA" else False,
+            cuda=True if "CUDAExecutionProvider" in self.available_onnx_providers else False,
             # DirectML: DirectML 推論が利用可能な場合は True
-            dml=True if self.is_gpu_available and self.gpu_type == "DirectML" else False,  # fmt: skip
+            dml=True if "DmlExecutionProvider" in self.available_onnx_providers else False,  # fmt: skip
         )
 
     def load_model(self, aivm_uuid: str) -> TTSModel:
