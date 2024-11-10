@@ -91,7 +91,8 @@ style-bert-vits2 = { git = "https://github.com/tsukumijima/Style-Bert-VITS2", re
 onnxruntime = "^1.20.0"
 onnxruntime-directml = { version = "^1.20.0", markers = "sys_platform == 'win32' and (platform_machine == 'x86_64' or platform_machine == 'AMD64')" }
 onnxruntime-gpu = [
-  { version = "^1.20.0", markers = "sys_platform == 'win32' and (platform_machine == 'x86_64' or platform_machine == 'AMD64')" },
+  # Windows では若干速度は落ちるが onnxruntime-directml で代用できるのとファイルサイズがデカいので、当面インストールしない
+  # { version = "^1.20.0", markers = "sys_platform == 'win32' and (platform_machine == 'x86_64' or platform_machine == 'AMD64')" },
   { version = "^1.20.0", markers = "sys_platform == 'linux' and platform_machine == 'x86_64'" },
 ]
 
