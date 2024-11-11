@@ -18,6 +18,7 @@
 -----
 
 - [ユーザーの方へ](#ユーザーの方へ)
+- [動作環境](#動作環境)
 - [サポートされている音声合成モデル](#サポートされている音声合成モデル)
   - [対応モデルアーキテクチャ](#対応モデルアーキテクチャ)
   - [モデルファイルの配置場所](#モデルファイルの配置場所)
@@ -44,6 +45,22 @@
 - **[使い方](public/howtouse.md)**
 - **[よくある質問](public/qAndA.md)**
 - **[お問い合わせ](public/contact.md)**
+
+## 動作環境
+
+Windows・macOS・Linux 搭載の PC に対応しています。
+
+- **Windows:** Windows 10・Windows 11
+- **macOS:** macOS 13 Ventura 以降
+- **Linux:** Ubuntu 20.04 以降
+
+> [!TIP]
+> デスクトップアプリである AivisSpeech は、Windows と macOS でのみ利用できます。  
+> 一方、音声合成 API サーバーである AivisSpeech Engine は、Ubuntu / Debian 系の Linux でも利用できます。
+
+> [!NOTE]
+> Intel CPU 搭載 Mac での動作は積極的に検証していません。  
+> Intel CPU 搭載 Mac はすでに製造が終了しており、検証環境やビルド環境の用意自体が難しくなってきています。Apple Silicon 搭載 Mac での利用をおすすめいたします。
 
 ## サポートされている音声合成モデル
 
@@ -160,12 +177,21 @@ TODO...
 > 互換性のためエンドポイントとして存在はしますが、常に `501 Not Implemented` を返します。  
 > 詳細は [app/routers/character.py](./voicevox_engine/app/routers/character.py) / [app/routers/tts_pipeline.py](./voicevox_engine/app/routers/tts_pipeline.py) を確認してください。
 
-  - **GET `/singers`**
-  - **GET `/singer_info`**
-  - **POST `/cancellable_synthesis`**
-  - **POST `/sing_frame_audio_query`**
-  - **POST `/sing_frame_volume`**
-  - **POST `/frame_synthesis`**
+- **GET `/singers`**
+- **GET `/singer_info`**
+- **POST `/cancellable_synthesis`**
+- **POST `/sing_frame_audio_query`**
+- **POST `/sing_frame_volume`**
+- **POST `/frame_synthesis`**
+
+> [!WARNING]  
+> **モーフィング機能を提供する `/synthesis_morphing` API はサポートされていません。**  
+> 話者ごとに発声タイミングが異なる関係で実装不可能なため（動作こそするが聴くに耐えない）、常に `400 Bad Request` を返します。  
+> 各話者ごとにモーフィングの利用可否を返す `/morphable_targets` API では、すべての話者でモーフィング禁止扱いとしています。  
+> 詳細は [app/routers/morphing.py](./voicevox_engine/app/routers/morphing.py) を確認してください。
+
+- **POST `/synthesis_morphing`**
+- **POST `/morphable_targets`**
 
 ### AivisSpeech Engine ではサポートされていない API パラメータ
 
