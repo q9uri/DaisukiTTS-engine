@@ -137,6 +137,10 @@ AivisSpeech Engine は、概ね VOICEVOX ENGINE の HTTP API と互換性があ�
 
 > [!IMPORTANT]  
 > **ただし、API クライアント側で `/audio_query` API から取得した `AudioQuery` の内容を編集してから `/synthesis` API に渡している場合は、仕様差異により正常に音声合成できない場合があります (後述) 。**
+> 
+> この関係で、**AivisSpeech エディタは AivisSpeech Engine と VOICEVOX ENGINE の両方を利用できますが（マルチエンジン機能利用時）、VOICEVOX エディタから AivisSpeech Engine を利用することはできません。**  
+> VOICEVOX エディタで AivisSpeech Engine を利用すると、エディタの実装上の制限により音声合成の品質が著しく低下します。AivisSpeech Engine 独自のパラメータも活用できなくなるほか、非対応機能の呼び出しでエラーが発生する可能性もあります。  
+> より良い音声合成結果を得るため、AivisSpeech エディタでの利用を強くおすすめします。
 
 > [!NOTE]  
 > 一般的な API ユースケースにおいては概ね互換性があるはずですが、**根本的に異なるモデルアーキテクチャの音声合成システムを強引に同一の API 仕様に収めている関係で、下記以外にも互換性のない API があるかもしれません。**  
