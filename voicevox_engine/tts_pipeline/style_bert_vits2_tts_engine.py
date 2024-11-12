@@ -81,7 +81,7 @@ class StyleBertVITS2TTSEngine(TTSEngine):
             self.onnx_providers = []
             # cudnn_conv_algo_search を DEFAULT にすると推論速度が大幅に向上する
             # ref: https://medium.com/neuml/debug-onnx-gpu-performance-c9290fe07459
-            self.onnx_providers.append(("CUDAExecutionProvider", {"cudnn_conv_algo_search": "DEFAULT"}))
+            self.onnx_providers.append(("CUDAExecutionProvider", {"cudnn_conv_algo_search": "DEFAULT"}))  # fmt: skip
             # DirectML が利用可能なら、フォールバックとして DmlExecutionProvider も指定する
             if "DmlExecutionProvider" in self.available_onnx_providers:
                 self.onnx_providers.append(("DmlExecutionProvider", {"device_id": 0}))
@@ -91,7 +91,7 @@ class StyleBertVITS2TTSEngine(TTSEngine):
 
         # Windows なら DirectML (DmlExecutionProvider) を利用できる
         ## iGPU でも利用できるが、大半のケースで CPU 推論よりも大幅に遅くなる
-        elif use_gpu is True and "DmlExecutionProvider" in self.available_onnx_providers:
+        elif use_gpu is True and "DmlExecutionProvider" in self.available_onnx_providers:  # fmt: skip
             self.onnx_providers = []
             ## TODO: より適した Direct3D 上のデバイス ID を指定できるようにする
             self.onnx_providers.append(("DmlExecutionProvider", {"device_id": 0}))
@@ -125,7 +125,9 @@ class StyleBertVITS2TTSEngine(TTSEngine):
             pretrained_model_name_or_path="tsukumijima/deberta-v2-large-japanese-char-wwm-onnx",
             cache_dir=str(self.BERT_MODEL_CACHE_DIR),
         )
-        logger.info(f"BERT model and tokenizer loaded. ({time.time() - start_time:.2f}s)")
+        logger.info(
+            f"BERT model and tokenizer loaded. ({time.time() - start_time:.2f}s)"
+        )
 
         # load_all_models が True の場合は全ての音声合成モデルをロードしておく
         if load_all_models is True:
@@ -150,9 +152,11 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         return DeviceSupport(
             # CPU: 常にサポートされる
             cpu=True,
-            # CUDA: CUDA 推論が利用可能な場合は True
+            # CUDA: CUDA Execution Provider が利用可能な場合は True
+            # この値が True であるからといって、必ずしも CUDA 推論が利用できるとは限らない
             cuda=True if "CUDAExecutionProvider" in self.available_onnx_providers else False,
-            # DirectML: DirectML 推論が利用可能な場合は True
+            # DirectML: DirectML Execution Provider が利用可能な場合は True
+            # この値が True であるからといって、必ずしも DirectML 推論が利用できるとは限らない
             dml=True if "DmlExecutionProvider" in self.available_onnx_providers else False,  # fmt: skip
         )
 
@@ -211,7 +215,9 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         )  # fmt: skip
         start_time = time.time()
         tts_model.load()
-        logger.info(f"{aivm_info.manifest.name} ({aivm_uuid}) loaded. ({time.time() - start_time:.2f}s)")
+        logger.info(
+            f"{aivm_info.manifest.name} ({aivm_uuid}) loaded. ({time.time() - start_time:.2f}s)"
+        )
 
         self.tts_models[aivm_uuid] = tts_model
         return tts_model
