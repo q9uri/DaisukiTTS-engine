@@ -17,8 +17,8 @@ typer = {version = ">=0.9.0", extras = ["all"]}
 [package.source]
 type = "git"
 url = "https://x-access-token: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@github.com/Aivis-Project/aivmlib.git"
-reference = "9731dc6f20c2282e09fa870790043a20b2662c16"
-resolved_reference = "9731dc6f20c2282e09fa870790043a20b2662c16"
+reference = "0705480c04d38eb1fc54a75ee0a5ab893fe4fd0e"
+resolved_reference = "0705480c04d38eb1fc54a75ee0a5ab893fe4fd0e"
 
 [[package]]
 name = "altgraph"
@@ -4202,4 +4202,4 @@ cffi = ["cffi (>=1.11)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "~3.11"
-content-hash = "68be1f0378e1a530ea9031344bac42e9134d9f6df09b3c081a02f13df9508f77"
+content-hash = "8e8ce71af12dba246823a6d7e119054c23bdbfeb6ee7ac09cf7bbf71ef96c7cb"
