@@ -42,10 +42,16 @@ class AivmManager:
 
     # AivisSpeech でサポートされているマニフェストバージョン
     SUPPORTED_MANIFEST_VERSIONS: Final[list[str]] = ["1.0"]
+
     # AivisSpeech でサポートされている音声合成モデルのアーキテクチャ
     SUPPORTED_MODEL_ARCHITECTURES: Final[list[ModelArchitecture]] = [
         ModelArchitecture.StyleBertVITS2,
         ModelArchitecture.StyleBertVITS2JPExtra,
+    ]
+
+    # デフォルトでダウンロードされる音声合成モデルの URL
+    DEFAULT_MODEL_DOWNLOAD_URLS: Final[list[str]] = [
+        "https://api.aivis-project.com/v1/aivm-models/a59cb814-0083-4369-8542-f51a29e72af7/download?model_type=AIVMX",
     ]
 
     def __init__(self, installed_aivm_dir: Path):
@@ -68,7 +74,11 @@ class AivmManager:
 
         current_installed_aivm_infos = self.get_installed_aivm_infos()
         if len(current_installed_aivm_infos) == 0:
-            logger.warning("No AIVM models are installed.")
+            logger.warning("No AIVM models are installed. Installing default models...")
+            # デフォルトで同梱する音声合成モデルをインストール
+            for url in self.DEFAULT_MODEL_DOWNLOAD_URLS:
+                logger.info(f"Installing default model from {url}...")
+                self.install_aivm_from_url(url)
         else:
             logger.info("Installed AIVM models:")
             for aivm_info in current_installed_aivm_infos.values():
@@ -483,7 +493,9 @@ class AivmManager:
         try:
             logger.info(f"Downloading AIVM file from {url}...")
             response = httpx.get(
-                url, headers={"User-Agent": f"AivisSpeech-Engine/{__version__}"}
+                url,
+                headers={"User-Agent": f"AivisSpeech-Engine/{__version__}"},
+                follow_redirects=True,  # 重要
             )
             response.raise_for_status()
             logger.info(f"Downloaded AIVM file from {url}.")
