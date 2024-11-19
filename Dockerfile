@@ -97,12 +97,13 @@ COPY --from=compile-python-env /opt/python /opt/python
 # Install Python dependencies
 ADD ./poetry.toml ./poetry.lock ./pyproject.toml /opt/aivisspeech-engine/
 RUN <<EOF
-    gosu user /opt/python/bin/pip3 install poetry
+    /opt/python/bin/pip3 install poetry
+    chown -R user /opt/aivisspeech-engine
     gosu user /opt/python/bin/poetry install --only=main
 EOF
 
 # Add local files
-ADD ./aivisspeech-engine /opt/aivisspeech-engine/aivisspeech-engine
+ADD ./voicevox_engine /opt/aivisspeech-engine/voicevox_engine
 ADD ./docs /opt/aivisspeech-engine/docs
 ADD ./run.py ./presets.yaml ./engine_manifest.json /opt/aivisspeech-engine/
 ADD ./resources /opt/aivisspeech-engine/resources
@@ -114,25 +115,7 @@ ARG AIVISSPEECH_ENGINE_VERSION=latest
 RUN sed -i "s/__version__ = \"latest\"/__version__ = \"${AIVISSPEECH_ENGINE_VERSION}\"/" /opt/aivisspeech-engine/voicevox_engine/__init__.py
 RUN sed -i "s/\"version\": \"999\\.999\\.999\"/\"version\": \"${AIVISSPEECH_ENGINE_VERSION}\"/" /opt/aivisspeech-engine/engine_manifest.json
 
-# Keep this layer separated to use layer cache on download failed in local build
-RUN <<EOF
-    set -eux
-
-    # Download openjtalk dictionary
-    # try 5 times, sleep 5 seconds before retry
-    for i in $(seq 5); do
-        EXIT_CODE=0
-        gosu user /opt/python/bin/python3 -c "import pyopenjtalk; pyopenjtalk._lazy_init()" || EXIT_CODE=$?
-        if [ "$EXIT_CODE" = "0" ]; then
-            break
-        fi
-        sleep 5
-    done
-
-    if [ "$EXIT_CODE" != "0" ]; then
-        exit "$EXIT_CODE"
-    fi
-EOF
+# openjtalk-plus include dictionary in itself, download is not needed
 
 # Create container start shell
 COPY --chmod=775 <<EOF /entrypoint.sh
@@ -143,8 +126,8 @@ exec "\$@"
 EOF
 
 ENTRYPOINT [ "/entrypoint.sh"  ]
-CMD [ "gosu", "user", "/opt/python/bin/python3", "./run.py", "--host", "0.0.0.0" ]
+CMD [ "gosu", "user", "/opt/python/bin/poetry", "run", "python", "./run.py", "--host", "0.0.0.0" ]
 
 # Enable use_gpu
 FROM runtime-env AS runtime-nvidia-env
-CMD [ "gosu", "user", "/opt/python/bin/python3", "./run.py", "--use_gpu", "--host", "0.0.0.0" ]
+CMD [ "gosu", "user", "/opt/python/bin/poetry", "run", "python", "./run.py", "--use_gpu", "--host", "0.0.0.0" ]
