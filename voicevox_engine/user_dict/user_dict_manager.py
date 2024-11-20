@@ -140,8 +140,11 @@ class UserDictionary:
 
             for file_path in default_dict_files:
                 with file_path.open("rb") as f:
-                    with decompressor.stream_reader(f) as reader:
-                        default_dict_content = reader.read().decode("utf-8")
+                    if file_path.suffix == ".zst":
+                        with decompressor.stream_reader(f) as reader:
+                            default_dict_content = reader.read().decode("utf-8")
+                    else:
+                        default_dict_content = f.read().decode("utf-8")
                 if not default_dict_content.endswith("\n"):
                     default_dict_content += "\n"
                 csv_text += default_dict_content
