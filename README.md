@@ -10,7 +10,7 @@
 
 -----
 
-**AivisSpeech Engine は、[VOICEVOX ENGINE](https://github.com/Aivis-Project/AivisSpeech-Engine) をベースにした、日本語音声合成エンジンです。**  
+**AivisSpeech Engine は、[VOICEVOX ENGINE](https://github.com/VOICEVOX/voicevox_engine) をベースにした、日本語音声合成エンジンです。**  
 日本語音声合成ソフトウェアの [AivisSpeech](https://github.com/Aivis-Project/AivisSpeech) に組み込まれており、かんたんに感情豊かな音声を生成できます。
 
 #### [💠 AivisSpeech をダウンロード](https://aivis-project.com/speech/) ／ [💠 AivisSpeech Engine をダウンロード](https://github.com/Aivis-Project/AivisSpeech-Engine/releases)
