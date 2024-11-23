@@ -30,7 +30,7 @@ def test_release_build(dist_dir: Path, skip_run_process: bool) -> None:
 
     # 起動待機
     try:
-        for i in range(10):
+        for i in range(20):
             print(f"Waiting for the engine to start... {i}")
             time.sleep(15)
             try:
