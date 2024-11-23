@@ -8,17 +8,17 @@ repos:
         entry: poetry run pysen run lint
         language: system
         types: [file, python]
-        stages: [push]
+        stages: [pre-push]
         pass_filenames: false
       - id: poetry-check # `pyproject.toml` と `poetry.lock` が整合する
         name: poetry-check
         entry: poetry check
         language: python
-        stages: [push]
+        stages: [pre-push]
         pass_filenames: false
       - id: update-licenses
         name: update-licenses
         entry: poetry run task update-licenses
         language: system
-        stages: [push]
+        stages: [pre-push]
         pass_filenames: false

@@ -105,7 +105,7 @@ EOF
 # Add local files
 ADD ./voicevox_engine /opt/aivisspeech-engine/voicevox_engine
 ADD ./docs /opt/aivisspeech-engine/docs
-ADD ./run.py ./presets.yaml ./engine_manifest.json /opt/aivisspeech-engine/
+ADD ./run.py ./engine_manifest.json /opt/aivisspeech-engine/
 ADD ./resources /opt/aivisspeech-engine/resources
 ADD ./tools/generate_licenses.py /opt/aivisspeech-engine/tools/
 ADD ./tools/licenses /opt/aivisspeech-engine/tools/licenses

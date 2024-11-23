@@ -10,7 +10,6 @@ datas = [
     ('resources/engine_manifest_assets', 'resources/engine_manifest_assets'),
     ('resources/setting_ui_template.html', 'resources'),
     ('engine_manifest.json', '.'),
-    ('presets.yaml', '.'),
 ]
 datas += collect_data_files('pyopenjtalk')
 datas += collect_data_files('style_bert_vits2')
