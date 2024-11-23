@@ -4,8 +4,8 @@
 name: Test Security
 
 on:
-  # schedule:
-  #   - cron: "00 04 15 * *" # 毎月15日 13:00 JST
+  schedule:
+    - cron: "00 04 15 * *" # 毎月15日 13:00 JST
   workflow_dispatch:
 
 env:

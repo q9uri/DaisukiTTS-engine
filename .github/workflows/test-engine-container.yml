@@ -18,7 +18,7 @@ on:
 
 env:
   PYTHON_VERSION: "3.11.9"
-  IMAGE_NAME: ${{ vars.DOCKERHUB_USERNAME }}/aivisspeech-engine
+  IMAGE_NAME: ghcr.io/aivis-project/aivisspeech-engine
   VERSION: |- # version指定時はversionを、それ以外はタグ名を使用
     ${{ (github.event.inputs || inputs).version }}
 
