@@ -85,7 +85,7 @@ jaconv = "^0.3.4"
 httpx = "^0.27.0"
 zstandard = "^0.23.0"
 # aivmlib は AIVMX ファイルのメタデータ読み取りに必要
-aivmlib = { git = "https://x-access-token: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@github.com/Aivis-Project/aivmlib.git", rev = "0705480c04d38eb1fc54a75ee0a5ab893fe4fd0e" }
+aivmlib = "^1.0.0"
 # AivisSpeech-Engine にはカスタマイズされた Style-Bert-VITS2 が必要
 style-bert-vits2 = { git = "https://github.com/tsukumijima/Style-Bert-VITS2", rev = "e834299b27e6378d9b3062f1b270f38414a94389" }
 # OS に応じて適切な ONNX Runtime プラグインをインストール

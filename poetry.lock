@@ -2,23 +2,19 @@
 
 [[package]]
 name = "aivmlib"
-version = "1.0.0b0"
+version = "1.0.0"
 description = "Aivis Voice Model File (.aivm/.aivmx) Utility Library"
 optional = false
 python-versions = ">=3.11"
-files = []
-develop = false
+files = [
+    {file = "aivmlib-1.0.0-py3-none-any.whl", hash = "sha256:0e797e52b24ea8ab830198ea7cb95d9f1ee8a07bd72693a813477ee7a471cca7"},
+    {file = "aivmlib-1.0.0.tar.gz", hash = "sha256:601d244fd00c73830fb74e0dde4df61091b04f5722426c8019e7e7f18d2d5b11"},
+]
 
 [package.dependencies]
 onnx = ">=1.17.0"
 pydantic = ">=2.4.0"
 typer = {version = ">=0.9.0", extras = ["all"]}
-
-[package.source]
-type = "git"
-url = "https://x-access-token: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@github.com/Aivis-Project/aivmlib.git"
-reference = "0705480c04d38eb1fc54a75ee0a5ab893fe4fd0e"
-resolved_reference = "0705480c04d38eb1fc54a75ee0a5ab893fe4fd0e"
 
 [[package]]
 name = "altgraph"
@@ -4209,4 +4205,4 @@ cffi = ["cffi (>=1.11)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "~3.11"
-content-hash = "a27c49175b7fbf0a9f96fc2bf0f126c1a390c025171829868f36d60385d32976"
+content-hash = "1081306c7a04fda443c72f29f15a0c5df7e7b53f997f48e3ea40bfc341ce06ea"
