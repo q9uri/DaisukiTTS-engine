@@ -88,13 +88,11 @@ aivmlib = { git = "https://x-access-token:github_pat_11AJLTV7Q0LW9wXdYid0Oa_nHO4
 # AivisSpeech-Engine にはカスタマイズされた Style-Bert-VITS2 が必要
 style-bert-vits2 = { git = "https://github.com/tsukumijima/Style-Bert-VITS2", rev = "e834299b27e6378d9b3062f1b270f38414a94389" }
 # OS に応じて適切な ONNX Runtime プラグインをインストール
+## Windows では若干速度は落ちるが onnxruntime-directml で代用できるのとファイルサイズがデカいので、
+## 当面 onnxruntime-gpu はインストールしない
 onnxruntime = "^1.20.0"
 onnxruntime-directml = { version = "^1.20.0", markers = "sys_platform == 'win32' and (platform_machine == 'x86_64' or platform_machine == 'AMD64')" }
-onnxruntime-gpu = [
-  # Windows では若干速度は落ちるが onnxruntime-directml で代用できるのとファイルサイズがデカいので、当面インストールしない
-  # { version = "^1.20.0", markers = "sys_platform == 'win32' and (platform_machine == 'x86_64' or platform_machine == 'AMD64')" },
-  { version = "^1.20.0", markers = "sys_platform == 'linux' and platform_machine == 'x86_64'" },
-]
+onnxruntime-gpu = { version = "^1.20.0", markers = "sys_platform == 'linux' and platform_machine == 'x86_64'" }
 
 [tool.poetry.group.dev.dependencies]
 pysen = "^0.11.0"
