@@ -9,6 +9,6 @@ from syrupy.assertion import SnapshotAssertion
 def test_post_initialize_speaker_204(
     client: TestClient, snapshot: SnapshotAssertion
 ) -> None:
-    response = client.post("/initialize_speaker", params={"speaker": 0})
+    response = client.post("/initialize_speaker", params={"speaker": 888753760})
     assert response.status_code == 204
     assert snapshot == response.content

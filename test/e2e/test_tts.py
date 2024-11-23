@@ -13,12 +13,14 @@ def test_テキストとキャラクターIDから音声を合成できる(
 ) -> None:
     # テキストとキャラクター ID から AudioQuery を生成する
     audio_query_res = client.post(
-        "/audio_query", params={"text": "テストです", "speaker": 0}
+        "/audio_query", params={"text": "テストです", "speaker": 888753760}
     )
     audio_query = audio_query_res.json()
 
     # AudioQuery から音声波形を生成する
-    synthesis_res = client.post("/synthesis", params={"speaker": 0}, json=audio_query)
+    synthesis_res = client.post(
+        "/synthesis", params={"speaker": 888753760}, json=audio_query
+    )
 
     # リクエストが成功している
     assert synthesis_res.status_code == 200

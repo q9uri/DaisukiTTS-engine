@@ -502,7 +502,7 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         else:
             logger.warning("AudioQuery.kana is not specified. Using accent phrases instead.")  # fmt: skip
             # 読み仮名 (カタカナのみ) のテキストを取得
-            ## ひらがなの方がまだ抑揚の棒読み度がマシになるため、カタカナをひらがなに変換した上で句点を付ける
+            ## ひらがなの方がまだ抑揚の棒読み度がマシになるため、カタカナをひらがなに変換する
             flatten_moras = to_flatten_moras(query.accent_phrases)
             text = "".join([mora.text for mora in flatten_moras])
             text = jaconv.kata2hira(text)

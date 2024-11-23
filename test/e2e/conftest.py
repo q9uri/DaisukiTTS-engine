@@ -9,12 +9,15 @@ from fastapi.testclient import TestClient
 
 from voicevox_engine.aivm_manager import AivmManager
 from voicevox_engine.app.application import generate_app
-from voicevox_engine.core.core_initializer import initialize_cores
+from voicevox_engine.core.core_initializer import MOCK_VER, initialize_cores
 from voicevox_engine.engine_manifest import load_manifest
 from voicevox_engine.library.library_manager import LibraryManager
 from voicevox_engine.preset.preset_manager import PresetManager
 from voicevox_engine.setting.setting_manager import SettingHandler
-from voicevox_engine.tts_pipeline.tts_engine import make_tts_engines_from_cores
+from voicevox_engine.tts_pipeline.style_bert_vits2_tts_engine import (
+    StyleBertVITS2TTSEngine,
+)
+from voicevox_engine.tts_pipeline.tts_engine import TTSEngineManager
 from voicevox_engine.user_dict.user_dict_manager import (
     DEFAULT_DICT_DIR_PATH,
     UserDictionary,
@@ -36,7 +39,11 @@ def _copy_under_dir(file_path: Path, dir_path: Path) -> Path:
 def app_params(tmp_path: Path) -> dict[str, Any]:
     aivm_manager = AivmManager(get_save_dir() / "Models")
     core_manager = initialize_cores(use_gpu=False, enable_mock=True)
-    tts_engines = make_tts_engines_from_cores(core_manager)
+    tts_engines = TTSEngineManager()
+    tts_engines.register_engine(
+        StyleBertVITS2TTSEngine(aivm_manager, False, False),
+        MOCK_VER,
+    )
     setting_loader = SettingHandler(tmp_path / "not_exist.yaml")
 
     # テスト用に隔離されたプリセットを生成する

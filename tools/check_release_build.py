@@ -47,19 +47,21 @@ def test_release_build(dist_dir: Path, skip_run_process: bool) -> None:
         # テキスト -> クエリ
         text = "こんにちは、音声合成の世界へようこそ"
         req = Request(
-            base_url + "audio_query?" + urlencode({"speaker": "1", "text": text}),
+            base_url
+            + "audio_query?"
+            + urlencode({"speaker": "888753760", "text": text}),
             method="POST",
         )
         with urlopen(req) as res:
             query = json.loads(res.read().decode("utf-8"))
 
         # クエリ -> 音声
-        # req = Request(base_url + "synthesis?speaker=1", method="POST")
-        # req.add_header("Content-Type", "application/json")
-        # req.data = json.dumps(query).encode("utf-8")
-        # with urlopen(req) as res:
-        #     wave = res.read()
-        # soundfile.read(BytesIO(wave))
+        req = Request(base_url + "synthesis?speaker=888753760", method="POST")
+        req.add_header("Content-Type", "application/json")
+        req.data = json.dumps(query).encode("utf-8")
+        with urlopen(req) as res:
+            wave = res.read()
+        soundfile.read(BytesIO(wave))
 
         # エンジンマニフェスト
         req = Request(base_url + "engine_manifest", method="GET")

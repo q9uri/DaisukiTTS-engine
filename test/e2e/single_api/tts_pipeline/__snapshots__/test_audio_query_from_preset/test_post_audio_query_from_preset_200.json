@@ -6,43 +6,43 @@
       "moras": [
         {
           "consonant": "t",
-          "consonant_length": 10001.31,
-          "pitch": 10002.38,
+          "consonant_length": 0.0,
+          "pitch": 0.0,
           "text": "テ",
           "vowel": "e",
-          "vowel_length": 9999.88
+          "vowel_length": 0.0
         },
         {
           "consonant": "s",
-          "consonant_length": 10001.19,
+          "consonant_length": 0.0,
           "pitch": 0.0,
           "text": "ス",
-          "vowel": "U",
-          "vowel_length": 9999.38
+          "vowel": "u",
+          "vowel_length": 0.0
         },
         {
           "consonant": "t",
-          "consonant_length": 10001.31,
-          "pitch": 10003.19,
+          "consonant_length": 0.0,
+          "pitch": 0.0,
           "text": "ト",
           "vowel": "o",
-          "vowel_length": 10000.88
+          "vowel_length": 0.0
         },
         {
           "consonant": "d",
-          "consonant_length": 9999.75,
-          "pitch": 10000.62,
+          "consonant_length": 0.0,
+          "pitch": 0.0,
           "text": "デ",
           "vowel": "e",
-          "vowel_length": 9999.88
+          "vowel_length": 0.0
         },
         {
           "consonant": "s",
-          "consonant_length": 10001.19,
+          "consonant_length": 0.0,
           "pitch": 0.0,
           "text": "ス",
-          "vowel": "U",
-          "vowel_length": 9999.38
+          "vowel": "u",
+          "vowel_length": 0.0
         }
       ],
       "pause_mora": null
@@ -50,7 +50,7 @@
   ],
   "intonationScale": 1.2,
   "kana": "テストです",
-  "outputSamplingRate": 24000,
+  "outputSamplingRate": 44100,
   "outputStereo": false,
   "pauseLength": 15.0,
   "pauseLengthScale": 1.4,
