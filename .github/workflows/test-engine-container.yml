@@ -79,16 +79,16 @@ jobs:
         run: docker run -d -p 10101:10101 -v ~/.local/share/AivisSpeech-Engine:/home/user/.local/share/AivisSpeech-Engine "${{ steps.docker_vars.outputs.image_tag }}"
 
       # Docker コンテナが起動してから、レスポンスが返ってくるまで待機する
-      # リトライは10回まで `/version` にアクセスしてレスポンスのステータスコードをチェック
+      # リトライは20回まで `/version` にアクセスしてレスポンスのステータスコードをチェック
       # - ステータスコードが `200` の場合は正常終了します
-      # - ステータスコードが `200` 以外の場合は、5秒間スリープしてリトライします
+      # - ステータスコードが `200` 以外の場合は、15秒間スリープしてリトライします
       - name: <Setup> Warm up ENGINE server by waiting
         run: |
           set +e # curlのエラーを無視する
 
           url="http://127.0.0.1:10101/version"
-          max_attempts=10
-          sleep_interval=5
+          max_attempts=20
+          sleep_interval=15
 
           for i in $(seq 1 "$max_attempts"); do
             status=$(curl -o /dev/null -s -w '%{http_code}\n' "$url")
