@@ -2,7 +2,7 @@
 TTSのテスト
 """
 
-from test.utility import hash_wave_floats_from_wav_bytes
+# from test.utility import hash_wave_floats_from_wav_bytes
 
 from fastapi.testclient import TestClient
 from syrupy.assertion import SnapshotAssertion
@@ -27,4 +27,5 @@ def test_テキストとキャラクターIDから音声を合成できる(
 
     # FileResponse 内の .wav から抽出された音声波形が一致する
     assert synthesis_res.headers["content-type"] == "audio/wav"
-    assert snapshot == hash_wave_floats_from_wav_bytes(synthesis_res.read())
+    # AivisSpeech Engine の音声合成は常にある程度のランダム性があるため、テストではハッシュ値の比較は行わない
+    # assert snapshot == hash_wave_floats_from_wav_bytes(synthesis_res.read())

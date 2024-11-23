@@ -3,10 +3,11 @@
 """
 
 from test.e2e.single_api.utils import gen_mora
-from test.utility import hash_wave_floats_from_wav_bytes
 
 from fastapi.testclient import TestClient
 from syrupy.assertion import SnapshotAssertion
+
+# from test.utility import hash_wave_floats_from_wav_bytes
 
 
 def test_post_synthesis_200(client: TestClient, snapshot: SnapshotAssertion) -> None:
@@ -40,7 +41,8 @@ def test_post_synthesis_200(client: TestClient, snapshot: SnapshotAssertion) -> 
 
     # 音声波形が一致する
     assert response.headers["content-type"] == "audio/wav"
-    assert snapshot == hash_wave_floats_from_wav_bytes(response.read())
+    # AivisSpeech Engine の音声合成は常にある程度のランダム性があるため、テストではハッシュ値の比較は行わない
+    # assert snapshot == hash_wave_floats_from_wav_bytes(response.read())
 
 
 def test_post_synthesis_old_audio_query_200(
@@ -74,4 +76,5 @@ def test_post_synthesis_old_audio_query_200(
 
     # 音声波形が一致する
     assert response.headers["content-type"] == "audio/wav"
-    assert snapshot == hash_wave_floats_from_wav_bytes(response.read())
+    # AivisSpeech Engine の音声合成は常にある程度のランダム性があるため、テストではハッシュ値の比較は行わない
+    # assert snapshot == hash_wave_floats_from_wav_bytes(response.read())
