@@ -110,6 +110,71 @@ AIVMX ファイルは、OS ごとに以下のフォルダに配置してくだ�
 > [!IMPORTANT]
 > 開発版 (PyInstaller でビルドされていない状態で実行している場合) の配置フォルダは、`AivisSpeech-Engine` 以下ではなく `AivisSpeech-Engine-Dev` 以下となります。
 
+## 導入方法
+
+### Windows / macOS
+
+**Windows / macOS では、AivisSpeech Engine を単独でインストールすることもできますが、[AivisSpeech](https://github.com/Aivis-Project/AivisSpeech) 本体に付属する AivisSpeech Engine を単独で起動させた方がより簡単です。**  
+
+AivisSpeech に同梱されている AivisSpeech Engine の実行ファイル (`run.exe` / `run`) のパスは以下のとおりです。  
+`--help` オプションを付けて実行すると、AivisSpeech Engine に渡せるコマンドラインオプションの一覧を確認できます。
+
+> [!TIP]
+> **`--use_gpu` オプションを付けて実行すると、Windows では DirectML 、Linux では NVIDIA GPU (CUDA) を用いて音声合成を行えます。**  
+> なお、Windows 環境では CPU 内蔵の GPU (iGPU) のみの PC でも DirectML 推論を行えますが、ほとんどの場合 CPU 推論よりもかなり遅くなってしまうため、おすすめできません。  
+> 詳細は [よくある質問](https://github.com/Aivis-Project/AivisSpeech/blob/master/public/qAndA.md#q-gpu-%E3%83%A2%E3%83%BC%E3%83%89%E3%81%AB%E5%88%87%E3%82%8A%E6%9B%BF%E3%81%88%E3%81%9F%E3%81%AE%E3%81%AB%E9%9F%B3%E5%A3%B0%E7%94%9F%E6%88%90%E3%81%8C-cpu-%E3%83%A2%E3%83%BC%E3%83%89%E3%82%88%E3%82%8A%E3%82%82%E9%81%85%E3%81%84%E3%81%A7%E3%81%99) を参照ください。 
+
+> [!WARNING]
+> VOICEVOX ENGINE と異なり、一部のオプションは AivisSpeech Engine では未実装です。
+
+- **Windows:** `C:\Program Files\AivisSpeech\AivisSpeech-Engine\run.exe`
+  - ユーザー権限でインストールされている場合、`C:\Users\(ユーザー名)\AppData\Local\Programs\AivisSpeech\AivisSpeech-Engine\run.exe` となります。
+- **macOS:** `/Applications/AivisSpeech.app/Contents/Resources/AivisSpeech-Engine/run`
+  - ユーザー権限でインストールされている場合、`~/Applications/AivisSpeech.app/Contents/Resources/AivisSpeech-Engine/run` となります。
+
+> [!NOTE]
+> 初回起動時はデフォルトモデル (約 250MB) と推論時に必要な [BERT モデル](https://huggingface.co/tsukumijima/deberta-v2-large-japanese-char-wwm-onnx) (約 1.3GB) が自動的にダウンロードされる関係で、起動完了まで最大数分ほどかかります。  
+> 起動完了までしばらくお待ちください。
+
+AivisSpeech Engine に音声合成モデルを追加するには、[モデルファイルの配置場所](#モデルファイルの配置場所) をご覧ください。  
+AivisSpeech 内の「設定」→「音声合成モデルの管理」から追加することも可能です。
+
+### Linux
+
+Linux + NVIDIA GPU 環境で実行する際は、ONNX Runtime が対応する CUDA / cuDNN バージョンとホスト環境の CUDA / cuDNN バージョンが一致している必要があり、動作条件が厳しめです。  
+具体的には、AivisSpeech Engine で利用している ONNX Runtime は CUDA 12.x / cuDNN 9.x 以上を要求します。
+
+Docker であればホスト OS の環境に関わらず動作しますので、Docker での導入をおすすめします。
+
+### Linux + Docker
+
+**Docker コンテナを実行する際は、常に `~/.local/share/AivisSpeech-Engine` をコンテナ内の `/home/user/.local/share/AivisSpeech-Engine-Dev` にマウントしてください。**  
+こうすることで、コンテナを停止・再起動した後でも、インストールした音声合成モデルや BERT モデルキャッシュ (約 1.3GB) を維持できます。
+
+Docker 環境の AivisSpeech Engine に音声合成モデルを追加するには、ホスト環境の `~/.local/share/AivisSpeech-Engine/Models` 以下にモデルファイル (.aivmx) を配置してください。
+
+> [!IMPORTANT]
+> 必ず `/home/user/.local/share/AivisSpeech-Engine-Dev` に対してマウントしてください。  
+> Docker イメージ上の AivisSpeech Engine は PyInstaller でビルドされていないため、データフォルダ名には `-Dev` の Suffix が付与され `AivisSpeech-Engine-Dev` となります。
+
+#### CPU で実行する
+
+```bash
+docker pull ghcr.io/aivis-project/aivisspeech-engine:cpu-latest
+docker run --rm -p '10101:10101' \
+  -v ~/.local/share/AivisSpeech-Engine:/home/user/.local/share/AivisSpeech-Engine-Dev \
+  ghcr.io/aivis-project/aivisspeech-engine:cpu-latest
+```
+
+#### NVIDIA GPU (CUDA) で実行する
+
+```bash
+docker pull ghcr.io/aivis-project/aivisspeech-engine:nvidia-latest
+docker run --rm --gpus all -p '10101:10101' \
+  -v ~/.local/share/AivisSpeech-Engine:/home/user/.local/share/AivisSpeech-Engine-Dev \
+  ghcr.io/aivis-project/aivisspeech-engine:nvidia-latest
+```
+
 ## 音声合成 API を使う
 
 Bash で以下のワンライナーを実行すると、`audio.wav` に音声合成した WAV ファイルが出力されます。  
@@ -122,7 +187,8 @@ Bash で以下のワンライナーを実行すると、`audio.wav` に音声合
 > 事前に AivisSpeech Engine が起動していて、かつログに表示される `Models directory:` 以下のディレクトリに、スタイル ID に対応する音声合成モデル (.aivmx) が格納されていることが前提です。
 
 ```bash
-STYLE_ID=(音声合成対象のスタイル ID 、別途 /speakers API から取得が必要) && \
+# STYLE_ID は音声合成対象のスタイル ID 、別途 /speakers API から取得が必要
+STYLE_ID=888753760 && \
 echo -n "こんにちは、音声合成の世界へようこそ！" > text.txt && \
 curl -s -X POST "127.0.0.1:10101/audio_query?speaker=$STYLE_ID" --get --data-urlencode text@text.txt > query.json && \
 curl -s -H "Content-Type: application/json" -X POST -d @query.json "127.0.0.1:10101/synthesis?speaker=$STYLE_ID" > audio.wav && \

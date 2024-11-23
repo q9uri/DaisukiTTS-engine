@@ -76,7 +76,7 @@ jobs:
         run: docker pull "${{ steps.docker_vars.outputs.image_tag }}"
 
       - name: <Setup> Run ENGINE application docker container
-        run: docker run -d -p 10101:10101 -v ~/.local/share/AivisSpeech-Engine:/home/user/.local/share/AivisSpeech-Engine "${{ steps.docker_vars.outputs.image_tag }}"
+        run: docker run -d -p 10101:10101 -v ~/.local/share/AivisSpeech-Engine:/home/user/.local/share/AivisSpeech-Engine-Dev "${{ steps.docker_vars.outputs.image_tag }}"
 
       # Docker コンテナが起動してから、レスポンスが返ってくるまで待機する
       # リトライは20回まで `/version` にアクセスしてレスポンスのステータスコードをチェック

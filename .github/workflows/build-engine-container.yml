@@ -58,7 +58,7 @@ jobs:
           - tag: nvidia
             target: runtime-nvidia-env
             base_image: ubuntu:20.04
-            base_runtime_image: nvidia/cuda:12.6.2-cudnn-runtime-ubuntu20.04
+            base_runtime_image: nvidia/cuda:12.3.2-cudnn9-runtime-ubuntu20.04
             platforms: linux/amd64
 
     steps:
