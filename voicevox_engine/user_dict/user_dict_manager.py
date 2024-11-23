@@ -50,7 +50,7 @@ if not save_dir.is_dir():
     save_dir.mkdir(parents=True)
 
 # デフォルトのファイルパス
-# デフォルト辞書ファイル (.csv) の配置ディレクトリのパス
+# デフォルト辞書ファイル (.csv.zst) の配置ディレクトリのパス
 DEFAULT_DICT_DIR_PATH = resource_dir / "dictionaries"
 # ユーザー辞書ファイルのパス
 _USER_DICT_PATH = save_dir / "user_dict.json"
@@ -79,7 +79,7 @@ class UserDictionary:
         Parameters
         ----------
         default_dict_dir_path : Path
-            デフォルト辞書ファイル (.csv) の配置ディレクトリのパス
+            デフォルト辞書ファイル (.csv.zst) の配置ディレクトリのパス
         user_dict_path : Path
             ユーザー辞書ファイルのパス
         compiled_dict_path : Path
@@ -127,7 +127,7 @@ class UserDictionary:
             # デフォルト辞書データの追加
             # pytest から実行されている場合は毎回全辞書を追加すると時間がかかりすぎるため、デフォルト辞書のみ追加する
             if self._is_pytest:
-                default_dict_files = [default_dict_dir_path / "01_default.csv"]
+                default_dict_files = [default_dict_dir_path / "01_default.csv.zst"]
                 logger.info("Using only default dictionary for pytest.")
             else:
                 default_dict_files = sorted(default_dict_dir_path.glob("*.csv.zst"))
