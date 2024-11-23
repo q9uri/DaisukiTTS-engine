@@ -504,11 +504,8 @@ class StyleBertVITS2TTSEngine(TTSEngine):
             # 読み仮名 (カタカナのみ) のテキストを取得
             ## ひらがなの方がまだ抑揚の棒読み度がマシになるため、カタカナをひらがなに変換した上で句点を付ける
             flatten_moras = to_flatten_moras(query.accent_phrases)
-            text = "".join([mora.text for mora in flatten_moras]) + "。"
+            text = "".join([mora.text for mora in flatten_moras])
             text = jaconv.kata2hira(text)
-            ## この時点で text が句点だけの場合は空文字列にする
-            if text == "。":
-                text = ""
 
         # AudioQuery.accent_phrase をカタカナモーラと音高 (0 or 1) のリストに変換
         kata_tone_list: list[tuple[str, int]] = []
