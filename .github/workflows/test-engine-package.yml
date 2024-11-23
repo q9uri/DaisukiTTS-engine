@@ -73,6 +73,12 @@ jobs:
           path: ~/.cache/pypoetry
           key: ${{ runner.os }}-${{ runner.arch }}-poetry-${{ hashFiles('**/poetry.lock') }}
 
+      - name: <Setup> Cache Engine Data
+        uses: actions/cache@v4
+        with:
+          path: ~/.local/share/AivisSpeech-Engine
+          key: ${{ runner.os }}-${{ runner.arch }}-engine-data
+
       - name: <Setup> Download ENGINE package
         env:
           GH_TOKEN: ${{ github.token }}
