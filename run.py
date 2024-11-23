@@ -308,6 +308,12 @@ def read_cli_arguments(envs: Envs) -> CLIArgs:
     # args_dict["runtime_dirs"] = args_dict.pop("runtime_dir")
     args_dict["allow_origins"] = args_dict.pop("allow_origin")
 
+    # --host に 127.0.0.1 が指定されたとき、Windows 上で localhost でアクセスした際に
+    # IPv6 でバインドされないことによる接続遅延を防ぐために、代わりに localhost を指定し IPv4 と IPv6 の両方でバインドする
+    # ref: https://github.com/VOICEVOX/voicevox_engine/issues/1480
+    if args_dict["host"] == "127.0.0.1":
+        args_dict["host"] = "localhost"
+
     args = _cli_args_adapter.validate_python(args_dict)
 
     return args
