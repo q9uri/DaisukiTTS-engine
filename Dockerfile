@@ -78,7 +78,7 @@ RUN <<EOF
     apt-get update
     apt-get install -y \
         git \
-        wget \
+        curl \
         cmake \
         ca-certificates \
         build-essential \
@@ -99,7 +99,11 @@ ADD ./poetry.toml ./poetry.lock ./pyproject.toml /opt/aivisspeech-engine/
 RUN <<EOF
     /opt/python/bin/pip3 install poetry
     chown -R user /opt/aivisspeech-engine
+    # Install Rust (wheel build dependencies)
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+    source $HOME/.cargo/env
     gosu user /opt/python/bin/poetry install --only=main
+    rm -rf /root/.cargo
 EOF
 
 # Add local files
