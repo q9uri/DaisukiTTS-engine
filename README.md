@@ -49,9 +49,9 @@
 このページでは、主に開発者向けの情報を掲載しています。  
 以下はユーザーの方向けのドキュメントです。
 
-- **[使い方](public/howtouse.md)**
-- **[よくある質問](public/qAndA.md)**
-- **[お問い合わせ](public/contact.md)**
+- **[使い方](https://github.com/Aivis-Project/AivisSpeech/blob/master/public/howtouse.md)**
+- **[よくある質問](https://github.com/Aivis-Project/AivisSpeech/blob/master/public/qAndA.md)**
+- **[お問い合わせ](https://github.com/Aivis-Project/AivisSpeech/blob/master/public/contact.md)**
 
 ## 動作環境
 
