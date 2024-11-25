@@ -392,7 +392,7 @@ def main() -> None:
         env_preset_path = Path(envs.env_preset_path)
     else:
         env_preset_path = None
-    default_preset_path = engine_root() / "presets.yaml"
+    default_preset_path = get_save_dir() / "presets.yaml"
     preset_path = select_first_not_none(
         [args.preset_file, env_preset_path, default_preset_path]
     )

@@ -19,14 +19,14 @@ def configure_middlewares(
 
     # 未処理の例外が発生するとCORSMiddlewareが適用されない問題に対するワークアラウンド
     # ref: https://github.com/VOICEVOX/voicevox_engine/issues/91
-    async def global_execution_handler(request: Request, exc: Exception) -> Response:
+    async def global_exception_handler(request: Request, exc: Exception) -> Response:
         logger.error("Internal Server Error occurred.", exc_info=exc)
         return JSONResponse(
             status_code=500,
             content="Internal Server Error",
         )
 
-    app.add_middleware(ServerErrorMiddleware, handler=global_execution_handler)
+    app.add_middleware(ServerErrorMiddleware, handler=global_exception_handler)
 
     # CORS用のヘッダを生成するミドルウェア
     localhost_regex = (
