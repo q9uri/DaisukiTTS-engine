@@ -23,11 +23,12 @@ def generate_aivm_models_router(
 
     @router.get(
         "",
-        response_description="インストールした音声合成モデルの情報",
+        summary="インストール済みのすべての音声合成モデルの情報を取得する",
+        response_description="インストール済みのすべての音声合成モデルの情報",
     )
     def get_installed_aivm_infos() -> dict[str, AivmInfo]:
         """
-        インストールした音声合成モデルの情報を返します。
+        インストール済みのすべての音声合成モデルの情報を返します。
         """
 
         return aivm_manager.get_installed_aivm_infos()
@@ -36,6 +37,7 @@ def generate_aivm_models_router(
         "/install",
         status_code=204,
         dependencies=[Depends(verify_mutability)],
+        summary="音声合成モデルをインストールする",
     )
     def install_aivm(
         file: Annotated[
@@ -65,6 +67,8 @@ def generate_aivm_models_router(
 
     @router.get(
         "/{aivm_uuid}",
+        summary="指定された音声合成モデルの情報を取得する",
+        response_description="指定された音声合成モデルの情報",
     )
     def get_aivm_info(
         aivm_uuid: Annotated[str, Path(description="音声合成モデルの UUID")]
@@ -79,6 +83,7 @@ def generate_aivm_models_router(
         "/{aivm_uuid}/uninstall",
         status_code=204,
         dependencies=[Depends(verify_mutability)],
+        summary="音声合成モデルをアンインストールする",
     )
     def uninstall_aivm(
         aivm_uuid: Annotated[str, Path(description="音声合成モデルの UUID")]

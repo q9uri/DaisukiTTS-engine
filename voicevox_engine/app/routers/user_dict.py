@@ -26,6 +26,7 @@ def generate_user_dict_router(
 
     @router.get(
         "/user_dict",
+        summary="ユーザー辞書に登録されている単語の一覧を取得する",
         response_description="単語のUUIDとその詳細",
     )
     def get_user_dict_words() -> dict[str, UserDictWord]:
@@ -42,7 +43,12 @@ def generate_user_dict_router(
                 status_code=500, detail="辞書の読み込みに失敗しました。"
             )
 
-    @router.post("/user_dict_word", dependencies=[Depends(verify_mutability)])
+    @router.post(
+        "/user_dict_word",
+        dependencies=[Depends(verify_mutability)],
+        summary="ユーザー辞書に言葉を追加する",
+        response_description="追加した言葉のUUID",
+    )
     def add_user_dict_word(
         surface: Annotated[str, Query(description="言葉の表層形")],
         pronunciation: Annotated[str, Query(description="言葉の発音（カタカナ）")],
@@ -100,6 +106,7 @@ def generate_user_dict_router(
         "/user_dict_word/{word_uuid}",
         status_code=204,
         dependencies=[Depends(verify_mutability)],
+        summary="ユーザー辞書に登録されている言葉を更新する",
     )
     def rewrite_user_dict_word(
         surface: Annotated[str, Query(description="言葉の表層形")],
@@ -159,6 +166,7 @@ def generate_user_dict_router(
         "/user_dict_word/{word_uuid}",
         status_code=204,
         dependencies=[Depends(verify_mutability)],
+        summary="ユーザー辞書に登録されている言葉を削除する",
     )
     def delete_user_dict_word(
         word_uuid: Annotated[str, Path(description="削除する言葉のUUID")]
@@ -179,6 +187,7 @@ def generate_user_dict_router(
         "/import_user_dict",
         status_code=204,
         dependencies=[Depends(verify_mutability)],
+        summary="他のユーザー辞書をインポートする",
     )
     def import_user_dict_words(
         import_dict_data: Annotated[

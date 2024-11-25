@@ -213,7 +213,7 @@ def generate_tts_pipeline_router(
     @router.post(
         "/mora_data",
         tags=["クエリ編集"],
-        summary="アクセント句から音高・音素長を得る",
+        summary="アクセント句から音高・音素長を得る (AivisSpeech Engine では常にダミーの値が返されます)",
     )
     def mora_data(
         accent_phrases: list[AccentPhrase],
@@ -230,7 +230,7 @@ def generate_tts_pipeline_router(
     @router.post(
         "/mora_length",
         tags=["クエリ編集"],
-        summary="アクセント句から音素長を得る",
+        summary="アクセント句から音素長を得る (AivisSpeech Engine では常にダミーの値が返されます)",
     )
     def mora_length(
         accent_phrases: list[AccentPhrase],
@@ -247,7 +247,7 @@ def generate_tts_pipeline_router(
     @router.post(
         "/mora_pitch",
         tags=["クエリ編集"],
-        summary="アクセント句から音高を得る",
+        summary="アクセント句から音高を得る (AivisSpeech Engine では常にダミーの値が返されます)",
     )
     def mora_pitch(
         accent_phrases: list[AccentPhrase],
@@ -286,6 +286,9 @@ def generate_tts_pipeline_router(
             Query(description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。"),
         ] = None,  # fmt: skip # noqa
     ) -> FileResponse:
+        """
+        指定されたスタイル ID に紐づく音声合成モデルを用いて音声合成を行います。
+        """
         version = core_version or LATEST_VERSION
         engine = tts_engines.get_engine(version)
         wave = engine.synthesize_wave(
@@ -536,7 +539,7 @@ def generate_tts_pipeline_router(
                 },
             }
         },
-        tags=["その他"],
+        tags=["音声合成"],
         summary="base64エンコードされた複数のwavデータを一つに結合する",
     )
     def connect_waves(waves: list[str]) -> FileResponse:
@@ -564,7 +567,7 @@ def generate_tts_pipeline_router(
 
     @router.post(
         "/validate_kana",
-        tags=["その他"],
+        tags=["クエリ作成"],
         summary="テキストが AquesTalk 風記法に従っているか判定する",
         responses={
             400: {
@@ -589,13 +592,18 @@ def generate_tts_pipeline_router(
                 detail=ParseKanaBadRequest(err).model_dump(),
             )
 
-    @router.post("/initialize_speaker", status_code=204, tags=["その他"])
+    @router.post(
+        "/initialize_speaker",
+        status_code=204,
+        tags=["音声合成モデル管理"],
+        summary="指定されたスタイル ID に紐づく音声合成モデルをロードする",
+    )
     def initialize_speaker(
         style_id: Annotated[StyleId, Query(alias="speaker")],
         skip_reinit: Annotated[
             bool,
             Query(
-                description="既に初期化済みのスタイルの再初期化をスキップするかどうか"
+                description="既にロード済みの音声合成モデルの再ロードをスキップするかどうか"
             ),
         ] = False,
         core_version: Annotated[
@@ -604,14 +612,18 @@ def generate_tts_pipeline_router(
         ] = None,  # fmt: skip # noqa
     ) -> None:
         """
-        指定されたスタイルを初期化します。
-        実行しなくても他のAPIは使用できますが、初回実行時に時間がかかることがあります。
+        指定されたスタイル ID に紐づく音声合成モデルをロードします。
+        実行しなくても他の API は使用できますが、初回実行時に時間がかかることがあります。
         """
         version = core_version or LATEST_VERSION
         engine = tts_engines.get_engine(version)
         engine.initialize_synthesis(style_id, skip_reinit=skip_reinit)
 
-    @router.get("/is_initialized_speaker", tags=["その他"])
+    @router.get(
+        "/is_initialized_speaker",
+        tags=["音声合成モデル管理"],
+        summary="指定されたスタイル ID に紐づく音声合成モデルがロードされているかを確認する",
+    )
     def is_initialized_speaker(
         style_id: Annotated[StyleId, Query(alias="speaker")],
         core_version: Annotated[
@@ -620,20 +632,30 @@ def generate_tts_pipeline_router(
         ] = None,  # fmt: skip # noqa
     ) -> bool:
         """
-        指定されたスタイルが初期化されているかどうかを返します。
+        指定されたスタイル ID に紐づく音声合成モデルがロードされているかどうかを返します。
         """
         version = core_version or LATEST_VERSION
         engine = tts_engines.get_engine(version)
         return engine.is_synthesis_initialized(style_id)
 
-    @router.get("/supported_devices", tags=["その他"])
+    @router.get(
+        "/supported_devices",
+        tags=["音声合成モデル管理"],
+        summary="このビルドでサポートされている、音声合成モデルの推論デバイスを取得する",
+    )
     def supported_devices(
         core_version: Annotated[
             str | SkipJsonSchema[None],
             Query(description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。"),
         ] = None,  # fmt: skip # noqa
     ) -> SupportedDevicesInfo:
-        """対応デバイスの一覧を取得します。"""
+        """
+        このビルドでサポートされている、音声合成モデルの推論デバイスを返します。<br>
+        通常、下記の値が返されます。true であっても実際に推論デバイスが利用可能とは限りません。
+        - Windows: `{"cpu": true, "cuda": false, "dml": true}`
+        - macOS: `{"cpu": true, "cuda": false, "dml": false}`
+        - Linux: `{"cpu": true, "cuda": true, "dml": false}`
+        """
         version = core_version or LATEST_VERSION
         supported_devices = tts_engines.get_engine(version).supported_devices
         if supported_devices is None:

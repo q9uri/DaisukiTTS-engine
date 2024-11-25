@@ -51,13 +51,13 @@ def generate_morphing_router(
         ] = None,  # fmt: skip # noqa
     ) -> list[dict[str, MorphableTargetInfo]]:
         """
-        指定されたベーススタイルに対してエンジン内の各キャラクターがモーフィング機能を利用可能か返します。
-        モーフィングの許可/禁止は `/speakers `の `speaker.supported_features.synthesis_morphing` に記載されています。
-        プロパティが存在しない場合は、モーフィングが許可されているとみなします。
-        返り値のスタイル ID は string 型なので注意。
+        指定されたベーススタイルに対してエンジン内の各キャラクターがモーフィング機能を利用可能か返します。<br>
+        モーフィングの許可/禁止は `/speakers `の `speaker.supported_features.synthesis_morphing` に記載されています。<br>
+        プロパティが存在しない場合は、モーフィングが許可されているとみなします。<br>
+        返り値のスタイル ID は string 型なので注意。<br>
         AivisSpeech Engine では話者ごとに発声タイミングが異なる関係で実装不可能なため (動作こそするが聴くに耐えない) 、
         全ての話者でモーフィングが禁止されています。
-        """
+        """  # noqa
         characters = aivm_manager.get_characters()
         try:
             morphable_targets = get_morphable_targets(characters, base_style_ids)
@@ -93,8 +93,8 @@ def generate_morphing_router(
         ] = None,  # fmt: skip # noqa
     ) -> FileResponse:
         """
-        指定された 2 種類のスタイルで音声を合成、指定した割合でモーフィングした音声を得ます。
-        モーフィングの割合は `morph_rate` で指定でき、0.0 でベースのスタイル、1.0 でターゲットのスタイルに近づきます。
+        指定された 2 種類のスタイルで音声を合成、指定した割合でモーフィングした音声を得ます。<br>
+        モーフィングの割合は `morph_rate` で指定でき、0.0 でベースのスタイル、1.0 でターゲットのスタイルに近づきます。<br>
         AivisSpeech Engine では話者ごとに発声タイミングが異なる関係で実装不可能なため (動作こそするが聴くに耐えない) 、
         常に 400 Bad Request を返します。
         """

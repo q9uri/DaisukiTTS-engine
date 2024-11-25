@@ -39,16 +39,19 @@ def generate_character_router(
     aivm_manager: AivmManager,
 ) -> APIRouter:
     """キャラクター情報 API Router を生成する"""
-    router = APIRouter(tags=["その他"])
+    router = APIRouter(tags=["話者情報"])
 
-    @router.get("/speakers")
+    @router.get(
+        "/speakers",
+        summary="話者情報の一覧を取得する",
+    )
     def speakers(
         core_version: Annotated[
             str | SkipJsonSchema[None],
             Query(description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。"),
         ] = None,  # fmt: skip # noqa
     ) -> list[Speaker]:
-        """喋れるキャラクターの情報の一覧を返します。"""
+        """話者情報の一覧を返します。"""
         # AivisSpeech Engine では常に AivmManager から Speaker を取得する
         return aivm_manager.get_speakers()
         """
@@ -56,7 +59,10 @@ def generate_character_router(
         return _characters_to_speakers(characters)
         """
 
-    @router.get("/speaker_info")
+    @router.get(
+        "/speaker_info",
+        summary="UUID で指定された話者の情報を取得する",
+    )
     def speaker_info(
         resource_baseurl: Annotated[str, Depends(_get_resource_baseurl)],
         speaker_uuid: str,
@@ -67,8 +73,8 @@ def generate_character_router(
         ] = None,  # fmt: skip # noqa
     ) -> SpeakerInfo:
         """
-        UUID で指定された喋れるキャラクターの情報を返します。
-        画像や音声はresource_formatで指定した形式で返されます。
+        UUID で指定された話者の情報を返します。
+        画像や音声は resource_format で指定した形式で返されます。
         """
         # AivisSpeech Engine では常に AivmManager から SpeakerInfo を取得する
         return aivm_manager.get_speaker_info(speaker_uuid)

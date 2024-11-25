@@ -87,9 +87,6 @@ def generate_app(
         generate_tts_pipeline_router(tts_engines, preset_manager, cancellable_engine)
     )
     app.include_router(generate_morphing_router(tts_engines, aivm_manager))
-    app.include_router(
-        generate_preset_router(preset_manager, verify_mutability_allowed)
-    )
     app.include_router(generate_character_router(resource_manager, aivm_manager))
     if engine_manifest.supported_features.manage_library:
         app.include_router(
@@ -97,13 +94,16 @@ def generate_app(
         )
     # generate_aivm_models_router() は AivisSpeech Engine 独自追加ルーター
     app.include_router(generate_aivm_models_router(aivm_manager, verify_mutability_allowed))  # noqa # fmt: skip
+    app.include_router(
+        generate_preset_router(preset_manager, verify_mutability_allowed)
+    )
     app.include_router(generate_user_dict_router(user_dict, verify_mutability_allowed))
-    app.include_router(generate_engine_info_router(core_version_list, engine_manifest))
     app.include_router(
         generate_setting_router(
             setting_loader, engine_manifest.brand_name, verify_mutability_allowed
         )
     )
+    app.include_router(generate_engine_info_router(core_version_list, engine_manifest))
     app.include_router(generate_portal_page_router(engine_manifest.name))
 
     app = configure_openapi_schema(

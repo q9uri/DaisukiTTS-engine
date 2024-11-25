@@ -18,15 +18,16 @@ def generate_preset_router(
     preset_manager: PresetManager, verify_mutability: VerifyMutabilityAllowed
 ) -> APIRouter:
     """プリセット API Router を生成する"""
-    router = APIRouter(tags=["その他"])
+    router = APIRouter(tags=["プリセット"])
 
     @router.get(
         "/presets",
+        summary="エンジンが保持しているプリセットの設定を取得する",
         response_description="プリセットのリスト",
     )
     def get_presets() -> list[Preset]:
         """
-        エンジンが保持しているプリセットの設定を返します
+        エンジンが保持しているプリセットの設定を返します。
         """
         try:
             presets = preset_manager.load_presets()
@@ -38,6 +39,7 @@ def generate_preset_router(
 
     @router.post(
         "/add_preset",
+        summary="新しいプリセットを追加する",
         response_description="追加したプリセットのプリセットID",
         dependencies=[Depends(verify_mutability)],
     )
@@ -50,7 +52,7 @@ def generate_preset_router(
         ]
     ) -> int:
         """
-        新しいプリセットを追加します
+        新しいプリセットを追加します。
         """
         try:
             id = preset_manager.add_preset(preset)
@@ -62,6 +64,7 @@ def generate_preset_router(
 
     @router.post(
         "/update_preset",
+        summary="既存のプリセットを更新する",
         response_description="更新したプリセットのプリセットID",
         dependencies=[Depends(verify_mutability)],
     )
@@ -74,7 +77,7 @@ def generate_preset_router(
         ]
     ) -> int:
         """
-        既存のプリセットを更新します
+        既存のプリセットを更新します。
         """
         try:
             id = preset_manager.update_preset(preset)
@@ -86,6 +89,7 @@ def generate_preset_router(
 
     @router.post(
         "/delete_preset",
+        summary="既存のプリセットを削除する",
         status_code=204,
         dependencies=[Depends(verify_mutability)],
     )
@@ -93,7 +97,7 @@ def generate_preset_router(
         id: Annotated[int, Query(description="削除するプリセットのプリセットID")]
     ) -> None:
         """
-        既存のプリセットを削除します
+        既存のプリセットを削除します。
         """
         try:
             preset_manager.delete_preset(id)
