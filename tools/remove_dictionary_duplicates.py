@@ -1,25 +1,25 @@
 """
-Usage: python remove_dictionary_duplicates.py <manual_csv_path>
+Usage: python remove_dictionary_duplicates.py
 
-resources/dictionaries ディレクトリにある辞書データのうち、引数で与えられた辞書 CSV ファイルに定義されている単語を削除するツール。
-tdmelodic / NEologd から自動生成された辞書データ内の単語のうち、pyopenjtalk-plus デフォルト辞書
-(naist-jdic.csv / unidic-csj.csv) に既に定義されている単語を削除するユースケースでの利用を想定している。
+resources/dictionaries ディレクトリにある辞書データのうち、pyopenjtalk-plus デフォルト辞書 (naist-jdic.csv / unidic-csj.csv) に
+既に定義されている単語を削除するツール。tdmelodic / NEologd から自動生成された辞書データ内の単語のうち、pyopenjtalk-plus デフォルト辞書に
+既に定義されている単語を削除するユースケースでの利用を想定している。
 """
 
 import csv
 import shutil
-import sys
 from pathlib import Path
 
 
-def read_manual_words(manual_csv_path: str) -> dict[str, list[str]]:
+def read_manual_words(manual_csv_paths: list[str]) -> dict[str, list[str]]:
     """手動生成された CSV から単語辞書を作成する"""
     manual_words: dict[str, list[str]] = {}
-    with open(manual_csv_path, "r", encoding="utf-8") as manual_file:
-        manual_reader = csv.reader(manual_file)
-        for row in manual_reader:
-            if row:  # 空行をスキップ
-                manual_words[row[0]] = row
+    for manual_csv_path in manual_csv_paths:
+        with open(manual_csv_path, "r", encoding="utf-8") as manual_file:
+            manual_reader = csv.reader(manual_file)
+            for row in manual_reader:
+                if row:  # 空行をスキップ
+                    manual_words[row[0]] = row
     return manual_words
 
 
@@ -65,8 +65,13 @@ def print_removed_entries(
         print("-" * shutil.get_terminal_size().columns)
 
 
-def remove_duplicates(manual_csv_path: str) -> None:
-    manual_words = read_manual_words(manual_csv_path)
+def remove_duplicates() -> None:
+    # pyopenjtalk-plus のデフォルト辞書のパス
+    manual_csv_paths = [
+        str((Path(__file__).parent.parent.parent / "pyopenjtalk-plus/pyopenjtalk/dictionary/naist-jdic.csv").resolve()),
+        str((Path(__file__).parent.parent.parent / "pyopenjtalk-plus/pyopenjtalk/dictionary/unidic-csj.csv").resolve()),
+    ]
+    manual_words = read_manual_words(manual_csv_paths)
 
     dict_dir = Path("resources/dictionaries")
     total_removed = 0
@@ -86,9 +91,4 @@ def remove_duplicates(manual_csv_path: str) -> None:
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print("Usage: python remove_duplicates.py <manual_csv_path>")
-        sys.exit(1)
-
-    manual_csv_path = sys.argv[1]
-    remove_duplicates(manual_csv_path)
+    remove_duplicates()

@@ -73,12 +73,18 @@ def process_auto_csv(
         writer.writerows(unique_rows)
 
     # ファイルの末尾の改行を削除
-    with open(file_path, "rb+") as file:
-        file.seek(-1, 2)
-        last_char = file.read(1)
+    with open(priority_file_path, "rb+") as pfile:
+        pfile.seek(-1, 2)
+        last_char = pfile.read(1)
         if last_char == b"\n":
-            file.seek(-1, 2)
-            file.truncate()
+            pfile.seek(-1, 2)
+            pfile.truncate()
+    with open(file_path, "rb+") as auto_file:
+        auto_file.seek(-1, 2)
+        last_char = auto_file.read(1)
+        if last_char == b"\n":
+            auto_file.seek(-1, 2)
+            auto_file.truncate()
 
     return len(unique_rows), removed_rows
 
