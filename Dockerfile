@@ -66,6 +66,9 @@ EOF
 FROM ${BASE_RUNTIME_IMAGE} AS runtime-env
 ARG DEBIAN_FRONTEND=noninteractive
 
+# Set timezone to Asia/Tokyo
+ENV TZ=Asia/Tokyo
+
 WORKDIR /opt/aivisspeech-engine
 
 # ca-certificates: pyopenjtalk dictionary download
