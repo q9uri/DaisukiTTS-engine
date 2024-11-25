@@ -3,6 +3,7 @@
 import json
 import sys
 import threading
+import time
 from collections.abc import Callable
 from pathlib import Path
 from typing import Any, TypeVar
@@ -90,7 +91,16 @@ class UserDictionary:
         self._compiled_dict_path = compiled_dict_path
         # pytest から実行されているかどうか
         self._is_pytest = "pytest" in sys.argv[0] or "py.test" in sys.argv[0]
-        self.update_dict()
+
+        # サーバーの起動高速化のため、前回起動時にコンパイル済みのユーザー辞書データがあれば、そのまま pyopenjtalk に適用する
+        if self._compiled_dict_path.is_file():
+            pyopenjtalk.update_global_jtalk_with_user_dict(
+                str(self._compiled_dict_path.resolve(strict=True))
+            )
+            logger.info("Compiled user dictionary applied.")
+
+        # バックグラウンドで辞書更新を行う (数秒程度を要する)
+        threading.Thread(target=self.update_dict, daemon=True).start()
 
     @mutex_wrapper(mutex_user_dict)
     def _write_to_json(self, user_dict: dict[str, UserDictWord]) -> None:
@@ -111,6 +121,8 @@ class UserDictionary:
         # pytest 実行時かつ Windows ではなぜか辞書更新時に MeCab の初期化に失敗するので、辞書更新自体を無効化する
         if self._is_pytest and sys.platform == "win32":
             return
+
+        start_time = time.time()
 
         random_string = uuid4()
         tmp_csv_path = compiled_dict_path.with_suffix(
@@ -138,6 +150,7 @@ class UserDictionary:
             # ZStandard デコーダーの初期化
             decompressor = zstandard.ZstdDecompressor()
 
+            # デフォルト辞書データの追加
             for file_path in default_dict_files:
                 with file_path.open("rb") as f:
                     if file_path.suffix == ".zst":
@@ -176,6 +189,7 @@ class UserDictionary:
                     mora_count=word.mora_count,
                     accent_associative_rule=word.accent_associative_rule,
                 )
+
             # 辞書データを辞書.csv へ一時保存
             tmp_csv_path.write_text(csv_text, encoding="utf-8")
 
@@ -192,8 +206,13 @@ class UserDictionary:
                     str(compiled_dict_path.resolve(strict=True))
                 )
 
+            logger.info(f"User dictionary updated. ({time.time() - start_time:.2f}s)")
+
         except Exception as e:
-            logger.error("Failed to update dictionary.", exc_info=e)
+            logger.error(
+                f"Failed to update user dictionary. ({time.time() - start_time:.2f}s)",
+                exc_info=e,
+            )
             raise e
 
         finally:
