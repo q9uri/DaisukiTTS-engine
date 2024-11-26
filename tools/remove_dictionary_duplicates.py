@@ -4,7 +4,7 @@ Usage: python remove_dictionary_duplicates.py
 resources/dictionaries ディレクトリにある辞書データのうち、pyopenjtalk-plus デフォルト辞書 (naist-jdic.csv / unidic-csj.csv) に
 既に定義されている単語を削除するツール。tdmelodic / NEologd から自動生成された辞書データ内の単語のうち、pyopenjtalk-plus デフォルト辞書に
 既に定義されている単語を削除するユースケースでの利用を想定している。
-"""
+"""  # noqa
 
 import csv
 import shutil
@@ -68,8 +68,8 @@ def print_removed_entries(
 def remove_duplicates() -> None:
     # pyopenjtalk-plus のデフォルト辞書のパス
     manual_csv_paths = [
-        str((Path(__file__).parent.parent.parent / "pyopenjtalk-plus/pyopenjtalk/dictionary/naist-jdic.csv").resolve()),
-        str((Path(__file__).parent.parent.parent / "pyopenjtalk-plus/pyopenjtalk/dictionary/unidic-csj.csv").resolve()),
+        str((Path(__file__).parent.parent.parent / "pyopenjtalk-plus/pyopenjtalk/dictionary/naist-jdic.csv").resolve()),  # fmt: skip # noqa
+        str((Path(__file__).parent.parent.parent / "pyopenjtalk-plus/pyopenjtalk/dictionary/unidic-csj.csv").resolve()),  # fmt: skip # noqa
     ]
     manual_words = read_manual_words(manual_csv_paths)
 

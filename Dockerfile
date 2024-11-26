@@ -102,11 +102,10 @@ ADD ./poetry.toml ./poetry.lock ./pyproject.toml /opt/aivisspeech-engine/
 RUN <<EOF
     /opt/python/bin/pip3 install poetry
     chown -R user /opt/aivisspeech-engine
-    # Install Rust (wheel build dependencies)
-    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-    source $HOME/.cargo/env
-    gosu user /opt/python/bin/poetry install --only=main
-    rm -rf /root/.cargo
+    # Install Rust (Sudachipy arm64 wheel build dependencies)
+    gosu user bash -c "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y"
+    gosu user bash -c "source /home/user/.cargo/env; /opt/python/bin/poetry install --only=main"
+    gosu user rm -rf /home/user/.cargo
 EOF
 
 # Add local files
