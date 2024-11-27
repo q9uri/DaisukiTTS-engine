@@ -1486,7 +1486,7 @@
     },
     "/add_preset": {
       "post": {
-        "description": "新しいプリセットを追加します",
+        "description": "新しいプリセットを追加します。",
         "operationId": "add_preset_add_preset_post",
         "requestBody": {
           "content": {
@@ -1522,15 +1522,15 @@
             "description": "Validation Error"
           }
         },
-        "summary": "Add Preset",
+        "summary": "新しいプリセットを追加する",
         "tags": [
-          "その他"
+          "プリセット"
         ]
       }
     },
     "/aivm_models": {
       "get": {
-        "description": "インストールした音声合成モデルの情報を返します。",
+        "description": "インストール済みのすべての音声合成モデルの情報を返します。",
         "operationId": "get_installed_aivm_infos_aivm_models_get",
         "responses": {
           "200": {
@@ -1545,10 +1545,10 @@
                 }
               }
             },
-            "description": "インストールした音声合成モデルの情報"
+            "description": "インストール済みのすべての音声合成モデルの情報"
           }
         },
-        "summary": "Get Installed Aivm Infos",
+        "summary": "インストール済みのすべての音声合成モデルの情報を取得する",
         "tags": [
           "音声合成モデル管理"
         ]
@@ -1582,7 +1582,7 @@
             "description": "Validation Error"
           }
         },
-        "summary": "Install Aivm",
+        "summary": "音声合成モデルをインストールする",
         "tags": [
           "音声合成モデル管理"
         ]
@@ -1614,7 +1614,7 @@
                 }
               }
             },
-            "description": "Successful Response"
+            "description": "指定された音声合成モデルの情報"
           },
           "422": {
             "content": {
@@ -1627,7 +1627,7 @@
             "description": "Validation Error"
           }
         },
-        "summary": "Get Aivm Info",
+        "summary": "指定された音声合成モデルの情報を取得する",
         "tags": [
           "音声合成モデル管理"
         ]
@@ -1665,7 +1665,7 @@
             "description": "Validation Error"
           }
         },
-        "summary": "Uninstall Aivm",
+        "summary": "音声合成モデルをアンインストールする",
         "tags": [
           "音声合成モデル管理"
         ]
@@ -1904,7 +1904,7 @@
         },
         "summary": "base64エンコードされた複数のwavデータを一つに結合する",
         "tags": [
-          "その他"
+          "音声合成"
         ]
       }
     },
@@ -1936,7 +1936,7 @@
     },
     "/delete_preset": {
       "post": {
-        "description": "既存のプリセットを削除します",
+        "description": "既存のプリセットを削除します。",
         "operationId": "delete_preset_delete_preset_post",
         "parameters": [
           {
@@ -1966,9 +1966,9 @@
             "description": "Validation Error"
           }
         },
-        "summary": "Delete Preset",
+        "summary": "既存のプリセットを削除する",
         "tags": [
-          "その他"
+          "プリセット"
         ]
       }
     },
@@ -2105,7 +2105,7 @@
             "description": "Validation Error"
           }
         },
-        "summary": "Import User Dict Words",
+        "summary": "他のユーザー辞書をインポートする",
         "tags": [
           "ユーザー辞書"
         ]
@@ -2113,7 +2113,7 @@
     },
     "/initialize_speaker": {
       "post": {
-        "description": "指定されたスタイルを初期化します。\n実行しなくても他のAPIは使用できますが、初回実行時に時間がかかることがあります。",
+        "description": "指定されたスタイル ID に紐づく音声合成モデルをロードします。\n実行しなくても他の API は使用できますが、初回実行時に時間がかかることがあります。",
         "operationId": "initialize_speaker_initialize_speaker_post",
         "parameters": [
           {
@@ -2126,13 +2126,13 @@
             }
           },
           {
-            "description": "既に初期化済みのスタイルの再初期化をスキップするかどうか",
+            "description": "既にロード済みの音声合成モデルの再ロードをスキップするかどうか",
             "in": "query",
             "name": "skip_reinit",
             "required": false,
             "schema": {
               "default": false,
-              "description": "既に初期化済みのスタイルの再初期化をスキップするかどうか",
+              "description": "既にロード済みの音声合成モデルの再ロードをスキップするかどうか",
               "title": "Skip Reinit",
               "type": "boolean"
             }
@@ -2164,15 +2164,15 @@
             "description": "Validation Error"
           }
         },
-        "summary": "Initialize Speaker",
+        "summary": "指定されたスタイル ID に紐づく音声合成モデルをロードする",
         "tags": [
-          "その他"
+          "音声合成モデル管理"
         ]
       }
     },
     "/is_initialized_speaker": {
       "get": {
-        "description": "指定されたスタイルが初期化されているかどうかを返します。",
+        "description": "指定されたスタイル ID に紐づく音声合成モデルがロードされているかどうかを返します。",
         "operationId": "is_initialized_speaker_is_initialized_speaker_get",
         "parameters": [
           {
@@ -2219,9 +2219,9 @@
             "description": "Validation Error"
           }
         },
-        "summary": "Is Initialized Speaker",
+        "summary": "指定されたスタイル ID に紐づく音声合成モデルがロードされているかを確認する",
         "tags": [
-          "その他"
+          "音声合成モデル管理"
         ]
       }
     },
@@ -2290,7 +2290,7 @@
             "description": "Validation Error"
           }
         },
-        "summary": "アクセント句から音高・音素長を得る",
+        "summary": "アクセント句から音高・音素長を得る (AivisSpeech Engine では常にダミーの値が返されます)",
         "tags": [
           "クエリ編集"
         ]
@@ -2361,7 +2361,7 @@
             "description": "Validation Error"
           }
         },
-        "summary": "アクセント句から音素長を得る",
+        "summary": "アクセント句から音素長を得る (AivisSpeech Engine では常にダミーの値が返されます)",
         "tags": [
           "クエリ編集"
         ]
@@ -2432,7 +2432,7 @@
             "description": "Validation Error"
           }
         },
-        "summary": "アクセント句から音高を得る",
+        "summary": "アクセント句から音高を得る (AivisSpeech Engine では常にダミーの値が返されます)",
         "tags": [
           "クエリ編集"
         ]
@@ -2440,7 +2440,7 @@
     },
     "/morphable_targets": {
       "post": {
-        "description": "指定されたベーススタイルに対してエンジン内の各キャラクターがモーフィング機能を利用可能か返します。\nモーフィングの許可/禁止は `/speakers `の `speaker.supported_features.synthesis_morphing` に記載されています。\nプロパティが存在しない場合は、モーフィングが許可されているとみなします。\n返り値のスタイル ID は string 型なので注意。\nAivisSpeech Engine では話者ごとに発声タイミングが異なる関係で実装不可能なため (動作こそするが聴くに耐えない) 、\n全ての話者でモーフィングが禁止されています。",
+        "description": "指定されたベーススタイルに対してエンジン内の各キャラクターがモーフィング機能を利用可能か返します。<br>\nモーフィングの許可/禁止は `/speakers `の `speaker.supported_features.synthesis_morphing` に記載されています。<br>\nプロパティが存在しない場合は、モーフィングが許可されているとみなします。<br>\n返り値のスタイル ID は string 型なので注意。<br>\nAivisSpeech Engine では話者ごとに発声タイミングが異なる関係で実装不可能なため (動作こそするが聴くに耐えない) 、\n全ての話者でモーフィングが禁止されています。",
         "operationId": "morphable_targets_morphable_targets_post",
         "parameters": [
           {
@@ -2574,7 +2574,7 @@
     },
     "/presets": {
       "get": {
-        "description": "エンジンが保持しているプリセットの設定を返します",
+        "description": "エンジンが保持しているプリセットの設定を返します。",
         "operationId": "get_presets_presets_get",
         "responses": {
           "200": {
@@ -2592,9 +2592,9 @@
             "description": "プリセットのリスト"
           }
         },
-        "summary": "Get Presets",
+        "summary": "エンジンが保持しているプリセットの設定を取得する",
         "tags": [
-          "その他"
+          "プリセット"
         ]
       }
     },
@@ -2839,7 +2839,7 @@
         },
         "summary": "AivisSpeech Engine ではサポートされていない API です (常に 501 Not Implemented を返します)",
         "tags": [
-          "その他"
+          "話者情報"
         ]
       }
     },
@@ -2887,13 +2887,13 @@
         },
         "summary": "AivisSpeech Engine ではサポートされていない API です (常に 501 Not Implemented を返します)",
         "tags": [
-          "その他"
+          "話者情報"
         ]
       }
     },
     "/speaker_info": {
       "get": {
-        "description": "UUID で指定された喋れるキャラクターの情報を返します。\n画像や音声はresource_formatで指定した形式で返されます。",
+        "description": "UUID で指定された話者の情報を返します。\n画像や音声は resource_format で指定した形式で返されます。",
         "operationId": "speaker_info_speaker_info_get",
         "parameters": [
           {
@@ -2953,15 +2953,15 @@
             "description": "Validation Error"
           }
         },
-        "summary": "Speaker Info",
+        "summary": "UUID で指定された話者の情報を取得する",
         "tags": [
-          "その他"
+          "話者情報"
         ]
       }
     },
     "/speakers": {
       "get": {
-        "description": "喋れるキャラクターの情報の一覧を返します。",
+        "description": "話者情報の一覧を返します。",
         "operationId": "speakers_speakers_get",
         "parameters": [
           {
@@ -3002,15 +3002,15 @@
             "description": "Validation Error"
           }
         },
-        "summary": "Speakers",
+        "summary": "話者情報の一覧を取得する",
         "tags": [
-          "その他"
+          "話者情報"
         ]
       }
     },
     "/supported_devices": {
       "get": {
-        "description": "対応デバイスの一覧を取得します。",
+        "description": "このビルドでサポートされている、音声合成モデルの推論デバイスを返します。<br>\n通常、下記の値が返されます。true であっても実際に推論デバイスが利用可能とは限りません。\n- Windows: `{\"cpu\": true, \"cuda\": false, \"dml\": true}`\n- macOS: `{\"cpu\": true, \"cuda\": false, \"dml\": false}`\n- Linux: `{\"cpu\": true, \"cuda\": true, \"dml\": false}`",
         "operationId": "supported_devices_supported_devices_get",
         "parameters": [
           {
@@ -3047,14 +3047,15 @@
             "description": "Validation Error"
           }
         },
-        "summary": "Supported Devices",
+        "summary": "このビルドでサポートされている、音声合成モデルの推論デバイスを取得する",
         "tags": [
-          "その他"
+          "音声合成モデル管理"
         ]
       }
     },
     "/synthesis": {
       "post": {
+        "description": "指定されたスタイル ID に紐づく音声合成モデルを用いて音声合成を行います。",
         "operationId": "synthesis_synthesis_post",
         "parameters": [
           {
@@ -3131,7 +3132,7 @@
     },
     "/synthesis_morphing": {
       "post": {
-        "description": "指定された 2 種類のスタイルで音声を合成、指定した割合でモーフィングした音声を得ます。\nモーフィングの割合は `morph_rate` で指定でき、0.0 でベースのスタイル、1.0 でターゲットのスタイルに近づきます。\nAivisSpeech Engine では話者ごとに発声タイミングが異なる関係で実装不可能なため (動作こそするが聴くに耐えない) 、\n常に 400 Bad Request を返します。",
+        "description": "指定された 2 種類のスタイルで音声を合成、指定した割合でモーフィングした音声を得ます。<br>\nモーフィングの割合は `morph_rate` で指定でき、0.0 でベースのスタイル、1.0 でターゲットのスタイルに近づきます。<br>\nAivisSpeech Engine では話者ごとに発声タイミングが異なる関係で実装不可能なため (動作こそするが聴くに耐えない) 、\n常に 400 Bad Request を返します。",
         "operationId": "_synthesis_morphing_synthesis_morphing_post",
         "parameters": [
           {
@@ -3216,7 +3217,7 @@
     },
     "/update_preset": {
       "post": {
-        "description": "既存のプリセットを更新します",
+        "description": "既存のプリセットを更新します。",
         "operationId": "update_preset_update_preset_post",
         "requestBody": {
           "content": {
@@ -3252,9 +3253,9 @@
             "description": "Validation Error"
           }
         },
-        "summary": "Update Preset",
+        "summary": "既存のプリセットを更新する",
         "tags": [
-          "その他"
+          "プリセット"
         ]
       }
     },
@@ -3278,7 +3279,7 @@
             "description": "単語のUUIDとその詳細"
           }
         },
-        "summary": "Get User Dict Words",
+        "summary": "ユーザー辞書に登録されている単語の一覧を取得する",
         "tags": [
           "ユーザー辞書"
         ]
@@ -3356,7 +3357,7 @@
                 }
               }
             },
-            "description": "Successful Response"
+            "description": "追加した言葉のUUID"
           },
           "422": {
             "content": {
@@ -3369,7 +3370,7 @@
             "description": "Validation Error"
           }
         },
-        "summary": "Add User Dict Word",
+        "summary": "ユーザー辞書に言葉を追加する",
         "tags": [
           "ユーザー辞書"
         ]
@@ -3407,7 +3408,7 @@
             "description": "Validation Error"
           }
         },
-        "summary": "Delete User Dict Word",
+        "summary": "ユーザー辞書に登録されている言葉を削除する",
         "tags": [
           "ユーザー辞書"
         ]
@@ -3499,7 +3500,7 @@
             "description": "Validation Error"
           }
         },
-        "summary": "Rewrite User Dict Word",
+        "summary": "ユーザー辞書に登録されている言葉を更新する",
         "tags": [
           "ユーザー辞書"
         ]
@@ -3557,7 +3558,7 @@
         },
         "summary": "テキストが AquesTalk 風記法に従っているか判定する",
         "tags": [
-          "その他"
+          "クエリ作成"
         ]
       }
     },
