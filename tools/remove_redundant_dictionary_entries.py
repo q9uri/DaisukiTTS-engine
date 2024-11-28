@@ -1,3 +1,4 @@
+# flake8: noqa
 """
 Usage: python remove_redundant_dictionary_entries.py
 
@@ -7,15 +8,30 @@ resources/dictionaries ディレクトリにある辞書データのうち、pyo
 import csv
 import shutil
 from pathlib import Path
-from typing import cast
 
 import pyopenjtalk
 
 
-def get_default_reading(text: str) -> str:
-    """pyopenjtalk のデフォルト辞書から読みを取得する"""
-    # g2p() の kana=True で読みをカタカナで取得
-    return cast(str, pyopenjtalk.g2p(text, kana=True))
+def get_default_reading_pronunciation(text: str) -> tuple[str, str]:
+    """pyopenjtalk のデフォルト辞書から読みと発音を取得する"""
+    njd_features = pyopenjtalk.run_frontend(text)
+
+    reads: list[str] = []
+    prons: list[str] = []
+    for n in njd_features:
+        if n["pos"] == "記号":
+            r = n["string"]
+            p = n["string"]
+        else:
+            r = n["read"]
+            p = n["pron"]
+        # remove special chars
+        for c in "’":
+            r = r.replace(c, "")
+            p = p.replace(c, "")
+        reads.append(r)
+        prons.append(p)
+    return "".join(reads), "".join(prons)
 
 
 def process_csv_file(file_path: str) -> tuple[int, list[list[str]]]:
@@ -36,19 +52,34 @@ def process_csv_file(file_path: str) -> tuple[int, list[list[str]]]:
                 continue
 
             # CSV の形式は 表層形,左文脈ID,右文脈ID,コスト,品詞,品詞細分類1,品詞細分類2,品詞細分類3,活用型,活用形,原形,読み,発音 を想定
+            # : は除去してから比較
             surface = row[0]
-            pronunciation = row[12].replace(
-                ":", ""
-            )  # 「読み」ではなく「発音」(一番最後) の方を採用する (: は除去してから比較)
+            reading = row[11].replace(":", "")
+            pronunciation = row[12].replace(":", "")
 
-            # デフォルト辞書から読みを取得
-            default_reading = get_default_reading(surface)
+            # デフォルト辞書のみ適用した pyopenjtalk から読みと発音を取得
+            default_reading, default_pronunciation = get_default_reading_pronunciation(surface)  # fmt: skip
 
-            # デフォルト辞書の読みと完全一致する場合は削除
-            if default_reading == pronunciation:
+            # デフォルト辞書のみ適用した pyopenjtalk の発音と完全一致する場合は削除
+            ## pyopenjtalk から取得した発音には「・」や全角スペースが含まれることがあるが、Mecab 辞書データの発音には含まれていないことが多いので、
+            ## 除去した状態でも一致する場合は削除する
+            if (
+                default_pronunciation == pronunciation
+                or default_pronunciation.replace("・", "").replace("　", "")
+                == pronunciation
+            ):
                 removed_rows.append(row)
                 print(
-                    f'Removed: {surface} → {default_reading} | \033[91m{",".join(row)}\033[0m'
+                    f'Removed: {surface} → {default_pronunciation} (Pron) | \033[91m{",".join(row)}\033[0m'
+                )
+            # そうでないが、デフォルト辞書の読みと完全一致する場合は削除
+            elif (
+                default_reading == reading
+                or default_reading.replace("・", "").replace("　", "") == reading
+            ):
+                removed_rows.append(row)
+                print(
+                    f'Removed: {surface} → {default_reading} (Read) | \033[91m{",".join(row)}\033[0m'
                 )
             else:
                 unique_rows.append(row)
