@@ -85,6 +85,10 @@ starlette = "^0.41.3"
 jaconv = "^0.3.4"
 httpx = "^0.27.0"
 zstandard = "^0.23.0"
+# truststore は HTTPS 通信時にシステムにインストールされた証明書ストアを使うために必要
+## ref: https://github.com/psf/requests/issues/2966
+## ref: https://truststore.readthedocs.io/en/latest/
+truststore = "^0.10.0"
 # sudachipy 0.6.9 は Linux arm64 でのビルドに失敗するため、当面 0.6.8 に固定する
 sudachipy = "0.6.8"
 # aivmlib は AIVMX ファイルのメタデータ読み取りに必要

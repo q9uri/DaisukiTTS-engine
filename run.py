@@ -1,5 +1,14 @@
 """AivisSpeech Engine の実行"""
 
+# truststore を適用し、HTTPS 通信時にシステムにインストールされた証明書ストアを使う
+# 企業内 LAN など HTTPS プロキシが導入されている環境で、システムにインストールされた自己署名証明書を信頼するために必要
+# requests からの HTTPS 通信には certifi が使われるため、HTTPS プロキシ導入環境では truststore を適用しない限り通信エラーが発生する
+# ref: https://github.com/psf/requests/issues/2966
+# ref: https://truststore.readthedocs.io/en/latest/
+import truststore  # fmt: skip # isort: skip
+truststore.inject_into_ssl()
+# flake8: noqa: E402
+
 import argparse
 import multiprocessing
 import os

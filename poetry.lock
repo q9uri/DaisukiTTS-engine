@@ -3852,6 +3852,17 @@ files = [
 ]
 
 [[package]]
+name = "truststore"
+version = "0.10.0"
+description = "Verify certificates using native system trust stores"
+optional = false
+python-versions = ">=3.10"
+files = [
+    {file = "truststore-0.10.0-py3-none-any.whl", hash = "sha256:b3798548e421ffe2ca2a6217cca49e7a17baf40b72d86a5505dc7d701e77d15b"},
+    {file = "truststore-0.10.0.tar.gz", hash = "sha256:5da347c665714fdfbd46f738c823fe9f0d8775e41ac5fb94f325749091187896"},
+]
+
+[[package]]
 name = "typeguard"
 version = "4.4.1"
 description = "Run-time type checker for Python"
@@ -4206,4 +4217,4 @@ cffi = ["cffi (>=1.11)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "~3.11"
-content-hash = "f2f055aa09f470b41beab7721bcacb59702b523c7a360b5e0e7dd755b60ab0a7"
+content-hash = "062abc639569d12601dd086ce5ab5ebd153d70701d309ec9d829ce77f7fc4392"

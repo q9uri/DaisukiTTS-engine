@@ -497,9 +497,6 @@ class AivmManager:
                 headers={"User-Agent": f"AivisSpeech-Engine/{__version__}"},
                 # リダイレクトを追跡する
                 follow_redirects=True,
-                # HTTPS 証明書の検証を行わない
-                # HTTP プロキシ導入環境だとシステムの証明書が使われないためエラーになることがあるらしい
-                verify=False,
             )
             response.raise_for_status()
             logger.info(f"Downloaded AIVM file from {url}.")
