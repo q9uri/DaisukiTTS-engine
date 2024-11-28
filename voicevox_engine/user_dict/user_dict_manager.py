@@ -93,7 +93,8 @@ class UserDictionary:
         self._is_pytest = "pytest" in sys.argv[0] or "py.test" in sys.argv[0]
 
         # 初回起動時などまだユーザー辞書 JSON が存在しない場合、辞書登録例として「担々麺」の辞書エントリを書き込む
-        if not self._user_dict_path.is_file():
+        # pytest から実行されている場合は書き込まない
+        if not self._user_dict_path.is_file() and not self._is_pytest:
             self._write_to_json({
                 "担々麺": create_word(WordProperty(
                     surface="担々麺",
