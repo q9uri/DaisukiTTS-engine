@@ -77,7 +77,7 @@ def remove_duplicates() -> None:
     total_removed = 0
 
     for file_path in sorted(dict_dir.glob("*.csv")):
-        # 01_default.csv は手動生成された辞書なのでスキップ
+        # 01_default.csv は明示的に手動作成されたデフォルト辞書なのでスキップ
         if file_path.name == "01_default.csv":
             continue
         original_count = sum(1 for _ in open(file_path, "r", encoding="utf-8"))

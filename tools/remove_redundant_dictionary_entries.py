@@ -6,6 +6,7 @@ resources/dictionaries ディレクトリにある辞書データのうち、pyo
 """
 
 import csv
+import re
 import shutil
 from pathlib import Path
 
@@ -46,7 +47,7 @@ def process_csv_file(file_path: str) -> tuple[int, list[list[str]]]:
         for row in reader:
             processed_rows += 1
             if processed_rows % 100 == 0:  # 100行ごとに進捗を表示
-                print(f"Processing... {processed_rows}/{total_rows} rows", end="\r")
+                print(f"Processing... {processed_rows}/{total_rows} rows")
 
             if not row:  # 空行をスキップ
                 continue
@@ -57,16 +58,27 @@ def process_csv_file(file_path: str) -> tuple[int, list[list[str]]]:
             reading = row[11].replace(":", "")
             pronunciation = row[12].replace(":", "")
 
+            # surface がひらがな・カタカナのみで構成される場合、かつ3文字以上の場合は、pyopenjtalk が苦手とする
+            # ひらがな・カタカナ単語の分かち書き強化のために意図的に残す
+            if re.match(r"^[\u3040-\u309F\u30A0-\u30FF]{3,}$", surface):
+                unique_rows.append(row)
+                continue
+
             # デフォルト辞書のみ適用した pyopenjtalk から読みと発音を取得
             default_reading, default_pronunciation = get_default_reading_pronunciation(surface)  # fmt: skip
+            default_reading_without_special_chars = default_reading.replace(
+                "・", ""
+            ).replace("　", "")
+            default_pronunciation_without_special_chars = default_pronunciation.replace(
+                "・", ""
+            ).replace("　", "")
 
             # デフォルト辞書のみ適用した pyopenjtalk の発音と完全一致する場合は削除
             ## pyopenjtalk から取得した発音には「・」や全角スペースが含まれることがあるが、Mecab 辞書データの発音には含まれていないことが多いので、
             ## 除去した状態でも一致する場合は削除する
             if (
                 default_pronunciation == pronunciation
-                or default_pronunciation.replace("・", "").replace("　", "")
-                == pronunciation
+                or default_pronunciation_without_special_chars == pronunciation
             ):
                 removed_rows.append(row)
                 print(
@@ -75,7 +87,7 @@ def process_csv_file(file_path: str) -> tuple[int, list[list[str]]]:
             # そうでないが、デフォルト辞書の読みと完全一致する場合は削除
             elif (
                 default_reading == reading
-                or default_reading.replace("・", "").replace("　", "") == reading
+                or default_reading_without_special_chars == reading
             ):
                 removed_rows.append(row)
                 print(
@@ -116,8 +128,8 @@ def remove_redundant_dictionary_entries() -> None:
     total_removed = 0
 
     for file_path in sorted(dict_dir.glob("*.csv")):
-        # 01_default.csv は手動生成された辞書なのでスキップ
-        if file_path.name == "01_default.csv":
+        # 01_ から始まる辞書は手動生成された辞書なのでスキップ
+        if file_path.name.startswith("01_"):
             continue
 
         print(f"\nProcessing {file_path.name}...")
