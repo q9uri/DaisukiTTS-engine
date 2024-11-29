@@ -1,14 +1,12 @@
 """モーフィング機能を提供する API Router"""
 
+import io
 from functools import lru_cache
-from tempfile import NamedTemporaryFile
 from typing import Annotated
 
 import soundfile
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query, Response
 from pydantic.json_schema import SkipJsonSchema
-from starlette.background import BackgroundTask
-from starlette.responses import FileResponse
 
 from voicevox_engine.aivm_manager import AivmManager
 from voicevox_engine.metas.Metas import StyleId
@@ -24,7 +22,6 @@ from voicevox_engine.morphing.morphing import (
 )
 from voicevox_engine.morphing.morphing import synthesize_morphed_wave
 from voicevox_engine.tts_pipeline.tts_engine import LATEST_VERSION, TTSEngineManager
-from voicevox_engine.utility.file_utility import try_delete_file
 
 # キャッシュを有効化
 # モジュール側でlru_cacheを指定するとキャッシュを制御しにくいため、HTTPサーバ側で指定する
@@ -72,7 +69,7 @@ def generate_morphing_router(
 
     @router.post(
         "/synthesis_morphing",
-        response_class=FileResponse,
+        response_class=Response,
         responses={
             200: {
                 "content": {
@@ -91,7 +88,7 @@ def generate_morphing_router(
             str | SkipJsonSchema[None],
             Query(description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。"),
         ] = None,  # fmt: skip # noqa
-    ) -> FileResponse:
+    ) -> Response:
         """
         指定された 2 種類のスタイルで音声を合成、指定した割合でモーフィングした音声を得ます。<br>
         モーフィングの割合は `morph_rate` で指定でき、0.0 でベースのスタイル、1.0 でターゲットのスタイルに近づきます。<br>
@@ -127,18 +124,14 @@ def generate_morphing_router(
             output_stereo=query.outputStereo,
         )
 
-        with NamedTemporaryFile(delete=False) as f:
-            soundfile.write(
-                file=f,
-                data=morph_wave,
-                samplerate=query.outputSamplingRate,
-                format="WAV",
-            )
-
-        return FileResponse(
-            f.name,
-            media_type="audio/wav",
-            background=BackgroundTask(try_delete_file, f.name),
+        buffer = io.BytesIO()
+        soundfile.write(
+            file=buffer,
+            data=morph_wave,
+            samplerate=query.outputSamplingRate,
+            format="WAV",
         )
+
+        return Response(buffer.getvalue(), media_type="audio/wav")
 
     return router

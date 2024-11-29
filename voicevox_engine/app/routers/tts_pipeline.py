@@ -1,15 +1,13 @@
 """音声合成機能を提供する API Router"""
 
+import io
 import zipfile
-from tempfile import NamedTemporaryFile, TemporaryFile
 from typing import Annotated, Self
 
 import soundfile
-from fastapi import APIRouter, HTTPException, Query, Request
+from fastapi import APIRouter, HTTPException, Query, Request, Response
 from pydantic import BaseModel, Field
 from pydantic.json_schema import SkipJsonSchema
-from starlette.background import BackgroundTask
-from starlette.responses import FileResponse
 
 from voicevox_engine.cancellable_engine import CancellableEngine
 from voicevox_engine.core.core_adapter import DeviceSupport
@@ -32,7 +30,6 @@ from voicevox_engine.tts_pipeline.model import (
     Score,
 )
 from voicevox_engine.tts_pipeline.tts_engine import LATEST_VERSION, TTSEngineManager
-from voicevox_engine.utility.file_utility import try_delete_file
 
 
 class ParseKanaBadRequest(BaseModel):
@@ -263,7 +260,7 @@ def generate_tts_pipeline_router(
 
     @router.post(
         "/synthesis",
-        response_class=FileResponse,
+        response_class=Response,
         responses={
             200: {
                 "content": {
@@ -285,7 +282,7 @@ def generate_tts_pipeline_router(
             str | SkipJsonSchema[None],
             Query(description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。"),
         ] = None,  # fmt: skip # noqa
-    ) -> FileResponse:
+    ) -> Response:
         """
         指定されたスタイル ID に紐づく音声合成モデルを用いて音声合成を行います。
         """
@@ -295,20 +292,16 @@ def generate_tts_pipeline_router(
             query, style_id, enable_interrogative_upspeak=enable_interrogative_upspeak
         )
 
-        with NamedTemporaryFile(delete=False) as f:
-            soundfile.write(
-                file=f, data=wave, samplerate=query.outputSamplingRate, format="WAV"
-            )
-
-        return FileResponse(
-            f.name,
-            media_type="audio/wav",
-            background=BackgroundTask(try_delete_file, f.name),
+        buffer = io.BytesIO()
+        soundfile.write(
+            file=buffer, data=wave, samplerate=query.outputSamplingRate, format="WAV"
         )
+
+        return Response(buffer.getvalue(), media_type="audio/wav")
 
     @router.post(
         "/cancellable_synthesis",
-        response_class=FileResponse,
+        response_class=Response,
         responses={
             200: {
                 "content": {
@@ -328,7 +321,7 @@ def generate_tts_pipeline_router(
             str | SkipJsonSchema[None],
             Query(description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。"),
         ] = None,  # fmt: skip # noqa
-    ) -> FileResponse:
+    ) -> Response:
         raise HTTPException(
             status_code=501,
             detail="Cancelable synthesis is not supported in AivisSpeech Engine.",
@@ -359,7 +352,7 @@ def generate_tts_pipeline_router(
 
     @router.post(
         "/multi_synthesis",
-        response_class=FileResponse,
+        response_class=Response,
         responses={
             200: {
                 "content": {
@@ -379,36 +372,33 @@ def generate_tts_pipeline_router(
             str | SkipJsonSchema[None],
             Query(description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。"),
         ] = None,  # fmt: skip # noqa
-    ) -> FileResponse:
+    ) -> Response:
         version = core_version or LATEST_VERSION
         engine = tts_engines.get_engine(version)
         sampling_rate = queries[0].outputSamplingRate
 
-        with NamedTemporaryFile(delete=False) as f:
-            with zipfile.ZipFile(f, mode="a") as zip_file:
-                for i in range(len(queries)):
-                    if queries[i].outputSamplingRate != sampling_rate:
-                        raise HTTPException(
-                            status_code=422,
-                            detail="サンプリングレートが異なるクエリがあります",
-                        )
+        buffer = io.BytesIO()
+        with zipfile.ZipFile(buffer, mode="a") as zip_file:
+            for i in range(len(queries)):
+                if queries[i].outputSamplingRate != sampling_rate:
+                    raise HTTPException(
+                        status_code=422,
+                        detail="サンプリングレートが異なるクエリがあります",
+                    )
 
-                    with TemporaryFile() as wav_file:
-                        wave = engine.synthesize_wave(queries[i], style_id)
-                        soundfile.write(
-                            file=wav_file,
-                            data=wave,
-                            samplerate=sampling_rate,
-                            format="WAV",
-                        )
-                        wav_file.seek(0)
-                        zip_file.writestr(f"{str(i + 1).zfill(3)}.wav", wav_file.read())
+                wav_file_buffer = io.BytesIO()
+                wave = engine.synthesize_wave(queries[i], style_id)
+                soundfile.write(
+                    file=wav_file_buffer,
+                    data=wave,
+                    samplerate=sampling_rate,
+                    format="WAV",
+                )
+                zip_file.writestr(
+                    f"{str(i + 1).zfill(3)}.wav", wav_file_buffer.getvalue()
+                )
 
-        return FileResponse(
-            f.name,
-            media_type="application/zip",
-            background=BackgroundTask(try_delete_file, f.name),
-        )
+        return Response(buffer.getvalue(), media_type="application/zip")
 
     @router.post(
         "/sing_frame_audio_query",
@@ -483,7 +473,7 @@ def generate_tts_pipeline_router(
 
     @router.post(
         "/frame_synthesis",
-        response_class=FileResponse,
+        response_class=Response,
         responses={
             200: {
                 "content": {
@@ -501,7 +491,7 @@ def generate_tts_pipeline_router(
             str | SkipJsonSchema[None],
             Query(description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。"),
         ] = None,  # fmt: skip # noqa
-    ) -> FileResponse:
+    ) -> Response:
         # """
         # 歌唱音声合成を行います。
         # """
@@ -517,21 +507,17 @@ def generate_tts_pipeline_router(
         except TalkSingInvalidInputError as e:
             raise HTTPException(status_code=400, detail=str(e))
 
-        with NamedTemporaryFile(delete=False) as f:
-            soundfile.write(
-                file=f, data=wave, samplerate=query.outputSamplingRate, format="WAV"
-            )
-
-        return FileResponse(
-            f.name,
-            media_type="audio/wav",
-            background=BackgroundTask(try_delete_file, f.name),
+        buffer = io.BytesIO()
+        soundfile.write(
+            file=buffer, data=wave, samplerate=query.outputSamplingRate, format="WAV"
         )
+
+        return Response(buffer.getvalue(), media_type="audio/wav")
         """
 
     @router.post(
         "/connect_waves",
-        response_class=FileResponse,
+        response_class=Response,
         responses={
             200: {
                 "content": {
@@ -542,7 +528,7 @@ def generate_tts_pipeline_router(
         tags=["音声合成"],
         summary="base64エンコードされた複数のwavデータを一つに結合する",
     )
-    def connect_waves(waves: list[str]) -> FileResponse:
+    def connect_waves(waves: list[str]) -> Response:
         """
         base64エンコードされたwavデータを一纏めにし、wavファイルで返します。
         """
@@ -551,19 +537,15 @@ def generate_tts_pipeline_router(
         except ConnectBase64WavesException as err:
             raise HTTPException(status_code=422, detail=str(err))
 
-        with NamedTemporaryFile(delete=False) as f:
-            soundfile.write(
-                file=f,
-                data=waves_nparray,
-                samplerate=sampling_rate,
-                format="WAV",
-            )
-
-        return FileResponse(
-            f.name,
-            media_type="audio/wav",
-            background=BackgroundTask(try_delete_file, f.name),
+        buffer = io.BytesIO()
+        soundfile.write(
+            file=buffer,
+            data=waves_nparray,
+            samplerate=sampling_rate,
+            format="WAV",
         )
+
+        return Response(buffer.getvalue(), media_type="audio/wav")
 
     @router.post(
         "/validate_kana",
