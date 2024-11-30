@@ -3,8 +3,8 @@ Usage: python remove_dictionary_duplicates_by_priority.py
 
 resources/dictionaries ディレクトリにある辞書データのうち、ファイル名昇順で上位にある辞書の単語を優先し、
 下位のファイルから重複する単語を削除するツール。
-例えば 01_default.csv に含まれている単語が 03_tdmelodic-01.csv にも存在する場合、
-03_tdmelodic-01.csv から該当する単語を削除します。
+例えば 01_default.csv に含まれている単語が 04_neologd-01.csv にも存在する場合、
+04_neologd-01.csv から該当する単語を削除します。
 
 ただし、削除する側の単語コスト(3番目の値)が0以外で、残す側の単語コストが0の場合は、
 残す側の単語コストを削除する側の値で上書きします。
@@ -15,20 +15,22 @@ import shutil
 from pathlib import Path
 
 
-def read_csv_words(csv_path: str) -> dict[str, list[str]]:
+def read_csv_words(csv_path: str) -> dict[tuple[str, str, str, str], list[str]]:
     """CSV ファイルから単語辞書を作成する"""
-    words: dict[str, list[str]] = {}
+    words: dict[tuple[str, str, str, str], list[str]] = {}
     with open(csv_path, "r", encoding="utf-8") as file:
         reader = csv.reader(file)
         for row in reader:
             if row:  # 空行をスキップ
-                words[row[0]] = row
+                # 単語と品詞情報(4-6列目)をキーとして使用
+                key = (row[0], row[4], row[5], row[6])
+                words[key] = row
     return words
 
 
 def process_auto_csv(
     file_path: str,
-    priority_words: dict[str, list[str]],
+    priority_words: dict[tuple[str, str, str, str], list[str]],
     priority_file_path: str,
 ) -> tuple[int, list[tuple[list[str], list[str], bool]]]:
     """CSV を処理し、優先度の高いファイルに含まれる単語を削除する"""
@@ -43,23 +45,26 @@ def process_auto_csv(
     with open(file_path, "r", encoding="utf-8") as auto_file:
         auto_reader = csv.reader(auto_file)
         for row in auto_reader:
-            if row and row[0] in priority_words:
-                priority_row = priority_words[row[0]]
-                cost_updated = False
+            if row:
+                # 単語と品詞情報(4-6列目)をキーとして使用
+                key = (row[0], row[4], row[5], row[6])
+                if key in priority_words:
+                    priority_row = priority_words[key]
+                    cost_updated = False
 
-                # 単語コストの比較と更新
-                if row[3] != "0" and priority_row[3] == "0":
-                    # 優先ファイル内の該当行を探して更新
-                    for i, prow in enumerate(priority_file_rows):
-                        if prow and prow[0] == row[0]:
-                            priority_file_rows[i][3] = row[3]
-                            priority_row = priority_file_rows[i]  # 更新後の行を使用
-                            cost_updated = True
-                            break
+                    # 単語コストの比較と更新
+                    if row[3] != "0" and priority_row[3] == "0":
+                        # 優先ファイル内の該当行を探して更新
+                        for i, prow in enumerate(priority_file_rows):
+                            if prow and (prow[0], prow[4], prow[5], prow[6]) == key:
+                                priority_file_rows[i][3] = row[3]
+                                priority_row = priority_file_rows[i]  # 更新後の行を使用
+                                cost_updated = True
+                                break
 
-                removed_rows.append((row, priority_row, cost_updated))
-            else:
-                unique_rows.append(row)
+                    removed_rows.append((row, priority_row, cost_updated))
+                else:
+                    unique_rows.append(row)
 
     # 優先ファイルを更新された内容で上書き
     with open(priority_file_path, "w", encoding="utf-8", newline="") as pfile:
