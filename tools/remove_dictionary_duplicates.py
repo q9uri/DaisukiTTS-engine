@@ -4,6 +4,9 @@ Usage: python remove_dictionary_duplicates.py
 resources/dictionaries ディレクトリにある辞書データのうち、pyopenjtalk-plus デフォルト辞書 (naist-jdic.csv / unidic-csj.csv) に
 既に定義されている単語を削除するツール。tdmelodic / NEologd から自動生成された辞書データ内の単語のうち、pyopenjtalk-plus デフォルト辞書に
 既に定義されている単語を削除するユースケースでの利用を想定している。
+
+remove_dictionary_duplicates_by_priority.py と異なり、デフォルト辞書は基本手動で作られた高精度な辞書という前提のもと、
+品詞情報を無視して単語のみで重複しているかどうかを判定する（デフォルト辞書の方が品詞情報も含めて正確と考えられるため）。
 """  # noqa
 
 import csv
