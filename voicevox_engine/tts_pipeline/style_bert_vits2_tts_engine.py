@@ -267,7 +267,7 @@ class StyleBertVITS2TTSEngine(TTSEngine):
 
         # 入力テキストを Style-Bert-VITS2 の基準で正規化
         ## Style-Bert-VITS2 では「〜」などの伸ばす棒も長音記号として扱うため、normalize_text() でそれらを統一する
-        normalized_text = normalize_text(text)
+        normalized_text = normalize_text(text.strip())  # 前後の空白を削除してから実行
 
         # g2p 処理を行い、テキストからモーラ情報と音高 (0 or 1) のリストを取得
         ## Style-Bert-VITS2 側では、pyopenjtalk_g2p_prosody() から取得したアクセント情報が含まれるモーラのリストを
@@ -480,7 +480,7 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         ## 通常の読み上げテキストの方が遥かに抑揚が自然になるため、読み仮名のみの読み上げテキストよりも優先される
         ## VOICEVOX ENGINE との互換性維持のための苦肉の策で、基本可能な限り AudioQuery.kana に読み上げテキストを指定すべき
         if query.kana is not None and query.kana != "":
-            text = query.kana.strip()
+            text = query.kana.strip()  # 事前に前後の空白を削除
 
             # アクセント辞書でのプレビュー時のエラーを回避するための処理
             ## もし AudioQuery に含まれる最後のモーラの text が "ガ" だったら、テキストの末尾に "ガ" を追加する
