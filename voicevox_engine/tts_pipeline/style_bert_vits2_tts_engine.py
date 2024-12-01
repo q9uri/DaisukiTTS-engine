@@ -5,7 +5,7 @@ import re
 import time
 from io import BytesIO
 from pathlib import Path
-from typing import Any, Final, Sequence
+from typing import Any, Final, Sequence, cast
 
 import aivmlib
 import jaconv
@@ -505,7 +505,7 @@ class StyleBertVITS2TTSEngine(TTSEngine):
             ## ひらがなの方がまだ抑揚の棒読み度がマシになるため、カタカナをひらがなに変換する
             flatten_moras = to_flatten_moras(query.accent_phrases)
             text = "".join([mora.text for mora in flatten_moras])
-            text = jaconv.kata2hira(text)
+            text = cast(str, jaconv.kata2hira(text))
 
         # AudioQuery.accent_phrase をカタカナモーラと音高 (0 or 1) のリストに変換
         kata_tone_list: list[tuple[str, int]] = []
@@ -534,7 +534,6 @@ class StyleBertVITS2TTSEngine(TTSEngine):
                 kata_tone_list.append((',', 0))  # テキストは "," 固定 ("," は正規化後の読点の文字列表現) 、音高は 0 固定  # fmt: skip
 
         # 音素と音高のリストに変換した後、さらにそれぞれ音素・音高だけのリストに変換
-        ## text が空文字列の時は、InvalidToneError を回避するために None を渡す
         if text != "":
             # 事前にカタカナ表記でない音素と音高のリストに変換するのが大変重要
             ## これをやらないと InvalidToneError が発生する
@@ -545,8 +544,8 @@ class StyleBertVITS2TTSEngine(TTSEngine):
             given_phone_list = [phone for phone, _ in phone_tone_list]
             given_tone_list = [tone for _, tone in phone_tone_list]
         else:
-            given_phone_list = None
-            given_tone_list = None
+            given_phone_list = []
+            given_tone_list = []
 
         # スタイル ID に対応する AivmManifest, AivmManifestSpeaker, AivmManifestSpeakerStyle を取得
         result = self.aivm_manager.get_aivm_manifest_from_style_id(style_id)
@@ -620,23 +619,32 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         logger.info(f"        Volume: {query.volumeScale:.2f}")
         logger.info(f"   Pre-Silence: {query.prePhonemeLength:.2f}")
         logger.info(f"  Post-Silence: {query.postPhonemeLength:.2f}")
-        start_time = time.time()
-        raw_sample_rate, raw_wave = model.infer(
-            text=text,
-            given_phone=given_phone_list,
-            given_tone=given_tone_list,
-            language=Languages.JP,
-            speaker_id=local_speaker_id,
-            style=local_style_name,
-            style_weight=style_weight,
-            sdp_ratio=sdp_ratio,
-            length=length,
-            pitch_scale=pitch_scale,
-            # AivisSpeech Engine ではテキストの改行ごとの分割生成を行わない (エディタ側の機能と競合するため)
-            # line_split=True だと音素やアクセントの指定ができない
-            line_split=False,
-        )
-        logger.info("Inference done. Elapsed time: {:.2f} sec.".format(time.time() - start_time))  # fmt: skip
+
+        # テキストが空文字列ではなく、given_phone_list / given_tone_list が空でない場合のみ音声合成を実行
+        if text != "" and len(given_phone_list) > 0 and len(given_tone_list) > 0:
+            start_time = time.time()
+            raw_sample_rate, raw_wave = model.infer(
+                text=text,
+                given_phone=given_phone_list,
+                given_tone=given_tone_list,
+                language=Languages.JP,
+                speaker_id=local_speaker_id,
+                style=local_style_name,
+                style_weight=style_weight,
+                sdp_ratio=sdp_ratio,
+                length=length,
+                pitch_scale=pitch_scale,
+                # AivisSpeech Engine ではテキストの改行ごとの分割生成を行わない (エディタ側の機能と競合するため)
+                # line_split=True だと音素やアクセントの指定ができない
+                line_split=False,
+            )
+            logger.info("Inference done. Elapsed time: {:.2f} sec.".format(time.time() - start_time))  # fmt: skip
+
+        # 空文字列が入力された場合、0.5 秒の無音波形を後続の処理に渡す
+        else:
+            logger.info("Text is empty. Returning 0.5 sec silence.")
+            raw_sample_rate = self.default_sampling_rate
+            raw_wave = np.zeros(int(self.default_sampling_rate * 0.5), dtype=np.float32)
 
         # VOICEVOX CORE は float32 型の音声波形を返すため、int16 から float32 に変換して VOICEVOX CORE に合わせる
         ## float32 に変換する際に -1.0 ~ 1.0 の範囲に正規化する
