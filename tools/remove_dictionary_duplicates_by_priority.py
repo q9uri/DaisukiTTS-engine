@@ -4,10 +4,10 @@ Usage: python remove_dictionary_duplicates_by_priority.py
 resources/dictionaries ディレクトリにある辞書データのうち、ファイル名昇順で上位にある辞書の単語を優先し、
 下位のファイルから重複する単語を削除するツール。
 例えば 01_default.csv に含まれている単語が 04_neologd-01.csv にも存在する場合、
-04_neologd-01.csv から該当する単語を削除します。
+04_neologd-01.csv から該当する単語を削除する。
 
 ただし、削除する側の単語コスト(3番目の値)が0以外で、残す側の単語コストが0の場合は、
-残す側の単語コストを削除する側の値で上書きします。
+残す側の単語コストを削除する側の値で上書きする。
 """
 
 import csv
