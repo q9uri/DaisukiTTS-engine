@@ -25,7 +25,7 @@ def CompressDictionaries() -> None:
         return
 
     # csv ファイルを列挙
-    csv_files = list(dictionaries_path.glob("**/*.csv"))
+    csv_files = sorted(list(dictionaries_path.glob("**/*.csv")))
     if len(csv_files) == 0:
         print("Error: No csv files found")
         return
