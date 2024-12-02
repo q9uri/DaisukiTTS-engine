@@ -96,7 +96,7 @@ class UserDictionary:
         # pytest から実行されている場合は書き込まない
         if not self._user_dict_path.is_file() and not self._is_pytest:
             self._write_to_json({
-                "担々麺": create_word(WordProperty(
+                "dc94a187-9881-43c9-a9c1-cebbf774a96d": create_word(WordProperty(
                     surface="担々麺",
                     pronunciation="タンタンメン",
                     accent_type=3,
