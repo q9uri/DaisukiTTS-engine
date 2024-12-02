@@ -296,7 +296,7 @@ def read_cli_arguments(envs: Envs) -> CLIArgs:
         default=None,
         help=(
             "プリセットファイルを指定できます。"
-            "指定がない場合、環境変数 VV_PRESET_FILE 、実行ファイルのディレクトリの presets.yaml を順に探します。"
+            "指定がない場合、環境変数 VV_PRESET_FILE 、ユーザーディレクトリの presets.yaml を順に探します。"
         ),
     )
 

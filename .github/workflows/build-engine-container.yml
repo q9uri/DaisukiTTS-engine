@@ -44,21 +44,21 @@ jobs:
           - cpu
           - nvidia
         include:
-          # Ubuntu 20.04
+          # Ubuntu 22.04
           - tag: ""
             target: runtime-env
-            base_image: ubuntu:20.04
-            base_runtime_image: ubuntu:20.04
+            base_image: ubuntu:22.04
+            base_runtime_image: ubuntu:22.04
             platforms: linux/amd64,linux/arm64/v8
           - tag: cpu
             target: runtime-env
-            base_image: ubuntu:20.04
-            base_runtime_image: ubuntu:20.04
+            base_image: ubuntu:22.04
+            base_runtime_image: ubuntu:22.04
             platforms: linux/amd64,linux/arm64/v8
           - tag: nvidia
             target: runtime-nvidia-env
-            base_image: ubuntu:20.04
-            base_runtime_image: nvidia/cuda:12.3.2-cudnn9-runtime-ubuntu20.04
+            base_image: ubuntu:22.04
+            base_runtime_image: nvidia/cuda:12.3.2-cudnn9-runtime-ubuntu22.04
             platforms: linux/amd64
 
     steps:
