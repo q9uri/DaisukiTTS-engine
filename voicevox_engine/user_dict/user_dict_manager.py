@@ -1,5 +1,6 @@
 "ユーザー辞書関連の処理"
 
+import gc
 import json
 import sys
 import threading
@@ -232,6 +233,9 @@ class UserDictionary:
                 tmp_csv_path.unlink()
             if tmp_compiled_path.exists():
                 tmp_compiled_path.unlink()
+
+            # 強制的にメモリを開放
+            gc.collect()
 
     @mutex_wrapper(mutex_user_dict)
     def read_dict(self) -> dict[str, UserDictWord]:

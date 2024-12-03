@@ -10,6 +10,7 @@ truststore.inject_into_ssl()
 # flake8: noqa: E402
 
 import argparse
+import gc
 import multiprocessing
 import os
 import sys
@@ -448,6 +449,9 @@ def main() -> None:
         allow_origin,
         disable_mutable_api=disable_mutable_api,
     )
+
+    # 起動処理にのみに要したメモリを開放
+    gc.collect()
 
     # AivisSpeech Engine サーバーを起動
     # NOTE: デフォルトは ASGI に準拠した HTTP/1.1 サーバー
