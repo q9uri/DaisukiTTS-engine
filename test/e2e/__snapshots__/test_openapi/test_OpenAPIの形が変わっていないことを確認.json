@@ -702,33 +702,31 @@
         "description": "モーラ（子音＋母音）ごとの情報",
         "properties": {
           "consonant": {
-            "description": "子音の音素",
-            "title": "Consonant",
+            "title": "子音の音素",
             "type": "string"
           },
           "consonant_length": {
-            "description": "子音の音長",
-            "title": "Consonant Length",
+            "description": "子音の音長。\nAivisSpeech Engine の実装上算出できないため、ダミー値として常に 0.0 が返される。",
+            "title": "AivisSpeech Engine ではサポートされていないフィールドです (常に無視されます)",
             "type": "number"
           },
           "pitch": {
-            "description": "音高",
-            "title": "Pitch",
+            "description": "音高。\nAivisSpeech Engine の実装上算出できないため、ダミー値として常に 0.0 が返される。",
+            "title": "AivisSpeech Engine ではサポートされていないフィールドです (常に無視されます)",
             "type": "number"
           },
           "text": {
-            "description": "文字",
-            "title": "Text",
+            "description": "子音＋母音に対応する文字。\nVOICEVOX ENGINE と異なり、感嘆符・句読点などの記号もモーラに含まれる。\n記号モーラの場合、`text` には記号がそのまま、`vowel` には \"pau\" が設定される。",
+            "title": "子音＋母音に対応する文字",
             "type": "string"
           },
           "vowel": {
-            "description": "母音の音素",
-            "title": "Vowel",
+            "title": "母音の音素",
             "type": "string"
           },
           "vowel_length": {
-            "description": "母音の音長",
-            "title": "Vowel Length",
+            "description": "母音の音長。\nAivisSpeech Engine の実装上算出できないため、ダミー値として常に 0.0 が返される。",
+            "title": "AivisSpeech Engine ではサポートされていないフィールドです (常に無視されます)",
             "type": "number"
           }
         },

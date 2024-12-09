@@ -42,7 +42,7 @@ class PresetManager:
             old_preset_path = engine_root() / "presets.yaml"
             if old_preset_path.exists():
                 try:
-                    shutil.move(old_preset_path, self.preset_path)
+                    shutil.copyfile(old_preset_path, self.preset_path)
                 except OSError:
                     warnings.warn(
                         "プリセットファイルのマイグレーションに失敗しました",
