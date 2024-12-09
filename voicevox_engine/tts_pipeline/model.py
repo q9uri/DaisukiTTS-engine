@@ -20,17 +20,31 @@ class Mora(BaseModel):
 
     model_config = ConfigDict(validate_assignment=True)
 
-    text: str = Field(description="文字")
+    text: str = Field(
+        title="子音＋母音に対応する文字",
+        description=(
+            "子音＋母音に対応する文字。\n"
+            "VOICEVOX ENGINE と異なり、感嘆符・句読点などの記号もモーラに含まれる。\n"
+            '記号モーラの場合、`text` には記号がそのまま、`vowel` には "pau" が設定される。'
+        ),
+    )
     consonant: str | SkipJsonSchema[None] = Field(
-        default=None, description="子音の音素"
+        default=None,
+        title="子音の音素",
     )
     consonant_length: float | SkipJsonSchema[None] = Field(
-        default=None, description="子音の音長"
+        default=None,
+        title="AivisSpeech Engine ではサポートされていないフィールドです (常に無視されます)",
+        description="子音の音長。\nAivisSpeech Engine の実装上算出できないため、ダミー値として常に 0.0 が返される。",
     )
-    vowel: str = Field(description="母音の音素")
-    vowel_length: float = Field(description="母音の音長")
+    vowel: str = Field(title="母音の音素")
+    vowel_length: float = Field(
+        title="AivisSpeech Engine ではサポートされていないフィールドです (常に無視されます)",
+        description="母音の音長。\nAivisSpeech Engine の実装上算出できないため、ダミー値として常に 0.0 が返される。",
+    )
     pitch: float = Field(
-        description="音高"
+        title="AivisSpeech Engine ではサポートされていないフィールドです (常に無視されます)",
+        description="音高。\nAivisSpeech Engine の実装上算出できないため、ダミー値として常に 0.0 が返される。",
     )  # デフォルト値をつけるとts側のOpenAPIで生成されたコードの型がOptionalになる
 
     def __hash__(self) -> int:

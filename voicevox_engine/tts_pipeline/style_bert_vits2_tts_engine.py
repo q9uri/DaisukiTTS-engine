@@ -421,15 +421,17 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         モック版 VOICEVOX CORE を使うとスタイル ID をベースに無意味に生成した巨大な値が音素長に設定されるため、敢えて使っていない
         """
 
+        # すでに API リクエストで何らかの値が設定されている可能性もあるため、基本変更せずにそのまま返す
+        # ただし、consonant が存在するのに consonant_length が None の場合はダミー値を入れる
         for accent_phrase in accent_phrases:
             for mora in accent_phrase.moras:
-                # consonant_length は子音が None でない場合のみ更新
+                # consonant_length は consonant が存在するのに値が設定されていない場合のみ更新
                 if mora.consonant is not None:
-                    mora.consonant_length = 0.0
+                    if mora.consonant_length is None:
+                        mora.consonant_length = 0.0
+                # consonant が None の場合は consonant_length も None でなければならない
                 else:
                     mora.consonant_length = None
-                # vowel_length は常にダミー値
-                mora.vowel_length = 0.0
         return accent_phrases
 
     def update_pitch(
@@ -441,9 +443,7 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         モック版 VOICEVOX CORE を使うとスタイル ID をベースに無意味に生成した巨大な値が音高に設定されるため、敢えて使っていない
         """
 
-        for accent_phrase in accent_phrases:
-            for mora in accent_phrase.moras:
-                mora.pitch = 0.0
+        # すでに API リクエストで何らかの値が設定されている可能性もあるため、変更せずにそのまま返す
         return accent_phrases
 
     def synthesize_wave(
@@ -463,7 +463,7 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         style_id : StyleId
             スタイル ID
         enable_interrogative_upspeak : bool, optional
-            疑問文の場合に抑揚を上げるかどうか (VOICEVOX ENGINE との互換性維持のためのパラメータ)
+            疑問文の場合に抑揚を上げるかどうか (VOICEVOX ENGINE との互換性維持のためのパラメータ、常に無視される)
 
         Returns
         -------
