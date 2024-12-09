@@ -108,13 +108,16 @@ def generate_licenses() -> list[License]:
                 text_url = "https://raw.githubusercontent.com/antlr/antlr4/v4.11.1/LICENSE.txt"  # noqa: B950
                 license_json["LicenseText"] = get_license_text(text_url)
             elif package_name == "flatbuffers":
-                text_url = "https://raw.githubusercontent.com/google/flatbuffers/refs/tags/v24.3.25/LICENSE"  # noqa: B950
+                text_url = "https://raw.githubusercontent.com/google/flatbuffers/v24.3.25/LICENSE"  # noqa: B950
                 license_json["LicenseText"] = get_license_text(text_url)
             elif package_name == "gradio_client":
                 text_url = "https://raw.githubusercontent.com/gradio-app/gradio/v3.41.0/LICENSE"  # noqa: B950
                 license_json["LicenseText"] = get_license_text(text_url)
             elif package_name == "jieba":
                 text_url = "https://raw.githubusercontent.com/fxsjy/jieba/v0.42.1/LICENSE"  # noqa: B950
+                license_json["LicenseText"] = get_license_text(text_url)
+            elif package_name == "loguru":
+                text_url = "https://raw.githubusercontent.com/Delgan/loguru/0.7.3/LICENSE"  # noqa: B950
                 license_json["LicenseText"] = get_license_text(text_url)
             elif package_name == "primepy":
                 text_url = "https://raw.githubusercontent.com/janaindrajit/primePy/9c98276fee5211e8761dfc03c9a1e02127e09e4a/LICENSE"  # noqa: B950
