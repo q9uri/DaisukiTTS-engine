@@ -305,7 +305,7 @@ def read_cli_arguments(envs: Envs) -> CLIArgs:
         "--disable_mutable_api",
         action="store_true",
         help=(
-            "辞書登録や設定変更など、エンジンの静的なデータを変更するAPIを無効化します。"
+            "辞書登録や設定変更など、音声合成エンジンの静的なデータを変更する API を無効化します。"
             "指定しない場合、代わりに環境変数 VV_DISABLE_MUTABLE_API の値が使われます。"
             "VV_DISABLE_MUTABLE_API の値が 1 の場合は無効化で、0 または空文字、値がない場合は無視されます。"
         ),

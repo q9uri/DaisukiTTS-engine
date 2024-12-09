@@ -37,6 +37,7 @@
   - [`Preset` 型の仕様変更](#preset-型の仕様変更)
   - [AivisSpeech Engine ではサポートされていない API エンドポイント](#aivisspeech-engine-ではサポートされていない-api-エンドポイント)
   - [AivisSpeech Engine ではサポートされていない API パラメータ](#aivisspeech-engine-ではサポートされていない-api-パラメータ)
+- [よくある質問 / Q&A](#よくある質問--qa)
 - [開発方針](#開発方針)
 - [開発環境の構築](#開発環境の構築)
 - [開発](#開発)
@@ -50,7 +51,7 @@
 以下はユーザーの方向けのドキュメントです。
 
 - **[使い方](https://github.com/Aivis-Project/AivisSpeech/blob/master/public/howtouse.md)**
-- **[よくある質問](https://github.com/Aivis-Project/AivisSpeech/blob/master/public/qAndA.md)**
+- **[よくある質問 / Q&A](https://github.com/Aivis-Project/AivisSpeech/blob/master/public/qAndA.md)**
 - **[お問い合わせ](https://github.com/Aivis-Project/AivisSpeech/blob/master/public/contact.md)**
 
 ## 動作環境
@@ -97,7 +98,7 @@ AIVM 仕様や AIVM / AIVMX ファイルについての詳細は、Aivis Project
 - `Style-Bert-VITS2 (JP-Extra)`
 
 > [!NOTE]
-> AIVM の仕様上は多言語対応の話者を定義できますが、AivisSpeech Engine は VOICEVOX ENGINE と同様に、日本語音声合成のみに対応しています。  
+> AIVM メタデータの仕様上は多言語対応の話者を定義できますが、AivisSpeech Engine は VOICEVOX ENGINE と同様に、日本語音声合成のみに対応しています。  
 > そのため、英語や中国語に対応した音声合成モデルであっても、日本語以外の音声合成はできません。
 
 ### モデルファイルの配置場所
@@ -118,21 +119,32 @@ AIVMX ファイルは、OS ごとに以下のフォルダに配置してくだ�
 > 開発版 (PyInstaller でビルドされていない状態で実行している場合) の配置フォルダは、`AivisSpeech-Engine` 以下ではなく `AivisSpeech-Engine-Dev` 以下となります。
 
 ## 導入方法
+ 
+**AivisSpeech Engine では、以下のような便利なコマンドラインオプションが利用できます！**
+- `--host 0.0.0.0` を指定すると、同一ネットワーク内の他の端末からも AivisSpeech Engine へアクセスできるようになります。
+- `--cors_policy_mode all` を指定すると、すべてのドメインからの [CORS](https://developer.mozilla.org/ja/docs/Web/HTTP/CORS) リクエストを許可します。
+- `--load_all_models` を指定すると、AivisSpeech Engine の起動時に、インストールされているすべての音声合成モデルを事前にロードします。
+- `--help` を指定すると、利用可能なすべてのオプションの一覧と説明を表示します。
+
+その他にも多くのオプションが用意されています。詳細は `--help` オプションでご確認ください。
+
+> [!TIP]
+> **`--use_gpu` オプションを付けて実行すると、Windows では DirectML 、Linux では NVIDIA GPU (CUDA) を活用し、高速に音声合成を行えます。**  
+> なお、Windows 環境では CPU 内蔵の GPU (iGPU) のみの PC でも DirectML 推論を行えますが、ほとんどの場合 CPU 推論よりもかなり遅くなってしまうため、おすすめできません。  
+> 詳細は [よくある質問](#q-gpu-モード---use_gpu-に切り替えたのに音声生成が-cpu-モードよりも遅いです) を参照してください。 
+
+> [!NOTE]
+> AivisSpeech Engine は、デフォルトではポート番号 `10101` で動作します。  
+> 他のアプリケーションと競合する場合は、`--port` オプションで任意のポート番号に変更できます。
+
+> [!WARNING]
+> VOICEVOX ENGINE と異なり、一部のオプションは AivisSpeech Engine では未実装です。
 
 ### Windows / macOS
 
 **Windows / macOS では、AivisSpeech Engine を単独でインストールすることもできますが、[AivisSpeech](https://github.com/Aivis-Project/AivisSpeech) 本体に付属する AivisSpeech Engine を単独で起動させた方がより簡単です。**  
 
-AivisSpeech に同梱されている AivisSpeech Engine の実行ファイル (`run.exe` / `run`) のパスは以下のとおりです。  
-`--help` オプションを付けて実行すると、AivisSpeech Engine に渡せるコマンドラインオプションの一覧を確認できます。
-
-> [!TIP]
-> **`--use_gpu` オプションを付けて実行すると、Windows では DirectML 、Linux では NVIDIA GPU (CUDA) を用いて音声合成を行えます。**  
-> なお、Windows 環境では CPU 内蔵の GPU (iGPU) のみの PC でも DirectML 推論を行えますが、ほとんどの場合 CPU 推論よりもかなり遅くなってしまうため、おすすめできません。  
-> 詳細は [よくある質問](https://github.com/Aivis-Project/AivisSpeech/blob/master/public/qAndA.md#q-gpu-%E3%83%A2%E3%83%BC%E3%83%89%E3%81%AB%E5%88%87%E3%82%8A%E6%9B%BF%E3%81%88%E3%81%9F%E3%81%AE%E3%81%AB%E9%9F%B3%E5%A3%B0%E7%94%9F%E6%88%90%E3%81%8C-cpu-%E3%83%A2%E3%83%BC%E3%83%89%E3%82%88%E3%82%8A%E3%82%82%E9%81%85%E3%81%84%E3%81%A7%E3%81%99) を参照ください。 
-
-> [!WARNING]
-> VOICEVOX ENGINE と異なり、一部のオプションは AivisSpeech Engine では未実装です。
+AivisSpeech に同梱されている AivisSpeech Engine の実行ファイル (`run.exe` / `run`) のパスは以下のとおりです。 
 
 - **Windows:** `C:\Program Files\AivisSpeech\AivisSpeech-Engine\run.exe`
   - ユーザー権限でインストールされている場合、`C:\Users\(ユーザー名)\AppData\Local\Programs\AivisSpeech\AivisSpeech-Engine\run.exe` となります。
@@ -305,6 +317,92 @@ VOICEVOX ENGINE では搭載されている話者やスタイルは固定のた�
   - 疑問系のテキストが与えられたら語尾を自動調整するかのパラメータです。
   - AivisSpeech Engine では、常に「！」「？」「…」「〜」などのテキストに含まれる記号に対応した、自然な抑揚で読み上げられます。
   - したがって、`どうですか…？` のように読み上げテキストの末尾に「？」を付与するだけで、疑問系の抑揚で読み上げることができます。
+
+## よくある質問 / Q&A
+
+> [!TIP]  
+> **AivisSpeech エディタの [よくある質問 / Q&A](https://github.com/Aivis-Project/AivisSpeech/blob/master/public/qAndA.md) もあわせてご覧ください。**
+
+### Q. 「スタイルの強さ」(`intonationScale`) の値を上げると発声がおかしくなります
+
+AivisSpeech Engine で対応している、Style-Bert-VITS2 モデルアーキテクチャの現時点での仕様になります。  
+話者やスタイルにもよりますが、`intonationScale` の値を上げすぎると発声がおかしくなったり、棒読みで不自然な声になる場合もあります。  
+
+ちゃんと発声できる `intonationScale` の値の上限は、話者やスタイルによって異なります。最適な値に適宜調整してください。
+
+### Q. 読み方が想定と異なります
+
+AivisSpeech Engine ではなるべく一発で正しい読み・正しいアクセントになるよう処理を工夫していますが、どうしても間違った読み・アクセントになる場合もあります。  
+あまり使われない固有名詞や人名（特にキラキラネーム）など、内蔵辞書に登録されていない単語は、正しい読みにならないことが多いです。  
+
+こうした単語の読み方は辞書登録で変更できます。AivisSpeech エディタまたは API から単語を登録してみてください。  
+なお、複合語や英単語に関しては、単語の優先度にかかわらず、辞書への登録内容が反映されないことがあります。これは現時点での仕様になります。
+
+### Q. オフラインの PC でも利用できますか？
+
+AivisSpeech をはじめて起動するときのみ、モデルデータのダウンロードのため、インターネットアクセスが必要になります。  
+2回目以降の起動では、PC がオフラインでもお使いいただけます。
+
+### Q. 辞書をインポート／エクスポートしたいです
+
+起動中の AivisSpeech Engine の設定画面で行えます。
+
+AivisSpeech Engine 起動中にブラウザから `http://127.0.0.1:[AivisSpeech Engine のポート番号]/setting` にアクセスすると、AivisSpeech Engine の設定画面が開きます。  
+AivisSpeech Engine のポート番号のデフォルトは `10101` です。
+
+### Q. クレジット表記は必要ですか？
+
+AivisSpeech は、利用用途を束縛されない、自由な AI 音声合成ソフトウェアを目指しています。  
+（成果物で使った音声合成モデルのライセンス次第ではありますが）少なくともソフトウェア本体はクレジット表記不要で、個人・法人・商用・非商用を問わず、自由にお使いいただけます。
+
+…とはいえ、より多くの方に AivisSpeech のことを知っていただきたい気持ちもあります。  
+もしよければ、成果物のどこかに AivisSpeech のことをクレジットしていただけると嬉しいです。（クレジットの表記フォーマットはお任せします。）
+
+### Q. GPU モード (`--use_gpu`) に切り替えたのに音声生成が CPU モードよりも遅いです
+
+**CPU 内蔵の GPU (iGPU) のみの PC でも GPU モードは使えますが、ほとんどの場合 CPU モードよりかなり遅くなってしまうため、おすすめできません。**
+
+これは、CPU 内蔵の GPU は独立した GPU (dGPU) に比べて性能が低く、AI 音声合成のような重い処理が苦手なためです。  
+一方で、最近の CPU は性能が大幅に向上しており、CPU だけでも十分高速に音声を生成できます。  
+そのため、dGPU 非搭載の PC では CPU モードの利用をおすすめします。
+
+### Q. 音声生成時、Intel 第 12 世代以降の CPU でフル性能を発揮できない
+
+Intel の第 12 世代以降の CPU（P コア・E コアのハイブリッド構成）搭載 PC をお使いの場合、Windows の電源設定によって音声生成の性能が大きく変わることがあります。
+
+これは、デフォルトの「バランス」モードでは、音声生成タスクが省電力重視の E コアに割り当てられやすいためです。  
+以下の手順で設定を変更することで、P コアと E コア両方を活用した最大限の性能を引き出すことができます。
+
+1. Windows 11 の設定を開く
+2. システム → 電源 と進む
+3. 「電源モード」を「最適なパフォーマンス」に変更する
+
+※ コントロールパネルの電源プランにも「高パフォーマンス」設定がありますが、設定内容が異なります。  
+Intel 第 12 世代以降の CPU では、上記の Windows 11 の設定画面から「電源モード」を変更することをおすすめします。
+
+### Q. AivisSpeech Engine のエラーログはどこで確認できますか？
+
+以下のフォルダに保存されています。
+
+- **Windows:** `C:\Users\(ユーザー名)\AppData\Roaming\AivisSpeech-Engine\Logs`
+- **Mac:** `~/Library/Application Support/AivisSpeech-Engine/Logs`  
+- **Linux:** `~/.local/share/AivisSpeech-Engine/Logs`
+
+### Q. 不具合を見つけました。どこに報告すれば良いですか？
+
+不具合を見つけられた方は、以下のいずれかの方法でご報告ください。
+
+1. **[GitHub Issue](https://github.com/Aivis-Project/AivisSpeech-Engine/issues) (推奨)**  
+   GitHub アカウントをお持ちの方は、GitHub の Issue からご報告いただけると、早期の対応が可能です。
+
+2. **[Twitter (X)](https://x.com/aivis_project)**  
+   Twitter (X) のリプライや DM でご報告いただくことも可能です。
+
+3. **お問い合わせフォーム**  
+   [Aivis Project お問い合わせフォーム](https://docs.google.com/forms/d/e/1FAIpQLSd1gi8lMW1mpdrkCHbM090pWmWhKgz4tR1Obc9G9hOuWpZPsA/viewform) からもご報告いただけます。
+
+> [!NOTE]
+> なるべく具体的な状況（エラーメッセージ、発生時の操作内容など）を記載いただけますと、より迅速な対応が可能です。
 
 ## 開発方針
 
