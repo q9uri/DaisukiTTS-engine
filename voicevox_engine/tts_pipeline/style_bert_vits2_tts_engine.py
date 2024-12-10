@@ -650,7 +650,7 @@ class StyleBertVITS2TTSEngine(TTSEngine):
             else:
                 logger.info("Text is empty. Returning 0.5 sec silence.")
                 raw_sample_rate = self.default_sampling_rate
-                raw_wave = np.zeros(int(self.default_sampling_rate * 0.5), dtype=np.float32)
+                raw_wave = np.zeros(int(self.default_sampling_rate * 0.5), dtype=np.float32)  # fmt: skip
 
         # VOICEVOX CORE は float32 型の音声波形を返すため、int16 から float32 に変換して VOICEVOX CORE に合わせる
         ## float32 に変換する際に -1.0 ~ 1.0 の範囲に正規化する
