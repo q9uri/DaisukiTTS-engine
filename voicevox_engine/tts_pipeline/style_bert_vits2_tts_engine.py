@@ -2,6 +2,7 @@
 
 import copy
 import re
+import threading
 import time
 from io import BytesIO
 from pathlib import Path
@@ -52,6 +53,9 @@ class StyleBertVITS2TTSEngine(TTSEngine):
 
     # BERT モデルのキャッシュディレクトリ
     BERT_MODEL_CACHE_DIR: Final[Path] = get_save_dir() / "BertModelCaches"
+
+    # ONNX Runtime の推論処理を排他制御するためのロック
+    _inference_lock: Final[threading.Lock] = threading.Lock()
 
     def __init__(
         self,
@@ -610,41 +614,43 @@ class StyleBertVITS2TTSEngine(TTSEngine):
 
         # 音声合成を実行
         ## 出力音声は int16 型の NDArray で返される
-        logger.info("Running inference...")
-        logger.info(f"Text: {text}")
-        logger.info(f"         Speed: {length:.2f} (Input: {query.speedScale:.2f})")
-        logger.info(f"  Style Weight: {style_weight:.2f} (Input: {query.intonationScale:.2f})")  # fmt: skip
-        logger.info(f"Tempo Dynamics: {sdp_ratio:.2f} (Input: {query.tempoDynamicsScale:.2f})")  # fmt: skip
-        logger.info(f"         Pitch: {pitch_scale:.2f} (Input: {query.pitchScale:.2f})")  # fmt: skip
-        logger.info(f"        Volume: {query.volumeScale:.2f}")
-        logger.info(f"   Pre-Silence: {query.prePhonemeLength:.2f}")
-        logger.info(f"  Post-Silence: {query.postPhonemeLength:.2f}")
+        ## 推論処理を大量に並列実行すると最悪プロセスごと ONNX Runtime がクラッシュするため、排他ロックを掛ける
+        with self._inference_lock:
+            logger.info("Running inference...")
+            logger.info(f"Text: {text}")
+            logger.info(f"         Speed: {length:.2f} (Input: {query.speedScale:.2f})")
+            logger.info(f"  Style Weight: {style_weight:.2f} (Input: {query.intonationScale:.2f})")  # fmt: skip
+            logger.info(f"Tempo Dynamics: {sdp_ratio:.2f} (Input: {query.tempoDynamicsScale:.2f})")  # fmt: skip
+            logger.info(f"         Pitch: {pitch_scale:.2f} (Input: {query.pitchScale:.2f})")  # fmt: skip
+            logger.info(f"        Volume: {query.volumeScale:.2f}")
+            logger.info(f"   Pre-Silence: {query.prePhonemeLength:.2f}")
+            logger.info(f"  Post-Silence: {query.postPhonemeLength:.2f}")
 
-        # テキストが空文字列ではなく、given_phone_list / given_tone_list が空でない場合のみ音声合成を実行
-        if text != "" and len(given_phone_list) > 0 and len(given_tone_list) > 0:
-            start_time = time.time()
-            raw_sample_rate, raw_wave = model.infer(
-                text=text,
-                given_phone=given_phone_list,
-                given_tone=given_tone_list,
-                language=Languages.JP,
-                speaker_id=local_speaker_id,
-                style=local_style_name,
-                style_weight=style_weight,
-                sdp_ratio=sdp_ratio,
-                length=length,
-                pitch_scale=pitch_scale,
-                # AivisSpeech Engine ではテキストの改行ごとの分割生成を行わない (エディタ側の機能と競合するため)
-                # line_split=True だと音素やアクセントの指定ができない
-                line_split=False,
-            )
-            logger.info("Inference done. Elapsed time: {:.2f} sec.".format(time.time() - start_time))  # fmt: skip
+            # テキストが空文字列ではなく、given_phone_list / given_tone_list が空でない場合のみ音声合成を実行
+            if text != "" and len(given_phone_list) > 0 and len(given_tone_list) > 0:
+                start_time = time.time()
+                raw_sample_rate, raw_wave = model.infer(
+                    text=text,
+                    given_phone=given_phone_list,
+                    given_tone=given_tone_list,
+                    language=Languages.JP,
+                    speaker_id=local_speaker_id,
+                    style=local_style_name,
+                    style_weight=style_weight,
+                    sdp_ratio=sdp_ratio,
+                    length=length,
+                    pitch_scale=pitch_scale,
+                    # AivisSpeech Engine ではテキストの改行ごとの分割生成を行わない (エディタ側の機能と競合するため)
+                    # line_split=True だと音素やアクセントの指定ができない
+                    line_split=False,
+                )
+                logger.info("Inference done. Elapsed time: {:.2f} sec.".format(time.time() - start_time))  # fmt: skip
 
-        # 空文字列が入力された場合、0.5 秒の無音波形を後続の処理に渡す
-        else:
-            logger.info("Text is empty. Returning 0.5 sec silence.")
-            raw_sample_rate = self.default_sampling_rate
-            raw_wave = np.zeros(int(self.default_sampling_rate * 0.5), dtype=np.float32)
+            # 空文字列が入力された場合、0.5 秒の無音波形を後続の処理に渡す
+            else:
+                logger.info("Text is empty. Returning 0.5 sec silence.")
+                raw_sample_rate = self.default_sampling_rate
+                raw_wave = np.zeros(int(self.default_sampling_rate * 0.5), dtype=np.float32)
 
         # VOICEVOX CORE は float32 型の音声波形を返すため、int16 から float32 に変換して VOICEVOX CORE に合わせる
         ## float32 に変換する際に -1.0 ~ 1.0 の範囲に正規化する
