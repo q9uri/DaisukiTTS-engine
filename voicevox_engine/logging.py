@@ -52,11 +52,11 @@ LOGGING_CONFIG: dict[str, Any] = {
         },
     },
     "handlers": {
-        ## サーバーログは標準エラー出力と logs/AivisSpeech-Engine.log の両方に出力する
+        ## サーバーログは標準出力と logs/AivisSpeech-Engine.log の両方に出力する
         "default": {
             "formatter": "default",
             "class": "logging.StreamHandler",
-            "stream": "ext://sys.stderr",
+            "stream": "ext://sys.stdout",
         },
         "default_file": {
             "formatter": "default_file",
