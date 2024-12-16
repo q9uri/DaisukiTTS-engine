@@ -124,7 +124,7 @@ jobs:
 
       # Build
       - name: <Build> Generate licenses.json
-        run: bash tools/create_venv_and_generate_licenses.bash
+        run: poetry run task update-licenses
 
       - name: <Build> Build AivisSpeech Engine run.py
         run: |
