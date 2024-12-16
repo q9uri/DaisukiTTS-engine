@@ -373,17 +373,17 @@ AivisSpeech は、利用用途を束縛されない、自由な AI 音声合成�
 
 ### Q. 音声生成時、Intel 第 12 世代以降の CPU でフル性能を発揮できない
 
-Intel の第 12 世代以降の CPU（P コア・E コアのハイブリッド構成）搭載 PC をお使いの場合、Windows の電源設定によって音声生成の性能が大きく変わることがあります。
+Intel の第 12 世代以降の CPU（P コア・E コアのハイブリッド構成）搭載 PC をお使いの場合、Windows の電源設定によって音声生成の性能が大きく変わることがあります。  
+これは、デフォルトの「バランス」モードでは、音声生成タスクが省電力重視の E コアに割り当てられやすいためです。
 
-これは、デフォルトの「バランス」モードでは、音声生成タスクが省電力重視の E コアに割り当てられやすいためです。  
-以下の手順で設定を変更することで、P コアと E コア両方を活用した最大限の性能を引き出すことができます。
+以下の手順で設定を変更すると、P コアと E コアの両方を最大限活用し、音声生成をより高速に行えます。
 
 1. Windows 11 の設定を開く
 2. システム → 電源 と進む
 3. 「電源モード」を「最適なパフォーマンス」に変更する
 
-※ コントロールパネルの電源プランにも「高パフォーマンス」設定がありますが、設定内容が異なります。  
-Intel 第 12 世代以降の CPU では、上記の Windows 11 の設定画面から「電源モード」を変更することをおすすめします。
+※ コントロールパネル内「電源プラン」にも「高パフォーマンス」設定がありますが、設定内容が異なります。  
+Intel 第 12 世代以降の CPU では、Windows 11 の設定画面からの「電源モード」の変更をおすすめします。
 
 ### Q. AivisSpeech Engine のエラーログはどこで確認できますか？
 
@@ -397,11 +397,11 @@ Intel 第 12 世代以降の CPU では、上記の Windows 11 の設定画面�
 
 不具合を見つけられた方は、以下のいずれかの方法でご報告ください。
 
-1. **[GitHub Issue](https://github.com/Aivis-Project/AivisSpeech-Engine/issues) (推奨)**  
-   GitHub アカウントをお持ちの方は、GitHub の Issue からご報告いただけると、早期の対応が可能です。
+1. **GitHub Issue (推奨)**  
+   GitHub アカウントをお持ちの方は、[GitHub の Issue](https://github.com/Aivis-Project/AivisSpeech-Engine/issues) からご報告いただけますと、早期の対応が可能です。
 
-2. **[Twitter (X)](https://x.com/aivis_project)**  
-   Twitter (X) のリプライや DM でご報告いただくことも可能です。
+2. **Twitter (X)**  
+   [Aivis Project 公式アカウント](https://x.com/aivis_project) へのリプライや DM、またはハッシュタグ [#AivisSpeech](https://x.com/search?q=%23AivisSpeech&src=typed_query) を付けたツイートでご報告いただけます。
 
 3. **お問い合わせフォーム**  
    [Aivis Project お問い合わせフォーム](https://docs.google.com/forms/d/e/1FAIpQLSd1gi8lMW1mpdrkCHbM090pWmWhKgz4tR1Obc9G9hOuWpZPsA/viewform) からもご報告いただけます。
