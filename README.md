@@ -269,6 +269,34 @@ VOICEVOX ENGINE では搭載されている話者やスタイルは固定のた�
 
 `AudioQuery` 型は、テキストや音素列を指定して音声合成を行うためのクエリです。
 
+VOICEVOX ENGINE の `AudioQuery` 型からの主な変更点は以下のとおりです。
+
+- **`intonationScale` フィールドの意味が異なります。**
+  - VOICEVOX ENGINE では「全体の抑揚」を表すパラメータでしたが、AivisSpeech Engine では「全体のスタイルの強さ」を表すパラメータとなっています。
+  - 話者スタイルの声色の強弱を 0.0 ~ 2.0 の範囲で指定します (デフォルト: 1.0) 。
+  - 値が大きいほど、選択したスタイルに近い抑揚がついた声になります。
+    - 例えば「うれしい」スタイルなら、値が大きいほどより嬉しそうな明るい話し方になります。
+    - ただし、話者やスタイルによっては数値を上げすぎると不自然な声になる場合があります。
+  - 全スタイルの平均であるノーマルスタイルには指定できません（値にかかわらず無視されます）。
+  - Style-Bert-VITS2 における「スタイルの強さ」パラメータは、AivisSpeech Engine の `intonationScale` に変換される際に以下のように変換されます。
+    - `intonationScale` が 0.0 ~ 1.0 の場合、Style-Bert-VITS2 では 0.0 ~ 1.0 の範囲に相当します。
+    - `intonationScale` が 1.0 ~ 2.0 の場合、Style-Bert-VITS2 では 1.0 ~ 10.0 の範囲に相当します。
+- **`tempoDynamicsScale` フィールドが独自に追加されました。**
+  - AivisSpeech Engine 固有のパラメータです。話す速さの緩急の強弱を 0.0 ~ 2.0 の範囲で指定できます（デフォルト: 1.0）。
+  - 値が大きいほど、より早口で生っぽい抑揚がついた声になります。
+  - Style-Bert-VITS2 における「テンポの緩急」パラメータは、AivisSpeech Engine の `tempoDynamicsScale` に変換される際に以下のように変換されます。
+    - `tempoDynamicsScale` が 0.0 ~ 1.0 の場合、Style-Bert-VITS2 では 0.0 ~ 0.2 の範囲に相当します。
+    - `tempoDynamicsScale` が 1.0 ~ 2.0 の場合、Style-Bert-VITS2 では 0.2 ~ 1.0 の範囲に相当します。
+- **`pitchScale` フィールドの仕様が異なります。**
+  - VOICEVOX ENGINE と異なり、この値を 0.0 から変更すると音質が劣化する可能性があります。
+- **`pauseLength` および `pauseLengthScale` フィールドはサポートされていません。**
+  - 互換性のためフィールドとして存在はしますが、常に無視されます。
+- **`kana` フィールドの仕様が異なります。**
+  - VOICEVOX ENGINE では AquesTalk 風記法テキストが入る読み取り専用フィールドでしたが、AivisSpeech Engine では通常の読み上げテキストを指定するフィールドとして利用しています。
+  - null や空文字列が指定された場合は、アクセント句から自動生成されたひらがな文字列が読み上げテキストとなりますが、不自然なイントネーションになる可能性があります。
+  - より自然な音声合成結果を得るため、可能な限り通常の読み上げテキストを指定することを推奨します。
+
+
 変更点の詳細は、[model.py](./voicevox_engine/model.py) を参照してください。
 
 ### `Mora` 型の仕様変更
@@ -279,11 +307,26 @@ VOICEVOX ENGINE では搭載されている話者やスタイルは固定のた�
 > モーラとは、実際に発音される際の音のまとまりの最小単位（「あ」「か」「を」など）のことです。  
 > `Mora` 型単独で API リクエスト・レスポンスに使われることはなく、常に `AudioQuery.accent_phrases[n].moras` または `AudioQuery.accent_phrases[n].pause_mora` を通して間接的に利用されます。
 
+VOICEVOX ENGINE の `Mora` 型からの主な変更点は以下のとおりです。
+
+- **記号もモーラとして扱われます。**
+  - VOICEVOX ENGINE では感嘆符・句読点などの記号は `pause_mora` として扱われていましたが、AivisSpeech Engine では通常のモーラとして扱われます。
+  - 記号モーラの場合、`text` には記号がそのまま、`vowel` には "pau" が設定されます。
+- **`consonant` / `vowel` フィールドは読み取り専用です。**
+  - 音声合成時のテキストの読みには、常に `text` フィールドの値が利用されます。
+  - これらのフィールドの値を変更しても、音声合成結果には影響しません。
+- **`consonant_length` / `vowel_length` / `pitch` フィールドはサポートされていません。**
+  - AivisSpeech Engine の実装上、これらの値を算出することができないため、常にダミー値として 0.0 が返されます。
+  - 互換性のためフィールドとして存在はしますが、常に無視されます。
+
+
 変更点の詳細は、[tts_pipeline/model.py](./voicevox_engine/tts_pipeline/model.py) を参照してください。
 
 ### `Preset` 型の仕様変更
 
 `Preset` 型は、エディタ側で音声合成クエリの初期値を決定するためのプリセット情報です。
+
+変更点は、`AudioQuery` 型で説明した `intonationScale` / `tempoDynamicsScale` / `pitchScale` / `pauseLength` / `pauseLengthScale` のフィールドの仕様変更に概ね対応しています。
 
 変更点の詳細は、[preset/model.py](./voicevox_engine/preset/model.py) を参照してください。
 
