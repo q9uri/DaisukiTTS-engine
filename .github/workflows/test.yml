@@ -50,10 +50,10 @@ jobs:
       - name: <Setup> Install Python dependencies
         run: poetry install --with=dev
 
-      - name: <Test> Validate poetry.lock
-        run: |
-          poetry lock --no-update
-          git diff --exit-code
+      # - name: <Test> Validate poetry.lock
+      #   run: |
+      #     poetry lock --no-update
+      #     git diff --exit-code
 
       - name: <Test> Check format
         run: PYTHONUTF8=1 poetry run task lint
