@@ -56,14 +56,15 @@
 
 ## 動作環境
 
-Windows・macOS・Linux 搭載の PC に対応しています。
+Windows・macOS・Linux 搭載の PC に対応しています。  
+AivisSpeech Engine を起動するには、PC に 3GB 以上の空きメモリ (RAM) が必要です。
 
 - **Windows:** Windows 10 (22H2 以降)・Windows 11  
 - **macOS:** macOS 13 Ventura 以降
 - **Linux:** Ubuntu 20.04 以降
 
 > [!TIP]
-> デスクトップアプリである AivisSpeech は、Windows と macOS でのみ利用できます。  
+> デスクトップアプリである AivisSpeech は、Windows・macOS のみサポート対象としています。  
 > 一方、音声合成 API サーバーである AivisSpeech Engine は、Ubuntu / Debian 系の Linux でも利用できます。
 
 > [!NOTE]
@@ -73,7 +74,7 @@ Windows・macOS・Linux 搭載の PC に対応しています。
 > [!WARNING]
 > Windows 10 では、バージョン 22H2 での動作確認のみ行っています。  
 > **サポートが終了した Windows 10 の古いバージョンでは、AivisSpeech Engine がクラッシュし起動に失敗する事例が報告されています。**  
-> セキュリティ上の観点からも、Windows 10 環境の方は最低限バージョン 22H2 まで更新してからの利用を強くおすすめいたします。
+> セキュリティ上の観点からも、Windows 10 環境の方は、最低限バージョン 22H2 まで更新してからの利用を強くおすすめいたします。
 
 ## サポートされている音声合成モデル
 
