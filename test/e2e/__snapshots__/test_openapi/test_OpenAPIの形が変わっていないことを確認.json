@@ -1220,7 +1220,7 @@
         "type": "object"
       },
       "UserDictWord": {
-        "description": "辞書のコンパイルに使われる情報",
+        "description": "辞書のビルドに使われる情報",
         "properties": {
           "accent_associative_rule": {
             "description": "アクセント結合規則",

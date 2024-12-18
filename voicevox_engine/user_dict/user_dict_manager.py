@@ -11,7 +11,6 @@ from typing import Any, TypeVar
 from uuid import UUID, uuid4
 
 import pyopenjtalk
-import zstandard
 from pydantic import TypeAdapter
 
 from ..logging import logger
@@ -52,11 +51,11 @@ if not save_dir.is_dir():
     save_dir.mkdir(parents=True)
 
 # デフォルトのファイルパス
-# デフォルト辞書ファイル (.csv.zst) の配置ディレクトリのパス
-DEFAULT_DICT_DIR_PATH = resource_dir / "dictionaries"
+# ビルド済みデフォルトユーザー辞書ファイルのパス
+DEFAULT_DICT_PATH = resource_dir / "dictionaries" / "default.dic"
 # ユーザー辞書ファイルのパス
 _USER_DICT_PATH = save_dir / "user_dict.json"
-# コンパイル済み辞書ファイルのパス
+# ビルド済み辞書ファイルのパス
 _COMPILED_DICT_PATH = save_dir / "user.dic"
 
 
@@ -73,21 +72,21 @@ class UserDictionary:
 
     def __init__(
         self,
-        default_dict_dir_path: Path = DEFAULT_DICT_DIR_PATH,
+        default_dict_path: Path = DEFAULT_DICT_PATH,
         user_dict_path: Path = _USER_DICT_PATH,
         compiled_dict_path: Path = _COMPILED_DICT_PATH,
     ) -> None:
         """
         Parameters
         ----------
-        default_dict_dir_path : Path
-            デフォルト辞書ファイル (.csv.zst) の配置ディレクトリのパス
+        default_dict_path : Path
+            ビルド済みデフォルトユーザー辞書ファイルのパス
         user_dict_path : Path
             ユーザー辞書ファイルのパス
         compiled_dict_path : Path
-            コンパイル済み辞書ファイルのパス
+            ビルド済み辞書ファイルのパス
         """
-        self._default_dict_dir_path = default_dict_dir_path
+        self._default_dict_path = default_dict_path
         self._user_dict_path = user_dict_path
         self._compiled_dict_path = compiled_dict_path
         # pytest から実行されているかどうか
@@ -104,7 +103,7 @@ class UserDictionary:
                 ))
             })  # fmt: skip
 
-        # サーバーの起動高速化のため、前回起動時にコンパイル済みのユーザー辞書データがあれば、そのまま pyopenjtalk に適用する
+        # サーバーの起動高速化のため、前回起動時にビルド済みのユーザー辞書データがあれば、そのまま pyopenjtalk に適用する
         if self._compiled_dict_path.is_file():
             pyopenjtalk.update_global_jtalk_with_user_dict(
                 str(self._compiled_dict_path.resolve(strict=True))
@@ -127,7 +126,7 @@ class UserDictionary:
     @mutex_wrapper(mutex_openjtalk_dict)
     def update_dict(self) -> None:
         """辞書を更新する。"""
-        default_dict_dir_path = self._default_dict_dir_path
+        default_dict_path = self._default_dict_path
         compiled_dict_path = self._compiled_dict_path
 
         # pytest 実行時かつ Windows ではなぜか辞書更新時に MeCab の初期化に失敗するので、辞書更新自体を無効化する
@@ -139,40 +138,14 @@ class UserDictionary:
         random_string = uuid4()
         tmp_csv_path = compiled_dict_path.with_suffix(
             f".dict_csv-{random_string}.tmp"
-        )  # csv形式辞書データの一時保存ファイル
+        )  # CSV 形式辞書データの一時保存ファイル
         tmp_compiled_path = compiled_dict_path.with_suffix(
             f".dict_compiled-{random_string}.tmp"
-        )  # コンパイル済み辞書データの一時保存ファイル
+        )  # ビルド済み辞書データの一時保存ファイル
 
         try:
-            # 辞書.csvを作成
+            # 辞書.csv を作成
             csv_text = ""
-
-            # デフォルト辞書データの追加
-            # pytest から実行されている場合は毎回全辞書を追加すると時間がかかりすぎるため、デフォルト辞書のみ追加する
-            if self._is_pytest:
-                default_dict_files = [default_dict_dir_path / "01_default.csv.zst"]
-                logger.info("Using only default dictionary for pytest.")
-            else:
-                default_dict_files = sorted(default_dict_dir_path.glob("*.csv.zst"))
-            if len(default_dict_files) == 0:
-                logger.warning("Cannot find default dictionary.")
-                return
-
-            # ZStandard デコーダーの初期化
-            decompressor = zstandard.ZstdDecompressor()
-
-            # デフォルト辞書データの追加
-            for file_path in default_dict_files:
-                with file_path.open("rb") as f:
-                    if file_path.suffix == ".zst":
-                        with decompressor.stream_reader(f) as reader:
-                            default_dict_content = reader.read().decode("utf-8")
-                    else:
-                        default_dict_content = f.read().decode("utf-8")
-                if not default_dict_content.endswith("\n"):
-                    default_dict_content += "\n"
-                csv_text += default_dict_content
 
             # ユーザー辞書データの追加
             user_dict = self.read_dict()
@@ -202,21 +175,29 @@ class UserDictionary:
                     accent_associative_rule=word.accent_associative_rule,
                 )
 
+            # この時点で csv_text が空文字列のとき、ユーザー辞書が空なため処理を終了する
+            # ユーザー辞書 CSV が空の状態で継続すると pyopenjtalk.mecab_dict_index() で Segmentation Fault が発生する
+            if not csv_text:
+                logger.info("User dictionary is empty. Skipping dictionary update.")
+                return
+
             # 辞書データを辞書.csv へ一時保存
             tmp_csv_path.write_text(csv_text, encoding="utf-8")
 
-            # 辞書.csvをOpenJTalk用にコンパイル
+            # 辞書.csv を OpenJTalk 用にビルド
             pyopenjtalk.mecab_dict_index(str(tmp_csv_path), str(tmp_compiled_path))
             if not tmp_compiled_path.is_file():
-                raise RuntimeError("辞書のコンパイル時にエラーが発生しました。")
+                raise RuntimeError("辞書のビルド時にエラーが発生しました。")
 
-            # コンパイル済み辞書の置き換え・読み込み
+            # ビルド済み辞書の置き換え・読み込み
+            # デフォルトのユーザー辞書ファイルと、先ほどビルドした辞書ファイルの両方を指定する
             pyopenjtalk.unset_user_dict()
             tmp_compiled_path.replace(compiled_dict_path)
             if compiled_dict_path.is_file():
-                pyopenjtalk.update_global_jtalk_with_user_dict(
-                    str(compiled_dict_path.resolve(strict=True))
-                )
+                pyopenjtalk.update_global_jtalk_with_user_dict([
+                    str(default_dict_path.resolve(strict=True)),
+                    str(compiled_dict_path.resolve(strict=True)),
+                ])  # fmt: skip
 
             logger.info(f"User dictionary updated. ({time.time() - start_time:.2f}s)")
 
