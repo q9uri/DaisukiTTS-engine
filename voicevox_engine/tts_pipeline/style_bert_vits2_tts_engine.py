@@ -114,8 +114,22 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         # Style-Bert-VITS2 本体のロガーを抑制
         style_bert_vits2_logger.remove()
 
+        # BERT モデルの FP16 化に伴い、旧バージョンの BERT モデル (FP32, 1.3GB) をキャッシュから削除
+        ## これにより、BERT モデルのファイルサイズとメモリ使用量が半分に削減される
+        ## ref: https://huggingface.co/tsukumijima/deberta-v2-large-japanese-char-wwm-onnx
+        OLD_BERT_MODEL_CACHE_PATH = (
+            self.BERT_MODEL_CACHE_DIR
+            / "models--tsukumijima--deberta-v2-large-japanese-char-wwm-onnx"
+            / "blobs"
+            / "c5c880ef4bd0d3308ec6503a8728efae920bc5c5a984de4f76fc3d0ad518a2ec"
+        )
+        if OLD_BERT_MODEL_CACHE_PATH.exists():
+            OLD_BERT_MODEL_CACHE_PATH.unlink(missing_ok=True)
+            logger.info(f"Old BERT model cache removed. ({OLD_BERT_MODEL_CACHE_PATH})")
+
         # 音声合成に必要な BERT モデル・トークナイザーを読み込む
-        ## 一度ロードすればプロセス内でグローバルに保持される
+        ## 最新のモデルがまだローカルにキャッシュされていない場合は、自動的にネットワークからダウンロードされる
+        ## 一度ロードしておけば、同じプロセス内でグローバルに保持される
         start_time = time.time()
         logger.info("Loading BERT model and tokenizer...")
         onnx_bert_models.load_model(
