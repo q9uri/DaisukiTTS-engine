@@ -71,9 +71,17 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         self.tts_models: dict[str, TTSModel] = {}
 
         # ONNX Runtime での推論に利用するデバイスを選択
+        ## デフォルト: CPU 推論 (CPUExecutionProvider)
+        ## arena_extend_strategy を kSameAsRequested にすると、推論セッションによって作成される
+        ## メモリアリーナが、実際に推論に必要な容量以上にメモリを確保する問題を防ぐことができる
+        ## この設定によるパフォーマンス低下はほとんどない (はず)
+        ## ref: https://github.com/microsoft/onnxruntime/issues/11627#issuecomment-1137668551
+        ## ref: https://skottmckay.github.io/onnxruntime/docs/reference/api/c-api.html
         self.available_onnx_providers: list[str] = onnxruntime.get_available_providers()
         self.onnx_providers: Sequence[str | tuple[str, dict[str, Any]]] = [
-            ("CPUExecutionProvider", {}),
+            ("CPUExecutionProvider", {
+                "arena_extend_strategy": "kSameAsRequested",
+            }),
         ]
 
         # NVIDIA GPU が接続されていて CUDA がインストールされていれば、CUDAExecutionProvider が利用できる
@@ -85,12 +93,19 @@ class StyleBertVITS2TTSEngine(TTSEngine):
             self.onnx_providers = []
             # cudnn_conv_algo_search を DEFAULT にすると推論速度が大幅に向上する
             # ref: https://medium.com/neuml/debug-onnx-gpu-performance-c9290fe07459
-            self.onnx_providers.append(("CUDAExecutionProvider", {"cudnn_conv_algo_search": "DEFAULT"}))  # fmt: skip
+            self.onnx_providers.append(("CUDAExecutionProvider", {
+                "arena_extend_strategy": "kSameAsRequested",
+                "cudnn_conv_algo_search": "DEFAULT",
+            }))  # fmt: skip
             # DirectML が利用可能なら、フォールバックとして DmlExecutionProvider も指定する
             if "DmlExecutionProvider" in self.available_onnx_providers:
-                self.onnx_providers.append(("DmlExecutionProvider", {"device_id": 0}))
+                self.onnx_providers.append(("DmlExecutionProvider", {
+                    "device_id": 0,
+                }))
             # フォールバックとして CPUExecutionProvider も指定する
-            self.onnx_providers.append(("CPUExecutionProvider", {}))
+            self.onnx_providers.append(("CPUExecutionProvider", {
+                "arena_extend_strategy": "kSameAsRequested",
+            }))
             logger.info("Using GPU (NVIDIA CUDA) for inference.")
 
         # Windows なら DirectML (DmlExecutionProvider) を利用できる
@@ -98,9 +113,13 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         elif use_gpu is True and "DmlExecutionProvider" in self.available_onnx_providers:  # fmt: skip
             self.onnx_providers = []
             ## TODO: より適した Direct3D 上のデバイス ID を指定できるようにする
-            self.onnx_providers.append(("DmlExecutionProvider", {"device_id": 0}))
+            self.onnx_providers.append(("DmlExecutionProvider", {
+                "device_id": 0,
+            }))
             # フォールバックとして CPUExecutionProvider も指定する
-            self.onnx_providers.append(("CPUExecutionProvider", {}))
+            self.onnx_providers.append(("CPUExecutionProvider", {
+                "arena_extend_strategy": "kSameAsRequested",
+            }))
             logger.info("Using GPU (DirectML) for inference.")
 
         # GPU モードが指定されているが GPU が利用できない場合は CPU にフォールバック
@@ -232,6 +251,7 @@ class StyleBertVITS2TTSEngine(TTSEngine):
             onnx_providers=self.onnx_providers,
         )  # fmt: skip
         start_time = time.time()
+        logger.info(f"Loading {aivm_info.manifest.name} ({aivm_uuid})...")
         tts_model.load()
         logger.info(
             f"{aivm_info.manifest.name} ({aivm_uuid}) loaded. ({time.time() - start_time:.2f}s)"
