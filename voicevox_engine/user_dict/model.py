@@ -90,10 +90,10 @@ class UserDictWord(BaseModel):
     def check_mora_count_and_accent_type(self) -> Self:
         if self.mora_count is None:
             rule_others = (
-                "[イ][ェ]|[ヴ][ャュョ]|[ウクグトド][ゥ]|[テデ][ィェャュョ]|[クグ][ヮ]"
+                "[イ][ェ]|[ヴ][ャュョ]|[クグトド][ゥ]|[テデ][ィャュョ]|[デ][ェ]|[クグ][ヮ]"
             )
-            rule_line_i = "[キシチニヒミリギジヂビピ][ェャュョ]|[キニヒミリギビピ][ィ]"
-            rule_line_u = "[クツフヴグ][ァ]|[ウクスツフヴグズ][ィ]|[ウクツフヴグ][ェォ]"
+            rule_line_i = "[キシチニヒミリギジヂビピ][ェャュョ]|[シ][ィ]"
+            rule_line_u = "[クツフヴグ][ァ]|[ウクスツフヴグズ][ィ]|[ウクツフヴグ][ェォ]|[フ][ュ]"
             rule_one_mora = "[ァ-ヴー]"
             self.mora_count = len(
                 findall(
