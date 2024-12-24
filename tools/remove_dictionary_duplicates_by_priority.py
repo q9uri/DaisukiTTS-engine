@@ -7,7 +7,7 @@ resources/dictionaries ディレクトリにある辞書データのうち、フ
 04_neologd-01.csv から該当する単語を削除する。
 
 ただし、削除する側の単語コスト(3番目の値)が0以外で、残す側の単語コストが0の場合は、
-残す側の単語コストを削除する側の値で上書きする。
+残す側の単語コストを削除する側の値で上書きする (削除する側が neologd の場合のみ) 。
 """
 
 import csv
@@ -53,14 +53,16 @@ def process_auto_csv(
                     cost_updated = False
 
                     # 単語コストの比較と更新
-                    if row[3] != "0" and priority_row[3] == "0":
-                        # 優先ファイル内の該当行を探して更新
-                        for i, prow in enumerate(priority_file_rows):
-                            if prow and (prow[0], prow[4], prow[5], prow[6]) == key:
-                                priority_file_rows[i][3] = row[3]
-                                priority_row = priority_file_rows[i]  # 更新後の行を使用
-                                cost_updated = True
-                                break
+                    # priority_file_path のファイル名に neologd が含まれている場合のみ実行する
+                    if "neologd" in priority_file_path:
+                        if row[3] != "0" and priority_row[3] == "0":
+                            # 優先ファイル内の該当行を探して更新
+                            for i, prow in enumerate(priority_file_rows):
+                                if prow and (prow[0], prow[4], prow[5], prow[6]) == key:
+                                    priority_file_rows[i][3] = row[3]
+                                    priority_row = priority_file_rows[i]  # 更新後の行を使用
+                                    cost_updated = True
+                                    break
 
                     removed_rows.append((row, priority_row, cost_updated))
                 else:
