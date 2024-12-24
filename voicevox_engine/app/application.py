@@ -93,7 +93,7 @@ def generate_app(
             generate_library_router(library_manager, verify_mutability_allowed)
         )
     # generate_aivm_models_router() は AivisSpeech Engine 独自追加ルーター
-    app.include_router(generate_aivm_models_router(aivm_manager, verify_mutability_allowed))  # noqa # fmt: skip
+    app.include_router(generate_aivm_models_router(aivm_manager, tts_engines, verify_mutability_allowed))  # noqa # fmt: skip
     app.include_router(
         generate_preset_router(preset_manager, verify_mutability_allowed)
     )

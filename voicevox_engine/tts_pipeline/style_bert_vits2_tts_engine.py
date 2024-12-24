@@ -251,7 +251,7 @@ class StyleBertVITS2TTSEngine(TTSEngine):
             onnx_providers=self.onnx_providers,
         )  # fmt: skip
         start_time = time.time()
-        logger.info(f"Loading {aivm_info.manifest.name} ({aivm_uuid})...")
+        logger.info(f"Loading {aivm_info.manifest.name} ({aivm_uuid}) ...")
         tts_model.load()
         logger.info(
             f"{aivm_info.manifest.name} ({aivm_uuid}) loaded. ({time.time() - start_time:.2f}s)"
@@ -259,6 +259,30 @@ class StyleBertVITS2TTSEngine(TTSEngine):
 
         self.tts_models[aivm_uuid] = tts_model
         return tts_model
+
+    def unload_model(self, aivm_uuid: str) -> None:
+        """
+        指定された AIVM の UUID に対応する音声合成モデルをアンロードする
+        継承元の TTSEngine には存在しない、StyleBertVITS2TTSEngine 固有のメソッド
+
+        Parameters
+        ----------
+        aivm_uuid : str
+            AIVM の UUID
+        """
+
+        # モデルがロードされていない場合は何もしない
+        if not self.is_model_loaded(aivm_uuid):
+            return
+
+        # モデルをアンロード
+        aivm_info = self.aivm_manager.get_aivm_info(aivm_uuid)
+        start_time = time.time()
+        logger.info(f"Unloading {aivm_info.manifest.name} ({aivm_uuid}) ...")
+        del self.tts_models[aivm_uuid]
+        logger.info(
+            f"{aivm_info.manifest.name} ({aivm_uuid}) unloaded. ({time.time() - start_time:.2f}s)"
+        )
 
     def is_model_loaded(self, aivm_uuid: str) -> bool:
         """

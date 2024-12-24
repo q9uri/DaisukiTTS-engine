@@ -6,12 +6,17 @@ from fastapi import APIRouter, Depends, File, Form, HTTPException, Path, UploadF
 
 from voicevox_engine.aivm_manager import AivmManager
 from voicevox_engine.model import AivmInfo
+from voicevox_engine.tts_pipeline.style_bert_vits2_tts_engine import (
+    StyleBertVITS2TTSEngine,
+)
+from voicevox_engine.tts_pipeline.tts_engine import LATEST_VERSION, TTSEngineManager
 
 from ..dependencies import VerifyMutabilityAllowed
 
 
 def generate_aivm_models_router(
     aivm_manager: AivmManager,
+    tts_engines: TTSEngineManager,
     verify_mutability: VerifyMutabilityAllowed,
 ) -> APIRouter:
     """音声合成モデル管理 API Router を生成する"""
@@ -79,11 +84,54 @@ def generate_aivm_models_router(
 
         return aivm_manager.get_aivm_info(aivm_uuid)
 
+    @router.post(
+        "/{aivm_uuid}/load",
+        status_code=204,
+        summary="指定された音声合成モデルをロードする",
+    )
+    def load_aivm(
+        aivm_uuid: Annotated[str, Path(description="音声合成モデルの UUID")],
+    ) -> None:
+        """
+        指定された音声合成モデルをロードします。すでにロード済みの場合は何も行われません。
+        実行しなくても他の API は使用できますが、初回実行時に時間がかかることがあります。
+        """
+
+        # まず対応する音声合成モデルがインストールされているかを確認
+        # 存在しない場合は内部で HTTPException が送出される
+        aivm_info = aivm_manager.get_aivm_info(aivm_uuid)
+
+        # StyleBertVITS2TTSEngine を取得し、音声合成モデルをロード
+        engine = tts_engines.get_engine(LATEST_VERSION)
+        assert isinstance(engine, StyleBertVITS2TTSEngine)
+        engine.load_model(str(aivm_info.manifest.uuid))
+
+    @router.post(
+        "/{aivm_uuid}/unload",
+        status_code=204,
+        summary="指定された音声合成モデルをアンロードする",
+    )
+    def unload_aivm(
+        aivm_uuid: Annotated[str, Path(description="音声合成モデルの UUID")],
+    ) -> None:
+        """
+        指定された音声合成モデルをアンロードします。
+        """
+
+        # まず対応する音声合成モデルがインストールされているかを確認
+        # 存在しない場合は内部で HTTPException が送出される
+        aivm_info = aivm_manager.get_aivm_info(aivm_uuid)
+
+        # StyleBertVITS2TTSEngine を取得し、音声合成モデルをアンロード
+        engine = tts_engines.get_engine(LATEST_VERSION)
+        assert isinstance(engine, StyleBertVITS2TTSEngine)
+        engine.unload_model(str(aivm_info.manifest.uuid))
+
     @router.delete(
         "/{aivm_uuid}/uninstall",
         status_code=204,
         dependencies=[Depends(verify_mutability)],
-        summary="音声合成モデルをアンインストールする",
+        summary="指定された音声合成モデルをアンインストールする",
     )
     def uninstall_aivm(
         aivm_uuid: Annotated[str, Path(description="音声合成モデルの UUID")]
