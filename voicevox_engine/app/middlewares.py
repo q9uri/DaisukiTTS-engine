@@ -46,7 +46,7 @@ def configure_middlewares(
             if "*" in allow_origin:
                 logger.warning(
                     'Deprecated use of argument "*" in allow_origin. '
-                    'Use option "--cors_policy_mod all" instead. See "--help" for more.',
+                    'Use option "--cors_policy_mode all" instead. See "--help" for more.',
                 )
 
     app.add_middleware(
