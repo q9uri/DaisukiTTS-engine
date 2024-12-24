@@ -93,6 +93,39 @@ def process_csv_file(file_path: str) -> tuple[int, list[list[str]]]:
                 print(
                     f'Removed: {surface} → {default_reading} (Read) | \033[91m{",".join(row)}\033[0m'
                 )
+            # CSV 側の「ハ」を「ワ」に変換した場合に一致する場合も削除
+            elif (
+                reading.replace("ハ", "ワ") == default_reading
+                or reading.replace("ハ", "ワ") == default_reading_without_special_chars
+                or pronunciation.replace("ハ", "ワ") == default_pronunciation
+                or pronunciation.replace("ハ", "ワ") == default_pronunciation_without_special_chars
+            ):
+                removed_rows.append(row)
+                print(
+                    f'Removed: {surface} → {reading.replace("ハ", "ワ")} (Ha->Wa in CSV) | \033[91m{",".join(row)}\033[0m'
+                )
+            # CSV 側の「ヲ」を「オ」に変換した場合に一致する場合も削除
+            elif (
+                reading.replace("ヲ", "オ") == default_reading
+                or reading.replace("ヲ", "オ") == default_reading_without_special_chars
+                or pronunciation.replace("ヲ", "オ") == default_pronunciation
+                or pronunciation.replace("ヲ", "オ") == default_pronunciation_without_special_chars
+            ):
+                removed_rows.append(row)
+                print(
+                    f'Removed: {surface} → {reading.replace("ヲ", "オ")} (Wo->O in CSV) | \033[91m{",".join(row)}\033[0m'
+                )
+            # CSV 側の「ヘ」を「エ」に変換した場合に一致する場合も削除
+            elif (
+                reading.replace("ヘ", "エ") == default_reading
+                or reading.replace("ヘ", "エ") == default_reading_without_special_chars
+                or pronunciation.replace("ヘ", "エ") == default_pronunciation
+                or pronunciation.replace("ヘ", "エ") == default_pronunciation_without_special_chars
+            ):
+                removed_rows.append(row)
+                print(
+                    f'Removed: {surface} → {reading.replace("ヘ", "エ")} (He->E in CSV) | \033[91m{",".join(row)}\033[0m'
+                )
             else:
                 unique_rows.append(row)
 
