@@ -82,7 +82,7 @@ class StyleBertVITS2TTSEngine(TTSEngine):
             ("CPUExecutionProvider", {
                 "arena_extend_strategy": "kSameAsRequested",
             }),
-        ]
+        ]  # fmt: skip
 
         # NVIDIA GPU が接続されていて CUDA がインストールされていれば、CUDAExecutionProvider が利用できる
         ## DirectML よりも CUDA の方が推論速度が速いため、優先的に利用する
@@ -101,11 +101,11 @@ class StyleBertVITS2TTSEngine(TTSEngine):
             if "DmlExecutionProvider" in self.available_onnx_providers:
                 self.onnx_providers.append(("DmlExecutionProvider", {
                     "device_id": 0,
-                }))
+                }))  # fmt: skip
             # フォールバックとして CPUExecutionProvider も指定する
             self.onnx_providers.append(("CPUExecutionProvider", {
                 "arena_extend_strategy": "kSameAsRequested",
-            }))
+            }))  # fmt: skip
             logger.info("Using GPU (NVIDIA CUDA) for inference.")
 
         # Windows なら DirectML (DmlExecutionProvider) を利用できる
@@ -115,11 +115,11 @@ class StyleBertVITS2TTSEngine(TTSEngine):
             ## TODO: より適した Direct3D 上のデバイス ID を指定できるようにする
             self.onnx_providers.append(("DmlExecutionProvider", {
                 "device_id": 0,
-            }))
+            }))  # fmt: skip
             # フォールバックとして CPUExecutionProvider も指定する
             self.onnx_providers.append(("CPUExecutionProvider", {
                 "arena_extend_strategy": "kSameAsRequested",
-            }))
+            }))  # fmt: skip
             logger.info("Using GPU (DirectML) for inference.")
 
         # GPU モードが指定されているが GPU が利用できない場合は CPU にフォールバック
@@ -832,7 +832,9 @@ def _sep_kata_with_joshi2sep_phonemes_with_joshi(
     return sep_phonemes_with_joshi
 
 
-def trim_silence(audio: NDArray[np.float32], threshold: float = 0.0004) -> NDArray[np.float32]:
+def trim_silence(
+    audio: NDArray[np.float32], threshold: float = 0.0004
+) -> NDArray[np.float32]:
     """
     推論結果から変換済みの float32 波形（[-1.0, 1.0] の範囲）を受け取り、
     前後の無音（または閾値以下の小音）をトリミングして返す。

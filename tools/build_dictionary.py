@@ -29,7 +29,7 @@ def BuildDictionary() -> None:
     for csv_file in csv_files:
 
         # 出力する .dic ファイルのパスを生成
-        output_dic_path = csv_file.with_suffix('.dic')
+        output_dic_path = csv_file.with_suffix(".dic")
 
         try:
             # pyopenjtalk 向けにビルド
