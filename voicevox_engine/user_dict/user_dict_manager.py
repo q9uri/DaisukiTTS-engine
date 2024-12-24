@@ -51,8 +51,8 @@ if not save_dir.is_dir():
     save_dir.mkdir(parents=True)
 
 # デフォルトのファイルパス
-# ビルド済みデフォルトユーザー辞書ファイルのパス
-DEFAULT_DICT_PATH = resource_dir / "dictionaries" / "default.dic"
+# ビルド済みデフォルトユーザー辞書ディレクトリのパス
+DEFAULT_DICT_DIR_PATH = resource_dir / "dictionaries"
 # ユーザー辞書ファイルのパス
 _USER_DICT_PATH = save_dir / "user_dict.json"
 # ビルド済み辞書ファイルのパス
@@ -72,21 +72,21 @@ class UserDictionary:
 
     def __init__(
         self,
-        default_dict_path: Path = DEFAULT_DICT_PATH,
+        default_dict_dir_path: Path = DEFAULT_DICT_DIR_PATH,
         user_dict_path: Path = _USER_DICT_PATH,
         compiled_dict_path: Path = _COMPILED_DICT_PATH,
     ) -> None:
         """
         Parameters
         ----------
-        default_dict_path : Path
-            ビルド済みデフォルトユーザー辞書ファイルのパス
+        default_dict_dir_path : Path
+            ビルド済みデフォルトユーザー辞書ディレクトリのパス
         user_dict_path : Path
             ユーザー辞書ファイルのパス
         compiled_dict_path : Path
             ビルド済み辞書ファイルのパス
         """
-        self._default_dict_path = default_dict_path
+        self._default_dict_dir_path = default_dict_dir_path
         self._user_dict_path = user_dict_path
         self._compiled_dict_path = compiled_dict_path
         # pytest から実行されているかどうか
@@ -126,7 +126,7 @@ class UserDictionary:
     @mutex_wrapper(mutex_openjtalk_dict)
     def update_dict(self) -> None:
         """辞書を更新する。"""
-        default_dict_path = self._default_dict_path
+        default_dict_dir_path = self._default_dict_dir_path
         compiled_dict_path = self._compiled_dict_path
 
         # pytest 実行時かつ Windows ではなぜか辞書更新時に MeCab の初期化に失敗するので、辞書更新自体を無効化する
@@ -189,15 +189,19 @@ class UserDictionary:
             if not tmp_compiled_path.is_file():
                 raise RuntimeError("辞書のビルド時にエラーが発生しました。")
 
+            # デフォルトユーザー辞書ディレクトリにある *.dic ファイルを名前順に取得
+            dict_files = sorted(list(default_dict_dir_path.glob("**/*.dic")))
+            # 先ほどビルドしたユーザー辞書を追加
+            if compiled_dict_path.is_file():
+                dict_files.append(compiled_dict_path)
+
             # ビルド済み辞書の置き換え・読み込み
             # デフォルトのユーザー辞書ファイルと、先ほどビルドした辞書ファイルの両方を指定する
-            pyopenjtalk.unset_user_dict()
-            tmp_compiled_path.replace(compiled_dict_path)
-            if compiled_dict_path.is_file():
-                pyopenjtalk.update_global_jtalk_with_user_dict([
-                    str(default_dict_path.resolve(strict=True)),
-                    str(compiled_dict_path.resolve(strict=True)),
-                ])  # fmt: skip
+            dict_paths = [str(p.resolve(strict=True)) for p in dict_files]
+            if dict_paths:  # 辞書ファイルが1つ以上存在する場合のみ更新
+                pyopenjtalk.unset_user_dict()
+                tmp_compiled_path.replace(compiled_dict_path)
+                pyopenjtalk.update_global_jtalk_with_user_dict(dict_paths)
 
             logger.info(f"User dictionary updated. ({time.time() - start_time:.2f}s)")
 

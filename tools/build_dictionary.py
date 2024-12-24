@@ -7,8 +7,8 @@ import pyopenjtalk
 
 def BuildDictionary() -> None:
     """
-    ../resources/dictionaries/ 以下の csv ファイルを名前順で連結し、
-    ビルド済みの user.dic を同じディレクトリに出力する
+    ../resources/dictionaries/ 以下の csv ファイルを個別にコンパイルし、
+    同じディレクトリに .dic ファイルとして出力する
     """
 
     # ../resources/dictionaries/ のパスを取得
@@ -25,39 +25,23 @@ def BuildDictionary() -> None:
         print("Error: No csv files found")
         return
 
-    # 一時ファイルのパスを生成
-    tmp_csv_path = dictionaries_path / "tmp_dict.csv"
-    output_dic_path = dictionaries_path / "default.dic"
+    # 各CSVファイルごとに個別にコンパイル
+    for csv_file in csv_files:
 
-    try:
-        # 全ての csv ファイルを連結
-        csv_text = ""
-        for csv_file in csv_files:
-            with open(csv_file, "r", encoding="utf-8") as f:
-                content = f.read()
-                if not content.endswith("\n"):
-                    content += "\n"
-                csv_text += content
-            print(f"Concatenated: {csv_file.name}")
+        # 出力する .dic ファイルのパスを生成
+        output_dic_path = csv_file.with_suffix('.dic')
 
-        # 連結した csv を一時ファイルに保存
-        tmp_csv_path.write_text(csv_text, encoding="utf-8")
+        try:
+            # pyopenjtalk 向けにビルド
+            pyopenjtalk.mecab_dict_index(str(csv_file), str(output_dic_path))
+            if not output_dic_path.is_file():
+                raise RuntimeError(f"Failed to build dictionary: {csv_file.name}")
 
-        # pyopenjtalk 向けにビルド
-        pyopenjtalk.mecab_dict_index(str(tmp_csv_path), str(output_dic_path))
-        if not output_dic_path.is_file():
-            raise RuntimeError("Failed to build dictionary.")
+            print(f"Successfully built: {output_dic_path.name}")
 
-        print(f"Successfully built: {output_dic_path.name}")
-
-    except Exception as e:
-        print(f"Error: {str(e)}")
-        raise e
-
-    finally:
-        # 一時ファイルを削除
-        if tmp_csv_path.exists():
-            tmp_csv_path.unlink()
+        except Exception as e:
+            print(f"Error while processing {csv_file.name}: {str(e)}")
+            raise e
 
 
 if __name__ == "__main__":
