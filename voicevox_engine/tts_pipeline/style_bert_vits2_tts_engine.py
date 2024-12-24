@@ -690,6 +690,10 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         ## float32 に変換する際に -1.0 ~ 1.0 の範囲に正規化する
         raw_wave = raw_wave.astype(np.float32) / 32768.0
 
+        # 学習元データなどの関係でモデルによっては音声の前後に無音が含まれることがあるため、後処理前に前後の無音をトリミングする
+        ## この処理を行ってから再度指定秒数の無音区間を追加することで、無音区間が指定以上に長くなるのを防ぐ
+        raw_wave = trim_silence(raw_wave)
+
         # 前後の無音区間を追加
         pre_silence_length = int(raw_sample_rate * query.prePhonemeLength)
         post_silence_length = int(raw_sample_rate * query.postPhonemeLength)
@@ -826,3 +830,46 @@ def _sep_kata_with_joshi2sep_phonemes_with_joshi(
         sep_phonemes_with_joshi.append(sep_phonemes_with_joshi_element)
 
     return sep_phonemes_with_joshi
+
+
+def trim_silence(audio: NDArray[np.float32], threshold: float = 0.0004) -> NDArray[np.float32]:
+    """
+    推論結果から変換済みの float32 波形（[-1.0, 1.0] の範囲）を受け取り、
+    前後の無音（または閾値以下の小音）をトリミングして返す。
+
+    Parameters
+    ----------
+    audio : NDArray[np.float32]
+        float32 型の 1次元配列（モノラル想定）。値は [-1.0, 1.0] の範囲。
+    threshold : float
+        無音判定の絶対振幅の閾値 (0.0 ~ 1.0)。
+        例: 0.0001 (約 -80 dB), 0.001 (約 -60 dB) など
+
+    Returns
+    -------
+    NDArray[np.float32]
+        前後の無音を除去した波形 (dtype=float32)。
+        全サンプルが閾値以下の場合は空配列 (shape=(0,)) を返す。
+    """
+
+    if audio.dtype != np.float32:
+        raise ValueError("Input audio must be float32 (range: [-1.0, 1.0]).")
+
+    # 絶対値をとる
+    abs_audio = np.abs(audio)
+
+    # 閾値以上のサンプルのインデックスを取得
+    above_threshold_indices = np.where(abs_audio > threshold)[0]
+
+    # 全部が閾値以下の場合は空配列を返す
+    if len(above_threshold_indices) == 0:
+        return np.array([], dtype=np.float32)
+
+    # 前側のカット開始位置と後ろ側のカット終了位置(+1)
+    start_idx = above_threshold_indices[0]
+    end_idx = above_threshold_indices[-1] + 1
+
+    # 前後の無音をカット
+    trimmed = audio[start_idx:end_idx]
+
+    return trimmed
