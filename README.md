@@ -217,8 +217,7 @@ rm text.txt query.json
 ```
 
 > [!TIP]
-> **詳しい API リクエスト・レスポンス仕様は [API ドキュメント](https://aivis-project.github.io/AivisSpeech-Engine/api/) や [VOICEVOX API との互換性について](#voicevox-api-との互換性について) をご参照ください。**  
-> **API ドキュメントでは、最新の開発版での変更を随時反映しています。**
+> **詳しい API リクエスト・レスポンス仕様は [API ドキュメント](https://aivis-project.github.io/AivisSpeech-Engine/api/) や [VOICEVOX API との互換性について](#voicevox-api-との互換性について) をご参照ください。API ドキュメントでは、最新の開発版での変更を随時反映しています。**
 > 
 > 起動中の AivisSpeech Engine の API ドキュメント (Swagger UI) は、AivisSpeech Engine もしくは AivisSpeech エディタを起動した状態で、http://127.0.0.1:10101/docs にアクセスすると確認できます。
 
