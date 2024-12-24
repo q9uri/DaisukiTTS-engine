@@ -189,18 +189,19 @@ class UserDictionary:
             if not tmp_compiled_path.is_file():
                 raise RuntimeError("辞書のビルド時にエラーが発生しました。")
 
+            # ユーザー辞書の適用を解除した後、ユーザー辞書ファイルを置き換え
+            pyopenjtalk.unset_user_dict()
+            tmp_compiled_path.replace(compiled_dict_path)
+
             # デフォルトユーザー辞書ディレクトリにある *.dic ファイルを名前順に取得
             dict_files = sorted(list(default_dict_dir_path.glob("**/*.dic")))
-            # 先ほどビルドしたユーザー辞書を追加
-            if compiled_dict_path.is_file():
-                dict_files.append(compiled_dict_path)
+            # ユーザー辞書ファイルのパスを追加
+            dict_files.append(compiled_dict_path)
 
-            # ビルド済み辞書の置き換え・読み込み
+            # ユーザー辞書を pyopenjtalk に適用
             # デフォルトのユーザー辞書ファイルと、先ほどビルドした辞書ファイルの両方を指定する
             dict_paths = [str(p.resolve(strict=True)) for p in dict_files]
-            if dict_paths:  # 辞書ファイルが1つ以上存在する場合のみ更新
-                pyopenjtalk.unset_user_dict()
-                tmp_compiled_path.replace(compiled_dict_path)
+            if dict_paths:  # 辞書ファイルが1つ以上存在する場合のみ実行
                 pyopenjtalk.update_global_jtalk_with_user_dict(dict_paths)
 
             logger.info(f"User dictionary updated. ({time.time() - start_time:.2f}s)")
