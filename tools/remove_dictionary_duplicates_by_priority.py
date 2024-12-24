@@ -60,7 +60,8 @@ def process_auto_csv(
                             for i, prow in enumerate(priority_file_rows):
                                 if prow and (prow[0], prow[4], prow[5], prow[6]) == key:
                                     priority_file_rows[i][3] = row[3]
-                                    priority_row = priority_file_rows[i]  # 更新後の行を使用
+                                    # 更新後の行を使用
+                                    priority_row = priority_file_rows[i]
                                     cost_updated = True
                                     break
 

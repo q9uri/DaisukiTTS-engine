@@ -20,7 +20,7 @@ from voicevox_engine.tts_pipeline.style_bert_vits2_tts_engine import (
 )
 from voicevox_engine.tts_pipeline.tts_engine import TTSEngineManager
 from voicevox_engine.user_dict.user_dict_manager import (
-    DEFAULT_DICT_PATH,
+    DEFAULT_DICT_DIR_PATH,
     UserDictionary,
 )
 from voicevox_engine.utility.path_utility import engine_manifest_path, get_save_dir
@@ -54,7 +54,7 @@ def app_params(tmp_path: Path) -> dict[str, Any]:
 
     # テスト用に隔離されたユーザー辞書を生成する
     user_dict = UserDictionary(
-        default_dict_path=_copy_under_dir(DEFAULT_DICT_PATH, tmp_path),
+        default_dict_dir_path=_copy_under_dir(DEFAULT_DICT_DIR_PATH, tmp_path),
         user_dict_path=_generate_user_dict(tmp_path),
         compiled_dict_path=tmp_path / "user.dic",
     )
