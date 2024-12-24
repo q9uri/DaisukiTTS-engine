@@ -202,14 +202,10 @@ docker run --rm --gpus all -p '10101:10101' \
 
 ## 音声合成 API を使う
 
-Bash で以下のワンライナーを実行すると、`audio.wav` に音声合成した WAV ファイルが出力されます。  
-詳細な API リクエスト・レスポンスの仕様は、API ドキュメントや [VOICEVOX API との互換性について](#voicevox-api-との互換性について) をご参照ください。
-
-> [!TIP]
-> **AivisSpeech Engine の API ドキュメントは、AivisSpeech Engine もしくは AivisSpeech エディタを起動した状態で、http://127.0.0.1:10101/docs にアクセスすると確認できます。**
+Bash で以下のワンライナーを実行すると、`audio.wav` に音声合成した WAV ファイルが出力されます。
 
 > [!IMPORTANT]  
-> 事前に AivisSpeech Engine が起動していて、かつログに表示される `Models directory:` 以下のディレクトリに、スタイル ID に対応する音声合成モデル (.aivmx) が格納されていることが前提です。
+> **事前に AivisSpeech Engine が起動していて、かつログに表示される `Models directory:` 以下のディレクトリに、スタイル ID に対応する音声合成モデル (.aivmx) が格納されていることが前提です。**
 
 ```bash
 # STYLE_ID は音声合成対象のスタイル ID 、別途 /speakers API から取得が必要
@@ -219,6 +215,12 @@ curl -s -X POST "127.0.0.1:10101/audio_query?speaker=$STYLE_ID" --get --data-url
 curl -s -H "Content-Type: application/json" -X POST -d @query.json "127.0.0.1:10101/synthesis?speaker=$STYLE_ID" > audio.wav && \
 rm text.txt query.json
 ```
+
+> [!TIP]
+> **詳しい API リクエスト・レスポンス仕様は [API ドキュメント](https://aivis-project.github.io/AivisSpeech-Engine/api/) や [VOICEVOX API との互換性について](#voicevox-api-との互換性について) をご参照ください。**  
+> **API ドキュメントでは、最新の開発版での変更を随時反映しています。**
+> 
+> 起動中の AivisSpeech Engine の API ドキュメント (Swagger UI) は、AivisSpeech Engine もしくは AivisSpeech エディタを起動した状態で、http://127.0.0.1:10101/docs にアクセスすると確認できます。
 
 ## VOICEVOX API との互換性について
 

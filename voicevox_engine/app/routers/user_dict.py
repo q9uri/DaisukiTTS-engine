@@ -27,12 +27,12 @@ def generate_user_dict_router(
     @router.get(
         "/user_dict",
         summary="ユーザー辞書に登録されている単語の一覧を取得する",
-        response_description="単語のUUIDとその詳細",
+        response_description="単語の UUID とその詳細",
     )
     def get_user_dict_words() -> dict[str, UserDictWord]:
         """
         ユーザー辞書に登録されている単語の一覧を返します。
-        単語の表層形(surface)は正規化済みの物を返します。
+        単語の表層形 (surface) は正規化済みの物を返します。
         """
         try:
             return user_dict.read_dict()
@@ -47,7 +47,7 @@ def generate_user_dict_router(
         "/user_dict_word",
         dependencies=[Depends(verify_mutability)],
         summary="ユーザー辞書に言葉を追加する",
-        response_description="追加した言葉のUUID",
+        response_description="追加した言葉の UUID",
     )
     def add_user_dict_word(
         surface: Annotated[str, Query(description="言葉の表層形")],
@@ -114,7 +114,7 @@ def generate_user_dict_router(
         accent_type: Annotated[
             int, Query(description="アクセント型（音が下がる場所を指す）")
         ],
-        word_uuid: Annotated[str, Path(description="更新する言葉のUUID")],
+        word_uuid: Annotated[str, Path(description="更新する言葉の UUID")],
         word_type: Annotated[
             WordTypes | SkipJsonSchema[None],
             Query(

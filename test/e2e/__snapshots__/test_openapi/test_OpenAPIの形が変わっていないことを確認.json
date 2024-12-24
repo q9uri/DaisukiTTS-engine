@@ -438,7 +438,7 @@
         "type": "object"
       },
       "CorsPolicyMode": {
-        "description": "CORSの許可モード",
+        "description": "CORS の許可モード",
         "enum": [
           "all",
           "localapps"
@@ -1634,6 +1634,44 @@
         ]
       }
     },
+    "/aivm_models/{aivm_uuid}/load": {
+      "post": {
+        "description": "指定された音声合成モデルをロードします。すでにロード済みの場合は何も行われません。\n実行しなくても他の API は利用できますが、音声合成の初回実行時に時間がかかることがあります。",
+        "operationId": "load_aivm_aivm_models__aivm_uuid__load_post",
+        "parameters": [
+          {
+            "description": "音声合成モデルの UUID",
+            "in": "path",
+            "name": "aivm_uuid",
+            "required": true,
+            "schema": {
+              "description": "音声合成モデルの UUID",
+              "title": "Aivm Uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "指定された音声合成モデルをロードする",
+        "tags": [
+          "音声合成モデル管理"
+        ]
+      }
+    },
     "/aivm_models/{aivm_uuid}/uninstall": {
       "delete": {
         "description": "指定された音声合成モデルをアンインストールします。",
@@ -1666,7 +1704,45 @@
             "description": "Validation Error"
           }
         },
-        "summary": "音声合成モデルをアンインストールする",
+        "summary": "指定された音声合成モデルをアンインストールする",
+        "tags": [
+          "音声合成モデル管理"
+        ]
+      }
+    },
+    "/aivm_models/{aivm_uuid}/unload": {
+      "post": {
+        "description": "指定された音声合成モデルをアンロードします。",
+        "operationId": "unload_aivm_aivm_models__aivm_uuid__unload_post",
+        "parameters": [
+          {
+            "description": "音声合成モデルの UUID",
+            "in": "path",
+            "name": "aivm_uuid",
+            "required": true,
+            "schema": {
+              "description": "音声合成モデルの UUID",
+              "title": "Aivm Uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "指定された音声合成モデルをアンロードする",
         "tags": [
           "音声合成モデル管理"
         ]
@@ -1864,7 +1940,7 @@
     },
     "/connect_waves": {
       "post": {
-        "description": "base64エンコードされたwavデータを一纏めにし、wavファイルで返します。",
+        "description": "Base64 エンコードされた WAV データを一つに結合し、WAV ファイルで返します。",
         "operationId": "connect_waves_connect_waves_post",
         "requestBody": {
           "content": {
@@ -1903,7 +1979,7 @@
             "description": "Validation Error"
           }
         },
-        "summary": "base64エンコードされた複数のwavデータを一つに結合する",
+        "summary": "Base64 エンコードされた複数の WAV データを一つに結合する",
         "tags": [
           "音声合成"
         ]
@@ -2114,7 +2190,7 @@
     },
     "/initialize_speaker": {
       "post": {
-        "description": "指定されたスタイル ID に紐づく音声合成モデルをロードします。\n実行しなくても他の API は使用できますが、初回実行時に時間がかかることがあります。",
+        "description": "指定されたスタイル ID に紐づく音声合成モデルをロードします。\n実行しなくても他の API は利用できますが、音声合成の初回実行時に時間がかかることがあります。",
         "operationId": "initialize_speaker_initialize_speaker_post",
         "parameters": [
           {
@@ -3262,7 +3338,7 @@
     },
     "/user_dict": {
       "get": {
-        "description": "ユーザー辞書に登録されている単語の一覧を返します。\n単語の表層形(surface)は正規化済みの物を返します。",
+        "description": "ユーザー辞書に登録されている単語の一覧を返します。\n単語の表層形 (surface) は正規化済みの物を返します。",
         "operationId": "get_user_dict_words_user_dict_get",
         "responses": {
           "200": {
@@ -3277,7 +3353,7 @@
                 }
               }
             },
-            "description": "単語のUUIDとその詳細"
+            "description": "単語の UUID とその詳細"
           }
         },
         "summary": "ユーザー辞書に登録されている単語の一覧を取得する",
@@ -3358,7 +3434,7 @@
                 }
               }
             },
-            "description": "追加した言葉のUUID"
+            "description": "追加した言葉の UUID"
           },
           "422": {
             "content": {
@@ -3419,12 +3495,12 @@
         "operationId": "rewrite_user_dict_word_user_dict_word__word_uuid__put",
         "parameters": [
           {
-            "description": "更新する言葉のUUID",
+            "description": "更新する言葉の UUID",
             "in": "path",
             "name": "word_uuid",
             "required": true,
             "schema": {
-              "description": "更新する言葉のUUID",
+              "description": "更新する言葉の UUID",
               "title": "Word Uuid",
               "type": "string"
             }

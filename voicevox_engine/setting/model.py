@@ -9,7 +9,7 @@ from enum import Enum
 
 class CorsPolicyMode(str, Enum):
     """
-    CORSの許可モード
+    CORS の許可モード
     """
 
     all = "all"  # 全てのオリジンからのリクエストを許可

@@ -526,11 +526,11 @@ def generate_tts_pipeline_router(
             }
         },
         tags=["音声合成"],
-        summary="base64エンコードされた複数のwavデータを一つに結合する",
+        summary="Base64 エンコードされた複数の WAV データを一つに結合する",
     )
     def connect_waves(waves: list[str]) -> Response:
         """
-        base64エンコードされたwavデータを一纏めにし、wavファイルで返します。
+        Base64 エンコードされた WAV データを一つに結合し、WAV ファイルで返します。
         """
         try:
             waves_nparray, sampling_rate = connect_base64_waves(waves)
@@ -595,7 +595,7 @@ def generate_tts_pipeline_router(
     ) -> None:
         """
         指定されたスタイル ID に紐づく音声合成モデルをロードします。
-        実行しなくても他の API は使用できますが、初回実行時に時間がかかることがあります。
+        実行しなくても他の API は利用できますが、音声合成の初回実行時に時間がかかることがあります。
         """
         version = core_version or LATEST_VERSION
         engine = tts_engines.get_engine(version)
