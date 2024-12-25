@@ -44,6 +44,18 @@
             "title": "AIVMX ファイルのインストール先パス",
             "type": "string"
           },
+          "is_loaded": {
+            "title": "この音声合成モデルがロードされているかどうか",
+            "type": "boolean"
+          },
+          "is_update_available": {
+            "title": "この音声合成モデルの新しいバージョンが AivisHub で公開されているかどうか",
+            "type": "boolean"
+          },
+          "latest_version": {
+            "title": "この音声合成モデルの AivisHub で公開されている最新バージョン (AivisHub で公開されていない場合は AIVM マニフェスト記載のバージョン)",
+            "type": "string"
+          },
           "manifest": {
             "$ref": "#/components/schemas/AivmManifest",
             "title": "AIVM マニフェスト"
@@ -57,6 +69,9 @@
           }
         },
         "required": [
+          "is_loaded",
+          "is_update_available",
+          "latest_version",
           "file_path",
           "manifest",
           "speakers"

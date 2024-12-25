@@ -1,9 +1,11 @@
 # flake8: noqa
 
+import asyncio
 import glob
 import hashlib
 from io import BytesIO
 from pathlib import Path
+from threading import Thread
 from typing import BinaryIO, Final
 
 import aivmlib
@@ -15,6 +17,7 @@ from aivmlib.schemas.aivm_manifest import (
     ModelArchitecture,
 )
 from fastapi import HTTPException
+from semver.version import Version
 
 from voicevox_engine import __version__
 from voicevox_engine.logging import logger
@@ -49,6 +52,9 @@ class AivmManager:
         ModelArchitecture.StyleBertVITS2JPExtra,
     ]
 
+    # AivisHub API のベース URL
+    AIVISHUB_API_BASE_URL: Final[str] = "https://api.aivis-project.com/v1"
+
     # デフォルトでダウンロードされる音声合成モデルの URL
     DEFAULT_MODEL_DOWNLOAD_URLS: Final[list[str]] = [
         "https://api.aivis-project.com/v1/aivm-models/a59cb814-0083-4369-8542-f51a29e72af7/download?model_type=AIVMX",
@@ -74,13 +80,13 @@ class AivmManager:
 
         current_installed_aivm_infos = self.get_installed_aivm_infos()
         if len(current_installed_aivm_infos) == 0:
-            logger.warning("No AIVM models are installed. Installing default models...")
+            logger.warning("No models are installed. Installing default models...")
             # デフォルトで同梱する音声合成モデルをインストール
             for url in self.DEFAULT_MODEL_DOWNLOAD_URLS:
                 logger.info(f"Installing default model from {url}...")
                 self.install_aivm_from_url(url)
         else:
-            logger.info("Installed AIVM models:")
+            logger.info("Installed models:")
             for aivm_info in current_installed_aivm_infos.values():
                 logger.info(f"- {aivm_info.manifest.name} ({aivm_info.manifest.uuid})")
 
@@ -312,6 +318,9 @@ class AivmManager:
 
             # 仮の AivmInfo モデルを作成
             aivm_info = AivmInfo(
+                is_loaded=False,
+                is_update_available=False,
+                latest_version=aivm_manifest.version,  # 初期値として AIVM マニフェスト記載のバージョンを設定
                 # AIVMX ファイルのインストール先パス
                 file_path=aivm_file_path,
                 # AIVM マニフェスト
@@ -418,7 +427,102 @@ class AivmManager:
         # 音声合成モデル名でソートしてから返す
         # 実行結果はキャッシュとして保持する
         self._installed_aivm_infos = dict(sorted(aivm_infos.items(), key=lambda x: x[1].manifest.name))  # fmt: skip
+
+        # 非同期で AivisHub からの情報更新を開始
+        # 音声合成エンジンの起動を遅延させないよう、別スレッドで非同期タスクを開始する
+        try:
+            Thread(target=asyncio.run, args=(self._update_all_aivm_infos(),)).start()
+        except Exception as ex:
+            # 非同期タスクの開始に失敗しても起動に影響を与えないよう、ログ出力のみ行う
+            logger.warning(f"Failed to start async update task:")
+            logger.warning(ex)
+
         return self._installed_aivm_infos
+
+    async def _update_all_aivm_infos(self) -> None:
+        """
+        AivisHub からすべてのインストール済み音声合成モデルのアップデート情報を取得し、非同期に更新する
+        """
+
+        async def update_aivm_info_from_aivishub(aivm_info: AivmInfo) -> None:
+            try:
+                async with httpx.AsyncClient() as client:
+                    response = await client.get(
+                        f"{self.AIVISHUB_API_BASE_URL}/aivm-models/{aivm_info.manifest.uuid}",
+                        headers={"User-Agent": f"AivisSpeech-Engine/{__version__}"},
+                        timeout=5.0,  # 5秒でタイムアウト
+                    )
+
+                    # 404 の場合は AivisHub に公開されていないモデルのためスキップ
+                    if response.status_code == 404:
+                        return
+
+                    # 200 以外のステータスコードは異常なのでエラーとして処理
+                    if response.status_code != 200:
+                        logger.warning(
+                            f"Failed to fetch model info for {aivm_info.manifest.uuid} from AivisHub: "
+                            f"Status code {response.status_code}, Response: {response.text}"
+                        )
+                        return
+
+                    model_info = response.json()
+
+                    # model_files から最新の AIVMX ファイルのバージョンを取得
+                    latest_aivmx_version = next(
+                        (
+                            file
+                            for file in model_info["model_files"]
+                            if file["model_type"] == "AIVMX"
+                        ),
+                        None,
+                    )
+
+                    if latest_aivmx_version is not None:
+                        # latest_version を更新
+                        aivm_info.latest_version = latest_aivmx_version["version"]
+                        # バージョン比較を行い is_update_available を更新
+                        current_version = Version.parse(aivm_info.manifest.version)
+                        latest_version = Version.parse(aivm_info.latest_version)
+                        aivm_info.is_update_available = latest_version > current_version
+
+            except httpx.TimeoutException as ex:
+                logger.warning(
+                    f"Timeout while fetching model info for {aivm_info.manifest.uuid} from AivisHub:"
+                )
+                logger.warning(ex)
+            except (httpx.RequestError, KeyError, StopIteration, ValueError) as ex:
+                # エラーが発生しても起動に影響を与えないよう、ログ出力のみ行う
+                # - httpx.RequestError: ネットワークエラーなど
+                # - KeyError: レスポンスのJSONに必要なキーが存在しない
+                # - StopIteration: model_files に AIVMX が存在しない
+                # - ValueError: Version.parse() が失敗
+                logger.warning(
+                    f"Failed to fetch model info for {aivm_info.manifest.uuid} from AivisHub:"
+                )
+                logger.warning(ex)
+
+        # 全モデルの更新タスクを作成
+        assert self._installed_aivm_infos is not None
+        update_tasks = [
+            update_aivm_info_from_aivishub(aivm_info)
+            for aivm_info in self._installed_aivm_infos.values()
+        ]
+
+        # 全タスクを同時に実行
+        await asyncio.gather(*update_tasks, return_exceptions=True)
+
+        # 更新があった場合はログ出力
+        update_available_models = [
+            aivm_info
+            for aivm_info in self._installed_aivm_infos.values()
+            if aivm_info.is_update_available
+        ]
+        if update_available_models:
+            logger.info("Update available models:")
+            for aivm_info in update_available_models:
+                logger.info(
+                    f"- {aivm_info.manifest.name} ({aivm_info.manifest.uuid}) v{aivm_info.manifest.version} -> v{aivm_info.latest_version}"
+                )
 
     def install_aivm(self, file: BinaryIO) -> None:
         """

@@ -100,6 +100,13 @@ class AivmInfo(BaseModel):
     AIVM マニフェストを元に Speaker / SpeakerStyle / SpeakerInfo / StyleInfo モデルに変換したもの
     """
 
+    is_loaded: bool = Field(title="この音声合成モデルがロードされているかどうか")
+    is_update_available: bool = Field(
+        title="この音声合成モデルの新しいバージョンが AivisHub で公開されているかどうか"
+    )
+    latest_version: str = Field(
+        title="この音声合成モデルの AivisHub で公開されている最新バージョン (AivisHub で公開されていない場合は AIVM マニフェスト記載のバージョン)"
+    )
     file_path: Path = Field(title="AIVMX ファイルのインストール先パス")
     manifest: AivmManifest = Field(title="AIVM マニフェスト")
     speakers: list[LibrarySpeaker] = Field(
