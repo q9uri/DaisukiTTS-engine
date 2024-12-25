@@ -44,6 +44,7 @@ from voicevox_engine.utility.path_utility import (
     engine_root,
     get_save_dir,
 )
+from voicevox_engine.utility.user_agent_utility import generate_user_agent
 
 
 def decide_boolean_from_env(env_name: str) -> bool:
@@ -343,6 +344,9 @@ def main() -> None:
 
     if args.output_log_utf8:
         set_output_log_utf8()
+
+    # 起動の一番早い段階で実行結果をキャッシュしておくのが重要
+    generate_user_agent("GPU" if args.use_gpu is True else "CPU")
 
     logger.info(f"AivisSpeech Engine version {__version__}")
     logger.info(f"Engine root directory: {engine_root()}")

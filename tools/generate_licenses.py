@@ -110,6 +110,9 @@ def generate_licenses() -> list[License]:
             elif package_name == "flatbuffers":
                 text_url = "https://raw.githubusercontent.com/google/flatbuffers/v24.3.25/LICENSE"  # noqa: B950
                 license_json["LicenseText"] = get_license_text(text_url)
+            elif package_name == "gputil":
+                text_url = "https://raw.githubusercontent.com/anderskm/gputil/refs/heads/master/LICENSE.txt"  # noqa: B950
+                license_json["LicenseText"] = get_license_text(text_url)
             elif package_name == "gradio_client":
                 text_url = "https://raw.githubusercontent.com/gradio-app/gradio/v3.41.0/LICENSE"  # noqa: B950
                 license_json["LicenseText"] = get_license_text(text_url)

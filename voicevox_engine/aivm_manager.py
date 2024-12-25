@@ -31,6 +31,7 @@ from voicevox_engine.metas.Metas import (
 )
 from voicevox_engine.metas.MetasStore import Character
 from voicevox_engine.model import AivmInfo, LibrarySpeaker
+from voicevox_engine.utility.user_agent_utility import generate_user_agent
 
 __all__ = ["AivmManager"]
 
@@ -471,7 +472,7 @@ class AivmManager:
                 async with httpx.AsyncClient() as client:
                     response = await client.get(
                         f"{self.AIVISHUB_API_BASE_URL}/aivm-models/{aivm_info.manifest.uuid}",
-                        headers={"User-Agent": f"AivisSpeech-Engine/{__version__}"},
+                        headers={"User-Agent": generate_user_agent()},
                         timeout=5.0,  # 5秒でタイムアウト
                     )
 
@@ -649,7 +650,7 @@ class AivmManager:
             logger.info(f"Downloading AIVMX file from {url}...")
             response = httpx.get(
                 url,
-                headers={"User-Agent": f"AivisSpeech-Engine/{__version__}"},
+                headers={"User-Agent": generate_user_agent()},
                 # リダイレクトを追跡する
                 follow_redirects=True,
             )

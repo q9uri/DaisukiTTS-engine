@@ -84,6 +84,9 @@ pydantic = "^2.7.3"
 starlette = "^0.41.3"
 jaconv = "^0.3.4"
 httpx = "^0.27.0"
+gputil = "^1.4.0"
+py-cpuinfo = "^9.0.0"
+wmi = {version = "^1.5.1", platform = "win32"}
 # truststore は HTTPS 通信時にシステムにインストールされた証明書ストアを使うために必要
 ## ref: https://github.com/psf/requests/issues/2966
 ## ref: https://truststore.readthedocs.io/en/latest/
