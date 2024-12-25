@@ -110,8 +110,6 @@ def generate_user_agent(inference_type: Literal["CPU", "GPU"] = "CPU") -> str:
                     return ["Unknown"]
             elif os_name == "Linux":
                 try:
-                    if not GPUtil:
-                        return ["NoGPULib"]
                     gpus = GPUtil.getGPUs()
                     names = [gpu.name for gpu in gpus if hasattr(gpu, "name")]
                     return names if names else ["NoGPU"]
@@ -129,8 +127,6 @@ def generate_user_agent(inference_type: Literal["CPU", "GPU"] = "CPU") -> str:
         エラー時は None, None を返す。
         """
         try:
-            if not psutil:
-                return None, None
             vm = psutil.virtual_memory()
             total_gb = round(vm.total / (1024**3), 1)
             available_gb = round(vm.available / (1024**3), 1)
@@ -200,15 +196,9 @@ def generate_user_agent(inference_type: Literal["CPU", "GPU"] = "CPU") -> str:
     except Exception as e:
         # 最悪の場合のフォールバック
         logger.error("Failed to generate user agent string: %s", e)
-        fallback_agent = (
-            f"AivisSpeech-Engine/{__version__} "
-            f"(OS/Unknown; Arch/Unknown; "
-            f"CPU/Unknown; GPU/Unknown; "
-            f"Memory/Unknown; "
-            f"Inference/{inference_type})"
-        )
-        __user_agent_cache = fallback_agent
-        return fallback_agent
+        generic_user_agent = f"AivisSpeech-Engine/{__version__}"
+        __user_agent_cache = generic_user_agent
+        return generic_user_agent
 
 
 if __name__ == "__main__":
