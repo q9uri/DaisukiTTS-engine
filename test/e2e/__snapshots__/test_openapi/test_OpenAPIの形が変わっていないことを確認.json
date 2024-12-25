@@ -1763,6 +1763,44 @@
         ]
       }
     },
+    "/aivm_models/{aivm_uuid}/update": {
+      "post": {
+        "description": "AivisHub から指定された音声合成モデルの一番新しいバージョンをダウンロードし、\nインストール済みの音声合成モデルへ上書き更新します。",
+        "operationId": "update_aivm_aivm_models__aivm_uuid__update_post",
+        "parameters": [
+          {
+            "description": "音声合成モデルの UUID",
+            "in": "path",
+            "name": "aivm_uuid",
+            "required": true,
+            "schema": {
+              "description": "音声合成モデルの UUID",
+              "title": "Aivm Uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "指定された音声合成モデルを更新する",
+        "tags": [
+          "音声合成モデル管理"
+        ]
+      }
+    },
     "/audio_query": {
       "post": {
         "description": "音声合成用のクエリの初期値を得ます。ここで得られたクエリはそのまま音声合成に利用できます。各値の意味は`Schemas`を参照してください。",

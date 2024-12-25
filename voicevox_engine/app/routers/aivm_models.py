@@ -127,6 +127,21 @@ def generate_aivm_models_router(
         assert isinstance(engine, StyleBertVITS2TTSEngine)
         engine.unload_model(str(aivm_info.manifest.uuid))
 
+    @router.post(
+        "/{aivm_uuid}/update",
+        status_code=204,
+        summary="指定された音声合成モデルを更新する",
+    )
+    def update_aivm(
+        aivm_uuid: Annotated[str, Path(description="音声合成モデルの UUID")],
+    ) -> None:
+        """
+        AivisHub から指定された音声合成モデルの一番新しいバージョンをダウンロードし、
+        インストール済みの音声合成モデルへ上書き更新します。
+        """
+
+        aivm_manager.update_aivm(aivm_uuid)
+
     @router.delete(
         "/{aivm_uuid}/uninstall",
         status_code=204,

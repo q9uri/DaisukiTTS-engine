@@ -55,9 +55,9 @@ class AivmManager:
     # AivisHub API のベース URL
     AIVISHUB_API_BASE_URL: Final[str] = "https://api.aivis-project.com/v1"
 
-    # デフォルトでダウンロードされる音声合成モデルの URL
-    DEFAULT_MODEL_DOWNLOAD_URLS: Final[list[str]] = [
-        "https://api.aivis-project.com/v1/aivm-models/a59cb814-0083-4369-8542-f51a29e72af7/download?model_type=AIVMX",
+    # デフォルトでインストールされる音声合成モデルの UUID
+    DEFAULT_MODEL_UUIDS: Final[list[str]] = [
+        "a59cb814-0083-4369-8542-f51a29e72af7",
     ]
 
     def __init__(self, installed_aivm_dir: Path):
@@ -81,8 +81,9 @@ class AivmManager:
         current_installed_aivm_infos = self.get_installed_aivm_infos()
         if len(current_installed_aivm_infos) == 0:
             logger.warning("No models are installed. Installing default models...")
-            # デフォルトで同梱する音声合成モデルをインストール
-            for url in self.DEFAULT_MODEL_DOWNLOAD_URLS:
+            # デフォルトモデルをインストール
+            for aivm_uuid in self.DEFAULT_MODEL_UUIDS:
+                url = f"{self.AIVISHUB_API_BASE_URL}/aivm-models/{aivm_uuid}/download?model_type=AIVMX"
                 logger.info(f"Installing default model from {url}...")
                 self.install_aivm_from_url(url)
         else:
@@ -645,6 +646,43 @@ class AivmManager:
 
         # ダウンロードした AIVMX ファイルをインストール
         self.install_aivm(BytesIO(response.content))
+
+    def update_aivm(self, aivm_uuid: str) -> None:
+        """
+        AivisHub から指定された音声合成モデルの一番新しいバージョンをダウンロードし、
+        インストール済みの音声合成モデルへ上書き更新する
+
+        Parameters
+        ----------
+        aivm_uuid : str
+            音声合成モデルの UUID (aivm_manifest.json に記載されているものと同一)
+        """
+
+        # 対象の音声合成モデルがインストール済みかを確認
+        installed_aivm_infos = self.get_installed_aivm_infos()
+        if aivm_uuid not in installed_aivm_infos.keys():
+            raise HTTPException(
+                status_code=404,
+                detail=f"音声合成モデル {aivm_uuid} はインストールされていません。",
+            )
+
+        # アップデートが利用可能かを確認
+        aivm_info = installed_aivm_infos[aivm_uuid]
+        if not aivm_info.is_update_available:
+            raise HTTPException(
+                status_code=422,
+                detail=f"音声合成モデル {aivm_uuid} にアップデートはありません。",
+            )
+
+        # AivisHub からアップデートをダウンロードしてインストール
+        logger.info(
+            f"Updating AIVM model {aivm_uuid} to version {aivm_info.latest_version}..."
+        )
+        download_url = f"{self.AIVISHUB_API_BASE_URL}/aivm-models/{aivm_uuid}/download?model_type=AIVMX"
+        self.install_aivm_from_url(download_url)
+        logger.info(
+            f"Updated AIVM model {aivm_uuid} to version {aivm_info.latest_version}."
+        )
 
     def uninstall_aivm(self, aivm_uuid: str) -> None:
         """
