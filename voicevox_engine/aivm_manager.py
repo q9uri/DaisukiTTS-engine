@@ -233,7 +233,7 @@ class AivmManager:
             detail=f"スタイル {style_id} は存在しません。",
         )
 
-    def get_installed_aivm_infos(self, force: bool = False) -> dict[str, AivmInfo]:
+    def get_installed_aivm_infos(self, force: bool = False, wait_for_update_check: bool = False) -> dict[str, AivmInfo]:
         """
         すべてのインストール済み音声合成モデルの情報を取得する
 
@@ -241,6 +241,8 @@ class AivmManager:
         ----------
         force : bool, default False
             強制的に再取得するかどうか
+        wait_for_update_check : bool, default False
+            AivisHub からの更新情報の取得を待機するかどうか
 
         Returns
         -------
@@ -434,9 +436,14 @@ class AivmManager:
         # 非同期で AivisHub からの情報更新を開始
         # 音声合成エンジンの起動を遅延させないよう、別スレッドで非同期タスクを開始する
         try:
-            Thread(
-                target=asyncio.run, args=(self.check_aivm_updates_from_hub(),)
-            ).start()
+            if wait_for_update_check:
+                # 更新情報の取得を待機する場合は同期的に実行
+                asyncio.run(self.check_aivm_updates_from_hub())
+            else:
+                # 待機しない場合は別スレッドでバックグラウンド実行
+                Thread(
+                    target=asyncio.run, args=(self.check_aivm_updates_from_hub(),)
+                ).start()
         except Exception as ex:
             # 非同期タスクの開始に失敗しても起動に影響を与えないよう、ログ出力のみ行う
             logger.warning(f"Failed to start async update task:")
@@ -607,13 +614,15 @@ class AivmManager:
         # AIVMX ファイルをインストール
         ## 通常は重複防止のため "(音声合成モデルの UUID).aivmx" のフォーマットのファイル名でインストールされるが、
         ## 手動で .aivmx ファイルをインストール先ディレクトリにコピーしても一通り動作するように考慮している
-        logger.info(f"Installing AIVM file to {aivm_file_path}...")
+        logger.info(f"Installing AIVMX file to {aivm_file_path}...")
         with open(aivm_file_path, mode="wb") as f:
             f.write(file.read())
-        logger.info(f"Installed AIVM file to {aivm_file_path}.")
+        logger.info(f"Installed AIVMX file to {aivm_file_path}.")
 
         # すべてのインストール済み音声合成モデルの情報のキャッシュを再生成
-        self.get_installed_aivm_infos(force=True)
+        ## インストール完了後にエディタから送られる /aivm_models API へのリクエストで確実に更新情報も返せるように、
+        ## 更新情報の取得が完了するのを待ってから戻る
+        self.get_installed_aivm_infos(force=True, wait_for_update_check=True)
 
     def install_aivm_from_url(self, url: str) -> None:
         """
@@ -714,12 +723,14 @@ class AivmManager:
         ## AIVMX ファイルのファイル名は必ずしも "(音声合成モデルの UUID).aivmx" になるとは限らないため、
         ## AivmInfo 内に格納されているファイルパスを使って削除する
         ## 万が一 AIVMX ファイルが存在しない場合は無視する
-        logger.info(f"Uninstalling AIVM file from {installed_aivm_infos[aivm_uuid].file_path}...")  # fmt: skip
+        logger.info(f"Uninstalling AIVMX file from {installed_aivm_infos[aivm_uuid].file_path}...")  # fmt: skip
         installed_aivm_infos[aivm_uuid].file_path.unlink(missing_ok=True)
-        logger.info(f"Uninstalled AIVM file from {installed_aivm_infos[aivm_uuid].file_path}.")  # fmt: skip
+        logger.info(f"Uninstalled AIVMX file from {installed_aivm_infos[aivm_uuid].file_path}.")  # fmt: skip
 
         # すべてのインストール済み音声合成モデルの情報のキャッシュを再生成
-        self.get_installed_aivm_infos(force=True)
+        ## インストール完了後にエディタから送られる /aivm_models API へのリクエストで確実に更新情報も返せるように、
+        ## 更新情報の取得が完了するのを待ってから戻る
+        self.get_installed_aivm_infos(force=True, wait_for_update_check=True)
 
     @staticmethod
     def local_style_id_to_style_id(local_style_id: int, speaker_uuid: str) -> StyleId:
