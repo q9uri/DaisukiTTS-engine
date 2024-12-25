@@ -233,7 +233,9 @@ class AivmManager:
             detail=f"スタイル {style_id} は存在しません。",
         )
 
-    def get_installed_aivm_infos(self, force: bool = False, wait_for_update_check: bool = False) -> dict[str, AivmInfo]:
+    def get_installed_aivm_infos(
+        self, force: bool = False, wait_for_update_check: bool = False
+    ) -> dict[str, AivmInfo]:
         """
         すべてのインストール済み音声合成モデルの情報を取得する
 
@@ -429,9 +431,17 @@ class AivmManager:
             # 完成した AivmInfo を UUID をキーとして追加
             aivm_infos[aivm_uuid] = aivm_info
 
-        # 音声合成モデル名でソートしてから返す
-        # 実行結果はキャッシュとして保持する
-        self._installed_aivm_infos = dict(sorted(aivm_infos.items(), key=lambda x: x[1].manifest.name))  # fmt: skip
+        # 音声合成モデル名でソート
+        sorted_aivm_infos = dict(sorted(aivm_infos.items(), key=lambda x: x[1].manifest.name))  # fmt: skip
+
+        # キャッシュ更新前に、キャッシュに保持されている既存のロード状態を移行する
+        if self._installed_aivm_infos is not None:
+            for aivm_uuid, aivm_info in sorted_aivm_infos.items():
+                if aivm_uuid in self._installed_aivm_infos:
+                    aivm_info.is_loaded = self._installed_aivm_infos[aivm_uuid].is_loaded  # fmt: skip
+
+        # 実行結果のキャッシュを更新
+        self._installed_aivm_infos = sorted_aivm_infos
 
         # 非同期で AivisHub からの情報更新を開始
         # 音声合成エンジンの起動を遅延させないよう、別スレッドで非同期タスクを開始する
