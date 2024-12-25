@@ -272,8 +272,10 @@ class AivmManager:
                 with open(aivm_file_path, mode="rb") as f:
                     aivm_metadata = aivmlib.read_aivmx_metadata(f)
                     aivm_manifest = aivm_metadata.manifest
-            except aivmlib.AivmValidationError as e:
-                logger.warning(f"{aivm_file_path}: Failed to read AIVM metadata. ({e})")
+            except aivmlib.AivmValidationError as ex:
+                logger.warning(
+                    f"{aivm_file_path}: Failed to read AIVM metadata. ({ex})"
+                )
                 continue
 
             # 音声合成モデルの UUID
@@ -431,7 +433,9 @@ class AivmManager:
         # 非同期で AivisHub からの情報更新を開始
         # 音声合成エンジンの起動を遅延させないよう、別スレッドで非同期タスクを開始する
         try:
-            Thread(target=asyncio.run, args=(self._update_all_aivm_infos(),)).start()
+            Thread(
+                target=asyncio.run, args=(self.check_aivm_updates_from_hub(),)
+            ).start()
         except Exception as ex:
             # 非同期タスクの開始に失敗しても起動に影響を与えないよう、ログ出力のみ行う
             logger.warning(f"Failed to start async update task:")
@@ -439,12 +443,12 @@ class AivmManager:
 
         return self._installed_aivm_infos
 
-    async def _update_all_aivm_infos(self) -> None:
+    async def check_aivm_updates_from_hub(self) -> None:
         """
         AivisHub からすべてのインストール済み音声合成モデルのアップデート情報を取得し、非同期に更新する
         """
 
-        async def update_aivm_info_from_aivishub(aivm_info: AivmInfo) -> None:
+        async def fetch_latest_version(aivm_info: AivmInfo) -> None:
             try:
                 async with httpx.AsyncClient() as client:
                     response = await client.get(
@@ -460,9 +464,9 @@ class AivmManager:
                     # 200 以外のステータスコードは異常なのでエラーとして処理
                     if response.status_code != 200:
                         logger.warning(
-                            f"Failed to fetch model info for {aivm_info.manifest.uuid} from AivisHub: "
-                            f"Status code {response.status_code}, Response: {response.text}"
+                            f"Failed to fetch model info for {aivm_info.manifest.uuid} from AivisHub (HTTP Error {response.status_code})."
                         )
+                        logger.warning(f"Response: {response.text}")
                         return
 
                     model_info = response.json()
@@ -490,7 +494,7 @@ class AivmManager:
                     f"Timeout while fetching model info for {aivm_info.manifest.uuid} from AivisHub:"
                 )
                 logger.warning(ex)
-            except (httpx.RequestError, KeyError, StopIteration, ValueError) as ex:
+            except Exception as ex:
                 # エラーが発生しても起動に影響を与えないよう、ログ出力のみ行う
                 # - httpx.RequestError: ネットワークエラーなど
                 # - KeyError: レスポンスのJSONに必要なキーが存在しない
@@ -504,7 +508,7 @@ class AivmManager:
         # 全モデルの更新タスクを作成
         assert self._installed_aivm_infos is not None
         update_tasks = [
-            update_aivm_info_from_aivishub(aivm_info)
+            fetch_latest_version(aivm_info)
             for aivm_info in self._installed_aivm_infos.values()
         ]
 
@@ -524,6 +528,25 @@ class AivmManager:
                     f"- {aivm_info.manifest.name} ({aivm_info.manifest.uuid}) v{aivm_info.manifest.version} -> v{aivm_info.latest_version}"
                 )
 
+    def update_model_load_state(self, aivm_uuid: str, is_loaded: bool) -> None:
+        """
+        モデルのロード状態を更新する
+        このメソッドは StyleBertVITS2TTSEngine 上でロード/アンロードされた際に呼び出される
+
+        Parameters
+        ----------
+        aivm_uuid : str
+            AIVM の UUID
+        is_loaded : bool
+            モデルがロードされているかどうか
+        """
+
+        if (
+            self._installed_aivm_infos is not None
+            and aivm_uuid in self._installed_aivm_infos
+        ):
+            self._installed_aivm_infos[aivm_uuid].is_loaded = is_loaded
+
     def install_aivm(self, file: BinaryIO) -> None:
         """
         AIVMX (Aivis Voice Model for ONNX) ファイル (`.aivmx`) をインストールする
@@ -538,10 +561,12 @@ class AivmManager:
         try:
             aivm_metadata = aivmlib.read_aivmx_metadata(file)
             aivm_manifest = aivm_metadata.manifest
-        except aivmlib.AivmValidationError as e:
+        except aivmlib.AivmValidationError as ex:
+            logger.error(f"AIVMX file is invalid.")
+            logger.error(ex)
             raise HTTPException(
                 status_code=422,
-                detail=f"指定された AIVMX ファイルの形式が正しくありません。({e})",
+                detail=f"指定された AIVMX ファイルの形式が正しくありません。({ex})",
             )
 
         # すでに同一 UUID のファイルがインストール済みの場合、同じファイルを更新する
@@ -556,6 +581,9 @@ class AivmManager:
 
         # マニフェストバージョンのバリデーション
         if aivm_manifest.manifest_version not in self.SUPPORTED_MANIFEST_VERSIONS:  # fmt: skip
+            logger.error(
+                f"AIVM manifest version {aivm_manifest.manifest_version} is not supported."
+            )
             raise HTTPException(
                 status_code=422,
                 detail=f"AIVM マニフェストバージョン {aivm_manifest.manifest_version} には対応していません。",
@@ -563,6 +591,9 @@ class AivmManager:
 
         # 音声合成モデルのアーキテクチャのバリデーション
         if aivm_manifest.model_architecture not in self.SUPPORTED_MODEL_ARCHITECTURES:  # fmt: skip
+            logger.error(
+                f"AIVM model architecture {aivm_manifest.model_architecture} is not supported."
+            )
             raise HTTPException(
                 status_code=422,
                 detail=f'モデルアーキテクチャ "{aivm_manifest.model_architecture}" には対応していません。',
@@ -595,7 +626,7 @@ class AivmManager:
 
         # URL から AIVMX ファイルをダウンロード
         try:
-            logger.info(f"Downloading AIVM file from {url}...")
+            logger.info(f"Downloading AIVMX file from {url}...")
             response = httpx.get(
                 url,
                 headers={"User-Agent": f"AivisSpeech-Engine/{__version__}"},
@@ -603,12 +634,13 @@ class AivmManager:
                 follow_redirects=True,
             )
             response.raise_for_status()
-            logger.info(f"Downloaded AIVM file from {url}.")
-        except httpx.HTTPError as e:
-            logger.error(f"Failed to download AIVM file from {url}: {e}")
+            logger.info(f"Downloaded AIVMX file from {url}.")
+        except httpx.HTTPError as ex:
+            logger.error(f"Failed to download AIVMX file from {url}:")
+            logger.error(ex)
             raise HTTPException(
                 status_code=500,
-                detail=f"AIVMX ファイルのダウンロードに失敗しました。({e})",
+                detail=f"AIVMX ファイルのダウンロードに失敗しました。({ex})",
             )
 
         # ダウンロードした AIVMX ファイルをインストール
@@ -634,6 +666,7 @@ class AivmManager:
 
         # インストール済みの音声合成モデルの数を確認
         if len(installed_aivm_infos) <= 1:
+            logger.error("AivisSpeech Engine must have at least one installed model.")
             raise HTTPException(
                 status_code=400,
                 detail="AivisSpeech Engine には必ず 1 つ以上の音声合成モデルがインストールされている必要があります。",

@@ -253,11 +253,12 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         start_time = time.time()
         logger.info(f"Loading {aivm_info.manifest.name} ({aivm_uuid}) ...")
         tts_model.load()
+        self.tts_models[aivm_uuid] = tts_model
+        self.aivm_manager.update_model_load_state(aivm_uuid, is_loaded=True)
         logger.info(
             f"{aivm_info.manifest.name} ({aivm_uuid}) loaded. ({time.time() - start_time:.2f}s)"
         )
 
-        self.tts_models[aivm_uuid] = tts_model
         return tts_model
 
     def unload_model(self, aivm_uuid: str) -> None:
@@ -279,7 +280,9 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         aivm_info = self.aivm_manager.get_aivm_info(aivm_uuid)
         start_time = time.time()
         logger.info(f"Unloading {aivm_info.manifest.name} ({aivm_uuid}) ...")
+        self.tts_models[aivm_uuid].unload()
         del self.tts_models[aivm_uuid]
+        self.aivm_manager.update_model_load_state(aivm_uuid, is_loaded=False)
         logger.info(
             f"{aivm_info.manifest.name} ({aivm_uuid}) unloaded. ({time.time() - start_time:.2f}s)"
         )
