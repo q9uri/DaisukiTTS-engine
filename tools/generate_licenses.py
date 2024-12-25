@@ -128,6 +128,8 @@ def generate_licenses() -> list[License]:
             elif package_name == "pyproject_hooks":
                 text_url = "https://raw.githubusercontent.com/pypa/pyproject-hooks/v1.1.0/LICENSE"  # noqa: B950
                 license_json["LicenseText"] = get_license_text(text_url)
+            elif package_name == "pywin32":
+                continue  # ライセンスファイルがリポジトリにない
             elif package_name == "safetensors":
                 text_url = "https://raw.githubusercontent.com/huggingface/safetensors/v0.4.3/LICENSE"  # noqa: B950
                 license_json["LicenseText"] = get_license_text(text_url)
@@ -146,6 +148,8 @@ def generate_licenses() -> list[License]:
             elif package_name == "types-pyyaml":
                 text_url = "https://raw.githubusercontent.com/python/typeshed/57f3dcac8dbed008479b251512975901a0206deb/LICENSE"  # noqa: B950
                 license_json["LicenseText"] = get_license_text(text_url)
+            elif package_name == "wmi":
+                continue  # ライセンスファイルがリポジトリにない
             else:
                 # ライセンスがpypiに無い
                 raise Exception(f"No License info provided for {package_name}")
