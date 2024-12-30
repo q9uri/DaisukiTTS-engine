@@ -88,6 +88,7 @@ gputil = "^1.4.0"
 psutil = "^6.1.1"
 py-cpuinfo = "^9.0.0"
 wmi = {version = "^1.5.1", platform = "win32"}
+sentry-sdk = {version = "^2.19.2", extras = ["fastapi"]}
 # truststore は HTTPS 通信時にシステムにインストールされた証明書ストアを使うために必要
 ## ref: https://github.com/psf/requests/issues/2966
 ## ref: https://truststore.readthedocs.io/en/latest/
