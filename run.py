@@ -35,9 +35,6 @@ from voicevox_engine.logging import LOGGING_CONFIG, logger
 from voicevox_engine.preset.preset_manager import PresetManager
 from voicevox_engine.setting.model import CorsPolicyMode
 from voicevox_engine.setting.setting_manager import USER_SETTING_PATH, SettingHandler
-from voicevox_engine.tts_pipeline.style_bert_vits2_tts_engine import (
-    StyleBertVITS2TTSEngine,
-)
 from voicevox_engine.tts_pipeline.tts_engine import TTSEngineManager
 from voicevox_engine.user_dict.user_dict_manager import UserDictionary
 from voicevox_engine.utility.path_utility import (
@@ -334,150 +331,159 @@ def read_cli_arguments(envs: Envs) -> CLIArgs:
 def main() -> None:
     """AivisSpeech Engine を実行する"""
 
-    multiprocessing.freeze_support()
+    try:
+        multiprocessing.freeze_support()
 
-    envs = read_environment_variables()
+        envs = read_environment_variables()
+        if envs.output_log_utf8:
+            set_output_log_utf8()
 
-    if envs.output_log_utf8:
-        set_output_log_utf8()
+        args = read_cli_arguments(envs)
+        if args.output_log_utf8:
+            set_output_log_utf8()
 
-    args = read_cli_arguments(envs)
+        # Sentry によるエラートラッキングを開始
+        # ref: https://docs.sentry.io/platforms/python/integrations/fastapi/
+        sentry_sdk.init(
+            dsn="https://ebdf5cc288b3ab31a262186329ff3a95@o4508551725383680.ingest.us.sentry.io/4508555159470080",
+            release=f"AivisSpeech-Engine@{__version__}",
+            environment="development" if __version__ == "latest" else "production",
+            # Set traces_sample_rate to 1.0 to capture 100%
+            # of transactions for tracing.
+            traces_sample_rate=1.0,
+            _experiments={
+                # Set continuous_profiling_auto_start to True
+                # to automatically start the profiler on when
+                # possible.
+                "continuous_profiling_auto_start": True,
+            },
+        )
 
-    if args.output_log_utf8:
-        set_output_log_utf8()
+        # 起動時の可能な限り早い段階で実行結果をキャッシュしておくのが重要
+        generate_user_agent("GPU" if args.use_gpu is True else "CPU")
 
-    # Sentry によるエラートラッキングを開始
-    # ref: https://docs.sentry.io/platforms/python/integrations/fastapi/
-    sentry_sdk.init(
-        dsn="https://ebdf5cc288b3ab31a262186329ff3a95@o4508551725383680.ingest.us.sentry.io/4508555159470080",
-        release=f"AivisSpeech-Engine@{__version__}",
-        environment="development" if __version__ == "latest" else "production",
-        # Set traces_sample_rate to 1.0 to capture 100%
-        # of transactions for tracing.
-        traces_sample_rate=1.0,
-        _experiments={
-            # Set continuous_profiling_auto_start to True
-            # to automatically start the profiler on when
-            # possible.
-            "continuous_profiling_auto_start": True,
-        },
-    )
+        logger.info(f"AivisSpeech Engine version {__version__}")
+        logger.info(f"Engine root directory: {engine_root()}")
+        logger.info(f"User data directory: {get_save_dir()}")
 
-    # 起動時の可能な限り早い段階で実行結果をキャッシュしておくのが重要
-    generate_user_agent("GPU" if args.use_gpu is True else "CPU")
-
-    logger.info(f"AivisSpeech Engine version {__version__}")
-    logger.info(f"Engine root directory: {engine_root()}")
-    logger.info(f"User data directory: {get_save_dir()}")
-
-    core_manager = initialize_cores(
-        use_gpu=args.use_gpu,
-        voicelib_dirs=args.voicelib_dirs,
-        voicevox_dir=args.voicevox_dir,
-        runtime_dirs=args.runtime_dirs,
-        cpu_num_threads=args.cpu_num_threads,
-        enable_mock=args.enable_mock,
-        load_all_models=args.load_all_models,
-    )
-    # tts_engines = make_tts_engines_from_cores(core_manager)
-    # assert len(tts_engines.versions()) != 0, "音声合成エンジンがありません。"
-
-    # AivmManager を初期化
-    aivm_manager = AivmManager(get_save_dir() / "Models")
-
-    # StyleBertVITS2TTSEngine を通常の TTSEngine の代わりに利用
-    tts_engines = TTSEngineManager()
-    tts_engines.register_engine(
-        StyleBertVITS2TTSEngine(aivm_manager, args.use_gpu, args.load_all_models),
-        MOCK_VER,
-    )
-
-    cancellable_engine: CancellableEngine | None = None
-    if args.enable_cancellable_synthesis:
-        cancellable_engine = CancellableEngine(
-            init_processes=args.init_processes,
+        core_manager = initialize_cores(
             use_gpu=args.use_gpu,
             voicelib_dirs=args.voicelib_dirs,
             voicevox_dir=args.voicevox_dir,
             runtime_dirs=args.runtime_dirs,
             cpu_num_threads=args.cpu_num_threads,
             enable_mock=args.enable_mock,
+            load_all_models=args.load_all_models,
+        )
+        # tts_engines = make_tts_engines_from_cores(core_manager)
+        # assert len(tts_engines.versions()) != 0, "音声合成エンジンがありません。"
+
+        # AivmManager を初期化
+        aivm_manager = AivmManager(get_save_dir() / "Models")
+
+        # ごく稀に style_bert_vits2_tts_engine.py (が依存する onnxruntime) のインポート自体に失敗し
+        # 例外が発生する環境があるようなので、例外をキャッチしてエラーログに出力できるよう、敢えてルーター初期化時にインポートする
+        from voicevox_engine.tts_pipeline.style_bert_vits2_tts_engine import (
+            StyleBertVITS2TTSEngine,
         )
 
-    setting_loader = SettingHandler(args.setting_file)
-    settings = setting_loader.load()
+        # StyleBertVITS2TTSEngine を通常の TTSEngine の代わりに利用
+        tts_engines = TTSEngineManager()
+        tts_engines.register_engine(
+            StyleBertVITS2TTSEngine(aivm_manager, args.use_gpu, args.load_all_models),
+            MOCK_VER,
+        )
 
-    # 複数方式で指定可能な場合、優先度は上から「引数」「環境変数」「設定ファイル」「デフォルト値」
+        cancellable_engine: CancellableEngine | None = None
+        if args.enable_cancellable_synthesis:
+            cancellable_engine = CancellableEngine(
+                init_processes=args.init_processes,
+                use_gpu=args.use_gpu,
+                voicelib_dirs=args.voicelib_dirs,
+                voicevox_dir=args.voicevox_dir,
+                runtime_dirs=args.runtime_dirs,
+                cpu_num_threads=args.cpu_num_threads,
+                enable_mock=args.enable_mock,
+            )
 
-    cors_policy_mode = select_first_not_none(
-        [args.cors_policy_mode, settings.cors_policy_mode]
-    )
+        setting_loader = SettingHandler(args.setting_file)
+        settings = setting_loader.load()
 
-    setting_allow_origins = None
-    if settings.allow_origin is not None:
-        setting_allow_origins = settings.allow_origin.split(" ")
-    allow_origin = select_first_not_none_or_none(
-        [args.allow_origins, setting_allow_origins]
-    )
+        # 複数方式で指定可能な場合、優先度は上から「引数」「環境変数」「設定ファイル」「デフォルト値」
 
-    if envs.env_preset_path is not None and len(envs.env_preset_path) != 0:
-        env_preset_path = Path(envs.env_preset_path)
-    else:
-        env_preset_path = None
-    default_preset_path = get_save_dir() / "presets.yaml"
-    preset_path = select_first_not_none(
-        [args.preset_file, env_preset_path, default_preset_path]
-    )
-    preset_manager = PresetManager(preset_path)
+        cors_policy_mode = select_first_not_none(
+            [args.cors_policy_mode, settings.cors_policy_mode]
+        )
 
-    user_dict = UserDictionary()
+        setting_allow_origins = None
+        if settings.allow_origin is not None:
+            setting_allow_origins = settings.allow_origin.split(" ")
+        allow_origin = select_first_not_none_or_none(
+            [args.allow_origins, setting_allow_origins]
+        )
 
-    engine_manifest = load_manifest(engine_manifest_path())
+        if envs.env_preset_path is not None and len(envs.env_preset_path) != 0:
+            env_preset_path = Path(envs.env_preset_path)
+        else:
+            env_preset_path = None
+        default_preset_path = get_save_dir() / "presets.yaml"
+        preset_path = select_first_not_none(
+            [args.preset_file, env_preset_path, default_preset_path]
+        )
+        preset_manager = PresetManager(preset_path)
 
-    library_manager = LibraryManager(
-        # get_save_dir() / "installed_libraries",
-        # AivisSpeech では利用しない LibraryManager によるディレクトリ作成を防ぐため、get_save_dir() 直下を指定
-        get_save_dir(),
-        engine_manifest.supported_vvlib_manifest_version,
-        engine_manifest.brand_name,
-        engine_manifest.name,
-        engine_manifest.uuid,
-    )
+        user_dict = UserDictionary()
 
-    if args.disable_mutable_api:
-        disable_mutable_api = True
-    else:
-        disable_mutable_api = envs.disable_mutable_api
+        engine_manifest = load_manifest(engine_manifest_path())
 
-    root_dir = select_first_not_none([args.voicevox_dir, engine_root()])
-    character_info_dir = root_dir / "resources" / "character_info"
-    # NOTE: ENGINE v0.19 以前向けに後方互換性を確保する
-    if not character_info_dir.exists():
-        character_info_dir = root_dir / "speaker_info"
+        library_manager = LibraryManager(
+            # get_save_dir() / "installed_libraries",
+            # AivisSpeech では利用しない LibraryManager によるディレクトリ作成を防ぐため、get_save_dir() 直下を指定
+            get_save_dir(),
+            engine_manifest.supported_vvlib_manifest_version,
+            engine_manifest.brand_name,
+            engine_manifest.name,
+            engine_manifest.uuid,
+        )
 
-    # ASGI に準拠した AivisSpeech Engine アプリケーションを生成する
-    app = generate_app(
-        tts_engines,
-        aivm_manager,
-        core_manager,
-        setting_loader,
-        preset_manager,
-        user_dict,
-        engine_manifest,
-        library_manager,
-        cancellable_engine,
-        character_info_dir,
-        cors_policy_mode,
-        allow_origin,
-        disable_mutable_api=disable_mutable_api,
-    )
+        if args.disable_mutable_api:
+            disable_mutable_api = True
+        else:
+            disable_mutable_api = envs.disable_mutable_api
 
-    # 起動処理にのみに要したメモリを開放
-    gc.collect()
+        root_dir = select_first_not_none([args.voicevox_dir, engine_root()])
+        character_info_dir = root_dir / "resources" / "character_info"
+        # NOTE: ENGINE v0.19 以前向けに後方互換性を確保する
+        if not character_info_dir.exists():
+            character_info_dir = root_dir / "speaker_info"
 
-    # AivisSpeech Engine サーバーを起動
-    # NOTE: デフォルトは ASGI に準拠した HTTP/1.1 サーバー
-    uvicorn.run(app, host=args.host, port=args.port, log_config=LOGGING_CONFIG)
+        # ASGI に準拠した AivisSpeech Engine アプリケーションを生成する
+        app = generate_app(
+            tts_engines,
+            aivm_manager,
+            core_manager,
+            setting_loader,
+            preset_manager,
+            user_dict,
+            engine_manifest,
+            library_manager,
+            cancellable_engine,
+            character_info_dir,
+            cors_policy_mode,
+            allow_origin,
+            disable_mutable_api=disable_mutable_api,
+        )
+
+        # 起動処理にのみに要したメモリを開放
+        gc.collect()
+
+        # AivisSpeech Engine サーバーを起動
+        # NOTE: デフォルトは ASGI に準拠した HTTP/1.1 サーバー
+        uvicorn.run(app, host=args.host, port=args.port, log_config=LOGGING_CONFIG)
+
+    except Exception as ex:
+        logger.error(f"Unexpected error occurred during engine startup:", exc_info=ex)
+        raise ex
 
 
 if __name__ == "__main__":

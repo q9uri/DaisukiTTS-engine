@@ -6,9 +6,6 @@ from fastapi import APIRouter, Depends, File, Form, HTTPException, Path, UploadF
 
 from voicevox_engine.aivm_manager import AivmManager
 from voicevox_engine.model import AivmInfo
-from voicevox_engine.tts_pipeline.style_bert_vits2_tts_engine import (
-    StyleBertVITS2TTSEngine,
-)
 from voicevox_engine.tts_pipeline.tts_engine import LATEST_VERSION, TTSEngineManager
 
 from ..dependencies import VerifyMutabilityAllowed
@@ -20,6 +17,12 @@ def generate_aivm_models_router(
     verify_mutability: VerifyMutabilityAllowed,
 ) -> APIRouter:
     """音声合成モデル管理 API Router を生成する"""
+
+    # ごく稀に style_bert_vits2_tts_engine.py (が依存する onnxruntime) のインポート自体に失敗し
+    # 例外が発生する環境があるようなので、例外をキャッチしてエラーログに出力できるよう、敢えてルーター初期化時にインポートする
+    from voicevox_engine.tts_pipeline.style_bert_vits2_tts_engine import (
+        StyleBertVITS2TTSEngine,
+    )
 
     router = APIRouter(
         prefix="/aivm_models",

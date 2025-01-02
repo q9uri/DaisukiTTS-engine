@@ -457,8 +457,7 @@ class AivmManager:
                 ).start()
         except Exception as ex:
             # 非同期タスクの開始に失敗しても起動に影響を与えないよう、ログ出力のみ行う
-            logger.warning(f"Failed to start async update task:")
-            logger.warning(ex)
+            logger.warning(f"Failed to start async update task:", exc_info=ex)
 
         return self._installed_aivm_infos
 
@@ -510,9 +509,9 @@ class AivmManager:
 
             except httpx.TimeoutException as ex:
                 logger.warning(
-                    f"Timeout while fetching model info for {aivm_info.manifest.uuid} from AivisHub:"
+                    f"Timeout while fetching model info for {aivm_info.manifest.uuid} from AivisHub:",
+                    exc_info=ex,
                 )
-                logger.warning(ex)
             except Exception as ex:
                 # エラーが発生しても起動に影響を与えないよう、ログ出力のみ行う
                 # - httpx.RequestError: ネットワークエラーなど
@@ -520,9 +519,9 @@ class AivmManager:
                 # - StopIteration: model_files に AIVMX が存在しない
                 # - ValueError: Version.parse() が失敗
                 logger.warning(
-                    f"Failed to fetch model info for {aivm_info.manifest.uuid} from AivisHub:"
+                    f"Failed to fetch model info for {aivm_info.manifest.uuid} from AivisHub:",
+                    exc_info=ex,
                 )
-                logger.warning(ex)
 
         # 全モデルの更新タスクを作成
         assert self._installed_aivm_infos is not None
@@ -581,8 +580,7 @@ class AivmManager:
             aivm_metadata = aivmlib.read_aivmx_metadata(file)
             aivm_manifest = aivm_metadata.manifest
         except aivmlib.AivmValidationError as ex:
-            logger.error(f"AIVMX file is invalid.")
-            logger.error(ex)
+            logger.error(f"AIVMX file is invalid:", exc_info=ex)
             raise HTTPException(
                 status_code=422,
                 detail=f"指定された AIVMX ファイルの形式が正しくありません。({ex})",
@@ -657,8 +655,7 @@ class AivmManager:
             response.raise_for_status()
             logger.info(f"Downloaded AIVMX file from {url}.")
         except httpx.HTTPError as ex:
-            logger.error(f"Failed to download AIVMX file from {url}:")
-            logger.error(ex)
+            logger.error(f"Failed to download AIVMX file from {url}:", exc_info=ex)
             raise HTTPException(
                 status_code=500,
                 detail=f"AIVMX ファイルのダウンロードに失敗しました。({ex})",
