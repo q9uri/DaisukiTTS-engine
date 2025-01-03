@@ -308,7 +308,7 @@ class UserDictionary:
         # 既存単語の上書きによる辞書データの更新
         user_dict = self.read_dict()
         if word_uuid not in user_dict:
-            raise UserDictInputError("UUIDに該当するワードが見つかりませんでした")
+            raise UserDictInputError("UUID に該当する単語が見つかりませんでした")
         user_dict[word_uuid] = create_word(word_property)
 
         # 更新された辞書データの保存と適用
@@ -316,11 +316,11 @@ class UserDictionary:
         self.update_dict()
 
     def delete_word(self, word_uuid: str) -> None:
-        """単語UUIDで指定された単語を削除する。"""
+        """単語 UUID で指定された単語を削除する。"""
         # 既存単語の削除による辞書データの更新
         user_dict = self.read_dict()
         if word_uuid not in user_dict:
-            raise UserDictInputError("IDに該当するワードが見つかりませんでした")
+            raise UserDictInputError("UUID に該当する単語が見つかりませんでした")
         del user_dict[word_uuid]
 
         # 更新された辞書データの保存と適用

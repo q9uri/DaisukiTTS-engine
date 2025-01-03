@@ -3,6 +3,7 @@
 import asyncio
 import glob
 import hashlib
+import re
 from io import BytesIO
 from pathlib import Path
 from threading import Thread
@@ -642,6 +643,26 @@ class AivmManager:
         url : str
             AIVMX ファイルの URL
         """
+
+        # AivisHub の音声合成モデル詳細ページの URL が渡された場合、特別に AivisHub API を使い AIVMX ファイルをダウンロードする
+        if url.startswith("https://hub.aivis-project.com/aivm-models/"):
+            # URL から AIVM の UUID を抽出
+            uuid_match = re.search(
+                r"/aivm-models/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})",
+                url.lower(),
+            )
+            if not uuid_match:
+                raise HTTPException(
+                    status_code=422,
+                    detail="Invalid AivisHub URL.",
+                )
+            # group(0) は一致した文字列全体なので、group(1) で UUID 部分のみを取得
+            aivm_uuid = uuid_match.group(1)
+            # AIVMX ダウンロード用の API の URL に置き換え
+            url = f"{self.AIVISHUB_API_BASE_URL}/aivm-models/{aivm_uuid}/download?model_type=AIVMX"
+            logger.info(
+                f"Detected AivisHub model page URL. Using download API URL: {url}"
+            )
 
         # URL から AIVMX ファイルをダウンロード
         try:
