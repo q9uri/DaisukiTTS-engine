@@ -347,6 +347,8 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         ## 分割されていないカタカナモーラの場合、「チョ」「ビャ」のような拗音では二文字に跨るため、単に文字数を数えるだけではズレてしまう
         ## ちゃんと音素に分割することで、確実に要素数を mora_tone_list と合わせられる
         sep_phonemes_with_joshi = _sep_kata_with_joshi2sep_phonemes_with_joshi(sep_kata_with_joshi)  # fmt: skip
+        ## この時点で、mora_tone_list 内のモーラ数と sep_phonemes_with_joshi 内のモーラ数が一致していなければならない
+        assert len(mora_tone_list) == sum(map(len, sep_phonemes_with_joshi))
 
         # mora_tone_list を、まず記号から通常のモーラに変わったタイミングで区切ってグループ化
         # 通常のモーラから記号に変わったタイミングでは区切らない
@@ -826,35 +828,50 @@ def _sep_kata_with_joshi2sep_phonemes_with_joshi(
             return f" {vowel}"
         return f" {consonant}${vowel}"
 
-    # 一度モーラ単位で分割した後、その後子音と母音を分割して音素に変換
-    sep_phonemes_with_joshi: list[list[tuple[str | None, str]]] = []
-    for sep_kata_with_joshi_element in sep_kata_with_joshi:
-        # 記号の場合は1文字ずつ分割して処理
-        if all(char in PUNCTUATIONS for char in sep_kata_with_joshi_element):
-            sep_phonemes_with_joshi.append(
-                [(None, char) for char in sep_kata_with_joshi_element]
-            )
-            continue
-
-        spaced_moras = __MORA_PATTERN.sub(lambda m: mora2phonemes(m.group()), sep_kata_with_joshi_element)  # fmt: skip
+    def process_kana_part(kana: str) -> list[tuple[str | None, str]]:
+        """カタカナ部分を音素に変換する共通処理"""
+        result: list[tuple[str | None, str]] = []
+        spaced_moras = __MORA_PATTERN.sub(lambda m: mora2phonemes(m.group()), kana)
         # 長音記号「ー」の処理
         long_replacement = lambda m: m.group(1) + (" " + m.group(1)) * len(m.group(2))  # type: ignore # fmt: skip
         spaced_moras = __LONG_PATTERN.sub(long_replacement, spaced_moras)
         moras = spaced_moras.strip().split(" ")
         # モーラごとに子音と母音に分割
-        sep_phonemes_with_joshi_element: list[tuple[str | None, str]] = []
         for mora in moras:
-            # 記号モーラの場合は単独で追加
             if mora in PUNCTUATIONS:
-                sep_phonemes_with_joshi_element.append((None, mora))
-            # $ が含まれていれば子音と母音に分割
+                result.append((None, mora))
             elif "$" in mora:
                 consonant, vowel = mora.split("$")
-                sep_phonemes_with_joshi_element.append((consonant, vowel))
-            # $ が含まれていなければ母音のみ
+                result.append((consonant, vowel))
             else:
-                sep_phonemes_with_joshi_element.append((None, mora))
-        sep_phonemes_with_joshi.append(sep_phonemes_with_joshi_element)
+                result.append((None, mora))
+        return result
+
+    # 一度モーラ単位で分割した後、その後子音と母音を分割して音素に変換
+    sep_phonemes_with_joshi: list[list[tuple[str | None, str]]] = []
+    for sep_kata_with_joshi_element in sep_kata_with_joshi:
+        # 記号とカタカナが混在している場合、記号部分とカタカナ部分を分離して処理
+        current_symbols: list[tuple[str | None, str]] = []
+        current_kana: str = ""
+        # 1文字ずつ処理して記号とカタカナを分離
+        for char in sep_kata_with_joshi_element:
+            # 記号の場合
+            if char in PUNCTUATIONS:
+                # 未処理のカタカナ部分があれば先に処理
+                if len(current_kana) > 0:
+                    # カタカナ部分を音素に変換して追加
+                    current_symbols.extend(process_kana_part(current_kana))
+                    current_kana = ""
+                # 記号を追加
+                current_symbols.append((None, char))
+            # カタカナの場合
+            else:
+                current_kana += char
+        # 最後の未処理カタカナ部分を処理
+        if len(current_kana) > 0:
+            current_symbols.extend(process_kana_part(current_kana))
+
+        sep_phonemes_with_joshi.append(current_symbols)
 
     return sep_phonemes_with_joshi
 
