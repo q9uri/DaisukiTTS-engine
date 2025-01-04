@@ -332,6 +332,8 @@ class AivmManager:
                 latest_version=aivm_manifest.version,  # 初期値として AIVM マニフェスト記載のバージョンを設定
                 # AIVMX ファイルのインストール先パス
                 file_path=aivm_file_path,
+                # AIVMX ファイルのインストールサイズ (バイト単位)
+                file_size=aivm_file_path.stat().st_size,
                 # AIVM マニフェスト
                 manifest=aivm_manifest,
                 # 話者情報は後で追加するため、空リストを渡す

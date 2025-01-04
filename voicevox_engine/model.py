@@ -108,6 +108,7 @@ class AivmInfo(BaseModel):
         title="この音声合成モデルの AivisHub で公開されている最新バージョン (AivisHub で公開されていない場合は AIVM マニフェスト記載のバージョン)"
     )
     file_path: Path = Field(title="AIVMX ファイルのインストール先パス")
+    file_size: int = Field(title="AIVMX ファイルのインストールサイズ (バイト単位)")
     manifest: AivmManifest = Field(title="AIVM マニフェスト")
     speakers: list[LibrarySpeaker] = Field(
         title="話者情報のリスト (VOICEVOX ENGINE 互換)"
