@@ -105,12 +105,15 @@ class UserDictionary:
 
         # サーバーの起動高速化のため、前回起動時にビルド済みのユーザー辞書データがあれば、そのまま pyopenjtalk に適用する
         if self._compiled_dict_path.is_file():
-            pyopenjtalk.update_global_jtalk_with_user_dict(
-                str(self._compiled_dict_path.resolve(strict=True))
-            )
-            logger.info("Compiled user dictionary applied.")
+            try:
+                pyopenjtalk.update_global_jtalk_with_user_dict(
+                    str(self._compiled_dict_path.resolve(strict=True))
+                )
+                logger.info("Compiled user dictionary applied.")
+            except Exception as ex:
+                logger.error("Failed to apply compiled user dictionary.", exc_info=ex)
 
-        # バックグラウンドで辞書更新を行う (数秒程度を要する)
+        # バックグラウンドで辞書更新を行う (辞書登録量によっては数秒を要する)
         threading.Thread(target=self.update_dict, daemon=True).start()
 
     @mutex_wrapper(mutex_user_dict)
