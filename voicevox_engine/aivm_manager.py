@@ -73,7 +73,7 @@ class AivmManager:
         """
 
         self.installed_aivm_dir = installed_aivm_dir
-        self.installed_aivm_dir.mkdir(exist_ok=True)
+        self.installed_aivm_dir.mkdir(parents=True, exist_ok=True)
         logger.info(f"Models directory: {self.installed_aivm_dir}")
 
         # self.get_installed_aivm_infos() の実行結果のキャッシュ
