@@ -44,6 +44,10 @@
             "title": "AIVMX ファイルのインストール先パス",
             "type": "string"
           },
+          "file_size": {
+            "title": "AIVMX ファイルのインストールサイズ (バイト単位)",
+            "type": "integer"
+          },
           "is_loaded": {
             "title": "この音声合成モデルがロードされているかどうか",
             "type": "boolean"
@@ -73,6 +77,7 @@
           "is_update_available",
           "latest_version",
           "file_path",
+          "file_size",
           "manifest",
           "speakers"
         ],
