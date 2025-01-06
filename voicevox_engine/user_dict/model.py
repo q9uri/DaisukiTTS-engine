@@ -15,11 +15,16 @@ from pydantic.json_schema import SkipJsonSchema
 class WordTypes(str, Enum):
     """品詞"""
 
-    PROPER_NOUN = "PROPER_NOUN"
-    COMMON_NOUN = "COMMON_NOUN"
-    VERB = "VERB"
-    ADJECTIVE = "ADJECTIVE"
-    SUFFIX = "SUFFIX"
+    PROPER_NOUN = "PROPER_NOUN"  # 固有名詞
+    LOCATION_NAME = "LOCATION_NAME"  # 地名
+    ORGANIZATION_NAME = "ORGANIZATION_NAME"  # 組織・施設名
+    PERSON_NAME = "PERSON_NAME"  # 人名
+    PERSON_FAMILY_NAME = "PERSON_FAMILY_NAME"  # 姓
+    PERSON_GIVEN_NAME = "PERSON_GIVEN_NAME"  # 名
+    COMMON_NOUN = "COMMON_NOUN"  # 一般名詞
+    VERB = "VERB"  # 動詞
+    ADJECTIVE = "ADJECTIVE"  # 形容詞
+    SUFFIX = "SUFFIX"  # 接尾辞
 
 
 USER_DICT_MIN_PRIORITY = 0

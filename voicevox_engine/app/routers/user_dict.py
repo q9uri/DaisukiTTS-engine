@@ -58,7 +58,7 @@ def generate_user_dict_router(
         word_type: Annotated[
             WordTypes | SkipJsonSchema[None],
             Query(
-                description="PROPER_NOUN（固有名詞）、COMMON_NOUN（普通名詞）、VERB（動詞）、ADJECTIVE（形容詞）、SUFFIX（語尾）のいずれか"
+                description="PROPER_NOUN（固有名詞）、LOCATION_NAME（地名）、ORGANIZATION_NAME（組織・施設名）、PERSON_NAME（人名）、PERSON_FAMILY_NAME（姓）、PERSON_GIVEN_NAME（名）、COMMON_NOUN（普通名詞）、VERB（動詞）、ADJECTIVE（形容詞）、SUFFIX（語尾）のいずれか"
             ),
         ] = None,
         priority: Annotated[
@@ -66,7 +66,7 @@ def generate_user_dict_router(
             Query(
                 ge=USER_DICT_MIN_PRIORITY,
                 le=USER_DICT_MAX_PRIORITY,
-                description="単語の優先度（0から10までの整数）。数字が大きいほど優先度が高くなる。1から9までの値を指定することを推奨",
+                description="単語の優先度（0から10までの整数）。数字が大きいほど優先度が高くなる。1から9までの値を指定することを推奨。",
                 # "SkipJsonSchema[None]"の副作用でスキーマーが欠落する問題に対するワークアラウンド
                 json_schema_extra={
                     "le": None,
@@ -118,7 +118,7 @@ def generate_user_dict_router(
         word_type: Annotated[
             WordTypes | SkipJsonSchema[None],
             Query(
-                description="PROPER_NOUN（固有名詞）、COMMON_NOUN（普通名詞）、VERB（動詞）、ADJECTIVE（形容詞）、SUFFIX（語尾）のいずれか"
+                description="PROPER_NOUN（固有名詞）、LOCATION_NAME（地名）、ORGANIZATION_NAME（組織・施設名）、PERSON_NAME（人名）、PERSON_FAMILY_NAME（姓）、PERSON_GIVEN_NAME（名）、COMMON_NOUN（普通名詞）、VERB（動詞）、ADJECTIVE（形容詞）、SUFFIX（語尾）のいずれか"
             ),
         ] = None,
         priority: Annotated[

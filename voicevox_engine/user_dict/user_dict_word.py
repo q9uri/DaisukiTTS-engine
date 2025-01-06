@@ -26,6 +26,11 @@ class _PartOfSpeechDetail:
 
 
 _costs_proper_noun = [-988, 3488, 4768, 6048, 7328, 8609, 8734, 8859, 8984, 9110, 14176]
+_costs_location_name = [147, 4350, 5403, 6456, 7509, 8562, 8778, 8994, 9210, 9427, 13960]  # fmt: skip # noqa
+_costs_organization_name = [1691, 4087, 4808, 5530, 6251, 6973, 7420, 7867, 8314, 8762, 13887]  # fmt: skip # noqa
+_costs_person_name = [515, 516, 2253, 3990, 5727, 7464, 8098, 8732, 9366, 10000, 10001]
+_costs_person_family_name = [1991, 4126, 4974, 5823, 6672, 7521, 8001, 8481, 8961, 9442, 12808]  # fmt: skip # noqa
+_costs_person_given_name = [2209, 3772, 4905, 6038, 7171, 8304, 8728, 9152, 9576, 10000, 13842]  # fmt: skip # noqa
 _costs_common_noun = [-4445, 49, 1473, 2897, 4321, 5746, 6554, 7362, 8170, 8979, 15001]
 _costs_verb = [3100, 6160, 6360, 6561, 6761, 6962, 7414, 7866, 8318, 8771, 13433]
 _costs_adjective = [1527, 3266, 3561, 3857, 4153, 4449, 5149, 5849, 6549, 7250, 10001]
@@ -40,6 +45,51 @@ part_of_speech_data: dict[WordTypes, _PartOfSpeechDetail] = {
         part_of_speech_detail_3="*",
         context_id=1348,
         cost_candidates=_costs_proper_noun,
+        accent_associative_rules=["*", "C1", "C2", "C3", "C4", "C5"],
+    ),
+    WordTypes.LOCATION_NAME: _PartOfSpeechDetail(
+        part_of_speech="名詞",
+        part_of_speech_detail_1="固有名詞",
+        part_of_speech_detail_2="地域",
+        part_of_speech_detail_3="一般",
+        context_id=1353,
+        cost_candidates=_costs_location_name,
+        accent_associative_rules=["*", "C1", "C2", "C3", "C4", "C5"],
+    ),
+    WordTypes.ORGANIZATION_NAME: _PartOfSpeechDetail(
+        part_of_speech="名詞",
+        part_of_speech_detail_1="固有名詞",
+        part_of_speech_detail_2="組織",
+        part_of_speech_detail_3="*",
+        context_id=1352,
+        cost_candidates=_costs_organization_name,
+        accent_associative_rules=["*", "C1", "C2", "C3", "C4", "C5"],
+    ),
+    WordTypes.PERSON_NAME: _PartOfSpeechDetail(
+        part_of_speech="名詞",
+        part_of_speech_detail_1="固有名詞",
+        part_of_speech_detail_2="人名",
+        part_of_speech_detail_3="一般",
+        context_id=1349,
+        cost_candidates=_costs_person_name,
+        accent_associative_rules=["*", "C1", "C2", "C3", "C4", "C5"],
+    ),
+    WordTypes.PERSON_FAMILY_NAME: _PartOfSpeechDetail(
+        part_of_speech="名詞",
+        part_of_speech_detail_1="固有名詞",
+        part_of_speech_detail_2="人名",
+        part_of_speech_detail_3="姓",
+        context_id=1350,
+        cost_candidates=_costs_person_family_name,
+        accent_associative_rules=["*", "C1", "C2", "C3", "C4", "C5"],
+    ),
+    WordTypes.PERSON_GIVEN_NAME: _PartOfSpeechDetail(
+        part_of_speech="名詞",
+        part_of_speech_detail_1="固有名詞",
+        part_of_speech_detail_2="人名",
+        part_of_speech_detail_3="名",
+        context_id=1351,
+        cost_candidates=_costs_person_given_name,
         accent_associative_rules=["*", "C1", "C2", "C3", "C4", "C5"],
     ),
     WordTypes.COMMON_NOUN: _PartOfSpeechDetail(
