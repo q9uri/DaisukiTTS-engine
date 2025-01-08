@@ -149,6 +149,8 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         # 音声合成に必要な BERT モデル・トークナイザーを読み込む
         ## 最新のモデルがまだローカルにキャッシュされていない場合は、自動的にネットワークからダウンロードされる
         ## 一度ロードしておけば、同じプロセス内でグローバルに保持される
+        ## リビジョンを指定しない場合毎回 Hugging Face への通信が発生し、オフライン環境では 60 秒でタイムアウトするまで待たされるので、
+        ## 明示的にコミットハッシュでリビジョンを指定している (こうすることで、オンライン環境でもロード時間が短縮されるメリットもある)
         start_time = time.time()
         logger.info("Loading BERT model and tokenizer...")
         onnx_bert_models.load_model(
@@ -156,11 +158,13 @@ class StyleBertVITS2TTSEngine(TTSEngine):
             pretrained_model_name_or_path="tsukumijima/deberta-v2-large-japanese-char-wwm-onnx",
             onnx_providers=self.onnx_providers,
             cache_dir=str(self.BERT_MODEL_CACHE_DIR),
+            revision="d701ec67708287b20d2063270f6b535e6eed09ab",
         )
         onnx_bert_models.load_tokenizer(
             language=Languages.JP,
             pretrained_model_name_or_path="tsukumijima/deberta-v2-large-japanese-char-wwm-onnx",
             cache_dir=str(self.BERT_MODEL_CACHE_DIR),
+            revision="d701ec67708287b20d2063270f6b535e6eed09ab",
         )
         logger.info(
             f"BERT model and tokenizer loaded. ({time.time() - start_time:.2f}s)"
