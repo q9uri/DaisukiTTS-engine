@@ -512,8 +512,7 @@ class AivmManager:
 
             except httpx.TimeoutException as ex:
                 logger.warning(
-                    f"Timeout while fetching model info for {aivm_info.manifest.uuid} from AivisHub:",
-                    exc_info=ex,
+                    f"Timeout while fetching model info for {aivm_info.manifest.uuid} from AivisHub."
                 )
             except Exception as ex:
                 # エラーが発生しても起動に影響を与えないよう、ログ出力のみ行う
