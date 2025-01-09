@@ -517,7 +517,7 @@ class AivmManager:
             except Exception as ex:
                 # エラーが発生しても起動に影響を与えないよう、ログ出力のみ行う
                 # - httpx.RequestError: ネットワークエラーなど
-                # - KeyError: レスポンスのJSONに必要なキーが存在しない
+                # - KeyError: レスポンスの JSON に必要なキーが存在しない
                 # - StopIteration: model_files に AIVMX が存在しない
                 # - ValueError: Version.parse() が失敗
                 logger.warning(
@@ -626,9 +626,27 @@ class AivmManager:
         ## 通常は重複防止のため "(音声合成モデルの UUID).aivmx" のフォーマットのファイル名でインストールされるが、
         ## 手動で .aivmx ファイルをインストール先ディレクトリにコピーしても一通り動作するように考慮している
         logger.info(f"Installing AIVMX file to {aivm_file_path}...")
-        with open(aivm_file_path, mode="wb") as f:
-            f.write(file.read())
-        logger.info(f"Installed AIVMX file to {aivm_file_path}.")
+        try:
+            with open(aivm_file_path, mode="wb") as f:
+                f.write(file.read())
+            logger.info(f"Installed AIVMX file to {aivm_file_path}.")
+        except OSError as ex:
+            logger.error(
+                f"Failed to write AIVMX file to {aivm_file_path}:", exc_info=ex
+            )
+            error_message = str(ex).lower()
+            if "no space" in error_message:
+                detail = f"AIVMX ファイルの書き込みに失敗しました。ストレージ容量が不足しています。({ex})"
+            elif "permission denied" in error_message:
+                detail = f"AIVMX ファイルの書き込みに失敗しました。インストール先フォルダへのアクセス権限が不足しています。({ex})"
+            elif "read-only" in error_message:
+                detail = f"AIVMX ファイルの書き込みに失敗しました。インストール先フォルダが読み取り専用権限になっています。({ex})"
+            else:
+                detail = f"AIVMX ファイルの書き込みに失敗しました。({ex})"
+            raise HTTPException(
+                status_code=500,
+                detail=detail,
+            )
 
         # すべてのインストール済み音声合成モデルの情報のキャッシュを再生成
         ## インストール完了後にエディタから送られる /aivm_models API へのリクエストで確実に更新情報も返せるように、
