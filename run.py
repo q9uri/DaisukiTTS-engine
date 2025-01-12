@@ -162,6 +162,7 @@ class CLIArgs:
     setting_file: Path
     preset_file: Path | None
     disable_mutable_api: bool
+    disable_sentry: bool
     # 以下は極力 VOICEVOX ENGINE との差分を最小限にするための互換用
     # 対応する引数は AivisSpeech Engine では常に無効化されている
     voicevox_dir: Path | None = None  # 常に None
@@ -310,6 +311,12 @@ def read_cli_arguments(envs: Envs) -> CLIArgs:
         ),
     )
 
+    parser.add_argument(
+        "--disable_sentry",
+        action="store_true",
+        help="Sentry によるエラーログ収集を無効化します。",
+    )
+
     args_dict = vars(parser.parse_args())
 
     # NOTE: 複数個の同名引数に基づいてリスト化されるため `CLIArgs` で複数形にリネームされている
@@ -344,25 +351,28 @@ def main() -> None:
 
         # Sentry によるエラートラッキングを開始
         # ref: https://docs.sentry.io/platforms/python/integrations/fastapi/
-        sentry_sdk.init(
-            dsn="https://ebdf5cc288b3ab31a262186329ff3a95@o4508551725383680.ingest.us.sentry.io/4508555159470080",
-            release=f"AivisSpeech-Engine@{__version__}",
-            environment="development" if __version__ == "latest" else "production",
-            # Set traces_sample_rate to 1.0 to capture 100%
-            # of transactions for tracing.
-            traces_sample_rate=1.0,
-            _experiments={
-                # Set continuous_profiling_auto_start to True
-                # to automatically start the profiler on when
-                # possible.
-                "continuous_profiling_auto_start": True,
-            },
-        )
+        if not args.disable_sentry:
+            sentry_sdk.init(
+                dsn="https://ebdf5cc288b3ab31a262186329ff3a95@o4508551725383680.ingest.us.sentry.io/4508555159470080",
+                release=f"AivisSpeech-Engine@{__version__}",
+                environment="development" if __version__ == "latest" else "production",
+                # Set traces_sample_rate to 1.0 to capture 100%
+                # of transactions for tracing.
+                traces_sample_rate=1.0,
+                _experiments={
+                    # Set continuous_profiling_auto_start to True
+                    # to automatically start the profiler on when
+                    # possible.
+                    "continuous_profiling_auto_start": True,
+                },
+            )
 
         # 起動時の可能な限り早い段階で実行結果をキャッシュしておくのが重要
         generate_user_agent("GPU" if args.use_gpu is True else "CPU")
 
         logger.info(f"AivisSpeech Engine version {__version__}")
+        if args.disable_sentry:
+            logger.info("Sentry error tracking is disabled.")
         logger.info(f"Engine root directory: {engine_root()}")
         logger.info(f"User data directory: {get_save_dir()}")
 
