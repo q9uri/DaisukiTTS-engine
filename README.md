@@ -148,7 +148,7 @@ AIVMX ファイルは、OS ごとに以下のフォルダに配置してくだ�
 
 ### Windows / macOS
 
-**Windows / macOS では、AivisSpeech Engine を単独でインストールすることもできますが、[AivisSpeech](https://github.com/Aivis-Project/AivisSpeech) 本体に付属する AivisSpeech Engine を単独で起動させた方がより簡単です。**  
+**Windows / macOS では、AivisSpeech Engine を単独でインストールすることもできますが、[AivisSpeech](https://github.com/Aivis-Project/AivisSpeech/releases) 本体に付属する AivisSpeech Engine を単独で起動させた方がより簡単です。**  
 
 AivisSpeech に同梱されている AivisSpeech Engine の実行ファイル (`run.exe` / `run`) のパスは以下のとおりです。 
 
@@ -158,7 +158,7 @@ AivisSpeech に同梱されている AivisSpeech Engine の実行ファイル (`
   - ユーザー権限でインストールされている場合、`~/Applications/AivisSpeech.app/Contents/Resources/AivisSpeech-Engine/run` となります。
 
 > [!NOTE]
-> 初回起動時はデフォルトモデル (約 250MB) と推論時に必要な [BERT モデル](https://huggingface.co/tsukumijima/deberta-v2-large-japanese-char-wwm-onnx) (約 1.3GB) が自動的にダウンロードされる関係で、起動完了まで最大数分ほどかかります。  
+> 初回起動時はデフォルトモデル (約 250MB) と推論時に必要な [BERT モデル](https://huggingface.co/tsukumijima/deberta-v2-large-japanese-char-wwm-onnx) (約 650MB) が自動的にダウンロードされる関係で、起動完了まで最大数分ほどかかります。  
 > 起動完了までしばらくお待ちください。
 
 AivisSpeech Engine に音声合成モデルを追加するには、[モデルファイルの配置場所](#モデルファイルの配置場所) をご覧ください。  
@@ -174,7 +174,7 @@ Docker であればホスト OS の環境に関わらず動作しますので、
 ### Linux + Docker
 
 **Docker コンテナを実行する際は、常に `~/.local/share/AivisSpeech-Engine` をコンテナ内の `/home/user/.local/share/AivisSpeech-Engine-Dev` にマウントしてください。**  
-こうすることで、コンテナを停止・再起動した後でも、インストールした音声合成モデルや BERT モデルキャッシュ (約 1.3GB) を維持できます。
+こうすることで、コンテナを停止・再起動した後でも、インストールした音声合成モデルや BERT モデルキャッシュ (約 650MB) を維持できます。
 
 Docker 環境の AivisSpeech Engine に音声合成モデルを追加するには、ホスト環境の `~/.local/share/AivisSpeech-Engine/Models` 以下にモデルファイル (.aivmx) を配置してください。
 
