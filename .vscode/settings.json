@@ -2,8 +2,6 @@
     // 日々付け替えられるナイトリービルド (1.x.x-dev) のタグがローカルと競合するため、
     // リモートで追加されたタグを自動ではローカルに反映しない
     "git.pullTags": false,
-    // poetry の仮想環境のあるフォルダを指定（指定しないと認識しない）
-    "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
     // Pylance の Type Checking を有効化
     "python.languageServer": "Pylance",
     "python.analysis.typeCheckingMode": "strict",
