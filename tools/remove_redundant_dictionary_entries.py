@@ -3,6 +3,7 @@
 Usage: python remove_redundant_dictionary_entries.py
 
 resources/dictionaries ディレクトリにある辞書データのうち、pyopenjtalk デフォルト辞書で得られる読みと一致する単語を削除するツール。
+02_ 以降の辞書データはアクセント情報が自動生成されているため、デフォルト辞書のみでも正確な読みが得られる単語は、辞書登録しない方が良いアクセントになると考えられる。
 """
 
 import csv
@@ -12,6 +13,7 @@ from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
 from typing import NamedTuple
 
+import jaconv
 import pyopenjtalk
 from tqdm import tqdm
 
@@ -53,14 +55,31 @@ def process_row(row: list[str]) -> ProcessResult:
 
     # CSV の形式は 表層形,左文脈ID,右文脈ID,コスト,品詞,品詞細分類1,品詞細分類2,品詞細分類3,活用型,活用形,原形,読み,発音 を想定
     # : は除去してから比較
-    surface = row[0]
-    reading = row[11].replace(":", "")
-    pronunciation = row[12].replace(":", "")
+    # 事前に全角英数字に変換している
+    surface = jaconv.h2z(row[0], ascii=True, digit=True)
+    reading = jaconv.h2z(row[11].replace(":", ""), ascii=True, digit=True)
+    pronunciation = jaconv.h2z(row[12].replace(":", ""), ascii=True, digit=True)
 
     # surface がひらがな・カタカナのみで構成される場合、かつ3文字以上の場合は、pyopenjtalk が苦手とする
     # ひらがな・カタカナ単語の分かち書き強化のために意図的に残す
     if re.match(r"^[\u3040-\u309F\u30A0-\u30FF]{3,}$", surface):
         return ProcessResult(row, False, None)
+
+    # 全角数字のみから構成される単語は読み間違いを防ぐため削除する
+    if re.match(r"^[０-９]+$", surface):
+        return ProcessResult(
+            row, True, f"{surface} → Removed (Full-width numbers only)"
+        )
+
+    # 表層形が1文字の単語は読み間違いを防ぐため削除する
+    if len(surface) == 1:
+        return ProcessResult(row, True, f"{surface} → Removed (Single character)")
+
+    # 全角英数字2文字以下の単語は読み間違いを防ぐため削除する
+    if re.match(r"^[０-９Ａ-Ｚａ-ｚ]{1,2}$", surface):
+        return ProcessResult(
+            row, True, f"{surface} → Removed (Full-width alphanumeric ≤ 2 chars)"
+        )
 
     # デフォルト辞書のみ適用した pyopenjtalk から読みと発音を取得
     default_reading, default_pronunciation = get_default_reading_pronunciation(surface)  # fmt: skip
