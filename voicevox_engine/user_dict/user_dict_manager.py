@@ -55,8 +55,6 @@ if not save_dir.is_dir():
 DEFAULT_DICT_DIR_PATH = resource_dir / "dictionaries"
 # ユーザー辞書ファイルのパス
 _USER_DICT_PATH = save_dir / "user_dict.json"
-# ビルド済み辞書ファイルのパス
-_COMPILED_DICT_PATH = save_dir / "user.dic"
 
 
 # 同時書き込みの制御
@@ -67,6 +65,62 @@ mutex_openjtalk_dict = threading.Lock()
 _save_format_dict_adapter = TypeAdapter(dict[str, SaveFormatUserDictWord])
 
 
+def _delete_file_on_close(file_path: Path) -> None:
+    """
+    ファイルのハンドルが全て閉じたときにファイルを削除する。OpenJTalk 用のカスタム辞書用。
+
+    Windowsでは CreateFileW関数で `FILE_FLAG_DELETE_ON_CLOSE` を付けてすぐに閉じることで、
+    `FILE_SHARE_DELETE` を付けて開かれているファイルのハンドルが全て閉じた時に削除されるようにする。
+
+    Windows 以外では即座にファイルを削除する。
+    """
+    if sys.platform == "win32":
+        import ctypes
+        from ctypes.wintypes import DWORD, HANDLE, LPCWSTR
+
+        _CreateFileW = ctypes.windll.kernel32.CreateFileW
+        _CreateFileW.argtypes = [
+            LPCWSTR,
+            DWORD,
+            DWORD,
+            ctypes.c_void_p,
+            DWORD,
+            DWORD,
+            HANDLE,
+        ]
+        _CreateFileW.restype = HANDLE
+        _CloseHandle = ctypes.windll.kernel32.CloseHandle
+        _CloseHandle.argtypes = [HANDLE]
+
+        _FILE_SHARE_DELETE = 0x00000004
+        _FILE_SHARE_READ = 0x00000001
+        _OPEN_EXISTING = 3
+        _FILE_FLAG_DELETE_ON_CLOSE = 0x04000000
+        _INVALID_HANDLE_VALUE = HANDLE(-1).value
+
+        h_file = _CreateFileW(
+            str(file_path),
+            0,
+            _FILE_SHARE_DELETE | _FILE_SHARE_READ,
+            None,
+            _OPEN_EXISTING,
+            _FILE_FLAG_DELETE_ON_CLOSE,
+            None,
+        )
+        if h_file == _INVALID_HANDLE_VALUE:
+            raise RuntimeError(
+                f"Failed to CreateFileW for {file_path}"
+            ) from ctypes.WinError()
+
+        result = _CloseHandle(h_file)
+        if result == 0:
+            raise RuntimeError(
+                f"Failed to CloseHandle for {file_path}"
+            ) from ctypes.WinError()
+    else:
+        file_path.unlink()
+
+
 class UserDictionary:
     """ユーザー辞書"""
 
@@ -74,7 +128,6 @@ class UserDictionary:
         self,
         default_dict_dir_path: Path = DEFAULT_DICT_DIR_PATH,
         user_dict_path: Path = _USER_DICT_PATH,
-        compiled_dict_path: Path = _COMPILED_DICT_PATH,
     ) -> None:
         """
         Parameters
@@ -83,12 +136,9 @@ class UserDictionary:
             ビルド済みデフォルトユーザー辞書ディレクトリのパス
         user_dict_path : Path
             ユーザー辞書ファイルのパス
-        compiled_dict_path : Path
-            ビルド済み辞書ファイルのパス
         """
         self._default_dict_dir_path = default_dict_dir_path
         self._user_dict_path = user_dict_path
-        self._compiled_dict_path = compiled_dict_path
         # pytest から実行されているかどうか
         self._is_pytest = "pytest" in sys.argv[0] or "py.test" in sys.argv[0]
 
@@ -102,16 +152,6 @@ class UserDictionary:
                     accent_type=3,
                 ))
             })  # fmt: skip
-
-        # サーバーの起動高速化のため、前回起動時にビルド済みのユーザー辞書データがあれば、そのまま pyopenjtalk に適用する
-        if self._compiled_dict_path.is_file():
-            try:
-                pyopenjtalk.update_global_jtalk_with_user_dict(
-                    str(self._compiled_dict_path.resolve(strict=True))
-                )
-                logger.info("Compiled user dictionary applied.")
-            except Exception as ex:
-                logger.error("Failed to apply compiled user dictionary.", exc_info=ex)
 
         # バックグラウンドで辞書更新を行う (辞書登録量によっては数秒を要する)
         threading.Thread(target=self.update_dict, daemon=True).start()
@@ -130,7 +170,7 @@ class UserDictionary:
     def update_dict(self) -> None:
         """辞書を更新する。"""
         default_dict_dir_path = self._default_dict_dir_path
-        compiled_dict_path = self._compiled_dict_path
+        user_dict_path = self._user_dict_path
 
         # pytest 実行時かつ Windows ではなぜか辞書更新時に MeCab の初期化に失敗するので、辞書更新自体を無効化する
         if self._is_pytest and sys.platform == "win32":
@@ -139,11 +179,11 @@ class UserDictionary:
         start_time = time.time()
 
         random_string = uuid4()
-        tmp_csv_path = compiled_dict_path.with_suffix(
-            f".dict_csv-{random_string}.tmp"
+        tmp_csv_path = user_dict_path.with_name(
+            f"user.dict_csv-{random_string}.tmp"
         )  # CSV 形式辞書データの一時保存ファイル
-        tmp_compiled_path = compiled_dict_path.with_suffix(
-            f".dict_compiled-{random_string}.tmp"
+        tmp_compiled_path = user_dict_path.with_name(
+            f"user.dict_compiled-{random_string}.tmp"
         )  # ビルド済み辞書データの一時保存ファイル
 
         try:
@@ -192,17 +232,17 @@ class UserDictionary:
             if not tmp_compiled_path.is_file():
                 raise RuntimeError("辞書のビルド時にエラーが発生しました。")
 
-            # ユーザー辞書の適用を解除した後、ユーザー辞書ファイルを置き換え
+            # ユーザー辞書の適用を解除
             pyopenjtalk.unset_user_dict()
-            tmp_compiled_path.replace(compiled_dict_path)
 
             # デフォルトユーザー辞書ディレクトリにある *.dic ファイルを名前順に取得
             dict_files = sorted(list(default_dict_dir_path.glob("**/*.dic")))
             # ユーザー辞書ファイルのパスを追加
-            dict_files.append(compiled_dict_path)
+            dict_files.append(tmp_compiled_path)
 
             # ユーザー辞書を pyopenjtalk に適用
             # デフォルトのユーザー辞書ファイルと、先ほどビルドした辞書ファイルの両方を指定する
+            # NOTE: resolve() によりコンパイル実行時でも相対パスを正しく認識できる
             dict_paths = [str(p.resolve(strict=True)) for p in dict_files]
             if dict_paths:  # 辞書ファイルが1つ以上存在する場合のみ実行
                 pyopenjtalk.update_global_jtalk_with_user_dict(dict_paths)
@@ -221,7 +261,7 @@ class UserDictionary:
             if tmp_csv_path.exists():
                 tmp_csv_path.unlink()
             if tmp_compiled_path.exists():
-                tmp_compiled_path.unlink()
+                _delete_file_on_close(tmp_compiled_path)
 
             # 強制的にメモリを開放
             gc.collect()

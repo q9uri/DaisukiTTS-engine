@@ -43,6 +43,7 @@ def generate_user_dict_router(
                 status_code=500, detail="辞書の読み込みに失敗しました。"
             )
 
+    # TODO: CsvSafeStrを使う
     @router.post(
         "/user_dict_word",
         dependencies=[Depends(verify_mutability)],

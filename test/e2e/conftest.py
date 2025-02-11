@@ -54,7 +54,6 @@ def app_params(tmp_path: Path) -> dict[str, Any]:
         # デフォルト辞書が巨大なためローカル環境のファイルを直接読み込む
         # default_dict_dir_path=_copy_under_dir(DEFAULT_DICT_DIR_PATH, tmp_path),
         user_dict_path=_generate_user_dict(tmp_path),
-        compiled_dict_path=tmp_path / "user.dic",
     )
 
     engine_manifest = load_manifest(engine_manifest_path())

@@ -77,11 +77,17 @@ def generate_licenses() -> list[License]:
             elif package_name == "future":
                 text_url = "https://raw.githubusercontent.com/PythonCharmers/python-future/master/LICENSE.txt"  # noqa: B950
                 license_json["LicenseText"] = get_license_text(text_url)
+            elif package_name == "license-expression":
+                text_url = "https://raw.githubusercontent.com/aboutcode-org/license-expression/main/license-expression.ABOUT"  # noqa: B950
+                license_json["LicenseText"] = get_license_text(text_url)
+            elif package_name == "packageurl-python":
+                text_url = "https://raw.githubusercontent.com/package-url/packageurl-python/main/mit.LICENSE"  # noqa: B950
+                license_json["LicenseText"] = get_license_text(text_url)
             elif package_name == "pefile":
                 text_url = "https://raw.githubusercontent.com/erocarrera/pefile/master/LICENSE"  # noqa: B950
                 license_json["LicenseText"] = get_license_text(text_url)
-            elif package_name == "pyopenjtalk-dict":
-                text_url = "https://raw.githubusercontent.com/litagin02/pyopenjtalk/master/LICENSE.md"  # noqa: B950
+            elif package_name == "pip-requirements-parser":
+                text_url = "https://raw.githubusercontent.com/aboutcode-org/pip-requirements-parser/main/apache-2.0.LICENSE"  # noqa: B950
                 license_json["LicenseText"] = get_license_text(text_url)
             elif package_name == "python-multipart":
                 text_url = "https://raw.githubusercontent.com/andrew-d/python-multipart/master/LICENSE.txt"  # noqa: B950

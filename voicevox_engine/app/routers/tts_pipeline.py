@@ -442,6 +442,36 @@ def generate_tts_pipeline_router(
         """
 
     @router.post(
+        "/sing_frame_f0",
+        tags=["クエリ編集"],
+        # summary="楽譜・歌唱音声合成用のクエリからフレームごとの基本周波数を得る",
+        summary="AivisSpeech Engine ではサポートされていない API です (常に 501 Not Implemented を返します)",
+    )
+    def sing_frame_f0(
+        score: Score,
+        frame_audio_query: FrameAudioQuery,
+        style_id: Annotated[StyleId, Query(alias="speaker")],
+        core_version: Annotated[
+            str | SkipJsonSchema[None],
+            Query(description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。"),
+        ] = None,  # fmt: skip # noqa
+    ) -> list[float]:
+        raise HTTPException(
+            status_code=501,
+            detail="Sing frame f0 is not supported in AivisSpeech Engine.",
+        )
+        """
+        version = core_version or LATEST_VERSION
+        engine = tts_engines.get_engine(version)
+        try:
+            return engine.create_sing_f0_from_phoneme(
+                score, frame_audio_query.phonemes, style_id
+            )
+        except TalkSingInvalidInputError as e:
+            raise HTTPException(status_code=400, detail=str(e))
+        """
+
+    @router.post(
         "/sing_frame_volume",
         tags=["クエリ編集"],
         # summary="楽譜・歌唱音声合成用のクエリからフレームごとの音量を得る",

@@ -121,7 +121,7 @@ ARG AIVISSPEECH_ENGINE_VERSION=latest
 RUN sed -i "s/__version__ = \"latest\"/__version__ = \"${AIVISSPEECH_ENGINE_VERSION}\"/" /opt/aivisspeech-engine/voicevox_engine/__init__.py
 RUN sed -i "s/\"version\": \"999\\.999\\.999\"/\"version\": \"${AIVISSPEECH_ENGINE_VERSION}\"/" /opt/aivisspeech-engine/engine_manifest.json
 
-# openjtalk-plus include dictionary in itself, download is not needed
+# pyopenjtalk-plus include dictionary in itself, download is not needed
 
 # Create container start shell
 COPY --chmod=775 <<EOF /entrypoint.sh
