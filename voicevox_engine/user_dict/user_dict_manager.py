@@ -121,6 +121,33 @@ def _delete_file_on_close(file_path: Path) -> None:
         file_path.unlink()
 
 
+def _cleanup_temporary_dict_files(dict_path: Path) -> None:
+    """
+    一時的に生成された辞書関連ファイル（バイナリ辞書・CSV）を削除する。
+    削除に失敗した場合もエラーを発生させない。
+
+    Parameters
+    ----------
+    dict_path : Path
+        ユーザー辞書ファイルのパス（この同じディレクトリ内の一時ファイルを削除）
+    """
+    try:
+        # 一時ファイルのパターンに一致するファイルを取得
+        parent_dir = dict_path.parent
+        # バイナリ辞書と CSV の両方のパターンを処理
+        tmp_patterns = ["user.dict_compiled-*.tmp", "user.dict_csv-*.tmp"]
+        for pattern in tmp_patterns:
+            tmp_files = parent_dir.glob(pattern)
+            for tmp_file in tmp_files:
+                try:
+                    if tmp_file.exists():
+                        _delete_file_on_close(tmp_file)
+                except Exception as e:
+                    logger.warning(f"Failed to delete temporary file {tmp_file}: {e}")
+    except Exception as e:
+        logger.warning(f"Failed to cleanup temporary files: {e}")
+
+
 class UserDictionary:
     """ユーザー辞書"""
 
@@ -141,6 +168,9 @@ class UserDictionary:
         self._user_dict_path = user_dict_path
         # pytest から実行されているかどうか
         self._is_pytest = "pytest" in sys.argv[0] or "py.test" in sys.argv[0]
+
+        # 起動時に一時的な辞書バイナリファイルを削除
+        _cleanup_temporary_dict_files(self._user_dict_path)
 
         # 初回起動時などまだユーザー辞書 JSON が存在しない場合、辞書登録例として「担々麺」の辞書エントリを書き込む
         # pytest から実行されている場合は書き込まない
