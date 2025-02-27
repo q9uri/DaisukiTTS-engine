@@ -533,7 +533,7 @@ def generate_tts_pipeline_router(
         version = core_version or LATEST_VERSION
         engine = tts_engines.get_engine(version)
         try:
-            wave = engine.frame_synthsize_wave(query, style_id)
+            wave = engine.frame_synthesize_wave(query, style_id)
         except TalkSingInvalidInputError as e:
             raise HTTPException(status_code=400, detail=str(e))
 
@@ -589,7 +589,7 @@ def generate_tts_pipeline_router(
         },
     )
     async def validate_kana(
-        text: Annotated[str, Query(description="判定する対象の文字列")]
+        text: Annotated[str, Query(description="判定する対象の文字列")],
     ) -> bool:
         """
         テキストが AquesTalk 風記法に従っているかどうかを判定します。

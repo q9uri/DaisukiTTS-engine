@@ -170,7 +170,7 @@ def generate_user_dict_router(
         summary="ユーザー辞書に登録されている言葉を削除する",
     )
     def delete_user_dict_word(
-        word_uuid: Annotated[str, Path(description="削除する言葉のUUID")]
+        word_uuid: Annotated[str, Path(description="削除する言葉のUUID")],
     ) -> None:
         """
         ユーザー辞書に登録されている言葉を削除します。
