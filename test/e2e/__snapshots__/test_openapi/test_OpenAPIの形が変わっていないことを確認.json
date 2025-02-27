@@ -117,9 +117,6 @@
           },
           "manifest_version": {
             "const": "1.0",
-            "enum": [
-              "1.0"
-            ],
             "title": "Manifest Version",
             "type": "string"
           },
