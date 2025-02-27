@@ -79,7 +79,7 @@ def generate_aivm_models_router(
         response_description="指定された音声合成モデルの情報",
     )
     def get_aivm_info(
-        aivm_uuid: Annotated[str, Path(description="音声合成モデルの UUID")]
+        aivm_uuid: Annotated[str, Path(description="音声合成モデルの UUID")],
     ) -> AivmInfo:
         """
         指定された音声合成モデルの情報を取得します。
@@ -152,7 +152,7 @@ def generate_aivm_models_router(
         summary="指定された音声合成モデルをアンインストールする",
     )
     def uninstall_aivm(
-        aivm_uuid: Annotated[str, Path(description="音声合成モデルの UUID")]
+        aivm_uuid: Annotated[str, Path(description="音声合成モデルの UUID")],
     ) -> None:
         """
         指定された音声合成モデルをアンインストールします。
