@@ -341,6 +341,9 @@ def main() -> None:
     try:
         multiprocessing.freeze_support()
 
+        # ユーザーの環境変数で hf_transfer が有効化されている場合に備え、事前に無効化しておく
+        os.environ["HF_HUB_ENABLE_HF_TRANSFER"] = "0"
+
         envs = read_environment_variables()
         if envs.output_log_utf8:
             set_output_log_utf8()
