@@ -646,7 +646,7 @@ class StyleBertVITS2TTSEngine(TTSEngine):
 
         # 話速
         ## ref: https://github.com/litagin02/Style-Bert-VITS2/blob/2.4.1/server_editor.py#L314
-        length = 1 / max(0.0, query.speedScale)
+        length = 1 / max(0.1, query.speedScale)  # 0.1を最小値として使用してゼロ除算を防止
 
         # スタイルの強さ
         ## VOICEVOX では「抑揚」の比率だが、AivisSpeech では声のテンポの緩急を指定する値としている
