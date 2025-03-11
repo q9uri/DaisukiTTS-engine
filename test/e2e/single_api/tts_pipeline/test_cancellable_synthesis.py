@@ -55,6 +55,9 @@ def test_post_cancellable_synthesis_200(
     response = cancellable_client.post(
         "/cancellable_synthesis", params={"speaker": 0}, json=query
     )
+    # AivisSpeech Engine では未実装 (501 Not Implemented を返す)
+    assert response.status_code == 501
+    return
     assert response.status_code == 200
 
     # 音声波形が一致する
