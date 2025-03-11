@@ -1417,7 +1417,7 @@
     "/": {
       "get": {
         "description": "ポータルページを返します。",
-        "operationId": "get_portal_page__get",
+        "operationId": "get_portal_page",
         "responses": {
           "200": {
             "content": {
@@ -1827,7 +1827,7 @@
     "/audio_query": {
       "post": {
         "description": "音声合成用のクエリの初期値を得ます。ここで得られたクエリはそのまま音声合成に利用できます。各値の意味は`Schemas`を参照してください。",
-        "operationId": "audio_query_audio_query_post",
+        "operationId": "audio_query",
         "parameters": [
           {
             "in": "query",
@@ -1890,7 +1890,7 @@
     "/audio_query_from_preset": {
       "post": {
         "description": "音声合成用のクエリの初期値を得ます。ここで得られたクエリはそのまま音声合成に利用できます。各値の意味は`Schemas`を参照してください。",
-        "operationId": "audio_query_from_preset_audio_query_from_preset_post",
+        "operationId": "audio_query_from_preset",
         "parameters": [
           {
             "in": "query",
@@ -1952,7 +1952,7 @@
     },
     "/cancellable_synthesis": {
       "post": {
-        "operationId": "cancellable_synthesis_cancellable_synthesis_post",
+        "operationId": "cancellable_synthesis",
         "parameters": [
           {
             "in": "query",
@@ -2064,7 +2064,7 @@
     "/core_versions": {
       "get": {
         "description": "利用可能なコアのバージョン一覧を取得します。",
-        "operationId": "core_versions_core_versions_get",
+        "operationId": "core_versions",
         "responses": {
           "200": {
             "content": {
@@ -2128,7 +2128,7 @@
     "/engine_manifest": {
       "get": {
         "description": "エンジンマニフェストを取得します。",
-        "operationId": "engine_manifest_engine_manifest_get",
+        "operationId": "engine_manifest",
         "responses": {
           "200": {
             "content": {
@@ -2214,7 +2214,7 @@
     "/import_user_dict": {
       "post": {
         "description": "他のユーザー辞書をインポートします。",
-        "operationId": "import_user_dict_words_import_user_dict_post",
+        "operationId": "import_user_dict_words",
         "parameters": [
           {
             "description": "重複したエントリがあった場合、上書きするかどうか",
@@ -2380,7 +2380,7 @@
     },
     "/mora_data": {
       "post": {
-        "operationId": "mora_data_mora_data_post",
+        "operationId": "mora_data",
         "parameters": [
           {
             "in": "query",
@@ -2451,7 +2451,7 @@
     },
     "/mora_length": {
       "post": {
-        "operationId": "mora_length_mora_length_post",
+        "operationId": "mora_length",
         "parameters": [
           {
             "in": "query",
@@ -2522,7 +2522,7 @@
     },
     "/mora_pitch": {
       "post": {
-        "operationId": "mora_pitch_mora_pitch_post",
+        "operationId": "mora_pitch",
         "parameters": [
           {
             "in": "query",
@@ -2659,7 +2659,7 @@
     },
     "/multi_synthesis": {
       "post": {
-        "operationId": "multi_synthesis_multi_synthesis_post",
+        "operationId": "multi_synthesis",
         "parameters": [
           {
             "in": "query",
@@ -2754,7 +2754,7 @@
     "/setting": {
       "get": {
         "description": "設定ページを返します。",
-        "operationId": "setting_get_setting_get",
+        "operationId": "setting_get",
         "responses": {
           "200": {
             "description": "Successful Response"
@@ -2767,7 +2767,7 @@
       },
       "post": {
         "description": "設定を更新します。",
-        "operationId": "setting_post_setting_post",
+        "operationId": "setting_post",
         "requestBody": {
           "content": {
             "application/x-www-form-urlencoded": {
@@ -2864,7 +2864,7 @@
     },
     "/sing_frame_f0": {
       "post": {
-        "operationId": "sing_frame_f0_sing_frame_f0_post",
+        "operationId": "sing_frame_f0",
         "parameters": [
           {
             "in": "query",
@@ -2931,7 +2931,7 @@
     },
     "/sing_frame_volume": {
       "post": {
-        "operationId": "sing_frame_volume_sing_frame_volume_post",
+        "operationId": "sing_frame_volume",
         "parameters": [
           {
             "in": "query",
@@ -3508,7 +3508,7 @@
     "/user_dict_word": {
       "post": {
         "description": "ユーザー辞書に言葉を追加します。",
-        "operationId": "add_user_dict_word_user_dict_word_post",
+        "operationId": "add_user_dict_word",
         "parameters": [
           {
             "description": "言葉の表層形",
@@ -3599,7 +3599,7 @@
     "/user_dict_word/{word_uuid}": {
       "delete": {
         "description": "ユーザー辞書に登録されている言葉を削除します。",
-        "operationId": "delete_user_dict_word_user_dict_word__word_uuid__delete",
+        "operationId": "delete_user_dict_word",
         "parameters": [
           {
             "description": "削除する言葉のUUID",
@@ -3635,7 +3635,7 @@
       },
       "put": {
         "description": "ユーザー辞書に登録されている言葉を更新します。",
-        "operationId": "rewrite_user_dict_word_user_dict_word__word_uuid__put",
+        "operationId": "rewrite_user_dict_word",
         "parameters": [
           {
             "description": "更新する言葉の UUID",
@@ -3785,7 +3785,7 @@
     "/version": {
       "get": {
         "description": "エンジンのバージョンを取得します。",
-        "operationId": "version_version_get",
+        "operationId": "version",
         "responses": {
           "200": {
             "content": {

@@ -52,7 +52,8 @@ jobs:
             target: runtime-env
             base_image: ubuntu:20.04
             base_runtime_image: ubuntu:20.04
-            platforms: linux/amd64,linux/arm64/v8
+            # platforms: linux/amd64,linux/arm64/v8
+            platforms: linux/amd64
           - prefixes: "nvidia-ubuntu20.04"
             buildcache_prefix: "nvidia-ubuntu20.04"
             target: runtime-nvidia-env
@@ -65,7 +66,8 @@ jobs:
             target: runtime-env
             base_image: ubuntu:22.04
             base_runtime_image: ubuntu:22.04
-            platforms: linux/amd64,linux/arm64/v8
+            # platforms: linux/amd64,linux/arm64/v8
+            platforms: linux/amd64
           - prefixes: "nvidia,nvidia-ubuntu22.04"
             buildcache_prefix: "nvidia-ubuntu22.04"
             target: runtime-nvidia-env
@@ -77,10 +79,14 @@ jobs:
       - name: <Setup> Check out the repository
         uses: actions/checkout@v4
 
-      - name: <Setup> Set up QEMU
-        uses: docker/setup-qemu-action@v3
+      - name: <Setup> Prepare Python version
+        id: prepare-python
+        uses: ./.github/actions/prepare_python
         with:
-          image: tonistiigi/binfmt:qemu-v7.0.0
+          only-export-python-version: true
+
+      # - name: <Setup> Set up QEMU
+      #   uses: docker/setup-qemu-action@v3
 
       - name: <Setup> Set up Docker Buildx
         id: buildx
