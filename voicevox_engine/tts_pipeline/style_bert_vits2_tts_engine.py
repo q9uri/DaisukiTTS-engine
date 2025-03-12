@@ -728,8 +728,13 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         raw_wave = trim_silence(raw_wave)
 
         # 前後の無音区間を追加
-        pre_silence_length = int(raw_sample_rate * query.prePhonemeLength)
-        post_silence_length = int(raw_sample_rate * query.postPhonemeLength)
+        ## VOICEVOX の TTSEngine との互換性のため、音声合成側と同様に AudioQuery の speedScale を加味する
+        pre_silence_length = int(
+            raw_sample_rate * query.prePhonemeLength / query.speedScale
+        )
+        post_silence_length = int(
+            raw_sample_rate * query.postPhonemeLength / query.speedScale
+        )
         silence_wave_pre = np.zeros(pre_silence_length, dtype=np.float32)
         silence_wave_post = np.zeros(post_silence_length, dtype=np.float32)
         raw_wave = np.concatenate((silence_wave_pre, raw_wave, silence_wave_post))
