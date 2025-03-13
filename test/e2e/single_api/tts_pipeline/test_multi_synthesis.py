@@ -2,10 +2,7 @@
 /multi_synthesis API のテスト
 """
 
-import io
-import zipfile
 from test.e2e.single_api.utils import gen_mora
-from test.utility import hash_wave_floats_from_wav_bytes
 
 from fastapi.testclient import TestClient
 from syrupy.assertion import SnapshotAssertion
@@ -74,8 +71,9 @@ def test_post_multi_synthesis_200(
     assert response.headers["content-type"] == "application/zip"
 
     # zip 内の全ての wav の波形がスナップショットと一致する
-    zip_bytes = io.BytesIO(response.read())
-    with zipfile.ZipFile(zip_bytes, "r") as zip_file:
-        wav_files = (zip_file.read(name) for name in zip_file.namelist())
-        for wav in wav_files:
-            assert snapshot == hash_wave_floats_from_wav_bytes(wav)
+    # AivisSpeech Engine の音声合成は常にある程度のランダム性があるため、テストではハッシュ値の比較は行わない
+    # zip_bytes = io.BytesIO(response.read())
+    # with zipfile.ZipFile(zip_bytes, "r") as zip_file:
+    #     wav_files = (zip_file.read(name) for name in zip_file.namelist())
+    #     for wav in wav_files:
+    #         assert snapshot == hash_wave_floats_from_wav_bytes(wav)
