@@ -76,6 +76,9 @@ def generate_licenses() -> list[License]:
             # NVIDIA ランタイムはライセンス生成をスキップ
             if package_name.startswith("nvidia-"):
                 continue
+            elif package_name == "e2k":
+                text_url = "https://raw.githubusercontent.com/Patchethium/e2k/master/LICENSE"  # noqa: B950
+                license_json["LicenseText"] = get_license_text(text_url)
             elif package_name == "future":
                 text_url = "https://raw.githubusercontent.com/PythonCharmers/python-future/master/LICENSE.txt"  # noqa: B950
                 license_json["LicenseText"] = get_license_text(text_url)
