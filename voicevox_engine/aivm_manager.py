@@ -281,7 +281,8 @@ class AivmManager:
                     aivm_manifest = aivm_metadata.manifest
             except aivmlib.AivmValidationError as ex:
                 logger.warning(
-                    f"{aivm_file_path}: Failed to read AIVM metadata. ({ex})"
+                    f"{aivm_file_path}: Failed to read AIVM metadata:",
+                    exc_info=ex,
                 )
                 continue
 

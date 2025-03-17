@@ -227,8 +227,10 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         try:
             with open(aivm_info.file_path, mode="rb") as f:
                 aivm_metadata = aivmlib.read_aivmx_metadata(f)
-        except aivmlib.AivmValidationError as e:
-            logger.error(f"{aivm_info.file_path}: Failed to read AIVM metadata. ({e})")
+        except aivmlib.AivmValidationError as ex:
+            logger.error(
+                f"{aivm_info.file_path}: Failed to read AIVM metadata:", exc_info=ex
+            )
             raise HTTPException(
                 status_code=500,
                 detail="Failed to read AIVM metadata.",
