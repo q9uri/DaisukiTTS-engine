@@ -339,7 +339,7 @@ class UserDictionary:
                         accent_type_mora_count=":".join(accent_type_mora_count),
                         accent_associative_rule=word.accent_associative_rule,
                     )
-                    logger.info(csv_row.strip())
+                    logger.info("- " + csv_row.strip())
                     csv_text += csv_row
 
                 # この時点で csv_text が空文字列のとき、ユーザー辞書が空なため処理を終了する
@@ -373,12 +373,12 @@ class UserDictionary:
                     pyopenjtalk.update_global_jtalk_with_user_dict(dict_paths)
 
                 logger.info(
-                    f"User dictionary updated. ({time.time() - start_time:.2f}s)"
+                    f"User dictionary applied. ({time.time() - start_time:.2f}s)"
                 )
 
             except Exception as ex:
                 logger.error(
-                    f"Failed to update user dictionary. ({time.time() - start_time:.2f}s)",
+                    f"Failed to apply user dictionary. ({time.time() - start_time:.2f}s)",
                     exc_info=ex,
                 )
                 raise ex
