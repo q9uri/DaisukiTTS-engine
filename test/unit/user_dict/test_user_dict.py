@@ -270,7 +270,7 @@ def test_import_invalid_word(tmp_path: Path) -> None:
     invalid_pos_word.part_of_speech_detail_1 = "*"
     invalid_pos_word.part_of_speech_detail_2 = "*"
     invalid_pos_word.part_of_speech_detail_3 = "*"
-    with pytest.raises(ValueError):
+    with pytest.raises(UserDictInputError):
         user_dict.import_dictionary(
             {"aab7dda2-0d97-43c8-8cb7-3f440dab9b4e": invalid_pos_word},
             override=True,
