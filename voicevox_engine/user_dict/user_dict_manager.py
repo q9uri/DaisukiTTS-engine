@@ -141,8 +141,9 @@ class UserDictionary:
         """
         self._default_dict_dir_path = default_dict_dir_path
         self._user_dict_path = user_dict_path
-        self._user_dict_repository = UserDictionaryRepository(user_dict_path)
+        self._repository = UserDictionaryRepository(user_dict_path)
         self._lock = threading.Lock()
+
         # pytest から実行されているかどうか
         self._is_pytest = "pytest" in sys.argv[0] or "py.test" in sys.argv[0]
 
@@ -169,7 +170,7 @@ class UserDictionary:
         # 初回起動時などまだユーザー辞書 JSON が存在しない場合、辞書登録例として「担々麺」の辞書エントリを書き込む
         # pytest から実行されている場合は書き込まない
         if not self._user_dict_path.is_file() and not self._is_pytest:
-            self._user_dict_repository.save({
+            self._repository.save({
                 "dc94a187-9881-43c9-a9c1-cebbf774a96d": UserDictWord.from_word_property(
                     WordProperty(
                         surface=["担々麺"],
@@ -184,17 +185,17 @@ class UserDictionary:
 
     def get_all_words(self) -> dict[str, UserDictWord]:
         """ユーザー辞書に登録されているすべての単語を取得する。"""
-        return self._user_dict_repository.load()
+        return self._repository.load()
 
     def add_word(self, word_property: WordProperty) -> str:
         """新規単語をユーザー辞書に追加し、その単語に割り当てられた UUID を返す。"""
         # 新規単語の追加による辞書データの更新
-        user_dict = self._user_dict_repository.load()
+        user_dict = self._repository.load()
         word_uuid = str(uuid4())
         user_dict[word_uuid] = UserDictWord.from_word_property(word_property)
 
         # 更新された辞書データを保存・適用
-        self._user_dict_repository.save(user_dict)
+        self._repository.save(user_dict)
         self.apply_jtalk_dictionary()
 
         # 追加した単語の UUID を返す
@@ -203,25 +204,25 @@ class UserDictionary:
     def update_word(self, word_uuid: str, word_property: WordProperty) -> None:
         """単語 UUID で指定された単語をユーザー辞書内で上書き更新する。"""
         # 既存単語の上書きによる辞書データの更新
-        user_dict = self._user_dict_repository.load()
+        user_dict = self._repository.load()
         if word_uuid not in user_dict:
             raise UserDictInputError("UUID に該当する単語が見つかりませんでした。")
         user_dict[word_uuid] = UserDictWord.from_word_property(word_property)
 
         # 更新された辞書データを保存・適用
-        self._user_dict_repository.save(user_dict)
+        self._repository.save(user_dict)
         self.apply_jtalk_dictionary()
 
     def delete_word(self, word_uuid: str) -> None:
         """単語 UUID で指定された単語をユーザー辞書から削除する。"""
         # 既存単語の削除による辞書データの更新
-        user_dict = self._user_dict_repository.load()
+        user_dict = self._repository.load()
         if word_uuid not in user_dict:
             raise UserDictInputError("UUID に該当する単語が見つかりませんでした。")
         del user_dict[word_uuid]
 
         # 更新された辞書データを保存・適用
-        self._user_dict_repository.save(user_dict)
+        self._repository.save(user_dict)
         self.apply_jtalk_dictionary()
 
     def import_dictionary(
@@ -263,7 +264,7 @@ class UserDictionary:
                 raise UserDictInputError("対応していない品詞です。")
 
         # 既存辞書の読み出し
-        old_dict = self._user_dict_repository.load()
+        old_dict = self._repository.load()
 
         # 辞書データの更新
         # 重複エントリの上書き
@@ -274,7 +275,7 @@ class UserDictionary:
             new_dict = {**dict_data, **old_dict}
 
         # 更新された辞書データを保存・適用
-        self._user_dict_repository.save(new_dict)
+        self._repository.save(new_dict)
         self.apply_jtalk_dictionary()
 
     def apply_jtalk_dictionary(self) -> None:
@@ -301,7 +302,7 @@ class UserDictionary:
             start_time = time.time()
             try:
                 # 現在のユーザー辞書データをロード
-                user_dict = self._user_dict_repository.load()
+                user_dict = self._repository.load()
 
                 # CSV 形式の OpenJTalk (MeCab) 用辞書データを作成
                 logger.info("Current user dictionary (CSV format):")

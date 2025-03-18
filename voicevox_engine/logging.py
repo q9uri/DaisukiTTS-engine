@@ -1,5 +1,3 @@
-# flake8: noqa
-
 import logging
 import logging.config
 from typing import Any
