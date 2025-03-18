@@ -101,17 +101,17 @@ class UserDictionaryRepository:
                         raw_word["stem"] = [raw_word["stem"]]
                     if "yomi" in raw_word and isinstance(raw_word["yomi"], str):
                         raw_word["yomi"] = [raw_word["yomi"]]
-                    if "pronunciation" in raw_word and isinstance(raw_word["pronunciation"], str):  # noqa # fmt: skip
+                    if "pronunciation" in raw_word and isinstance(raw_word["pronunciation"], str):  # fmt: skip # noqa
                         raw_word["pronunciation"] = [raw_word["pronunciation"]]
-                    if "accent_type" in raw_word and isinstance(raw_word["accent_type"], int):  # noqa # fmt: skip
+                    if "accent_type" in raw_word and isinstance(raw_word["accent_type"], int):  # fmt: skip # noqa
                         raw_word["accent_type"] = [raw_word["accent_type"]]
-                    if "mora_count" in raw_word and isinstance(raw_word["mora_count"], int):  # noqa # fmt: skip
+                    if "mora_count" in raw_word and isinstance(raw_word["mora_count"], int):  # fmt: skip # noqa
                         raw_word["mora_count"] = [raw_word["mora_count"]]
                 # マイグレーション処理が完了した辞書データをバリデーション
                 migrated_data = self._user_dict_adapter.validate_python(raw_word_dict)
                 # ファイルに書き込む (デッドロックになるので自前で書き込む)
                 with open(self.user_dict_path, mode="w", encoding="utf-8") as f:
-                    f.write(self._user_dict_adapter.dump_json(migrated_data, indent=4).decode("utf-8"))  # noqa # fmt: skip
+                    f.write(self._user_dict_adapter.dump_json(migrated_data, indent=4).decode("utf-8"))  # fmt: skip # noqa
                 logger.info(
                     "UserDictionaryRepository: Dictionary migration completed and saved."
                 )

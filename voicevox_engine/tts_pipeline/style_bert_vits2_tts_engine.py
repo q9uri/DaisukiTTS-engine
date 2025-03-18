@@ -1,3 +1,5 @@
+# flake8: noqa: E266, B950
+
 import copy
 import re
 import threading
@@ -842,7 +844,7 @@ def _sep_kata_with_joshi2sep_phonemes_with_joshi(
         result: list[tuple[str | None, str]] = []
         spaced_moras = __MORA_PATTERN.sub(lambda m: mora2phonemes(m.group()), kana)
         # 長音記号「ー」の処理
-        long_replacement = lambda m: m.group(1) + (" " + m.group(1)) * len(m.group(2))  # type: ignore # fmt: skip # noqa: E731
+        long_replacement = lambda m: m.group(1) + (" " + m.group(1)) * len(m.group(2))  # type: ignore  # noqa: E731
         spaced_moras = __LONG_PATTERN.sub(long_replacement, spaced_moras)
         moras = spaced_moras.strip().split(" ")
         # モーラごとに子音と母音に分割
