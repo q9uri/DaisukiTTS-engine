@@ -3,6 +3,7 @@
 import asyncio
 import glob
 import hashlib
+import sys
 import threading
 import time
 from pathlib import Path
@@ -66,6 +67,9 @@ class AivmInfosRepository:
         self.installed_models_dir = installed_models_dir
         self._lock = threading.Lock()
 
+        # pytest から実行されているかどうか
+        self._is_pytest = "pytest" in sys.argv[0] or "py.test" in sys.argv[0]
+
         # すべてのインストール済み音声合成モデルの情報を保持するマップ
         self._installed_aivm_infos: dict[str, AivmInfo] | None = None
 
@@ -76,6 +80,9 @@ class AivmInfosRepository:
         if result is True:
             # キャッシュ情報が存在する際は、バックグラウンドでスキャンを開始
             def update_repository_in_background():
+                # E2E テスト実行時に毎回スキャンするとあまりに時間がかかりすぎるため無効化
+                if self._is_pytest:
+                    return
                 # BERT モデルのロードと並行させるため、少し待ってから実行
                 ## aivmlib.read_aivmx_metadata() はモデルファイルをロードする関係で若干 CPU-bound だが、
                 ## Python は GIL の制約により、CPU-bound な処理はマルチスレッドでもほとんど並列化できない
