@@ -1256,7 +1256,122 @@
         "type": "object"
       },
       "UserDictWord": {
-        "description": "辞書のビルドに使われる情報",
+        "description": "ユーザー辞書のビルドに必要な単語情報\n単語登録・変更リクエストで受け取った単語情報のバリデーションと JSON への保存に用いる",
+        "properties": {
+          "accent_associative_rule": {
+            "description": "アクセント結合規則",
+            "title": "Accent Associative Rule",
+            "type": "string"
+          },
+          "accent_type": {
+            "description": "アクセント型",
+            "items": {
+              "type": "integer"
+            },
+            "title": "Accent Type",
+            "type": "array"
+          },
+          "context_id": {
+            "default": 1348,
+            "description": "文脈 ID",
+            "title": "Context Id",
+            "type": "integer"
+          },
+          "inflectional_form": {
+            "description": "活用形",
+            "title": "Inflectional Form",
+            "type": "string"
+          },
+          "inflectional_type": {
+            "description": "活用型",
+            "title": "Inflectional Type",
+            "type": "string"
+          },
+          "mora_count": {
+            "description": "モーラ数",
+            "items": {
+              "type": "integer"
+            },
+            "title": "Mora Count",
+            "type": "array"
+          },
+          "part_of_speech": {
+            "description": "品詞",
+            "title": "Part Of Speech",
+            "type": "string"
+          },
+          "part_of_speech_detail_1": {
+            "description": "品詞細分類1",
+            "title": "Part Of Speech Detail 1",
+            "type": "string"
+          },
+          "part_of_speech_detail_2": {
+            "description": "品詞細分類2",
+            "title": "Part Of Speech Detail 2",
+            "type": "string"
+          },
+          "part_of_speech_detail_3": {
+            "description": "品詞細分類3",
+            "title": "Part Of Speech Detail 3",
+            "type": "string"
+          },
+          "priority": {
+            "description": "優先度",
+            "maximum": 10.0,
+            "minimum": 0.0,
+            "title": "Priority",
+            "type": "integer"
+          },
+          "pronunciation": {
+            "description": "発音",
+            "items": {
+              "type": "string"
+            },
+            "title": "Pronunciation",
+            "type": "array"
+          },
+          "stem": {
+            "description": "原形",
+            "items": {
+              "type": "string"
+            },
+            "title": "Stem",
+            "type": "array"
+          },
+          "surface": {
+            "description": "表層形",
+            "title": "Surface",
+            "type": "string"
+          },
+          "yomi": {
+            "description": "読み",
+            "items": {
+              "type": "string"
+            },
+            "title": "Yomi",
+            "type": "array"
+          }
+        },
+        "required": [
+          "surface",
+          "priority",
+          "part_of_speech",
+          "part_of_speech_detail_1",
+          "part_of_speech_detail_2",
+          "part_of_speech_detail_3",
+          "inflectional_type",
+          "inflectional_form",
+          "stem",
+          "yomi",
+          "pronunciation",
+          "accent_type",
+          "accent_associative_rule"
+        ],
+        "title": "UserDictWord",
+        "type": "object"
+      },
+      "UserDictWordForCompat": {
+        "description": "UserDictWord とほとんど同じだが、ユーザー辞書関連 API の後方互換性を保つための互換レイヤー\nstem, yomi, pronunciation, accent_type, mora_count はリストではなく文字列/数値で表す\n既に UserDictWord にバリデーションが実装されていることから、重複するバリデーション定義は削られている",
         "properties": {
           "accent_associative_rule": {
             "description": "アクセント結合規則",
@@ -1270,7 +1385,7 @@
           },
           "context_id": {
             "default": 1348,
-            "description": "文脈ID",
+            "description": "文脈 ID",
             "title": "Context Id",
             "type": "integer"
           },
@@ -1352,7 +1467,7 @@
           "accent_type",
           "accent_associative_rule"
         ],
-        "title": "UserDictWord",
+        "title": "UserDictWordForCompat",
         "type": "object"
       },
       "ValidationError": {
@@ -1389,7 +1504,7 @@
         "type": "object"
       },
       "WordTypes": {
-        "description": "品詞",
+        "description": "品詞を表す列挙型",
         "enum": [
           "PROPER_NOUN",
           "LOCATION_NAME",
@@ -2232,12 +2347,22 @@
           "content": {
             "application/json": {
               "schema": {
-                "additionalProperties": {
-                  "$ref": "#/components/schemas/UserDictWord"
-                },
+                "anyOf": [
+                  {
+                    "additionalProperties": {
+                      "$ref": "#/components/schemas/UserDictWord"
+                    },
+                    "type": "object"
+                  },
+                  {
+                    "additionalProperties": {
+                      "$ref": "#/components/schemas/UserDictWordForCompat"
+                    },
+                    "type": "object"
+                  }
+                ],
                 "description": "インポートするユーザー辞書のデータ",
-                "title": "Import Dict Data",
-                "type": "object"
+                "title": "Import Dict Data"
               }
             }
           },
@@ -3483,20 +3608,54 @@
       "get": {
         "description": "ユーザー辞書に登録されている単語の一覧を返します。\n単語の表層形 (surface) は正規化済みの物を返します。",
         "operationId": "get_user_dict_words",
+        "parameters": [
+          {
+            "description": "複数のアクセント句を持つ単語の扱いを指定します。false の場合は API 互換性のため、最初のアクセント句の情報のみを返します。",
+            "in": "query",
+            "name": "enable_compound_accent",
+            "required": false,
+            "schema": {
+              "default": false,
+              "description": "複数のアクセント句を持つ単語の扱いを指定します。false の場合は API 互換性のため、最初のアクセント句の情報のみを返します。",
+              "title": "Enable Compound Accent",
+              "type": "boolean"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": {
-                    "$ref": "#/components/schemas/UserDictWord"
-                  },
-                  "title": "Response Get User Dict Words User Dict Get",
-                  "type": "object"
+                  "anyOf": [
+                    {
+                      "additionalProperties": {
+                        "$ref": "#/components/schemas/UserDictWord"
+                      },
+                      "type": "object"
+                    },
+                    {
+                      "additionalProperties": {
+                        "$ref": "#/components/schemas/UserDictWordForCompat"
+                      },
+                      "type": "object"
+                    }
+                  ],
+                  "title": "Response Get User Dict Words User Dict Get"
                 }
               }
             },
             "description": "単語の UUID とその詳細"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
           }
         },
         "summary": "ユーザー辞書に登録されている単語の一覧を取得する",
@@ -3507,29 +3666,35 @@
     },
     "/user_dict_word": {
       "post": {
-        "description": "ユーザー辞書に言葉を追加します。",
+        "description": "ユーザー辞書に単語を追加します。",
         "operationId": "add_user_dict_word",
         "parameters": [
           {
-            "description": "言葉の表層形",
+            "description": "単語の表層形",
             "in": "query",
             "name": "surface",
             "required": true,
             "schema": {
-              "description": "言葉の表層形",
+              "description": "単語の表層形",
+              "items": {
+                "type": "string"
+              },
               "title": "Surface",
-              "type": "string"
+              "type": "array"
             }
           },
           {
-            "description": "言葉の発音（カタカナ）",
+            "description": "単語の発音（カタカナ）",
             "in": "query",
             "name": "pronunciation",
             "required": true,
             "schema": {
-              "description": "言葉の発音（カタカナ）",
+              "description": "単語の発音（カタカナ）",
+              "items": {
+                "type": "string"
+              },
               "title": "Pronunciation",
-              "type": "string"
+              "type": "array"
             }
           },
           {
@@ -3539,8 +3704,11 @@
             "required": true,
             "schema": {
               "description": "アクセント型（音が下がる場所を指す）",
+              "items": {
+                "type": "integer"
+              },
               "title": "Accent Type",
-              "type": "integer"
+              "type": "array"
             }
           },
           {
@@ -3577,7 +3745,7 @@
                 }
               }
             },
-            "description": "追加した言葉の UUID"
+            "description": "追加した単語の UUID"
           },
           "422": {
             "content": {
@@ -3590,7 +3758,7 @@
             "description": "Validation Error"
           }
         },
-        "summary": "ユーザー辞書に言葉を追加する",
+        "summary": "ユーザー辞書に単語を追加する",
         "tags": [
           "ユーザー辞書"
         ]
@@ -3598,16 +3766,16 @@
     },
     "/user_dict_word/{word_uuid}": {
       "delete": {
-        "description": "ユーザー辞書に登録されている言葉を削除します。",
+        "description": "ユーザー辞書に登録されている単語を削除します。",
         "operationId": "delete_user_dict_word",
         "parameters": [
           {
-            "description": "削除する言葉のUUID",
+            "description": "削除する単語の UUID",
             "in": "path",
             "name": "word_uuid",
             "required": true,
             "schema": {
-              "description": "削除する言葉のUUID",
+              "description": "削除する単語の UUID",
               "title": "Word Uuid",
               "type": "string"
             }
@@ -3628,46 +3796,52 @@
             "description": "Validation Error"
           }
         },
-        "summary": "ユーザー辞書に登録されている言葉を削除する",
+        "summary": "ユーザー辞書に登録されている単語を削除する",
         "tags": [
           "ユーザー辞書"
         ]
       },
       "put": {
-        "description": "ユーザー辞書に登録されている言葉を更新します。",
+        "description": "ユーザー辞書に登録されている単語を更新します。",
         "operationId": "rewrite_user_dict_word",
         "parameters": [
           {
-            "description": "更新する言葉の UUID",
+            "description": "更新する単語の UUID",
             "in": "path",
             "name": "word_uuid",
             "required": true,
             "schema": {
-              "description": "更新する言葉の UUID",
+              "description": "更新する単語の UUID",
               "title": "Word Uuid",
               "type": "string"
             }
           },
           {
-            "description": "言葉の表層形",
+            "description": "単語の表層形",
             "in": "query",
             "name": "surface",
             "required": true,
             "schema": {
-              "description": "言葉の表層形",
+              "description": "単語の表層形",
+              "items": {
+                "type": "string"
+              },
               "title": "Surface",
-              "type": "string"
+              "type": "array"
             }
           },
           {
-            "description": "言葉の発音（カタカナ）",
+            "description": "単語の発音（カタカナ）",
             "in": "query",
             "name": "pronunciation",
             "required": true,
             "schema": {
-              "description": "言葉の発音（カタカナ）",
+              "description": "単語の発音（カタカナ）",
+              "items": {
+                "type": "string"
+              },
               "title": "Pronunciation",
-              "type": "string"
+              "type": "array"
             }
           },
           {
@@ -3677,8 +3851,11 @@
             "required": true,
             "schema": {
               "description": "アクセント型（音が下がる場所を指す）",
+              "items": {
+                "type": "integer"
+              },
               "title": "Accent Type",
-              "type": "integer"
+              "type": "array"
             }
           },
           {
@@ -3720,7 +3897,7 @@
             "description": "Validation Error"
           }
         },
-        "summary": "ユーザー辞書に登録されている言葉を更新する",
+        "summary": "ユーザー辞書に登録されている単語を更新する",
         "tags": [
           "ユーザー辞書"
         ]

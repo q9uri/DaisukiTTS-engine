@@ -18,11 +18,11 @@ class UserDictWordInputs(TypedDict):
     part_of_speech_detail_3: str
     inflectional_type: str
     inflectional_form: str
-    stem: str
-    yomi: str
-    pronunciation: str
-    accent_type: int
-    mora_count: int | None
+    stem: list[str]
+    yomi: list[str]
+    pronunciation: list[str]
+    accent_type: list[int]
+    mora_count: list[int] | None
     accent_associative_rule: str
 
 
@@ -37,10 +37,10 @@ def generate_model() -> UserDictWordInputs:
         "part_of_speech_detail_3": "*",
         "inflectional_type": "*",
         "inflectional_form": "*",
-        "stem": "*",
-        "yomi": "テスト",
-        "pronunciation": "テスト",
-        "accent_type": 0,
+        "stem": ["*"],
+        "yomi": ["テスト"],
+        "pronunciation": ["テスト"],
+        "accent_type": [0],
         "mora_count": None,
         "accent_associative_rule": "*",
     }
@@ -62,8 +62,6 @@ CsvSafeStrFieldName = Literal[
     "part_of_speech_detail_3",
     "inflectional_type",
     "inflectional_form",
-    "stem",
-    "yomi",
     "accent_associative_rule",
 ]
 
@@ -119,7 +117,7 @@ def test_count_mora() -> None:
     mora_count = UserDictWord(**test_value).mora_count
 
     # Test
-    assert mora_count == true_mora_count
+    assert mora_count == [true_mora_count]
 
 
 def test_count_mora_x() -> None:
@@ -129,37 +127,37 @@ def test_count_mora_x() -> None:
             continue
         for x in "ァィゥェォャュョ":
             expected_count = 0
-            test_value["pronunciation"] = s + x
+            test_value["pronunciation"] = [s + x]
             for accent_phrase in parse_kana(
-                test_value["pronunciation"] + "'",
+                "".join(test_value["pronunciation"]) + "'",
             ):
                 expected_count += len(accent_phrase.moras)
-                assert UserDictWord(**test_value).mora_count == expected_count
+                assert UserDictWord(**test_value).mora_count == [expected_count]
 
 
 def test_count_mora_xwa() -> None:
     """「ヮ」を含む発音のモーラ数が適切にカウントされる。"""
     # Inputs
     test_value = generate_model()
-    test_value["pronunciation"] = "クヮンセイ"
+    test_value["pronunciation"] = ["クヮンセイ"]
     # Expects
     true_mora_count = 0
     for accent_phrase in parse_kana(
-        test_value["pronunciation"] + "'",
+        "".join(test_value["pronunciation"]) + "'",
     ):
         true_mora_count += len(accent_phrase.moras)
     # Outputs
     mora_rount = UserDictWord(**test_value).mora_count
 
     # Test
-    assert mora_rount == true_mora_count
+    assert mora_rount == [true_mora_count]
 
 
 def test_invalid_pronunciation_not_katakana() -> None:
     """UserDictWord はカタカナでない pronunciation をエラーとする。"""
     # Inputs
     test_value = generate_model()
-    test_value["pronunciation"] = "ぼいぼ"
+    test_value["pronunciation"] = ["ぼいぼ"]
 
     # Test
     with pytest.raises(ValidationError):
@@ -170,9 +168,9 @@ def test_invalid_pronunciation_newlines_and_null() -> None:
     """UserDictWord は pronunciation 内の改行や null 文字をエラーとする。"""
     # Inputs
     test_value_newlines = generate_model()
-    test_value_newlines["pronunciation"] = "ボイ\r\nボ"
+    test_value_newlines["pronunciation"] = ["ボイ\r\nボ"]
     test_value_null = generate_model()
-    test_value_null["pronunciation"] = "ボイ\x00ボ"
+    test_value_null["pronunciation"] = ["ボイ\x00ボ"]
 
     # Test
     with pytest.raises(ValidationError):
@@ -185,7 +183,7 @@ def test_invalid_pronunciation_invalid_sutegana() -> None:
     """UserDictWord は無効な pronunciation をエラーとする。"""
     # Inputs
     test_value = generate_model()
-    test_value["pronunciation"] = "アィウェォ"
+    test_value["pronunciation"] = ["アィウェォ"]
 
     # Test
     with pytest.raises(ValidationError):
@@ -196,7 +194,7 @@ def test_invalid_pronunciation_invalid_xwa() -> None:
     """UserDictWord は無効な pronunciation をエラーとする。"""
     # Inputs
     test_value = generate_model()
-    test_value["pronunciation"] = "アヮ"
+    test_value["pronunciation"] = ["アヮ"]
 
     # Test
     with pytest.raises(ValidationError):
@@ -207,9 +205,12 @@ def test_count_mora_voiced_sound() -> None:
     """UserDictWord はモーラ数を正しくカウントして上書きする。"""
     # Inputs
     test_value = generate_model()
-    test_value["pronunciation"] = "ボイボ"
+    test_value["stem"] = ["ボイス", "ボックス"]
+    test_value["pronunciation"] = ["ボイス", "ボックス"]
+    test_value["yomi"] = ["ボイス", "ボックス"]
+    test_value["accent_type"] = [3, 1]
     # Expects
-    true_mora_count = 3
+    true_mora_count = [3, 4]
     # Outputs
     mora_count = UserDictWord(**test_value).mora_count
 
@@ -221,7 +222,7 @@ def test_word_accent_type_too_big() -> None:
     """UserDictWord はモーラ数を超えた accent_type をエラーとする。"""
     # Inputs
     test_value = generate_model()
-    test_value["accent_type"] = 4
+    test_value["accent_type"] = [4]
 
     # Test
     with pytest.raises(ValidationError):
@@ -232,7 +233,7 @@ def test_word_accent_type_negative() -> None:
     """UserDictWord は負の accent_type をエラーとする。"""
     # Inputs
     test_value = generate_model()
-    test_value["accent_type"] = -1
+    test_value["accent_type"] = [-1]
 
     # Test
     with pytest.raises(ValidationError):

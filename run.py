@@ -495,7 +495,7 @@ def main() -> None:
         uvicorn.run(app, host=args.host, port=args.port, log_config=LOGGING_CONFIG)
 
     except Exception as ex:
-        logger.error(f"Unexpected error occurred during engine startup:", exc_info=ex)
+        logger.error("Unexpected error occurred during engine startup:", exc_info=ex)
         raise ex
 
 
