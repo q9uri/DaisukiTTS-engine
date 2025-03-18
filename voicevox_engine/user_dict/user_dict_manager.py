@@ -180,8 +180,8 @@ class UserDictionary:
                 ),
             })  # fmt: skip
 
-        # バックグラウンドで辞書更新を行う (辞書登録量によっては数秒を要する)
-        threading.Thread(target=self.apply_jtalk_dictionary, daemon=True).start()
+        # 現在 UserDictionaryRepository に保持されているユーザー辞書データを OpenJTalk に適用
+        self.apply_jtalk_dictionary()
 
     def get_all_words(self) -> dict[str, UserDictWord]:
         """ユーザー辞書に登録されているすべての単語を取得する。"""
@@ -280,7 +280,7 @@ class UserDictionary:
 
     def apply_jtalk_dictionary(self) -> None:
         """
-        現在 UserDictionaryRepository に保存されているユーザー辞書データを OpenJTalk (MeCab) 用の辞書データに変換し、
+        現在 UserDictionaryRepository に保持されているユーザー辞書データを OpenJTalk (MeCab) 用の辞書データに変換し、
         現在のプロセスで実行される全ての pyopenjtalk 呼び出しに、設定したユーザー辞書データを反映させる。
         """
         default_dict_dir_path = self._default_dict_dir_path
