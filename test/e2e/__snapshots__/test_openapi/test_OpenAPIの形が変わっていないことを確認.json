@@ -2347,22 +2347,19 @@
           "content": {
             "application/json": {
               "schema": {
-                "anyOf": [
-                  {
-                    "additionalProperties": {
+                "additionalProperties": {
+                  "anyOf": [
+                    {
                       "$ref": "#/components/schemas/UserDictWord"
                     },
-                    "type": "object"
-                  },
-                  {
-                    "additionalProperties": {
+                    {
                       "$ref": "#/components/schemas/UserDictWordForCompat"
-                    },
-                    "type": "object"
-                  }
-                ],
+                    }
+                  ]
+                },
                 "description": "インポートするユーザー辞書のデータ",
-                "title": "Import Dict Data"
+                "title": "Import Dict Data",
+                "type": "object"
               }
             }
           },
@@ -3627,21 +3624,18 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "anyOf": [
-                    {
-                      "additionalProperties": {
+                  "additionalProperties": {
+                    "anyOf": [
+                      {
                         "$ref": "#/components/schemas/UserDictWord"
                       },
-                      "type": "object"
-                    },
-                    {
-                      "additionalProperties": {
+                      {
                         "$ref": "#/components/schemas/UserDictWordForCompat"
-                      },
-                      "type": "object"
-                    }
-                  ],
-                  "title": "Response Get User Dict Words User Dict Get"
+                      }
+                    ]
+                  },
+                  "title": "Response Get User Dict Words User Dict Get",
+                  "type": "object"
                 }
               }
             },

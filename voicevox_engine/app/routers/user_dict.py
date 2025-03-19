@@ -1,6 +1,6 @@
 """ユーザー辞書機能を提供する API Router"""
 
-from typing import Annotated
+from typing import Annotated, cast
 
 from fastapi import APIRouter, Body, Depends, HTTPException, Path, Query
 from pydantic import ValidationError
@@ -40,7 +40,7 @@ def generate_user_dict_router(
                 description="複数のアクセント句を持つ単語の扱いを指定します。false の場合は API 互換性のため、最初のアクセント句の情報のみを返します。"
             ),
         ] = False,
-    ) -> dict[str, UserDictWord] | dict[str, UserDictWordForCompat]:
+    ) -> dict[str, UserDictWord | UserDictWordForCompat]:
         """
         ユーザー辞書に登録されている単語の一覧を返します。
         単語の表層形 (surface) は正規化済みの物を返します。
@@ -49,7 +49,7 @@ def generate_user_dict_router(
             all_words = user_dict.get_all_words()
             if enable_compound_accent is True:
                 # enable_compound_accent=True の時は UserDictWord をそのまま返す
-                return all_words
+                return cast(dict[str, UserDictWord | UserDictWordForCompat], all_words)
             else:
                 # enable_compound_accent=False の時は UserDictWordForCompat に変換してから返す
                 return {
@@ -216,7 +216,7 @@ def generate_user_dict_router(
     )
     def import_user_dict_words(
         import_dict_data: Annotated[
-            dict[str, UserDictWord] | dict[str, UserDictWordForCompat],
+            dict[str, UserDictWord | UserDictWordForCompat],
             Body(description="インポートするユーザー辞書のデータ"),
         ],
         override: Annotated[
