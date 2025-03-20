@@ -298,14 +298,16 @@ class UserDictWordForCompat(BaseModel):
             part_of_speech_detail_3=user_dict_word.part_of_speech_detail_3,
             inflectional_type=user_dict_word.inflectional_type,
             inflectional_form=user_dict_word.inflectional_form,
-            # アクセント句が複数ある単語では、苦肉の策で最初のアクセント句の情報のみを返す
-            # これにより本来の登録意図と齟齬が生じるがやむを得ない…
-            stem=user_dict_word.stem[0],
-            yomi=user_dict_word.yomi[0],
-            pronunciation=user_dict_word.pronunciation[0],
+            # アクセント句が複数ある単語では、苦肉の策でアクセント句を結合して返す
+            # これにより本来の登録意図と齟齬が生じる（分割情報が失われる）が互換性のためやむを得ない…
+            stem="".join(user_dict_word.stem),
+            yomi="".join(user_dict_word.yomi),
+            pronunciation="".join(user_dict_word.pronunciation),
+            # 最初のアクセント句のアクセント位置を採用
             accent_type=user_dict_word.accent_type[0],
+            # アクセント句ごとに算出されているモーラ数を合計する
             mora_count=(
-                user_dict_word.mora_count[0]
+                sum(user_dict_word.mora_count)
                 if user_dict_word.mora_count is not None
                 else None
             ),
