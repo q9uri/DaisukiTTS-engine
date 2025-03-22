@@ -258,10 +258,10 @@ class AivmInfosRepository:
             # 最低限のパスのバリデーション
             aivm_file_path = Path(aivm_file_path)
             if not aivm_file_path.exists():
-                logger.warning(f"{aivm_file_path}: File not found.")
+                logger.warning(f"{aivm_file_path}: File not found. Skipping...")
                 continue
             if not aivm_file_path.is_file():
-                logger.warning(f"{aivm_file_path}: Not a file.")
+                logger.warning(f"{aivm_file_path}: Not a file. Skipping...")
                 continue
 
             # AIVM メタデータの読み込み
@@ -271,7 +271,7 @@ class AivmInfosRepository:
                     aivm_manifest = aivm_metadata.manifest
             except aivmlib.AivmValidationError as ex:
                 logger.warning(
-                    f"{aivm_file_path}: Failed to read AIVM metadata:",
+                    f"{aivm_file_path}: Failed to read AIVM metadata. Skipping...",
                     exc_info=ex,
                 )
                 continue
@@ -282,7 +282,7 @@ class AivmInfosRepository:
             # すでに同一 UUID のファイルがインストール済みかどうかのチェック
             if aivm_uuid in aivm_infos:
                 logger.info(
-                    f"{aivm_file_path}: AIVM model {aivm_uuid} is already installed."
+                    f"{aivm_file_path}: AIVM model {aivm_uuid} is already installed. Skipping..."
                 )
                 continue
 
@@ -291,7 +291,7 @@ class AivmInfosRepository:
             manifest_version_parts = aivm_manifest.manifest_version.split(".")
             if len(manifest_version_parts) != 2:
                 logger.warning(
-                    f"{aivm_file_path}: Invalid AIVM manifest version format: {aivm_manifest.manifest_version}"
+                    f"{aivm_file_path}: Invalid AIVM manifest version format: {aivm_manifest.manifest_version} Skipping..."
                 )
                 continue
             # サポートされているマニフェストバージョンごとにチェック
@@ -302,7 +302,7 @@ class AivmInfosRepository:
                 if manifest_major != supported_major:
                     # メジャーバージョンが AIVM マニフェストのものと異なる場合はスキップ
                     logger.warning(
-                        f"{aivm_file_path}: AIVM manifest version {aivm_manifest.manifest_version} is not supported (different major version)."
+                        f"{aivm_file_path}: AIVM manifest version {aivm_manifest.manifest_version} is not supported (different major version). Skipping..."
                     )
                     continue
                 # 同じメジャーバージョンだが、より新しいマイナーバージョンの場合は警告を出して続行
@@ -317,7 +317,7 @@ class AivmInfosRepository:
             # 音声合成モデルのアーキテクチャがサポートされているかどうかのチェック
             if aivm_manifest.model_architecture not in cls.SUPPORTED_MODEL_ARCHITECTURES:  # fmt: skip
                 logger.warning(
-                    f"{aivm_file_path}: Model architecture {aivm_manifest.model_architecture} is not supported."
+                    f"{aivm_file_path}: Model architecture {aivm_manifest.model_architecture} is not supported. Skipping..."
                 )
                 continue
 
@@ -346,7 +346,7 @@ class AivmInfosRepository:
                     lang.lower() for lang in speaker_manifest.supported_languages
                 ]
                 if not any(lang in supported_langs for lang in ['ja', 'ja-jp']):  # fmt: skip
-                    logger.warning(f"{aivm_file_path}: Speaker {speaker_uuid} does not support Japanese. Ignoring.")  # fmt: skip
+                    logger.warning(f"{aivm_file_path}: Speaker {speaker_uuid} does not support Japanese. Skipping...")  # fmt: skip
                     continue
 
                 # 話者アイコンを Base64 文字列に変換

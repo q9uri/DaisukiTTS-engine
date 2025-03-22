@@ -58,6 +58,7 @@ class AivmManager:
         self._repository = AivmInfosRepository(self.installed_models_dir)
 
         # まだ一つも音声合成モデルがインストールされていない場合、デフォルトモデルをインストール
+        # メタデータの読み取りに失敗したなどで情報を取得できなかったモデルはインストールされていないとみなす
         current_installed_aivm_infos = self._repository.get_installed_aivm_infos()
         if len(current_installed_aivm_infos) == 0:
             logger.warning("No models are installed. Installing default models...")
