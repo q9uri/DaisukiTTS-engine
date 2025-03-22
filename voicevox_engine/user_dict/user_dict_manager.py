@@ -60,7 +60,16 @@ class UserDictionaryRepository:
             try:
                 # まず通常のバリデーションを試みる
                 with open(self.user_dict_path, mode="r", encoding="utf-8") as f:
-                    return self._user_dict_adapter.validate_json(f.read())
+                    user_dict = self._user_dict_adapter.validate_json(f.read())
+                # バリデーションに成功した場合でも、stem の値が要素数1で、[0] の中身が "*" なら surface に変更する
+                for word_uuid, word in user_dict.items():
+                    if len(word.stem) == 1 and word.stem[0] == "*" and word.surface:
+                        logger.info(
+                            f"UserDictionaryRepository: [{word_uuid}] stem ({word.stem}) is '*'. "  # noqa
+                            + f"Use surface ({word.surface}) instead."
+                        )
+                        word.stem = [word.surface]
+                return user_dict
             except ValidationError as ex:
                 # バリデーションエラーが発生した場合、マイグレーション処理を行う
                 logger.warning(
@@ -98,7 +107,16 @@ class UserDictionaryRepository:
                     # AivisSpeech Engine 1.1.0 以前の辞書では stem, yomi, pronunciation,
                     # accent_type, mora_count が文字列として保存されていたため、リストに変換する
                     if "stem" in raw_word and isinstance(raw_word["stem"], str):
-                        raw_word["stem"] = [raw_word["stem"]]
+                        # もし stem が "*" の場合は stem の代わりに surface を使う
+                        # 上記仕様変更により、stem の値は省略せず surface の値が入るように変更されたため
+                        if (
+                            raw_word["stem"] == "*"
+                            and "surface" in raw_word
+                            and isinstance(raw_word["surface"], str)
+                        ):
+                            raw_word["stem"] = [raw_word["surface"]]
+                        else:
+                            raw_word["stem"] = [raw_word["stem"]]
                     if "yomi" in raw_word and isinstance(raw_word["yomi"], str):
                         raw_word["yomi"] = [raw_word["yomi"]]
                     if "pronunciation" in raw_word and isinstance(raw_word["pronunciation"], str):  # fmt: skip # noqa
