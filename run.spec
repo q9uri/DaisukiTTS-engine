@@ -11,6 +11,7 @@ datas = [
     ('resources/setting_ui_template.html', 'resources'),
     ('engine_manifest.json', '.'),
 ]
+datas += collect_data_files('e2k')
 datas += collect_data_files('pyopenjtalk')
 datas += collect_data_files('style_bert_vits2')
 
