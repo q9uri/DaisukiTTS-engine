@@ -12,7 +12,7 @@
     "part_of_speech_detail_3": "*",
     "priority": 4,
     "pronunciation": "テストサン",
-    "stem": "*",
+    "stem": "ｔｅｓｔ３",
     "surface": "ｔｅｓｔ３",
     "yomi": "テストサン"
   },
@@ -29,7 +29,7 @@
     "part_of_speech_detail_3": "*",
     "priority": 5,
     "pronunciation": "テストイチ",
-    "stem": "*",
+    "stem": "ｔｅｓｔ１",
     "surface": "ｔｅｓｔ１",
     "yomi": "テストイチ"
   },
@@ -46,7 +46,7 @@
     "part_of_speech_detail_3": "*",
     "priority": 5,
     "pronunciation": "テストニ",
-    "stem": "*",
+    "stem": "ｔｅｓｔ２",
     "surface": "ｔｅｓｔ２",
     "yomi": "テストニ"
   }
