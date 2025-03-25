@@ -50,7 +50,6 @@ import_word = UserDictWord(
     yomi=["テストツー"],
     pronunciation=["テストツー"],
     accent_type=[1],
-    mora_count=None,
     accent_associative_rule="*",
 )
 
@@ -88,7 +87,6 @@ def test_create_word() -> None:
         yomi=["テスト"],
         pronunciation=["テスト"],
         accent_type=[1],
-        mora_count=None,
         accent_associative_rule="*",
     )
 
@@ -266,10 +264,11 @@ def test_import_invalid_word(tmp_path: Path) -> None:
         )
     invalid_pos_word = deepcopy(import_word)
     invalid_pos_word.context_id = 2
-    invalid_pos_word.part_of_speech = "フィラー"
-    invalid_pos_word.part_of_speech_detail_1 = "*"
-    invalid_pos_word.part_of_speech_detail_2 = "*"
-    invalid_pos_word.part_of_speech_detail_3 = "*"
+    # @model_validator(mode="after") のバリデーションをバイパスする
+    object.__setattr__(invalid_pos_word, "part_of_speech", "フィラー")
+    object.__setattr__(invalid_pos_word, "part_of_speech_detail_1", "*")
+    object.__setattr__(invalid_pos_word, "part_of_speech_detail_2", "*")
+    object.__setattr__(invalid_pos_word, "part_of_speech_detail_3", "*")
     with pytest.raises(UserDictInputError):
         user_dict.import_dictionary(
             {"aab7dda2-0d97-43c8-8cb7-3f440dab9b4e": invalid_pos_word},

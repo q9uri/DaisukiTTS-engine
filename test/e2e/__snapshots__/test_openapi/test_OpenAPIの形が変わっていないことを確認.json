@@ -1288,6 +1288,7 @@
             "type": "string"
           },
           "mora_count": {
+            "default": [],
             "description": "モーラ数",
             "items": {
               "type": "integer"
@@ -1342,6 +1343,11 @@
             "description": "表層形",
             "title": "Surface",
             "type": "string"
+          },
+          "word_type": {
+            "$ref": "#/components/schemas/WordTypes",
+            "default": "PROPER_NOUN",
+            "description": "品詞種別"
           },
           "yomi": {
             "description": "読み",

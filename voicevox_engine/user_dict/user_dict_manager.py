@@ -328,7 +328,6 @@ class UserDictionary:
                 for word in user_dict.values():
                     # アクセント位置とモーラ数はスラッシュで結合する
                     accent_type_mora_count: list[str] = []
-                    assert word.mora_count is not None
                     for accent_type, mora_count in zip(
                         word.accent_type, word.mora_count
                     ):

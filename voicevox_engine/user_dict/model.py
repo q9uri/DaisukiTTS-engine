@@ -99,6 +99,7 @@ class UserDictWord(BaseModel):
     part_of_speech_detail_1: CsvSafeStr = Field(description="品詞細分類1")
     part_of_speech_detail_2: CsvSafeStr = Field(description="品詞細分類2")
     part_of_speech_detail_3: CsvSafeStr = Field(description="品詞細分類3")
+    word_type: WordTypes = Field(description="品詞種別", default=WordTypes.PROPER_NOUN)
     inflectional_type: CsvSafeStr = Field(description="活用型")
     inflectional_form: CsvSafeStr = Field(description="活用形")
     stem: list[
@@ -114,32 +115,55 @@ class UserDictWord(BaseModel):
         Field(description="発音")
     )
     accent_type: list[int] = Field(description="アクセント型")
-    mora_count: list[int] | SkipJsonSchema[None] = Field(
-        default=None, description="モーラ数"
-    )
+    mora_count: list[int] = Field(description="モーラ数", default=[])
     accent_associative_rule: CsvSafeStr = Field(description="アクセント結合規則")
 
     @model_validator(mode="after")
+    def compute_word_type(self) -> Self:
+        # 品詞情報から WordTypes (品詞種別) を自動算出する
+        # 品詞種別は品詞情報から自動算出できるため、外部からの入力値に頼るべきではない
+        # このバリデーターの処理により、word_type には常に品詞情報に対応する WordTypes の値が設定される
+        for word_type, part_of_speech_detail in PART_OF_SPEECH_DATA.items():
+            if (
+                self.part_of_speech == part_of_speech_detail.part_of_speech
+                and self.part_of_speech_detail_1
+                == part_of_speech_detail.part_of_speech_detail_1
+                and self.part_of_speech_detail_2
+                == part_of_speech_detail.part_of_speech_detail_2
+                and self.part_of_speech_detail_3
+                == part_of_speech_detail.part_of_speech_detail_3
+            ):
+                # 変更がある時のみセットしないと RecursionError が発生する
+                if self.word_type != word_type:
+                    self.word_type = word_type
+                return self
+        raise ValueError("不明な品詞です。")
+
+    @model_validator(mode="after")
     def check_mora_count_and_accent_type(self) -> Self:
-        # この時点でモーラ数が指定されていない場合は自動で計算する
-        if self.mora_count is None:
-            generated_mora_count = []
-            # アクセント句ごとに発音表記からモーラ数を計算し、対応するインデックスのモーラ数リストに格納
-            for pronunciation in self.pronunciation:
-                rule_others = "[イ][ェ]|[ヴ][ャュョ]|[クグトド][ゥ]|[テデ][ィャュョ]|[デ][ェ]|[クグ][ヮ]"
-                rule_line_i = "[キシチニヒミリギジヂビピ][ェャュョ]|[シ][ィ]"
-                rule_line_u = "[クツフヴグ][ァ]|[ウクスツフヴグズ][ィ]|[ウクツフヴグ][ェォ]|[フ][ュ]"
-                rule_one_mora = "[ァ-ヴー]"
-                generated_mora_count.append(
-                    len(
-                        findall(
-                            f"(?:{rule_others}|{rule_line_i}|{rule_line_u}|{rule_one_mora})",
-                            pronunciation,
-                        )
+        # モデル初期化時にセットされた値に関わらず、常にモーラ数を自動算出する
+        # モーラ数は発音表記から自動算出できるため、外部からの入力値に頼るべきではない
+        # このバリデーターの処理により、mora_count には常に1以上の要素を持つ list[int] が設定される
+        generated_mora_count: list[int] = []
+        # アクセント句ごとに発音表記からモーラ数を計算し、対応するインデックスのモーラ数リストに格納
+        for pronunciation in self.pronunciation:
+            rule_others = "[イ][ェ]|[ヴ][ャュョ]|[クグトド][ゥ]|[テデ][ィャュョ]|[デ][ェ]|[クグ][ヮ]"
+            rule_line_i = "[キシチニヒミリギジヂビピ][ェャュョ]|[シ][ィ]"
+            rule_line_u = (
+                "[クツフヴグ][ァ]|[ウクスツフヴグズ][ィ]|[ウクツフヴグ][ェォ]|[フ][ュ]"
+            )
+            rule_one_mora = "[ァ-ヴー]"
+            generated_mora_count.append(
+                len(
+                    findall(
+                        f"(?:{rule_others}|{rule_line_i}|{rule_line_u}|{rule_one_mora})",
+                        pronunciation,
                     )
                 )
-            # モーラ数を計算したリストをモーラ数リストに設定
-            # 全て生成してからセットしないと再度バリデーションが実行されてしまう
+            )
+        # 計算したモーラ数リストを設定
+        # 変更がある時のみセットしないと RecursionError が発生する
+        if sum(self.mora_count) != sum(generated_mora_count):
             self.mora_count = generated_mora_count
 
         # アクセント型とモーラ数の要素数が一致しない
@@ -224,8 +248,6 @@ class UserDictWord(BaseModel):
             # 「アクセント型」はアクセント位置をリスト形式のまま保持し、
             # アクセント句が複数ある場合は CSV 生成時にモーラ数と共に半角コロンで結合する
             accent_type=word_property.accent_type,
-            # 「モーラ数」は発音表記から自動生成するため None を設定
-            mora_count=None,
             # 「アクセント結合規則」は常に "*" 固定
             accent_associative_rule="*",
         )
@@ -249,11 +271,6 @@ class UserDictWord(BaseModel):
             yomi=[user_dict_word_for_compat.yomi],
             pronunciation=[user_dict_word_for_compat.pronunciation],
             accent_type=[user_dict_word_for_compat.accent_type],
-            mora_count=(
-                [user_dict_word_for_compat.mora_count]
-                if user_dict_word_for_compat.mora_count is not None
-                else None
-            ),
             accent_associative_rule=user_dict_word_for_compat.accent_associative_rule,
         )
 
@@ -298,19 +315,15 @@ class UserDictWordForCompat(BaseModel):
             part_of_speech_detail_3=user_dict_word.part_of_speech_detail_3,
             inflectional_type=user_dict_word.inflectional_type,
             inflectional_form=user_dict_word.inflectional_form,
-            # アクセント句が複数ある単語では、苦肉の策でアクセント句を結合して返す
-            # これにより本来の登録意図と齟齬が生じる（分割情報が失われる）が互換性のためやむを得ない…
+            # アクセント句が複数ある単語では、苦肉の策で原形・読み・発音表記を結合し単一アクセント句にして返す
+            # これにより本来の登録意図と齟齬が生じるが、API 互換性のためやむを得ない…
             stem="".join(user_dict_word.stem),
             yomi="".join(user_dict_word.yomi),
             pronunciation="".join(user_dict_word.pronunciation),
             # 最初のアクセント句のアクセント位置を採用
             accent_type=user_dict_word.accent_type[0],
-            # アクセント句ごとに算出されているモーラ数を合計する
-            mora_count=(
-                sum(user_dict_word.mora_count)
-                if user_dict_word.mora_count is not None
-                else None
-            ),
+            # アクセント句ごとに算出されているモーラ数を合計した値をセット
+            mora_count=sum(user_dict_word.mora_count),
             accent_associative_rule=user_dict_word.accent_associative_rule,
         )
 

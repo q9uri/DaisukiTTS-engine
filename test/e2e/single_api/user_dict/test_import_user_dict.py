@@ -29,7 +29,7 @@ def test_post_import_user_dict_contents(
             "context_id": 1348,
             "inflectional_form": "*",
             "inflectional_type": "*",
-            "mora_count": 3,
+            "mora_count": 5,
             "part_of_speech": "名詞",
             "part_of_speech_detail_1": "固有名詞",
             "part_of_speech_detail_2": "一般",

@@ -129,7 +129,6 @@ def _generate_user_dict(dir_path: Path) -> Path:
             "yomi": ["テストイチ"],
             "pronunciation": ["テストイチ"],
             "accent_type": [1],
-            "mora_count": [3],
             "accent_associative_rule": "*",
         },
         "c89596ad-caa8-4f4e-8eb3-3d2261c798fd": {
@@ -146,7 +145,6 @@ def _generate_user_dict(dir_path: Path) -> Path:
             "yomi": ["テストニ"],
             "pronunciation": ["テストニ"],
             "accent_type": [1],
-            "mora_count": [2],
             "accent_associative_rule": "*",
         },
     }

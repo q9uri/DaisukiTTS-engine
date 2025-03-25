@@ -22,7 +22,6 @@ class UserDictWordInputs(TypedDict):
     yomi: list[str]
     pronunciation: list[str]
     accent_type: list[int]
-    mora_count: list[int] | None
     accent_associative_rule: str
 
 
@@ -41,7 +40,6 @@ def generate_model() -> UserDictWordInputs:
         "yomi": ["テスト"],
         "pronunciation": ["テスト"],
         "accent_type": [0],
-        "mora_count": None,
         "accent_associative_rule": "*",
     }
 
@@ -108,7 +106,7 @@ def test_convert_to_zenkaku() -> None:
 
 
 def test_count_mora() -> None:
-    """UserDictWord は mora_count=None を上書きする。"""
+    """UserDictWord は mora_count=[] を上書きする。"""
     # Inputs
     test_value = generate_model()
     # Expects
