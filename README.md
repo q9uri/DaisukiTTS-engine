@@ -565,7 +565,7 @@ poetry run task build
 
 ## Special Thanks
 
-AivisSpeech Engine は多くの素晴らしいオープンソースソフトウェアとその貢献に深く支えられています。  
+AivisSpeech Engine は、多くの素晴らしいオープンソースソフトウェアとその貢献に深く支えられています。  
 オープンソースソフトウェアを開発してくださった全ての方々、コミュニティの皆様の貢献とサポートに、心より感謝いたします。
 
 - [@litagin02](https://github.com/litagin02)
