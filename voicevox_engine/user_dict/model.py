@@ -201,26 +201,20 @@ class UserDictWord(BaseModel):
         if len(word_property.surface) == 0:
             raise UserDictInputError("表層形が空です。")
 
-        # word_type が指定されていない場合は PROPER_NOUN (固有名詞) を設定
-        word_type: WordTypes | None = word_property.word_type
-        if word_type is None:
-            word_type = WordTypes.PROPER_NOUN
-
         # word_type が part_of_speech_data のキーに含まれていない
-        if word_type not in PART_OF_SPEECH_DATA.keys():
+        if word_property.word_type not in PART_OF_SPEECH_DATA.keys():
             raise UserDictInputError("不明な品詞です。")
 
-        # priority が指定されていない場合は 5 を設定
-        priority: int | None = word_property.priority
-        if priority is None:
-            priority = 5
-
         # priority が 0 から 10 の範囲外
-        if not USER_DICT_MIN_PRIORITY <= priority <= USER_DICT_MAX_PRIORITY:
+        if (
+            not USER_DICT_MIN_PRIORITY
+            <= word_property.priority
+            <= USER_DICT_MAX_PRIORITY
+        ):
             raise UserDictInputError("優先度の値が無効です。")
 
         # WordTypes に対応する品詞情報を取得
-        pos_detail = PART_OF_SPEECH_DATA[word_type]
+        pos_detail = PART_OF_SPEECH_DATA[word_property.word_type]
 
         # ユーザー辞書のビルドに必要な単語情報を生成し、同時にバリデーションも行う
         # バリデーション処理は Pydantic によって行われる
@@ -230,7 +224,7 @@ class UserDictWord(BaseModel):
             # 「左・右文脈 ID」は PART_OF_SPEECH_DATA から WordTypes に対応する定数を取得して設定
             context_id=pos_detail.context_id,
             # 「優先度」はユーザー辞書の優先度をそのまま設定
-            priority=priority,
+            priority=word_property.priority,
             # 「品詞」「品詞細分類1/2/3」は PART_OF_SPEECH_DATA から WordTypes に対応する定数を取得して設定
             part_of_speech=pos_detail.part_of_speech,
             part_of_speech_detail_1=pos_detail.part_of_speech_detail_1,

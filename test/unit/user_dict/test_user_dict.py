@@ -10,6 +10,7 @@ from voicevox_engine.user_dict.constants import (
     PART_OF_SPEECH_DATA,
     USER_DICT_MAX_PRIORITY,
     WordProperty,
+    WordTypes,
 )
 from voicevox_engine.user_dict.model import UserDictInputError, UserDictWord
 from voicevox_engine.user_dict.user_dict_manager import UserDictionary
@@ -73,7 +74,13 @@ def test_read_not_exist_json(tmp_path: Path) -> None:
 def test_create_word() -> None:
     # 将来的に品詞などが追加された時にテストを増やす
     assert UserDictWord.from_word_property(
-        WordProperty(surface=["test"], pronunciation=["テスト"], accent_type=[1])
+        WordProperty(
+            surface=["test"],
+            pronunciation=["テスト"],
+            accent_type=[1],
+            word_type=WordTypes.PROPER_NOUN,
+            priority=5,
+        )
     ) == UserDictWord(
         surface="ｔｅｓｔ",
         priority=5,
@@ -97,7 +104,13 @@ def test_apply_word_without_json(tmp_path: Path) -> None:
         user_dict_path=tmp_path / "test_apply_word_without_json.json"
     )
     user_dict.add_word(
-        WordProperty(surface=["test"], pronunciation=["テスト"], accent_type=[1])
+        WordProperty(
+            surface=["test"],
+            pronunciation=["テスト"],
+            accent_type=[1],
+            word_type=WordTypes.PROPER_NOUN,
+            priority=5,
+        )
     )
     res = user_dict.get_all_words()
     assert len(res) == 1
@@ -116,7 +129,13 @@ def test_apply_word_with_json(tmp_path: Path) -> None:
     )
     user_dict = UserDictionary(user_dict_path=user_dict_path)
     user_dict.add_word(
-        WordProperty(surface=["test2"], pronunciation=["テストツー"], accent_type=[3])
+        WordProperty(
+            surface=["test2"],
+            pronunciation=["テストツー"],
+            accent_type=[3],
+            word_type=WordTypes.PROPER_NOUN,
+            priority=5,
+        )
     )
     res = user_dict.get_all_words()
     assert len(res) == 2
@@ -138,7 +157,11 @@ def test_rewrite_word_invalid_id(tmp_path: Path) -> None:
         user_dict.update_word(
             "c2be4dc5-d07d-4767-8be1-04a1bb3f05a9",
             WordProperty(
-                surface=["test2"], pronunciation=["テストツー"], accent_type=[2]
+                surface=["test2"],
+                pronunciation=["テストツー"],
+                accent_type=[2],
+                word_type=WordTypes.PROPER_NOUN,
+                priority=5,
             ),
         )
 
@@ -151,7 +174,13 @@ def test_rewrite_word_valid_id(tmp_path: Path) -> None:
     user_dict = UserDictionary(user_dict_path=user_dict_path)
     user_dict.update_word(
         "aab7dda2-0d97-43c8-8cb7-3f440dab9b4e",
-        WordProperty(surface=["test2"], pronunciation=["テストツー"], accent_type=[2]),
+        WordProperty(
+            surface=["test2"],
+            pronunciation=["テストツー"],
+            accent_type=[2],
+            word_type=WordTypes.PROPER_NOUN,
+            priority=5,
+        ),
     )
     new_word = user_dict.get_all_words()["aab7dda2-0d97-43c8-8cb7-3f440dab9b4e"]
     assert (new_word.surface, new_word.pronunciation, new_word.accent_type) == (
@@ -294,6 +323,7 @@ if sys.platform != "win32":
                 surface=[test_text],
                 pronunciation=[success_pronunciation],
                 accent_type=[1],
+                word_type=WordTypes.PROPER_NOUN,
                 priority=10,
             )
         )

@@ -1,10 +1,11 @@
+# flake8: noqa: B950
+
 """ユーザー辞書機能を提供する API Router"""
 
 from typing import Annotated, cast
 
 from fastapi import APIRouter, Body, Depends, HTTPException, Path, Query
 from pydantic import ValidationError
-from pydantic.json_schema import SkipJsonSchema
 
 from voicevox_engine.user_dict.constants import (
     USER_DICT_MAX_PRIORITY,
@@ -37,7 +38,11 @@ def generate_user_dict_router(
         enable_compound_accent: Annotated[
             bool,
             Query(
-                description="複数のアクセント句を持つ単語の扱いを指定する<br>false の場合は API 互換性のため、最初のアクセント句の情報のみを返します。"
+                description=(
+                    "複数のアクセント句を持つ単語の扱いを指定する<br>"
+                    "false の場合は API 互換性のため、最初のアクセント句の情報のみを返します。<br>"
+                    "未指定時は `false` が設定されます。"
+                ),
             ),
         ] = False,
     ) -> dict[str, UserDictWord | UserDictWordForCompat]:
@@ -78,29 +83,37 @@ def generate_user_dict_router(
             list[str], Query(description="単語の発音（カタカナ）")
         ],
         accent_type: Annotated[
-            list[int], Query(description="東京式アクセントにおけるアクセント型<br>1-indexed で音高が下がる直前のモーラのインデックスを指定します。0 は平板型を意味します。<br>例として、`surface: [\"新田\", \"真剣佑\"], pronunciation: [\"あらた\", \"まっけんゆう\"]` のとき、`accent_type: [1, 3]` (新田 → 頭高型, 真剣佑 → 中高型) のように指定します。")
+            list[int],
+            Query(
+                description=(
+                    "東京式アクセントにおけるアクセント型<br>"
+                    "1-indexed で音高が下がる直前のモーラのインデックスを指定します。0 は平板型を意味します。<br>"
+                    '例として、`surface: ["新田", "真剣佑"], pronunciation: ["あらた", "まっけんゆう"]` のとき、`accent_type: [1, 3]` (新田 → 頭高型, 真剣佑 → 中高型) のように指定します。'
+                ),
+            ),
         ],
         word_type: Annotated[
-            WordTypes | SkipJsonSchema[None],
+            WordTypes,
             Query(
-                description="単語の品詞<br>固有名詞 / 地名 / 組織・施設名 / 人名 / 人名 (姓) / 人名 (名) / 普通名詞 / 動詞 / 形容詞 / 語尾 のいずれかです。"
+                description=(
+                    "単語の品詞<br>"
+                    "固有名詞 / 地名 / 組織・施設名 / 人名 / 人名 (姓) / 人名 (名) / 普通名詞 / 動詞 / 形容詞 / 語尾 のいずれかを指定します。<br>"
+                    "未指定時は `固有名詞` が設定されます。"
+                ),
             ),
-        ] = None,
+        ] = WordTypes.PROPER_NOUN,
         priority: Annotated[
-            int | SkipJsonSchema[None],
+            int,
             Query(
                 ge=USER_DICT_MIN_PRIORITY,
                 le=USER_DICT_MAX_PRIORITY,
-                description="単語の優先度 (1~9 の範囲を推奨)<br>数値が大きいほど辞書適用時に優先して利用されます。",
-                # "SkipJsonSchema[None]"の副作用でスキーマーが欠落する問題に対するワークアラウンド
-                json_schema_extra={
-                    "le": None,
-                    "ge": None,
-                    "maximum": USER_DICT_MAX_PRIORITY,
-                    "minimum": USER_DICT_MIN_PRIORITY,
-                },
+                description=(
+                    "単語の優先度 (1~9 の範囲を推奨)<br>"
+                    "数値が大きいほど、辞書適用時に優先して利用されます。<br>"
+                    "未指定時は `5` が設定されます。"
+                ),
             ),
-        ] = None,
+        ] = 5,
     ) -> str:
         """
         ユーザー辞書に単語を追加します。<br>
@@ -141,29 +154,37 @@ def generate_user_dict_router(
             list[str], Query(description="単語の発音（カタカナ）")
         ],
         accent_type: Annotated[
-            list[int], Query(description="東京式アクセントにおけるアクセント型<br>1-indexed で音高が下がる直前のモーラのインデックスを指定します。0 は平板型を意味します。<br>例として、`surface: [\"新田\", \"真剣佑\"], pronunciation: [\"あらた\", \"まっけんゆう\"]` のとき、`accent_type: [1, 3]` (新田 → 頭高型, 真剣佑 → 中高型) のように指定します。")
+            list[int],
+            Query(
+                description=(
+                    "東京式アクセントにおけるアクセント型<br>"
+                    "1-indexed で音高が下がる直前のモーラのインデックスを指定します。0 は平板型を意味します。<br>"
+                    '例として、`surface: ["新田", "真剣佑"], pronunciation: ["あらた", "まっけんゆう"]` のとき、`accent_type: [1, 3]` (新田 → 頭高型, 真剣佑 → 中高型) のように指定します。'
+                ),
+            ),
         ],
         word_type: Annotated[
-            WordTypes | SkipJsonSchema[None],
+            WordTypes,
             Query(
-                description="単語の品詞<br>固有名詞 / 地名 / 組織・施設名 / 人名 / 人名 (姓) / 人名 (名) / 普通名詞 / 動詞 / 形容詞 / 語尾 のいずれかを指定します。"
+                description=(
+                    "単語の品詞<br>"
+                    "固有名詞 / 地名 / 組織・施設名 / 人名 / 人名 (姓) / 人名 (名) / 普通名詞 / 動詞 / 形容詞 / 語尾 のいずれかを指定します。<br>"
+                    "未指定時は `固有名詞` が設定されます。"
+                ),
             ),
-        ] = None,
+        ] = WordTypes.PROPER_NOUN,
         priority: Annotated[
-            int | SkipJsonSchema[None],
+            int,
             Query(
                 ge=USER_DICT_MIN_PRIORITY,
                 le=USER_DICT_MAX_PRIORITY,
-                description="単語の優先度 (1~9 の範囲を推奨)<br>数値が大きいほど、辞書適用時に優先して利用されます。",
-                # "SkipJsonSchema[None]"の副作用でスキーマーが欠落する問題に対するワークアラウンド
-                json_schema_extra={
-                    "le": None,
-                    "ge": None,
-                    "maximum": USER_DICT_MAX_PRIORITY,
-                    "minimum": USER_DICT_MIN_PRIORITY,
-                },
+                description=(
+                    "単語の優先度 (1~9 の範囲を推奨)<br>"
+                    "数値が大きいほど、辞書適用時に優先して利用されます。<br>"
+                    "未指定時は `5` が設定されます。"
+                ),
             ),
-        ] = None,
+        ] = 5,
     ) -> None:
         """
         ユーザー辞書に登録されている単語を更新します。<br>

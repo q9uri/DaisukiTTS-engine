@@ -28,8 +28,8 @@ class WordProperty:
     surface: list[str]  # 表層形 (アクセント句ごとに1つずつ)
     pronunciation: list[str]  # 発音 (アクセント句ごとに1つずつ)
     accent_type: list[int]  # アクセント型 (アクセント句ごとに1つずつ)
-    word_type: WordTypes | None = None  # 品詞
-    priority: int | None = None  # 優先度
+    word_type: WordTypes  # 品詞
+    priority: int  # 優先度
 
 
 @dataclass(frozen=True)
