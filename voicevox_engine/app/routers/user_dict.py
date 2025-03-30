@@ -31,19 +31,21 @@ def generate_user_dict_router(
     @router.get(
         "/user_dict",
         summary="ユーザー辞書に登録されている単語の一覧を取得する",
-        response_description="単語の UUID とその詳細",
+        response_description="ユーザー辞書に登録されている単語情報のリスト",
     )
     def get_user_dict_words(
         enable_compound_accent: Annotated[
             bool,
             Query(
-                description="複数のアクセント句を持つ単語の扱いを指定します。false の場合は API 互換性のため、最初のアクセント句の情報のみを返します。"
+                description="複数のアクセント句を持つ単語の扱いを指定する<br>false の場合は API 互換性のため、最初のアクセント句の情報のみを返します。"
             ),
         ] = False,
     ) -> dict[str, UserDictWord | UserDictWordForCompat]:
         """
-        ユーザー辞書に登録されている単語の一覧を返します。
-        単語の表層形 (surface) は正規化済みの物を返します。
+        ユーザー辞書に登録されている単語の一覧を返します。<br>
+        複合語アクセントのサポートを有効にするか次第で、返されるデータ型が変化します。<br>
+        デフォルトでは、従来の API と互換性のある `UserDictWordForCompat` を返します。<br>
+        `?enable_compound_accent=true` を指定すると、AivisSpeech Engine 1.1.0 以降で利用可能な `UserDictWord` を返します。
         """
         try:
             all_words = user_dict.get_all_words()
@@ -76,12 +78,12 @@ def generate_user_dict_router(
             list[str], Query(description="単語の発音（カタカナ）")
         ],
         accent_type: Annotated[
-            list[int], Query(description="アクセント型（音が下がる場所を指す）")
+            list[int], Query(description="東京式アクセントにおけるアクセント型<br>1-indexed で音高が下がる直前のモーラのインデックスを指定します。0 は平板型を意味します。<br>例として、`surface: [\"新田\", \"真剣佑\"], pronunciation: [\"あらた\", \"まっけんゆう\"]` のとき、`accent_type: [1, 3]` (新田 → 頭高型, 真剣佑 → 中高型) のように指定します。")
         ],
         word_type: Annotated[
             WordTypes | SkipJsonSchema[None],
             Query(
-                description="PROPER_NOUN（固有名詞）、LOCATION_NAME（地名）、ORGANIZATION_NAME（組織・施設名）、PERSON_NAME（人名）、PERSON_FAMILY_NAME（姓）、PERSON_GIVEN_NAME（名）、COMMON_NOUN（普通名詞）、VERB（動詞）、ADJECTIVE（形容詞）、SUFFIX（語尾）のいずれか"
+                description="単語の品詞<br>固有名詞 / 地名 / 組織・施設名 / 人名 / 人名 (姓) / 人名 (名) / 普通名詞 / 動詞 / 形容詞 / 語尾 のいずれかです。"
             ),
         ] = None,
         priority: Annotated[
@@ -89,7 +91,7 @@ def generate_user_dict_router(
             Query(
                 ge=USER_DICT_MIN_PRIORITY,
                 le=USER_DICT_MAX_PRIORITY,
-                description="単語の優先度（0から10までの整数）。数字が大きいほど優先度が高くなる。1から9までの値を指定することを推奨。",
+                description="単語の優先度 (1~9 の範囲を推奨)<br>数値が大きいほど辞書適用時に優先して利用されます。",
                 # "SkipJsonSchema[None]"の副作用でスキーマーが欠落する問題に対するワークアラウンド
                 json_schema_extra={
                     "le": None,
@@ -101,7 +103,8 @@ def generate_user_dict_router(
         ] = None,
     ) -> str:
         """
-        ユーザー辞書に単語を追加します。
+        ユーザー辞書に単語を追加します。<br>
+        複合語を辞書に追加するには、`?surface=新田&surface=真剣佑&pronunciation=あらた&pronunciation=まっけんゆう&accent_type=1&accent_type=3` のように、`surface`, `pronunciation`, `accent_type` を同じ長さのリストで指定します。
         """
         try:
             word_uuid = user_dict.add_word(
@@ -131,19 +134,19 @@ def generate_user_dict_router(
         dependencies=[Depends(verify_mutability)],
         summary="ユーザー辞書に登録されている単語を更新する",
     )
-    def rewrite_user_dict_word(
+    def update_user_dict_word(
+        word_uuid: Annotated[str, Path(description="更新する単語の UUID")],
         surface: Annotated[list[str], Query(description="単語の表層形")],
         pronunciation: Annotated[
             list[str], Query(description="単語の発音（カタカナ）")
         ],
         accent_type: Annotated[
-            list[int], Query(description="アクセント型（音が下がる場所を指す）")
+            list[int], Query(description="東京式アクセントにおけるアクセント型<br>1-indexed で音高が下がる直前のモーラのインデックスを指定します。0 は平板型を意味します。<br>例として、`surface: [\"新田\", \"真剣佑\"], pronunciation: [\"あらた\", \"まっけんゆう\"]` のとき、`accent_type: [1, 3]` (新田 → 頭高型, 真剣佑 → 中高型) のように指定します。")
         ],
-        word_uuid: Annotated[str, Path(description="更新する単語の UUID")],
         word_type: Annotated[
             WordTypes | SkipJsonSchema[None],
             Query(
-                description="PROPER_NOUN（固有名詞）、LOCATION_NAME（地名）、ORGANIZATION_NAME（組織・施設名）、PERSON_NAME（人名）、PERSON_FAMILY_NAME（姓）、PERSON_GIVEN_NAME（名）、COMMON_NOUN（普通名詞）、VERB（動詞）、ADJECTIVE（形容詞）、SUFFIX（語尾）のいずれか"
+                description="単語の品詞<br>固有名詞 / 地名 / 組織・施設名 / 人名 / 人名 (姓) / 人名 (名) / 普通名詞 / 動詞 / 形容詞 / 語尾 のいずれかを指定します。"
             ),
         ] = None,
         priority: Annotated[
@@ -151,7 +154,7 @@ def generate_user_dict_router(
             Query(
                 ge=USER_DICT_MIN_PRIORITY,
                 le=USER_DICT_MAX_PRIORITY,
-                description="単語の優先度（0から10までの整数）。数字が大きいほど優先度が高くなる。1から9までの値を指定することを推奨。",
+                description="単語の優先度 (1~9 の範囲を推奨)<br>数値が大きいほど、辞書適用時に優先して利用されます。",
                 # "SkipJsonSchema[None]"の副作用でスキーマーが欠落する問題に対するワークアラウンド
                 json_schema_extra={
                     "le": None,
@@ -163,7 +166,8 @@ def generate_user_dict_router(
         ] = None,
     ) -> None:
         """
-        ユーザー辞書に登録されている単語を更新します。
+        ユーザー辞書に登録されている単語を更新します。<br>
+        複合語を辞書に追加するには、`?surface=新田&surface=真剣佑&pronunciation=あらた&pronunciation=まっけんゆう&accent_type=1&accent_type=3` のように、`surface`, `pronunciation`, `accent_type` を同じ長さのリストで指定します。
         """
         try:
             user_dict.update_word(
@@ -212,7 +216,7 @@ def generate_user_dict_router(
         "/import_user_dict",
         status_code=204,
         dependencies=[Depends(verify_mutability)],
-        summary="他のユーザー辞書をインポートする",
+        summary="ユーザー辞書をインポートする",
     )
     def import_user_dict_words(
         import_dict_data: Annotated[
@@ -224,7 +228,9 @@ def generate_user_dict_router(
         ],
     ) -> None:
         """
-        他のユーザー辞書をインポートします。
+        指定されたユーザー辞書をインポートします。<br>
+        従来の API と互換性のある `UserDictWordForCompat` と、AivisSpeech Engine 1.1.0 以降で利用可能な `UserDictWord` の両方の型に対応しています。<br>
+        `?override=true` を指定すると、UUID が重複したエントリはインポートしたデータで上書きされます。
         """
         try:
             converted_import_dict_data: dict[str, UserDictWord] = {}

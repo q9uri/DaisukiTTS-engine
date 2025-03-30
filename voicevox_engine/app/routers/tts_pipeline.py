@@ -93,7 +93,8 @@ def generate_tts_pipeline_router(
         ] = None,  # fmt: skip # noqa
     ) -> AudioQuery:
         """
-        音声合成用のクエリの初期値を得ます。ここで得られたクエリはそのまま音声合成に利用できます。各値の意味は`Schemas`を参照してください。
+        音声合成用のクエリの初期値を得ます。ここで得られたクエリはそのまま音声合成に利用できます。<br>
+        各値の意味は `Schemas` を参照してください。
         """
         version = core_version or LATEST_VERSION
         engine = tts_engines.get_engine(version)
@@ -129,7 +130,8 @@ def generate_tts_pipeline_router(
         ] = None,  # fmt: skip # noqa
     ) -> AudioQuery:
         """
-        音声合成用のクエリの初期値を得ます。ここで得られたクエリはそのまま音声合成に利用できます。各値の意味は`Schemas`を参照してください。
+        音声合成用のクエリの初期値を得ます。ここで得られたクエリはそのまま音声合成に利用できます。<br>
+        各値の意味は `Schemas` を参照してください。
         """
         version = core_version or LATEST_VERSION
         engine = tts_engines.get_engine(version)
@@ -187,7 +189,7 @@ def generate_tts_pipeline_router(
         ] = None,  # fmt: skip # noqa
     ) -> list[AccentPhrase]:
         """
-        テキストからアクセント句を得ます。
+        テキストからアクセント句を得ます。<br>
         is_kanaが`true`のとき、テキストは次の AquesTalk 風記法で解釈されます。デフォルトは`false`です。
         * 全てのカナはカタカナで記述される
         * アクセント句は`/`または`、`で区切る。`、`で区切った場合に限り無音区間が挿入される。
@@ -592,8 +594,7 @@ def generate_tts_pipeline_router(
         text: Annotated[str, Query(description="判定する対象の文字列")],
     ) -> bool:
         """
-        テキストが AquesTalk 風記法に従っているかどうかを判定します。
-        従っていない場合はエラーが返ります。
+        テキストが AquesTalk 風記法に従っているかどうかを判定します。従っていない場合はエラーが返ります。
         """
         try:
             parse_kana(text)
@@ -624,7 +625,7 @@ def generate_tts_pipeline_router(
         ] = None,  # fmt: skip # noqa
     ) -> None:
         """
-        指定されたスタイル ID に紐づく音声合成モデルをロードします。
+        指定されたスタイル ID に紐づく音声合成モデルをロードします。<br>
         実行しなくても他の API は利用できますが、音声合成の初回実行時に時間がかかることがあります。
         """
         version = core_version or LATEST_VERSION
