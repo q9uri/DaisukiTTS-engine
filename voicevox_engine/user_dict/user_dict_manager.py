@@ -5,6 +5,7 @@ import json
 import sys
 import threading
 import time
+from json import JSONDecodeError
 from pathlib import Path
 from typing import Any
 from uuid import UUID, uuid4
@@ -60,7 +61,11 @@ class UserDictionaryRepository:
             try:
                 # まず通常のバリデーションを試みる
                 with open(self.user_dict_path, mode="r", encoding="utf-8") as f:
-                    user_dict = self._user_dict_adapter.validate_json(f.read())
+                    # 中身が空なら {} を返す
+                    content = f.read().strip()
+                    if not content:
+                        return {}
+                    user_dict = self._user_dict_adapter.validate_json(content)
                 # バリデーションに成功した場合でも、stem の値が要素数1で、[0] の中身が "*" なら surface に変更する
                 for word_uuid, word in user_dict.items():
                     if len(word.stem) == 1 and word.stem[0] == "*" and word.surface:
@@ -70,6 +75,13 @@ class UserDictionaryRepository:
                         )
                         word.stem = [word.surface]
                 return user_dict
+            except JSONDecodeError as ex:
+                # ファイルの中身が JSON 形式でない場合、空の辞書を返す
+                logger.warning(
+                    "UserDictionaryRepository: JSON decode error occurred.",
+                    exc_info=ex,
+                )
+                return {}
             except ValidationError as ex:
                 # バリデーションエラーが発生した場合、マイグレーション処理を行う
                 logger.warning(
