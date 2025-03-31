@@ -1,0 +1,71 @@
+name: Sentry Release
+
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - '*'
+    paths:
+      - 'voicevox_engine/**'
+      - '.github/workflows/sentry.yml'
+
+jobs:
+  check-changes:
+    name: Check changed files
+    runs-on: ubuntu-latest
+    outputs:
+      voicevox_engine: ${{ steps.filter.outputs.voicevox_engine }}
+      workflow: ${{ steps.filter.outputs.workflow }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # 全履歴を取得して変更を正確に検出
+
+      - name: Check changed files
+        uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            voicevox_engine:
+              - 'voicevox_engine/**'
+            workflow:
+              - '.github/workflows/sentry.yml'
+
+  create-sentry-release:
+    name: Create Sentry Release
+    needs: check-changes
+    runs-on: ubuntu-latest
+    if: needs.check-changes.outputs.voicevox_engine == 'true' || needs.check-changes.outputs.workflow == 'true' || startsWith(github.ref, 'refs/tags/')
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Sentry CLI
+        run: pip install sentry-cli
+
+      - name: Create Sentry release
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: 'jpchain'
+          SENTRY_PROJECT: 'aivisspeech-engine'
+        run: |
+          if [[ $GITHUB_REF == refs/tags/* ]]; then
+            # タグの場合はタグ名を使用
+            TAG_NAME=${GITHUB_REF#refs/tags/}
+            RELEASE_NAME="AivisSpeech-Engine@${TAG_NAME}"
+          else
+            # ブランチの場合はコミットハッシュを使用
+            RELEASE_NAME="AivisSpeech-Engine@${{ github.sha }}"
+          fi
+
+          sentry-cli releases new "$RELEASE_NAME"
+          sentry-cli releases set-commits "$RELEASE_NAME" --auto
+          sentry-cli releases finalize "$RELEASE_NAME"
+          sentry-cli releases deploys "$RELEASE_NAME" new -e production
