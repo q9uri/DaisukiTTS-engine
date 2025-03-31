@@ -194,6 +194,8 @@ class UserDictionary:
                         surface=["担々麺"],
                         pronunciation=["タンタンメン"],
                         accent_type=[3],
+                        word_type=WordTypes.PROPER_NOUN,
+                        priority=5,
                     )
                 ),
             })  # fmt: skip
