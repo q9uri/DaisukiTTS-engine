@@ -47,6 +47,15 @@ jobs:
         with:
           python-version: '3.11'
 
+      - name: Set release version
+        id: set_version
+        run: |
+          if [[ $GITHUB_REF == refs/tags/* ]]; then
+            echo "RELEASE_VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+          else
+            echo "RELEASE_VERSION=${GITHUB_SHA}" >> $GITHUB_ENV
+          fi
+
       - name: Install Sentry CLI
         run: pip install sentry-cli
 
@@ -55,15 +64,9 @@ jobs:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_ORG: 'jpchain'
           SENTRY_PROJECT: 'aivisspeech-engine'
+          RELEASE_VERSION: ${{ env.RELEASE_VERSION }}
         run: |
-          if [[ $GITHUB_REF == refs/tags/* ]]; then
-            # タグの場合はタグ名を使用
-            TAG_NAME=${GITHUB_REF#refs/tags/}
-            RELEASE_NAME="AivisSpeech-Engine@${TAG_NAME}"
-          else
-            # ブランチの場合はコミットハッシュを使用
-            RELEASE_NAME="AivisSpeech-Engine@${{ github.sha }}"
-          fi
+          RELEASE_NAME="AivisSpeech-Engine@${{ env.RELEASE_VERSION }}"
 
           sentry-cli releases new "$RELEASE_NAME"
           sentry-cli releases set-commits "$RELEASE_NAME" --auto
