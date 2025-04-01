@@ -65,7 +65,7 @@ jobs:
             architecture: "arm64"
             target: macOS-arm64
           # Linux x64
-          - os: ubuntu-20.04
+          - os: ubuntu-22.04
             architecture: "x64"
             target: Linux-x64
 
@@ -90,11 +90,11 @@ jobs:
       #       There is a difference in specification between BSD 'sed' and 'split' and GNU 'sed' and 'split',
       #       so you need to install GNU 'sed' and 'split'.
       - name: <Setup> Install dependencies (macOS)
-        if: startsWith(matrix.os, 'macos-')
+        if: runner.os == 'macOS'
         run: brew install gnu-sed coreutils
 
       - name: <Setup> Set up MSVC
-        if: startsWith(matrix.os, 'windows-')
+        if: runner.os == 'Windows'
         uses: ilammy/msvc-dev-cmd@v1
 
       - name: <Setup> Prepare Python Runtime / Python Dependencies
@@ -116,7 +116,7 @@ jobs:
         run: poetry install --with=build
 
       - name: <Setup> Prepare custom PyInstaller
-        if: startsWith(matrix.os, 'windows-')
+        if: runner.os == 'Windows'
         run: ./tools/modify_pyinstaller.bash
 
       - name: <Setup> Create download directory
@@ -132,7 +132,7 @@ jobs:
 
           jq '
             .version = "${{ needs.config.outputs.version_or_latest }}" |
-            if ${{ startsWith(matrix.os, 'windows-') }} then .command += ".exe" else . end
+            if ${{ runner.os == 'Windows' }} then .command += ".exe" else . end
           ' engine_manifest.json > engine_manifest.json.tmp
 
           mv -f engine_manifest.json.tmp engine_manifest.json
@@ -143,7 +143,7 @@ jobs:
           poetry run task build
 
       - name: <Build> Code signing
-        if: github.event.inputs.code_signing == 'true' && startsWith(matrix.os, 'windows-')
+        if: github.event.inputs.code_signing == 'true' && runner.os == 'Windows'
         run: bash tools/codesign.bash "dist/run/run.exe"
         env:
           ESIGNERCKA_USERNAME: ${{ secrets.ESIGNERCKA_USERNAME }}

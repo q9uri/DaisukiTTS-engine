@@ -195,10 +195,14 @@ class StyleBertVITS2TTSEngine(TTSEngine):
             cpu=True,
             # CUDA: CUDA Execution Provider が利用可能な場合は True
             # この値が True であるからといって、必ずしも CUDA 推論が利用できるとは限らない
-            cuda=True if "CUDAExecutionProvider" in self.available_onnx_providers else False,
+            cuda=True
+            if "CUDAExecutionProvider" in self.available_onnx_providers
+            else False,
             # DirectML: DirectML Execution Provider が利用可能な場合は True
             # この値が True であるからといって、必ずしも DirectML 推論が利用できるとは限らない
-            dml=True if "DmlExecutionProvider" in self.available_onnx_providers else False,  # fmt: skip
+            dml=True
+            if "DmlExecutionProvider" in self.available_onnx_providers
+            else False,  # fmt: skip
         )
 
     def load_model(self, aivm_uuid: str) -> TTSModel:
@@ -442,11 +446,10 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         # mora_tone_groups を AccentPhrase に変換
         accent_phrases: list[AccentPhrase] = []
         for group in mora_tone_groups:
-
             # グループ内で次のモーラで音高が 1 から 0 に下がるモーラをアクセント核のインデックスとする
             # 1-indexed なので 1 から始まるインデックスに変換
             accent_index = None
-            for index, (mora, tone) in enumerate(group):
+            for index, (_, tone) in enumerate(group):
                 if tone == 1 and index < len(group) - 1 and group[index + 1][1] == 0:
                     accent_index = index + 1
                     break
@@ -763,7 +766,9 @@ class StyleBertVITS2TTSEngine(TTSEngine):
 
 # コンパイル済み正規表現
 __MORA_PATTERN: Final[re.Pattern[str]] = re.compile(
-    "|".join(map(re.escape, sorted(MORA_KATA_TO_MORA_PHONEMES.keys(), key=len, reverse=True)))  # fmt: skip
+    "|".join(
+        map(re.escape, sorted(MORA_KATA_TO_MORA_PHONEMES.keys(), key=len, reverse=True))
+    )  # fmt: skip
 )
 __LONG_PATTERN: Final[re.Pattern[str]] = re.compile(r"(\w)(ー*)")
 

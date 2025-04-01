@@ -48,7 +48,9 @@ def generate_character_router(
     def speakers(
         core_version: Annotated[
             str | SkipJsonSchema[None],
-            Query(description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。"),
+            Query(
+                description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。"
+            ),
         ] = None,  # fmt: skip # noqa
     ) -> list[Speaker]:
         """話者情報の一覧を返します。"""
@@ -69,7 +71,9 @@ def generate_character_router(
         resource_format: ResourceFormat = "base64",
         core_version: Annotated[
             str | SkipJsonSchema[None],
-            Query(description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。"),
+            Query(
+                description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。"
+            ),
         ] = None,  # fmt: skip # noqa
     ) -> SpeakerInfo:
         """
@@ -95,7 +99,9 @@ def generate_character_router(
     def singers(
         core_version: Annotated[
             str | SkipJsonSchema[None],
-            Query(description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。"),
+            Query(
+                description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。"
+            ),
         ] = None,  # fmt: skip # noqa
     ) -> list[Speaker]:
         # """歌えるキャラクターの情報の一覧を返します。"""
@@ -118,7 +124,9 @@ def generate_character_router(
         resource_format: ResourceFormat = "base64",
         core_version: Annotated[
             str | SkipJsonSchema[None],
-            Query(description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。"),
+            Query(
+                description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。"
+            ),
         ] = None,  # fmt: skip # noqa
     ) -> SpeakerInfo:
         # """

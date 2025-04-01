@@ -21,7 +21,7 @@ jobs:
           - windows-2022
           - macos-13
           - macos-14
-          - ubuntu-20.04
+          - ubuntu-22.04
 
     steps:
       - name: <Setup> Check out the repository
@@ -52,18 +52,25 @@ jobs:
 
       # - name: <Test> Validate poetry.lock
       #   run: |
-      #     poetry lock --no-update
+      #     poetry lock
       #     git diff --exit-code
 
-      - name: <Test> Check format
-        run: PYTHONUTF8=1 poetry run task lint
+      - name: <Test> Check linting
+        run: PYTHONUTF8=1 poetry run ruff check
+
+      - name: <Test> Check formatting
+        run: PYTHONUTF8=1 poetry run ruff format --check
+
+      # - name: <Test> Check typing
+      #   run: mypy .
 
       - name: <Test> Test codes and coverage
         run: poetry run coverage run --omit=test/* -m pytest
 
       - name: <Deploy> Submit coverage results to Coveralls
-        if: matrix.os == 'ubuntu-20.04'
-        run: poetry run coveralls --service=github
+        if: runner.os == 'Linux'
+        # Coveralls へのアップロードが失敗しても CI は継続させる
+        run: coveralls --service=github || echo "::warning::Coveralls failed, but continuing"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -71,11 +78,11 @@ jobs:
         run: poetry run task update-licenses
 
       - name: <Test> Test names by checking typo
-        if: matrix.os == 'ubuntu-20.04'
+        if: runner.os == 'Linux'
         uses: crate-ci/typos@v1.21.0
 
   lint-builders:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - name: <Setup> Check out the repository
         uses: actions/checkout@v4

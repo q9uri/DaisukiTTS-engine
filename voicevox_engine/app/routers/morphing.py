@@ -16,11 +16,11 @@ from voicevox_engine.morphing.morphing import (
     StyleIdNotFoundError,
     get_morphable_targets,
     is_morphable,
+    synthesize_morphed_wave,
 )
 from voicevox_engine.morphing.morphing import (
     synthesis_morphing_parameter as _synthesis_morphing_parameter,
 )
-from voicevox_engine.morphing.morphing import synthesize_morphed_wave
 from voicevox_engine.tts_pipeline.tts_engine import LATEST_VERSION, TTSEngineManager
 
 # キャッシュを有効化
@@ -44,7 +44,9 @@ def generate_morphing_router(
         base_style_ids: list[StyleId],
         core_version: Annotated[
             str | SkipJsonSchema[None],
-            Query(description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。"),
+            Query(
+                description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。"
+            ),
         ] = None,  # fmt: skip # noqa
     ) -> list[dict[str, MorphableTargetInfo]]:
         """
@@ -86,7 +88,9 @@ def generate_morphing_router(
         morph_rate: Annotated[float, Query(ge=0.0, le=1.0)],
         core_version: Annotated[
             str | SkipJsonSchema[None],
-            Query(description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。"),
+            Query(
+                description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。"
+            ),
         ] = None,  # fmt: skip # noqa
     ) -> Response:
         """

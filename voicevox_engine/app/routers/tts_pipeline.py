@@ -89,7 +89,9 @@ def generate_tts_pipeline_router(
         style_id: Annotated[StyleId, Query(alias="speaker")],
         core_version: Annotated[
             str | SkipJsonSchema[None],
-            Query(description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。"),
+            Query(
+                description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。"
+            ),
         ] = None,  # fmt: skip # noqa
     ) -> AudioQuery:
         """
@@ -126,7 +128,9 @@ def generate_tts_pipeline_router(
         preset_id: int,
         core_version: Annotated[
             str | SkipJsonSchema[None],
-            Query(description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。"),
+            Query(
+                description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。"
+            ),
         ] = None,  # fmt: skip # noqa
     ) -> AudioQuery:
         """
@@ -185,7 +189,9 @@ def generate_tts_pipeline_router(
         is_kana: bool = False,
         core_version: Annotated[
             str | SkipJsonSchema[None],
-            Query(description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。"),
+            Query(
+                description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。"
+            ),
         ] = None,  # fmt: skip # noqa
     ) -> list[AccentPhrase]:
         """
@@ -219,7 +225,9 @@ def generate_tts_pipeline_router(
         style_id: Annotated[StyleId, Query(alias="speaker")],
         core_version: Annotated[
             str | SkipJsonSchema[None],
-            Query(description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。"),
+            Query(
+                description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。"
+            ),
         ] = None,  # fmt: skip # noqa
     ) -> list[AccentPhrase]:
         version = core_version or LATEST_VERSION
@@ -236,7 +244,9 @@ def generate_tts_pipeline_router(
         style_id: Annotated[StyleId, Query(alias="speaker")],
         core_version: Annotated[
             str | SkipJsonSchema[None],
-            Query(description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。"),
+            Query(
+                description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。"
+            ),
         ] = None,  # fmt: skip # noqa
     ) -> list[AccentPhrase]:
         version = core_version or LATEST_VERSION
@@ -253,7 +263,9 @@ def generate_tts_pipeline_router(
         style_id: Annotated[StyleId, Query(alias="speaker")],
         core_version: Annotated[
             str | SkipJsonSchema[None],
-            Query(description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。"),
+            Query(
+                description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。"
+            ),
         ] = None,  # fmt: skip # noqa
     ) -> list[AccentPhrase]:
         version = core_version or LATEST_VERSION
@@ -282,7 +294,9 @@ def generate_tts_pipeline_router(
         ),
         core_version: Annotated[
             str | SkipJsonSchema[None],
-            Query(description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。"),
+            Query(
+                description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。"
+            ),
         ] = None,  # fmt: skip # noqa
     ) -> Response:
         """
@@ -321,7 +335,9 @@ def generate_tts_pipeline_router(
         style_id: Annotated[StyleId, Query(alias="speaker")],
         core_version: Annotated[
             str | SkipJsonSchema[None],
-            Query(description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。"),
+            Query(
+                description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。"
+            ),
         ] = None,  # fmt: skip # noqa
     ) -> Response:
         raise HTTPException(
@@ -336,7 +352,7 @@ def generate_tts_pipeline_router(
             )
         try:
             version = core_version or LATEST_VERSION
-            f_name = cancellable_engine._synthesis_impl(
+            f_name = cancellable_engine.synthesize_wave(
                 query, style_id, request, version=version
             )
         except CancellableEngineInternalError as e:
@@ -372,7 +388,9 @@ def generate_tts_pipeline_router(
         style_id: Annotated[StyleId, Query(alias="speaker")],
         core_version: Annotated[
             str | SkipJsonSchema[None],
-            Query(description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。"),
+            Query(
+                description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。"
+            ),
         ] = None,  # fmt: skip # noqa
     ) -> Response:
         version = core_version or LATEST_VERSION
@@ -413,7 +431,9 @@ def generate_tts_pipeline_router(
         style_id: Annotated[StyleId, Query(alias="speaker")],
         core_version: Annotated[
             str | SkipJsonSchema[None],
-            Query(description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。"),
+            Query(
+                description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。"
+            ),
         ] = None,  # fmt: skip # noqa
     ) -> FrameAudioQuery:
         # """
@@ -455,7 +475,9 @@ def generate_tts_pipeline_router(
         style_id: Annotated[StyleId, Query(alias="speaker")],
         core_version: Annotated[
             str | SkipJsonSchema[None],
-            Query(description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。"),
+            Query(
+                description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。"
+            ),
         ] = None,  # fmt: skip # noqa
     ) -> list[float]:
         raise HTTPException(
@@ -485,7 +507,9 @@ def generate_tts_pipeline_router(
         style_id: Annotated[StyleId, Query(alias="speaker")],
         core_version: Annotated[
             str | SkipJsonSchema[None],
-            Query(description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。"),
+            Query(
+                description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。"
+            ),
         ] = None,  # fmt: skip # noqa
     ) -> list[float]:
         raise HTTPException(
@@ -521,7 +545,9 @@ def generate_tts_pipeline_router(
         style_id: Annotated[StyleId, Query(alias="speaker")],
         core_version: Annotated[
             str | SkipJsonSchema[None],
-            Query(description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。"),
+            Query(
+                description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。"
+            ),
         ] = None,  # fmt: skip # noqa
     ) -> Response:
         # """
@@ -621,7 +647,9 @@ def generate_tts_pipeline_router(
         ] = False,
         core_version: Annotated[
             str | SkipJsonSchema[None],
-            Query(description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。"),
+            Query(
+                description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。"
+            ),
         ] = None,  # fmt: skip # noqa
     ) -> None:
         """
@@ -641,7 +669,9 @@ def generate_tts_pipeline_router(
         style_id: Annotated[StyleId, Query(alias="speaker")],
         core_version: Annotated[
             str | SkipJsonSchema[None],
-            Query(description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。"),
+            Query(
+                description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。"
+            ),
         ] = None,  # fmt: skip # noqa
     ) -> bool:
         """
@@ -659,7 +689,9 @@ def generate_tts_pipeline_router(
     def supported_devices(
         core_version: Annotated[
             str | SkipJsonSchema[None],
-            Query(description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。"),
+            Query(
+                description="AivisSpeech Engine ではサポートされていないパラメータです (常に無視されます) 。"
+            ),
         ] = None,  # fmt: skip # noqa
     ) -> SupportedDevicesInfo:
         """

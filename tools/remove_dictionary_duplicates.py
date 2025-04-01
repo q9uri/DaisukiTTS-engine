@@ -63,16 +63,26 @@ def print_removed_entries(
     print(f"\nRemoved entries from {file_name}:")
     print("-" * shutil.get_terminal_size().columns)
     for auto_row, manual_row in removed_rows:
-        print(f'\033[91m{",".join(auto_row)}\033[0m')  # 赤色で自動生成 CSV の行を出力
-        print(f'\033[92m{",".join(manual_row)}\033[0m')  # 緑色で手動生成 CSV の行を出力
+        print(f"\033[91m{','.join(auto_row)}\033[0m")  # 赤色で自動生成 CSV の行を出力
+        print(f"\033[92m{','.join(manual_row)}\033[0m")  # 緑色で手動生成 CSV の行を出力
         print("-" * shutil.get_terminal_size().columns)
 
 
 def remove_duplicates() -> None:
     # pyopenjtalk-plus のデフォルト辞書のパス
     manual_csv_paths = [
-        str((Path(__file__).parent.parent.parent / "pyopenjtalk-plus/pyopenjtalk/dictionary/naist-jdic.csv").resolve()),  # fmt: skip # noqa
-        str((Path(__file__).parent.parent.parent / "pyopenjtalk-plus/pyopenjtalk/dictionary/unidic-csj.csv").resolve()),  # fmt: skip # noqa
+        str(
+            (
+                Path(__file__).parent.parent.parent
+                / "pyopenjtalk-plus/pyopenjtalk/dictionary/naist-jdic.csv"
+            ).resolve()
+        ),  # fmt: skip # noqa
+        str(
+            (
+                Path(__file__).parent.parent.parent
+                / "pyopenjtalk-plus/pyopenjtalk/dictionary/unidic-csj.csv"
+            ).resolve()
+        ),  # fmt: skip # noqa
     ]
     manual_words = read_manual_words(manual_csv_paths)
 

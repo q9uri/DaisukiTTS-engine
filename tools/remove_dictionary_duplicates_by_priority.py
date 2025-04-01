@@ -106,15 +106,15 @@ def print_removed_entries(
     print(f"\nRemoved entries from {file_name} (duplicates with {priority_file_name}):")
     print("-" * shutil.get_terminal_size().columns)
     for auto_row, priority_row, cost_updated in removed_rows:
-        print(f'\033[91m{",".join(auto_row)}\033[0m')  # 赤色で削除された行を出力
+        print(f"\033[91m{','.join(auto_row)}\033[0m")  # 赤色で削除された行を出力
         # コストが更新された場合は、その旨を表示
         if cost_updated:
             print(
-                f'\033[92m{",".join(priority_row)} (cost updated from 0)\033[0m'
+                f"\033[92m{','.join(priority_row)} (cost updated from 0)\033[0m"
             )  # 緑色で優先ファイルの行を出力
         else:
             print(
-                f'\033[92m{",".join(priority_row)}\033[0m'
+                f"\033[92m{','.join(priority_row)}\033[0m"
             )  # 緑色で優先ファイルの行を出力
         print("-" * shutil.get_terminal_size().columns)
 

@@ -258,7 +258,6 @@ class AivmInfosRepository:
         # 各 AIVMX ファイルごとに
         aivm_infos: dict[str, AivmInfo] = {}
         for aivm_file_path in aivm_file_paths:
-
             # 最低限のパスのバリデーション
             aivm_file_path = Path(aivm_file_path)
             if not aivm_file_path.exists():
@@ -360,7 +359,6 @@ class AivmInfosRepository:
                 speaker_styles: list[SpeakerStyle] = []
                 style_infos: list[StyleInfo] = []
                 for style_manifest in speaker_manifest.styles:
-
                     # AIVM マニフェスト内の話者スタイル ID を VOICEVOX ENGINE 互換の StyleId に変換
                     style_id = cls.local_style_id_to_style_id(style_manifest.local_id, speaker_uuid)  # fmt: skip
 

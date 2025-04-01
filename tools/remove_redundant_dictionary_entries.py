@@ -114,7 +114,7 @@ def process_row(row: list[str]) -> ProcessResult:
         or pronunciation.replace("ハ", "ワ") == default_pronunciation_without_special_chars
     ):  # fmt: skip
         return ProcessResult(
-            row, True, f'{surface} → {reading.replace("ハ", "ワ")} (Ha->Wa in CSV)'
+            row, True, f"{surface} → {reading.replace('ハ', 'ワ')} (Ha->Wa in CSV)"
         )
 
     # CSV 側の「ヲ」を「オ」に変換した場合に一致する場合も削除
@@ -125,7 +125,7 @@ def process_row(row: list[str]) -> ProcessResult:
         or pronunciation.replace("ヲ", "オ") == default_pronunciation_without_special_chars
     ):  # fmt: skip
         return ProcessResult(
-            row, True, f'{surface} → {reading.replace("ヲ", "オ")} (Wo->O in CSV)'
+            row, True, f"{surface} → {reading.replace('ヲ', 'オ')} (Wo->O in CSV)"
         )
 
     # CSV 側の「ヘ」を「エ」に変換した場合に一致する場合も削除
@@ -136,7 +136,7 @@ def process_row(row: list[str]) -> ProcessResult:
         or pronunciation.replace("ヘ", "エ") == default_pronunciation_without_special_chars
     ):  # fmt: skip
         return ProcessResult(
-            row, True, f'{surface} → {reading.replace("ヘ", "エ")} (He->E in CSV)'
+            row, True, f"{surface} → {reading.replace('ヘ', 'エ')} (He->E in CSV)"
         )
 
     return ProcessResult(row, False, None)
@@ -159,7 +159,7 @@ def process_csv_file(file_path: str) -> tuple[int, list[list[str]]]:
             if result.should_remove:
                 removed_rows.append(result.row)
                 print(
-                    f'\033[91m{result.removal_reason} | {",".join(result.row)}\033[0m'
+                    f"\033[91m{result.removal_reason} | {','.join(result.row)}\033[0m"
                 )
             else:
                 unique_rows.append(result.row)
@@ -185,7 +185,7 @@ def print_removed_entries(file_name: str, removed_rows: list[list[str]]) -> None
     print(f"\nSummary of removed entries from {file_name}:")
     print("-" * shutil.get_terminal_size().columns)
     for row in removed_rows:
-        print(f'\033[91m{",".join(row)}\033[0m')  # 赤色で出力
+        print(f"\033[91m{','.join(row)}\033[0m")  # 赤色で出力
         print("-" * shutil.get_terminal_size().columns)
 
 

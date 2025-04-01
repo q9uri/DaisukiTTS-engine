@@ -77,87 +77,102 @@ def generate_licenses() -> list[License]:
             if package_name.startswith("nvidia-"):
                 continue
             elif package_name == "e2k":
-                text_url = "https://raw.githubusercontent.com/Patchethium/e2k/master/LICENSE"  # noqa: B950
+                text_url = (
+                    "https://raw.githubusercontent.com/Patchethium/e2k/master/LICENSE"
+                )
                 license_json["LicenseText"] = get_license_text(text_url)
             elif package_name == "future":
-                text_url = "https://raw.githubusercontent.com/PythonCharmers/python-future/master/LICENSE.txt"  # noqa: B950
+                text_url = "https://raw.githubusercontent.com/PythonCharmers/python-future/master/LICENSE.txt"
                 license_json["LicenseText"] = get_license_text(text_url)
             elif package_name == "license-expression":
-                text_url = "https://raw.githubusercontent.com/aboutcode-org/license-expression/main/license-expression.ABOUT"  # noqa: B950
+                text_url = "https://raw.githubusercontent.com/aboutcode-org/license-expression/main/license-expression.ABOUT"
                 license_json["LicenseText"] = get_license_text(text_url)
             elif package_name == "packageurl-python":
-                text_url = "https://raw.githubusercontent.com/package-url/packageurl-python/main/mit.LICENSE"  # noqa: B950
+                text_url = "https://raw.githubusercontent.com/package-url/packageurl-python/main/mit.LICENSE"
                 license_json["LicenseText"] = get_license_text(text_url)
             elif package_name == "pefile":
-                text_url = "https://raw.githubusercontent.com/erocarrera/pefile/master/LICENSE"  # noqa: B950
+                text_url = (
+                    "https://raw.githubusercontent.com/erocarrera/pefile/master/LICENSE"
+                )
                 license_json["LicenseText"] = get_license_text(text_url)
             elif package_name == "pip-requirements-parser":
-                text_url = "https://raw.githubusercontent.com/aboutcode-org/pip-requirements-parser/main/apache-2.0.LICENSE"  # noqa: B950
+                text_url = "https://raw.githubusercontent.com/aboutcode-org/pip-requirements-parser/main/apache-2.0.LICENSE"
+                license_json["LicenseText"] = get_license_text(text_url)
+            elif package_name == "pyopenjtalk":
+                text_url = "https://raw.githubusercontent.com/r9y9/pyopenjtalk/master/LICENSE.md"
                 license_json["LicenseText"] = get_license_text(text_url)
             elif package_name == "python-multipart":
-                text_url = "https://raw.githubusercontent.com/andrew-d/python-multipart/master/LICENSE.txt"  # noqa: B950
+                text_url = "https://raw.githubusercontent.com/andrew-d/python-multipart/master/LICENSE.txt"
                 license_json["LicenseText"] = get_license_text(text_url)
             elif package_name == "romkan":
-                text_url = "https://raw.githubusercontent.com/soimort/python-romkan/master/LICENSE"  # noqa: B950
+                text_url = "https://raw.githubusercontent.com/soimort/python-romkan/master/LICENSE"
                 license_json["LicenseText"] = get_license_text(text_url)
             elif package_name == "distlib":
-                text_url = "https://bitbucket.org/pypa/distlib/raw/7d93712134b28401407da27382f2b6236c87623a/LICENSE.txt"  # noqa: B950
+                text_url = "https://bitbucket.org/pypa/distlib/raw/7d93712134b28401407da27382f2b6236c87623a/LICENSE.txt"
                 license_json["LicenseText"] = get_license_text(text_url)
             elif package_name == "jsonschema":
-                text_url = "https://raw.githubusercontent.com/python-jsonschema/jsonschema/dbc398245a583cb2366795dc529ae042d10c1577/COPYING"  # noqa: B950
+                text_url = "https://raw.githubusercontent.com/python-jsonschema/jsonschema/dbc398245a583cb2366795dc529ae042d10c1577/COPYING"
                 license_json["LicenseText"] = get_license_text(text_url)
             elif package_name == "lockfile":
-                text_url = "https://opendev.org/openstack/pylockfile/raw/tag/0.12.2/LICENSE"  # noqa: B950
+                text_url = (
+                    "https://opendev.org/openstack/pylockfile/raw/tag/0.12.2/LICENSE"
+                )
                 license_json["LicenseText"] = get_license_text(text_url)
             elif package_name == "platformdirs":
-                text_url = "https://raw.githubusercontent.com/platformdirs/platformdirs/aa671aaa97913c7b948567f4d9c77d4f98bfa134/LICENSE"  # noqa: B950
+                text_url = "https://raw.githubusercontent.com/platformdirs/platformdirs/aa671aaa97913c7b948567f4d9c77d4f98bfa134/LICENSE"
                 license_json["LicenseText"] = get_license_text(text_url)
             elif package_name == "webencodings":
-                text_url = "https://raw.githubusercontent.com/gsnedders/python-webencodings/fa2cb5d75ab41e63ace691bc0825d3432ba7d694/LICENSE"  # noqa: B950
+                text_url = "https://raw.githubusercontent.com/gsnedders/python-webencodings/fa2cb5d75ab41e63ace691bc0825d3432ba7d694/LICENSE"
                 license_json["LicenseText"] = get_license_text(text_url)
             elif package_name == "antlr4-python3-runtime":
-                text_url = "https://raw.githubusercontent.com/antlr/antlr4/v4.11.1/LICENSE.txt"  # noqa: B950
+                text_url = (
+                    "https://raw.githubusercontent.com/antlr/antlr4/v4.11.1/LICENSE.txt"
+                )
                 license_json["LicenseText"] = get_license_text(text_url)
             elif package_name == "flatbuffers":
-                text_url = "https://raw.githubusercontent.com/google/flatbuffers/v24.3.25/LICENSE"  # noqa: B950
+                text_url = "https://raw.githubusercontent.com/google/flatbuffers/v24.3.25/LICENSE"
                 license_json["LicenseText"] = get_license_text(text_url)
             elif package_name == "gputil":
-                text_url = "https://raw.githubusercontent.com/anderskm/gputil/refs/heads/master/LICENSE.txt"  # noqa: B950
+                text_url = "https://raw.githubusercontent.com/anderskm/gputil/refs/heads/master/LICENSE.txt"
                 license_json["LicenseText"] = get_license_text(text_url)
             elif package_name == "gradio_client":
-                text_url = "https://raw.githubusercontent.com/gradio-app/gradio/v3.41.0/LICENSE"  # noqa: B950
+                text_url = "https://raw.githubusercontent.com/gradio-app/gradio/v3.41.0/LICENSE"
                 license_json["LicenseText"] = get_license_text(text_url)
             elif package_name == "jieba":
-                text_url = "https://raw.githubusercontent.com/fxsjy/jieba/v0.42.1/LICENSE"  # noqa: B950
+                text_url = (
+                    "https://raw.githubusercontent.com/fxsjy/jieba/v0.42.1/LICENSE"
+                )
                 license_json["LicenseText"] = get_license_text(text_url)
             elif package_name == "loguru":
-                text_url = "https://raw.githubusercontent.com/Delgan/loguru/0.7.3/LICENSE"  # noqa: B950
+                text_url = (
+                    "https://raw.githubusercontent.com/Delgan/loguru/0.7.3/LICENSE"
+                )
                 license_json["LicenseText"] = get_license_text(text_url)
             elif package_name == "primepy":
-                text_url = "https://raw.githubusercontent.com/janaindrajit/primePy/9c98276fee5211e8761dfc03c9a1e02127e09e4a/LICENSE"  # noqa: B950
+                text_url = "https://raw.githubusercontent.com/janaindrajit/primePy/9c98276fee5211e8761dfc03c9a1e02127e09e4a/LICENSE"
                 license_json["LicenseText"] = get_license_text(text_url)
             elif package_name == "pyproject_hooks":
-                text_url = "https://raw.githubusercontent.com/pypa/pyproject-hooks/v1.1.0/LICENSE"  # noqa: B950
+                text_url = "https://raw.githubusercontent.com/pypa/pyproject-hooks/v1.1.0/LICENSE"
                 license_json["LicenseText"] = get_license_text(text_url)
             elif package_name == "pywin32":
                 continue  # ライセンスファイルがリポジトリにない
             elif package_name == "safetensors":
-                text_url = "https://raw.githubusercontent.com/huggingface/safetensors/v0.4.3/LICENSE"  # noqa: B950
+                text_url = "https://raw.githubusercontent.com/huggingface/safetensors/v0.4.3/LICENSE"
                 license_json["LicenseText"] = get_license_text(text_url)
             elif package_name == "sentencepiece":
-                text_url = "https://raw.githubusercontent.com/google/sentencepiece/v0.2.0/LICENSE"  # noqa: B950
+                text_url = "https://raw.githubusercontent.com/google/sentencepiece/v0.2.0/LICENSE"
                 license_json["LicenseText"] = get_license_text(text_url)
             elif package_name == "sudachipy":
-                text_url = "https://raw.githubusercontent.com/WorksApplications/sudachi.rs/v0.6.8/LICENSE"  # noqa: B950
+                text_url = "https://raw.githubusercontent.com/WorksApplications/sudachi.rs/v0.6.8/LICENSE"
                 license_json["LicenseText"] = get_license_text(text_url)
             elif package_name == "tokenizers":
-                text_url = "https://raw.githubusercontent.com/huggingface/tokenizers/v0.19.1/LICENSE"  # noqa: B950
+                text_url = "https://raw.githubusercontent.com/huggingface/tokenizers/v0.19.1/LICENSE"
                 license_json["LicenseText"] = get_license_text(text_url)
             elif package_name == "triton":
-                text_url = "https://raw.githubusercontent.com/triton-lang/triton/v2.1.0/LICENSE"  # noqa: B950
+                text_url = "https://raw.githubusercontent.com/triton-lang/triton/v2.1.0/LICENSE"
                 license_json["LicenseText"] = get_license_text(text_url)
             elif package_name == "types-pyyaml":
-                text_url = "https://raw.githubusercontent.com/python/typeshed/57f3dcac8dbed008479b251512975901a0206deb/LICENSE"  # noqa: B950
+                text_url = "https://raw.githubusercontent.com/python/typeshed/57f3dcac8dbed008479b251512975901a0206deb/LICENSE"
                 license_json["LicenseText"] = get_license_text(text_url)
             elif package_name == "wmi":
                 continue  # ライセンスファイルがリポジトリにない
@@ -166,7 +181,7 @@ def generate_licenses() -> list[License]:
                 raise Exception(f"No License info provided for {package_name}")
         # soxr
         if package_name == "soxr":
-            text_url = "https://raw.githubusercontent.com/dofuuz/python-soxr/v0.3.6/LICENSE.txt"  # noqa: B950
+            text_url = "https://raw.githubusercontent.com/dofuuz/python-soxr/v0.3.6/LICENSE.txt"
             license_json["LicenseText"] = get_license_text(text_url)
 
         license = License(
@@ -210,6 +225,13 @@ def generate_licenses() -> list[License]:
             license_name="Modified BSD license",
             license_text="tools/licenses/open_jtalk/mecab-naist-jdic/COPYING",
             license_text_type="local_address",
+        ),
+        License(
+            package_name="World",
+            package_version=None,
+            license_name="Modified BSD license",
+            license_text="https://raw.githubusercontent.com/mmorise/World/master/LICENSE.txt",
+            license_text_type="remote_address",
         ),
         License(
             package_name="PyTorch",

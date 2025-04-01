@@ -27,7 +27,6 @@ def BuildDictionary() -> None:
 
     # 各CSVファイルごとに個別にコンパイル
     for csv_file in csv_files:
-
         # 出力する .dic ファイルのパスを生成
         output_dic_path = csv_file.with_suffix(".dic")
 
