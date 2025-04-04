@@ -60,7 +60,7 @@ class UserDictionaryRepository:
                 return {}
             try:
                 # まず通常のバリデーションを試みる
-                with open(self.user_dict_path, mode="r", encoding="utf-8") as f:
+                with open(self.user_dict_path, encoding="utf-8") as f:
                     # 中身が空なら {} を返す
                     content = f.read().strip()
                     if not content:
@@ -88,7 +88,7 @@ class UserDictionaryRepository:
                     "UserDictionaryRepository: Validation error occurred. Trying migration...",
                     exc_info=ex,
                 )
-                with open(self.user_dict_path, mode="r", encoding="utf-8") as f:
+                with open(self.user_dict_path, encoding="utf-8") as f:
                     # マイグレーション処理のために一旦自前で JSON をパースする
                     raw_word_dict: dict[str, Any] = json.load(f)
                 for word_uuid, raw_word in raw_word_dict.items():
@@ -343,7 +343,7 @@ class UserDictionary:
                     # アクセント位置とモーラ数はスラッシュで結合する
                     accent_type_mora_count: list[str] = []
                     for accent_type, mora_count in zip(
-                        word.accent_type, word.mora_count
+                        word.accent_type, word.mora_count, strict=False
                     ):
                         accent_type_mora_count.append(f"{accent_type}/{mora_count}")
                     # UserDictWord 内の情報を CSV のフォーマットに変換

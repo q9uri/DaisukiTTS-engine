@@ -7,11 +7,10 @@
 from __future__ import annotations
 
 from re import findall, fullmatch
-from typing import Self
+from typing import Annotated, Self
 
 from pydantic import AfterValidator, BaseModel, ConfigDict, Field, model_validator
 from pydantic.json_schema import SkipJsonSchema
-from typing_extensions import Annotated
 
 from voicevox_engine.user_dict.constants import (
     PART_OF_SPEECH_DATA,
@@ -175,9 +174,7 @@ class UserDictWord(BaseModel):
         for i in range(len(self.accent_type)):
             if not 0 <= self.accent_type[i] <= self.mora_count[i]:
                 raise ValueError(
-                    "誤ったアクセント型です({})。 expect: 0 <= accent_type <= {}".format(
-                        self.accent_type[i], self.mora_count[i]
-                    )
+                    f"誤ったアクセント型です({self.accent_type[i]})。 expect: 0 <= accent_type <= {self.mora_count[i]}"
                 )
 
         return self

@@ -191,7 +191,7 @@ class AivmInfosRepository:
         with self._lock:
             try:
                 # キャッシュファイルからインストール済みの音声合成モデルの情報を読み込む
-                with open(self.CACHE_FILE_PATH, mode="r", encoding="utf-8") as f:
+                with open(self.CACHE_FILE_PATH, encoding="utf-8") as f:
                     result = AivmInfosCache.validate_json(f.read())
                 # すべてのモデルのロード状態を False にする
                 for aivm_info in result.values():

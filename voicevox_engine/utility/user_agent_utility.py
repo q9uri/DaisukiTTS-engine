@@ -49,7 +49,7 @@ def generate_user_agent(inference_type: Literal["CPU", "GPU"] = "CPU") -> str:
                 try:
                     kernel = platform.release()
                     try:
-                        with open("/etc/os-release", mode="r", encoding="utf-8") as f:
+                        with open("/etc/os-release", encoding="utf-8") as f:
                             lines = f.readlines()
                             for line in lines:
                                 if line.startswith("PRETTY_NAME="):
@@ -146,7 +146,7 @@ def generate_user_agent(inference_type: Literal["CPU", "GPU"] = "CPU") -> str:
             if os.path.exists("/.dockerenv"):
                 return True
             try:
-                with open("/proc/1/cgroup", mode="r", encoding="utf-8") as f:
+                with open("/proc/1/cgroup", encoding="utf-8") as f:
                     for line in f:
                         if "docker" in line or "kubepods" in line:
                             return True

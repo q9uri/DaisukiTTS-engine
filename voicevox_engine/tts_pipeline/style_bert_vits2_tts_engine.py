@@ -4,9 +4,10 @@ import copy
 import re
 import threading
 import time
+from collections.abc import Sequence
 from io import BytesIO
 from pathlib import Path
-from typing import Any, Final, Sequence, cast
+from typing import Any, Final, cast
 
 import aivmlib
 import jaconv
@@ -351,7 +352,7 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         ## VOICEVOX ENGINE では「ん」の音素を「N」としているため、use_jp_extra (True のとき「ん」の音素を「N」とする) は常に True に設定している
         ## JP-Extra モデルと通常のモデルの音素差の吸収は synthesize_wave() で行う
         phones, tones, _, sep_kata_with_joshi = g2p(normalized_text, use_jp_extra=True, raise_yomi_error=False)  # fmt: skip
-        mora_tone_list = _phone_tone2mora_tone(list(zip(phones, tones)))
+        mora_tone_list = _phone_tone2mora_tone(list(zip(phones, tones, strict=False)))
 
         # sep_kata_with_joshi のカタカナを音素 (子音と母音のタプル) に変換
         ## 分割されていないカタカナモーラの場合、「チョ」「ビャ」のような拗音では二文字に跨るため、単に文字数を数えるだけではズレてしまう
@@ -716,7 +717,7 @@ class StyleBertVITS2TTSEngine(TTSEngine):
                     # line_split=True だと音素やアクセントの指定ができない
                     line_split=False,
                 )
-                logger.info("Inference done. Elapsed time: {:.2f} sec.".format(time.time() - start_time))  # fmt: skip
+                logger.info(f"Inference done. Elapsed time: {time.time() - start_time:.2f} sec.")  # fmt: skip
 
             # 空文字列が入力された場合、0.5 秒の無音波形を後続の処理に渡す
             else:
@@ -784,7 +785,9 @@ def _phone_tone2mora_tone(phone_tone: list[tuple[str, int]]) -> list[tuple[Mora,
     tones = [tone for _, tone in phone_tone]
     result: list[tuple[Mora, int]] = []
     current_consonant: str | None = None
-    for phone, _, tone, next_tone in zip(phones, phones[1:], tones, tones[1:]):
+    for phone, _, tone, next_tone in zip(
+        phones, phones[1:], tones, tones[1:], strict=False
+    ):
         # zip の関係で最後の ("_", 0) は無視されている
         # 記号モーラの場合
         if phone in PUNCTUATIONS:

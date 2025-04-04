@@ -18,7 +18,7 @@ def read_manual_words(manual_csv_paths: list[str]) -> dict[str, list[str]]:
     """手動生成された CSV から単語辞書を作成する"""
     manual_words: dict[str, list[str]] = {}
     for manual_csv_path in manual_csv_paths:
-        with open(manual_csv_path, "r", encoding="utf-8") as manual_file:
+        with open(manual_csv_path, encoding="utf-8") as manual_file:
             manual_reader = csv.reader(manual_file)
             for row in manual_reader:
                 if row:  # 空行をスキップ
@@ -32,7 +32,7 @@ def process_auto_csv(
     """自動生成された CSV を処理し、重複を削除する"""
     unique_rows: list[list[str]] = []
     removed_rows: list[tuple[list[str], list[str]]] = []
-    with open(file_path, "r", encoding="utf-8") as auto_file:
+    with open(file_path, encoding="utf-8") as auto_file:
         auto_reader = csv.reader(auto_file)
         for row in auto_reader:
             if row and row[0] in manual_words:
@@ -93,7 +93,7 @@ def remove_duplicates() -> None:
         # 01_default.csv は明示的に手動作成されたデフォルト辞書なのでスキップ
         if file_path.name == "01_default.csv":
             continue
-        original_count = sum(1 for _ in open(file_path, "r", encoding="utf-8"))
+        original_count = sum(1 for _ in open(file_path, encoding="utf-8"))
         new_count, removed_rows = process_auto_csv(str(file_path), manual_words)
         removed = original_count - new_count
         total_removed += removed

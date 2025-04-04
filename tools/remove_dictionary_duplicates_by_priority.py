@@ -18,7 +18,7 @@ from pathlib import Path
 def read_csv_words(csv_path: str) -> dict[tuple[str, str, str, str], list[str]]:
     """CSV ファイルから単語辞書を作成する"""
     words: dict[tuple[str, str, str, str], list[str]] = {}
-    with open(csv_path, "r", encoding="utf-8") as file:
+    with open(csv_path, encoding="utf-8") as file:
         reader = csv.reader(file)
         for row in reader:
             if row:  # 空行をスキップ
@@ -39,10 +39,10 @@ def process_auto_csv(
 
     # 優先ファイルの内容を更新可能な形式で読み込む
     priority_file_rows: list[list[str]] = []
-    with open(priority_file_path, "r", encoding="utf-8") as pfile:
+    with open(priority_file_path, encoding="utf-8") as pfile:
         priority_file_rows = list(csv.reader(pfile))
 
-    with open(file_path, "r", encoding="utf-8") as auto_file:
+    with open(file_path, encoding="utf-8") as auto_file:
         auto_reader = csv.reader(auto_file)
         for row in auto_reader:
             if row:
@@ -132,7 +132,7 @@ def remove_duplicates_by_priority() -> None:
 
         # 現在のファイルより後ろのファイルを処理
         for target_file in csv_files[i + 1 :]:
-            original_count = sum(1 for _ in open(target_file, "r", encoding="utf-8"))
+            original_count = sum(1 for _ in open(target_file, encoding="utf-8"))
             new_count, removed_rows = process_auto_csv(
                 str(target_file), priority_words, str(priority_file)
             )
