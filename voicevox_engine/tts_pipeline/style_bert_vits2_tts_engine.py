@@ -730,7 +730,7 @@ class StyleBertVITS2TTSEngine(TTSEngine):
 
         # 学習元データなどの関係でモデルによっては音声の前後に無音が含まれることがあるため、後処理前に前後の無音をトリミングする
         ## この処理を行ってから再度指定秒数の無音区間を追加することで、無音区間が指定以上に長くなるのを防ぐ
-        raw_wave = trim_silence(raw_wave)
+        raw_wave = _trim_silence(raw_wave)
 
         # 前後の無音区間を追加
         ## VOICEVOX の TTSEngine との互換性のため、音声合成側と同様に AudioQuery の speedScale を加味する
@@ -892,7 +892,7 @@ def _sep_kata_with_joshi2sep_phonemes_with_joshi(
     return sep_phonemes_with_joshi
 
 
-def trim_silence(
+def _trim_silence(
     audio: NDArray[np.float32], threshold: float = 0.0004
 ) -> NDArray[np.float32]:
     """
