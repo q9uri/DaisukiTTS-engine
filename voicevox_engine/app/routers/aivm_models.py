@@ -64,8 +64,10 @@ def generate_aivm_models_router(
         """
 
         if file is not None:
+            # ファイルから音声合成モデルをインストール
             aivm_manager.install_model(file.file)
         elif url is not None:
+            # URL から音声合成モデルをダウンロードしてインストール
             aivm_manager.install_model_from_url(url)
         else:
             raise HTTPException(
@@ -143,7 +145,12 @@ def generate_aivm_models_router(
         インストール済みの音声合成モデルへ上書き更新します。
         """
 
-        aivm_manager.update_model(aivm_uuid)
+        # まず対応する音声合成モデルがインストールされているかを確認
+        # 存在しない場合は内部で HTTPException が送出される
+        aivm_info = aivm_manager.get_aivm_info(aivm_uuid)
+
+        # AivisHub からダウンロードした新しいバージョンの音声合成モデルを上書きインストール
+        aivm_manager.update_model(str(aivm_info.manifest.uuid))
 
     @router.delete(
         "/{aivm_uuid}/uninstall",
@@ -158,6 +165,18 @@ def generate_aivm_models_router(
         指定された音声合成モデルをアンインストールします。
         """
 
-        aivm_manager.uninstall_model(aivm_uuid)
+        # まず対応する音声合成モデルがインストールされているかを確認
+        # 存在しない場合は内部で HTTPException が送出される
+        aivm_info = aivm_manager.get_aivm_info(aivm_uuid)
+
+        # StyleBertVITS2TTSEngine を取得し、音声合成モデルをアンロード
+        # アンインストール前にアンロードしておかないと、既にロードされている場合に
+        # プロセス終了までモデルがアンロードされなくなってしまう
+        engine = tts_engines.get_engine(LATEST_VERSION)
+        assert isinstance(engine, StyleBertVITS2TTSEngine)
+        engine.unload_model(str(aivm_info.manifest.uuid))
+
+        # インストール済みの音声合成モデルをアンインストール
+        aivm_manager.uninstall_model(str(aivm_info.manifest.uuid))
 
     return router
