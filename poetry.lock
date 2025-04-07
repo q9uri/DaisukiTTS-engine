@@ -572,19 +572,19 @@ test-randomorder = ["pytest-randomly"]
 
 [[package]]
 name = "cyclonedx-python-lib"
-version = "8.9.0"
+version = "9.1.0"
 description = "Python library for CycloneDX"
 optional = false
 python-versions = "<4.0,>=3.8"
 files = [
-    {file = "cyclonedx_python_lib-8.9.0-py3-none-any.whl", hash = "sha256:017b95b334aa83b2d0db8af9764e13a46f0e903bd30a57d93d08dcd302c84032"},
-    {file = "cyclonedx_python_lib-8.9.0.tar.gz", hash = "sha256:112c6e6e5290420e32026c49b8391645bf3e646c7602f7bdb5d02c6febbaa073"},
+    {file = "cyclonedx_python_lib-9.1.0-py3-none-any.whl", hash = "sha256:55693fca8edaecc3363b24af14e82cc6e659eb1e8353e58b587c42652ce0fb52"},
+    {file = "cyclonedx_python_lib-9.1.0.tar.gz", hash = "sha256:86935f2c88a7b47a529b93c724dbd3e903bc573f6f8bd977628a7ca1b5dadea1"},
 ]
 
 [package.dependencies]
 license-expression = ">=30,<31"
 packageurl-python = ">=0.11,<2"
-py-serializable = ">=1.1.1,<2.0.0"
+py-serializable = ">=2.0.0,<3.0.0"
 sortedcontainers = ">=2.4.0,<3.0.0"
 
 [package.extras]
@@ -723,22 +723,17 @@ pgp = ["gpg"]
 
 [[package]]
 name = "e2k"
-version = "0.4.1"
+version = "0.3.0"
 description = "A tool for automatic English to Katakana conversion"
 optional = false
 python-versions = ">=3.10"
 files = [
-    {file = "e2k-0.4.1-py3-none-any.whl", hash = "sha256:f1cdcd3c75764175cde1c616639379f218ebfc92bd1db1b24a013590206409ad"},
-    {file = "e2k-0.4.1.tar.gz", hash = "sha256:39b0ec1eaad0fa677a42b25cd66284c32ac98506646aeebef4e72fd2d186a0a4"},
+    {file = "e2k-0.3.0-py3-none-any.whl", hash = "sha256:67ae1a437d39d582def8c1dfec3634f61897d1b7dc49ce89e714d10b841c7c14"},
+    {file = "e2k-0.3.0.tar.gz", hash = "sha256:be7d40339aae8eb81f84db54183b34bd6914aad3f8396e4fe622f81b17ddb98b"},
 ]
 
 [package.dependencies]
 numpy = ">=1.0,<3.0"
-
-[package.extras]
-cpu = ["torch (>=2.6.0)"]
-cu121 = ["torch (>=2.5.0)"]
-cu124 = ["torch (>=2.6.0)"]
 
 [[package]]
 name = "fastapi"
@@ -1908,18 +1903,18 @@ pip = "*"
 
 [[package]]
 name = "pip-audit"
-version = "2.8.0"
+version = "2.9.0"
 description = "A tool for scanning Python environments for known vulnerabilities"
 optional = false
 python-versions = ">=3.9"
 files = [
-    {file = "pip_audit-2.8.0-py3-none-any.whl", hash = "sha256:200f50d56cb6fba3a9189c20d53250354f72f161d63b6ef77ae5de2b53044566"},
-    {file = "pip_audit-2.8.0.tar.gz", hash = "sha256:9816cbd94de6f618a8965c117433006b3d565a708dc05d5a7be47ab65b66fa05"},
+    {file = "pip_audit-2.9.0-py3-none-any.whl", hash = "sha256:348b16e60895749a0839875d7cc27ebd692e1584ebe5d5cb145941c8e25a80bd"},
+    {file = "pip_audit-2.9.0.tar.gz", hash = "sha256:0b998410b58339d7a231e5aa004326a294e4c7c6295289cdc9d5e1ef07b1f44d"},
 ]
 
 [package.dependencies]
 CacheControl = {version = ">=0.13.0", extras = ["filecache"]}
-cyclonedx-python-lib = ">=5,<9"
+cyclonedx-python-lib = ">=5,<10"
 packaging = ">=23.0.0"
 pip-api = ">=0.0.28"
 pip-requirements-parser = ">=32.0.0"
@@ -2195,13 +2190,13 @@ files = [
 
 [[package]]
 name = "py-serializable"
-version = "1.1.2"
+version = "2.0.0"
 description = "Library for serializing and deserializing Python Objects to and from JSON and XML."
 optional = false
 python-versions = "<4.0,>=3.8"
 files = [
-    {file = "py_serializable-1.1.2-py3-none-any.whl", hash = "sha256:801be61b0a1ba64c3861f7c624f1de5cfbbabf8b458acc9cdda91e8f7e5effa1"},
-    {file = "py_serializable-1.1.2.tar.gz", hash = "sha256:89af30bc319047d4aa0d8708af412f6ce73835e18bacf1a080028bb9e2f42bdb"},
+    {file = "py_serializable-2.0.0-py3-none-any.whl", hash = "sha256:1721e4c0368adeec965c183168da4b912024702f19e15e13f8577098b9a4f8fe"},
+    {file = "py_serializable-2.0.0.tar.gz", hash = "sha256:e9e6491dd7d29c31daf1050232b57f9657f9e8a43b867cca1ff204752cf420a5"},
 ]
 
 [package.dependencies]
@@ -3858,4 +3853,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.0"
 python-versions = "~3.11"
-content-hash = "a7f306f3fbac790fda59db6b980a1c7dde46176c0e5b1823035aded304707b64"
+content-hash = "36af38d33a6008001bd292a1be93f8aaed16ab9c52c0ca8d60810a93933a506c"
