@@ -75,7 +75,7 @@ truststore = "^0.10.0"
 # sudachipy 0.6.9 は Linux arm64 でのビルドに失敗するため、当面 0.6.8 に固定する
 sudachipy = "0.6.8"
 # aivmlib は AIVMX ファイルのメタデータ読み取りに必要
-aivmlib = "^1.0.0"
+aivmlib = "^1.1.0"
 # AivisSpeech-Engine にはカスタマイズされた Style-Bert-VITS2 が必要
 style-bert-vits2 = { git = "https://github.com/tsukumijima/Style-Bert-VITS2", rev = "43a3bfe510602cf7f09f9b06866b81ffd9b75ded" }
 # OS に応じて適切な ONNX Runtime プラグインをインストール
