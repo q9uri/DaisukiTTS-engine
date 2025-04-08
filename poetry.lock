@@ -723,17 +723,22 @@ pgp = ["gpg"]
 
 [[package]]
 name = "e2k"
-version = "0.3.0"
+version = "0.4.2"
 description = "A tool for automatic English to Katakana conversion"
 optional = false
 python-versions = ">=3.10"
 files = [
-    {file = "e2k-0.3.0-py3-none-any.whl", hash = "sha256:67ae1a437d39d582def8c1dfec3634f61897d1b7dc49ce89e714d10b841c7c14"},
-    {file = "e2k-0.3.0.tar.gz", hash = "sha256:be7d40339aae8eb81f84db54183b34bd6914aad3f8396e4fe622f81b17ddb98b"},
+    {file = "e2k-0.4.2-py3-none-any.whl", hash = "sha256:8b71860ffc0798c45cb6f19bced7ea2a6d3b816e44b8262a366397eaea6c6354"},
+    {file = "e2k-0.4.2.tar.gz", hash = "sha256:14bb83e2cd68d38843fad7b51bc07166745750ad4a4f5c043e093a58b3ac0ec2"},
 ]
 
 [package.dependencies]
 numpy = ">=1.0,<3.0"
+
+[package.extras]
+cpu = ["torch (>=2.6.0)"]
+cu121 = ["torch (>=2.5.0)"]
+cu124 = ["torch (>=2.6.0)"]
 
 [[package]]
 name = "fastapi"
@@ -3853,4 +3858,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.0"
 python-versions = "~3.11"
-content-hash = "36af38d33a6008001bd292a1be93f8aaed16ab9c52c0ca8d60810a93933a506c"
+content-hash = "a7f306f3fbac790fda59db6b980a1c7dde46176c0e5b1823035aded304707b64"

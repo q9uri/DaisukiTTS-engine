@@ -74,8 +74,6 @@ sentry-sdk = {version = "^2.19.2", extras = ["fastapi"]}
 truststore = "^0.10.0"
 # sudachipy 0.6.9 は Linux arm64 でのビルドに失敗するため、当面 0.6.8 に固定する
 sudachipy = "0.6.8"
-# e2k 0.4.1 は Syntax Error が発生するため、当面 0.3.0 に固定する
-e2k = "0.3.0"
 # aivmlib は AIVMX ファイルのメタデータ読み取りに必要
 aivmlib = "^1.1.0"
 # AivisSpeech-Engine にはカスタマイズされた Style-Bert-VITS2 が必要

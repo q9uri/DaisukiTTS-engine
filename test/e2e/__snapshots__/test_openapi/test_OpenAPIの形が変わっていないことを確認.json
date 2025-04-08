@@ -85,7 +85,7 @@
         "type": "object"
       },
       "AivmManifest": {
-        "description": "AIVM マニフェストのスキーマ ",
+        "description": "AIVM マニフェストのスキーマ",
         "properties": {
           "creators": {
             "default": [],
@@ -187,7 +187,7 @@
         "type": "object"
       },
       "AivmManifestSpeaker": {
-        "description": "AIVM マニフェストの話者情報 ",
+        "description": "AIVM マニフェストの話者情報",
         "properties": {
           "icon": {
             "pattern": "^data:image/(jpeg|png);base64,[A-Za-z0-9+/=]+$",
@@ -238,7 +238,7 @@
         "type": "object"
       },
       "AivmManifestSpeakerStyle": {
-        "description": "AIVM マニフェストの話者スタイル情報 ",
+        "description": "AIVM マニフェストの話者スタイル情報",
         "properties": {
           "icon": {
             "anyOf": [
@@ -281,7 +281,7 @@
         "type": "object"
       },
       "AivmManifestVoiceSample": {
-        "description": "AIVM マニフェストのボイスサンプル情報 ",
+        "description": "AIVM マニフェストのボイスサンプル情報",
         "properties": {
           "audio": {
             "pattern": "^data:audio/(wav|mp4);base64,[A-Za-z0-9+/=]+$",
