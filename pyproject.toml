@@ -6,8 +6,6 @@ typos = "typos"
 test = "pytest"
 update-snapshots = "pytest --snapshot-update"
 update-licenses = "bash tools/create_venv_and_generate_licenses.bash"
-build-dictionary = "python tools/build_dictionary.py"
-filter-dictionary = "python tools/remove_dictionary_duplicates.py && python tools/remove_dictionary_duplicates_by_priority.py && python tools/remove_redundant_dictionary_entries.py"
 build = "task update-licenses && pyinstaller --noconfirm run.spec"
 
 [tool.ruff]
