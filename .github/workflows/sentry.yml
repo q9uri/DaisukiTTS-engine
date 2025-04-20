@@ -62,7 +62,7 @@ jobs:
       - name: Create Sentry release
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-          SENTRY_ORG: 'jpchain'
+          SENTRY_ORG: 'aivis-project'
           SENTRY_PROJECT: 'aivisspeech-engine'
           RELEASE_VERSION: ${{ env.RELEASE_VERSION }}
         run: |
