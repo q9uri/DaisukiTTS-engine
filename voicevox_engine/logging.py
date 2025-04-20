@@ -15,8 +15,11 @@ ENGINE_LOG_DIR.mkdir(parents=True, exist_ok=True)
 
 # 前回の起動時に作成したログファイルを削除
 for log_file in [ENGINE_LOG_PATH, ENGINE_ACCESS_LOG_PATH]:
-    if log_file.exists():
-        log_file.unlink()
+    try:
+        if log_file.exists():
+            log_file.unlink()
+    except PermissionError:
+        pass
 
 # Uvicorn のロギング設定
 ## この dictConfig を Uvicorn の起動時に渡す
