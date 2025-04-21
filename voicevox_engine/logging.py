@@ -1,4 +1,4 @@
-# flake8: noqa: E266, B950
+"""ロギングの設定"""
 
 import logging
 import logging.config

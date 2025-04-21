@@ -1,4 +1,4 @@
-# flake8: noqa: E266, B950
+"""インストール済み音声合成モデルのスキャンとメタデータの取得、キャッシュの管理を行うリポジトリ"""
 
 import asyncio
 import glob
@@ -36,6 +36,7 @@ AivmInfosCache = TypeAdapter(dict[str, AivmInfo])
 class AivmInfosRepository:
     """
     インストール済み音声合成モデルのスキャンとメタデータの取得、キャッシュの管理を行うリポジトリ。
+
     エンジン起動時はキャッシュがあれば読み込み、バックグラウンドですべてのインストール済み音声合成モデルの情報を構築する。
     """
 
@@ -543,7 +544,7 @@ class AivmInfosRepository:
     @staticmethod
     def extract_base64_from_data_url(data_url: str) -> str:
         """
-        Data URL から Base64 部分のみを取り出す
+        指定された Data URL から Base64 部分のみを取り出す
 
         Parameters
         ----------

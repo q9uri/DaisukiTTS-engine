@@ -1,3 +1,5 @@
+"""ユーザーエージェント文字列を生成する utility"""
+
 import logging
 import os
 import platform

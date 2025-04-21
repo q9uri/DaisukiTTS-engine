@@ -93,7 +93,7 @@ def app(app_params: dict[str, Any]) -> FastAPI:
 
 @pytest.fixture()
 def client(app: FastAPI) -> TestClient:
-    """HTTP リクエストを VOICEVOX ENGINE へ送信するクライアントを生成する。"""
+    """HTTP リクエストを AivisSpeech Engine へ送信するクライアントを生成する。"""
     return TestClient(app)
 
 

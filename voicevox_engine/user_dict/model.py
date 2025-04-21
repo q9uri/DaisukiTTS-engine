@@ -118,7 +118,7 @@ class UserDictWord(BaseModel):
     accent_associative_rule: CsvSafeStr = Field(description="アクセント結合規則")
 
     @model_validator(mode="after")
-    def compute_word_type(self) -> Self:
+    def _compute_word_type(self) -> Self:
         # 品詞情報から WordTypes (品詞種別) を自動算出する
         # 品詞種別は品詞情報から自動算出できるため、外部からの入力値に頼るべきではない
         # このバリデーターの処理により、word_type には常に品詞情報に対応する WordTypes の値が設定される
@@ -139,7 +139,7 @@ class UserDictWord(BaseModel):
         raise ValueError("不明な品詞です。")
 
     @model_validator(mode="after")
-    def check_mora_count_and_accent_type(self) -> Self:
+    def _check_mora_count_and_accent_type(self) -> Self:
         # モデル初期化時にセットされた値に関わらず、常にモーラ数を自動算出する
         # モーラ数は発音表記から自動算出できるため、外部からの入力値に頼るべきではない
         # このバリデーターの処理により、mora_count には常に1以上の要素を持つ list[int] が設定される

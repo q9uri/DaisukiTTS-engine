@@ -62,9 +62,9 @@ def generate_client(
     server: ServerType, root_dir: Path | None
 ) -> TestClient | httpx.Client:
     """
-    VOICEVOX ENGINE へアクセス可能なクライアントを生成する。
+    AivisSpeech Engine へアクセス可能なクライアントを生成する。
 
-    `server=localhost` では http://localhost:50021 へのクライアントを生成する。
+    `server=localhost` では http://localhost:10101 へのクライアントを生成する。
     `server=fake` ではネットワークを介さずレスポンスを返す疑似サーバーを生成する。
     """
     if server == "fake":
@@ -74,6 +74,6 @@ def generate_client(
             root_dir = Path("VOICEVOX/vv-engine")
         return _generate_engine_fake_server(root_dir)
     elif server == "localhost":
-        return httpx.Client(base_url="http://localhost:50021")
+        return httpx.Client(base_url="http://localhost:10101")
     else:
         raise Exception(f"{server} はサポートされていないサーバータイプです")

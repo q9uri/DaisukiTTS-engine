@@ -434,14 +434,12 @@ def generate_tts_pipeline_router(
             ),
         ] = None,  # fmt: skip # noqa
     ) -> FrameAudioQuery:
-        # """
-        # 歌唱音声合成用のクエリの初期値を得ます。ここで得られたクエリはそのまま歌唱音声合成に利用できます。各値の意味は`Schemas`を参照してください。
-        # """
         raise HTTPException(
             status_code=501,
             detail="Sing frame audio query is not supported in AivisSpeech Engine.",
         )
-        """
+        '''
+        """歌唱音声合成用のクエリの初期値を得ます。ここで得られたクエリはそのまま歌唱音声合成に利用できます。各値の意味は`Schemas`を参照してください。"""
         version = core_version or LATEST_VERSION
         engine = song_engines.get_song_engine(version)
         try:
@@ -459,7 +457,7 @@ def generate_tts_pipeline_router(
             outputSamplingRate=engine.default_sampling_rate,
             outputStereo=False,
         )
-        """
+        '''
 
     @router.post(
         "/sing_frame_f0",
@@ -548,14 +546,12 @@ def generate_tts_pipeline_router(
             ),
         ] = None,  # fmt: skip # noqa
     ) -> Response:
-        # """
-        # 歌唱音声合成を行います。
-        # """
         raise HTTPException(
             status_code=501,
             detail="Frame synthesis is not supported in AivisSpeech Engine.",
         )
-        """
+        '''
+        """歌唱音声合成を行います。"""
         version = core_version or LATEST_VERSION
         engine = song_engines.get_song_engine(version)
         try:
@@ -563,13 +559,17 @@ def generate_tts_pipeline_router(
         except SongInvalidInputError as e:
             raise HTTPException(status_code=400, detail=str(e)) from e
 
-        buffer = io.BytesIO()
-        soundfile.write(
-            file=buffer, data=wave, samplerate=query.outputSamplingRate, format="WAV"
-        )
+        with NamedTemporaryFile(delete=False) as f:
+            soundfile.write(
+                file=f, data=wave, samplerate=query.outputSamplingRate, format="WAV"
+            )
 
-        return Response(buffer.getvalue(), media_type="audio/wav")
-        """
+        return FileResponse(
+            f.name,
+            media_type="audio/wav",
+            background=BackgroundTask(try_delete_file, f.name),
+        )
+        '''
 
     @router.post(
         "/connect_waves",

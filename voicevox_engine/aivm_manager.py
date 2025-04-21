@@ -1,4 +1,4 @@
-# flake8: noqa: E266, B950
+"""AIVM (Aivis Voice Model) 仕様に準拠した音声合成モデルと AIVM マニフェストを管理するクラス"""
 
 import re
 from io import BytesIO
@@ -26,9 +26,10 @@ __all__ = ["AivmManager"]
 
 class AivmManager:
     """
-    AIVM (Aivis Voice Model) 仕様に準拠した音声合成モデルと AIVM マニフェストを管理するクラス
-    VOICEVOX ENGINE における MetasStore の役割を代替する (AivisSpeech Engine では MetasStore は無効化されている)
-    AivisSpeech はインストールサイズを削減するため、AIVMX ファイルにのみ対応する
+    AIVM (Aivis Voice Model) 仕様に準拠した音声合成モデルと AIVM マニフェストを管理するクラス。
+
+    VOICEVOX ENGINE における MetasStore の役割を代替する。(AivisSpeech Engine では MetasStore は無効化されている)
+    AivisSpeech はインストールサイズを削減するため、AIVMX ファイルにのみ対応している。
     ref: https://github.com/Aivis-Project/aivmlib#aivm-specification
     """
 
@@ -261,7 +262,7 @@ class AivmManager:
             raise HTTPException(
                 status_code=422,
                 detail=f"指定された AIVMX ファイルの形式が正しくありません。({ex})",
-            )
+            ) from ex
 
         # すでに同一 UUID のファイルがインストール済みの場合、同じファイルを更新する
         ## 手動で .aivmx ファイルをインストール先ディレクトリにコピーしていた (ファイル名が UUID と一致しない) 場合も更新できるよう、
@@ -329,7 +330,7 @@ class AivmManager:
             raise HTTPException(
                 status_code=500,
                 detail=detail,
-            )
+            ) from ex
 
         # すべてのインストール済み音声合成モデルの情報を再取得
         ## このメソッドは情報更新後、AivisHub からアップデート情報を再取得してから戻る
@@ -381,7 +382,7 @@ class AivmManager:
             raise HTTPException(
                 status_code=500,
                 detail=f"AIVMX ファイルのダウンロードに失敗しました。({ex})",
-            )
+            ) from ex
 
         # ダウンロードした AIVMX ファイルをインストール
         self.install_model(BytesIO(response.content))

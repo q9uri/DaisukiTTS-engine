@@ -499,9 +499,9 @@ def main() -> None:
         # NOTE: デフォルトは ASGI に準拠した HTTP/1.1 サーバー
         uvicorn.run(app, host=args.host, port=args.port, log_config=LOGGING_CONFIG)
 
-    except Exception as ex:
-        logger.error("Unexpected error occurred during engine startup:", exc_info=ex)
-        raise ex
+    except Exception as e:
+        logger.error("Unexpected error occurred during engine startup:", exc_info=e)
+        raise e
 
 
 if __name__ == "__main__":

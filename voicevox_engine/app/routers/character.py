@@ -104,15 +104,15 @@ def generate_character_router(
             ),
         ] = None,  # fmt: skip # noqa
     ) -> list[Speaker]:
-        # """歌えるキャラクターの情報の一覧を返します。"""
         raise HTTPException(
             status_code=501,
             detail="Singers is not supported in AivisSpeech Engine.",
         )
-        """
+        '''
+        """歌えるキャラクターの情報の一覧を返します。"""
         characters = metas_store.sing_characters(core_version)
         return _characters_to_speakers(characters)
-        """
+        '''
 
     @router.get(
         "/singer_info",
@@ -129,14 +129,15 @@ def generate_character_router(
             ),
         ] = None,  # fmt: skip # noqa
     ) -> SpeakerInfo:
-        # """
-        # UUID で指定された歌えるキャラクターの情報を返します。
-        # 画像や音声はresource_formatで指定した形式で返されます。
-        # """
         raise HTTPException(
             status_code=501,
             detail="Singer info is not supported in AivisSpeech Engine.",
         )
+        '''
+        """
+        UUID で指定された歌えるキャラクターの情報を返します。
+
+        画像や音声はresource_formatで指定した形式で返されます。
         """
         return metas_store.character_info(
             character_uuid=speaker_uuid,
@@ -145,7 +146,7 @@ def generate_character_router(
             resource_baseurl=resource_baseurl,
             resource_format=resource_format,
         )
-        """
+        '''
 
     # リソースはAPIとしてアクセスするものではないことを表明するためOpenAPIスキーマーから除外する
     @router.get(f"/{RESOURCE_ENDPOINT}/{{resource_hash}}", include_in_schema=False)

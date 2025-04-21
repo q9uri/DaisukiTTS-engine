@@ -1,5 +1,3 @@
-# flake8: noqa: B950
-
 """ユーザー辞書機能を提供する API Router"""
 
 from typing import Annotated, cast
@@ -63,9 +61,9 @@ def generate_user_dict_router(
                     word_uuid: UserDictWordForCompat.from_user_dict_word(user_dict_word)
                     for word_uuid, user_dict_word in all_words.items()
                 }
-        except UserDictInputError as err:
-            raise HTTPException(status_code=422, detail=str(err))
-        except Exception:
+        except UserDictInputError as e:
+            raise HTTPException(status_code=422, detail=str(e)) from e
+        except Exception as e:
             raise HTTPException(
                 status_code=500, detail="辞書の読み込みに失敗しました。"
             ) from e
@@ -130,13 +128,13 @@ def generate_user_dict_router(
                 )
             )
             return word_uuid
-        except ValidationError as ex:
+        except ValidationError as e:
             raise HTTPException(
-                status_code=422, detail="パラメータに誤りがあります。\n" + str(ex)
-            )
-        except UserDictInputError as err:
-            raise HTTPException(status_code=422, detail=str(err))
-        except Exception:
+                status_code=422, detail="パラメータに誤りがあります。\n" + str(e)
+            ) from e
+        except UserDictInputError as e:
+            raise HTTPException(status_code=422, detail=str(e)) from e
+        except Exception as e:
             raise HTTPException(
                 status_code=500, detail="ユーザー辞書への追加に失敗しました。"
             ) from e
@@ -201,13 +199,13 @@ def generate_user_dict_router(
                     priority=priority,
                 ),
             )
-        except ValidationError as ex:
+        except ValidationError as e:
             raise HTTPException(
-                status_code=422, detail="パラメータに誤りがあります。\n" + str(ex)
-            )
-        except UserDictInputError as err:
-            raise HTTPException(status_code=422, detail=str(err))
-        except Exception:
+                status_code=422, detail="パラメータに誤りがあります。\n" + str(e)
+            ) from e
+        except UserDictInputError as e:
+            raise HTTPException(status_code=422, detail=str(e)) from e
+        except Exception as e:
             raise HTTPException(
                 status_code=500, detail="ユーザー辞書の更新に失敗しました。"
             ) from e
@@ -266,9 +264,9 @@ def generate_user_dict_router(
             user_dict.import_dictionary(
                 dict_data=converted_import_dict_data, override=override
             )
-        except UserDictInputError as err:
-            raise HTTPException(status_code=422, detail=str(err))
-        except Exception:
+        except UserDictInputError as e:
+            raise HTTPException(status_code=422, detail=str(e)) from e
+        except Exception as e:
             raise HTTPException(
                 status_code=500, detail="ユーザー辞書のインポートに失敗しました。"
             ) from e

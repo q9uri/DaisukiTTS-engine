@@ -1,4 +1,4 @@
-# flake8: noqa: E266, B950
+"""AivisSpeech Engine におけるテキスト音声合成エンジンの実装"""
 
 import copy
 import re
@@ -50,7 +50,11 @@ from ..utility.path_utility import get_save_dir
 
 
 class StyleBertVITS2TTSEngine(TTSEngine):
-    """Style-Bert-VITS2 TTS Engine"""
+    """
+    AivisSpeech Engine におけるテキスト音声合成エンジンの実装。
+
+    VOICEVOX ENGINE のテキスト音声合成エンジンの実装 (TTSEngine) と API 互換性があるが、中身はほぼ別物。
+    """
 
     # BERT モデルのキャッシュディレクトリ
     BERT_MODEL_CACHE_DIR: Final[Path] = get_save_dir() / "BertModelCaches"
@@ -239,7 +243,7 @@ class StyleBertVITS2TTSEngine(TTSEngine):
             raise HTTPException(
                 status_code=500,
                 detail="Failed to read AIVM metadata.",
-            )
+            ) from ex
 
         # ハイパーパラメータを読み込む
         hyper_parameters = HyperParameters.model_validate(

@@ -167,6 +167,7 @@ def _search_cost_candidates(context_id: int) -> list[int]:
 
 
 def cost2priority(context_id: int, cost: int) -> int:
+    """生起コストから辞書の優先度を計算する"""
     assert -32768 <= cost <= 32767
     cost_candidates = _search_cost_candidates(context_id)
     # cost_candidatesの中にある値で最も近い値を元にpriorityを返す
@@ -179,6 +180,7 @@ def cost2priority(context_id: int, cost: int) -> int:
 
 
 def priority2cost(context_id: int, priority: int) -> int:
+    """辞書の優先度から生起コストを計算する"""
     assert USER_DICT_MIN_PRIORITY <= priority <= USER_DICT_MAX_PRIORITY
     cost_candidates = _search_cost_candidates(context_id)
     return cost_candidates[USER_DICT_MAX_PRIORITY - priority]
