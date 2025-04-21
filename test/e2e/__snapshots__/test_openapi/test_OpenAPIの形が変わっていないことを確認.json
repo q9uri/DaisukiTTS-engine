@@ -37,7 +37,7 @@
         "type": "object"
       },
       "AivmInfo": {
-        "description": "AIVM (Aivis Voice Model) 仕様に準拠した音声合成モデルのメタデータ情報\nAIVM マニフェストには、音声合成モデルに関連する全てのメタデータが含まれる\nspeakers フィールド内の話者情報は、VOICEVOX ENGINE との API 互換性のために\nAIVM マニフェストを元に Speaker / SpeakerStyle / SpeakerInfo / StyleInfo モデルに変換したもの",
+        "description": "AIVM (Aivis Voice Model) 仕様に準拠した音声合成モデルのメタデータ情報。\n\nAIVM マニフェストには、音声合成モデルに関連する全てのメタデータが含まれる。\nspeakers フィールド内の話者情報は、VOICEVOX ENGINE との API 互換性のために、\nAIVM マニフェストを基に Speaker / SpeakerStyle / SpeakerInfo / StyleInfo モデルに変換したもの。",
         "properties": {
           "file_path": {
             "format": "path",
@@ -471,7 +471,7 @@
         "type": "object"
       },
       "CorsPolicyMode": {
-        "description": "CORS の許可モード",
+        "description": "CORS の許可モード。",
         "enum": [
           "all",
           "localapps"
