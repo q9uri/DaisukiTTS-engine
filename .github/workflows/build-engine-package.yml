@@ -54,19 +54,15 @@ jobs:
         include:
           # Windows x64
           - os: windows-2022
-            architecture: "x64"
             target: Windows-x64
           # macOS x64 (Intel Mac)
           - os: macos-13
-            architecture: "x64"
             target: macOS-x64
           # macOS arm64 (Apple Silicon Mac)
           - os: macos-14
-            architecture: "arm64"
             target: macOS-arm64
           # Linux x64
           - os: ubuntu-22.04
-            architecture: "x64"
             target: Linux-x64
 
     runs-on: ${{ matrix.os }}
@@ -101,7 +97,6 @@ jobs:
         uses: ./.github/actions/prepare_python
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-          architecture: ${{ matrix.architecture }}
 
       - name: <Setup> Install Poetry
         run: python -m pip install poetry

@@ -14,10 +14,6 @@ inputs:
     description: "インストールされる Python ランタイムのバージョン。デフォルト値はこのリポジトリが想定する Python バージョン。"
     required: false
     default: "3.11.9"
-  architecture:
-    description: "Python のアーキテクチャ"
-    required: false
-    default: "x64"
 outputs:
   python-version:
     description: "Python version"
@@ -31,7 +27,6 @@ runs:
       uses: actions/setup-python@v5
       with:
         python-version: ${{ inputs.python-version }}
-        architecture: ${{ inputs.architecture }}
         cache: pip
 
     # - name: <Setup> Install Python dependencies
