@@ -3,7 +3,7 @@
 import logging
 import os
 import platform
-from typing import Literal
+from typing import Literal, cast
 
 import GPUtil
 import psutil
@@ -86,7 +86,7 @@ def generate_user_agent(inference_type: Literal["CPU", "GPU"] = "CPU") -> str:
         """
         try:
             cpu_info = get_cpu_info()
-            return cpu_info.get("brand_raw", "Unknown")
+            return cast(str, cpu_info.get("brand_raw", "Unknown"))
         except Exception as ex:
             logger.error("Failed to get CPU information:", exc_info=ex)
             return "Unknown"

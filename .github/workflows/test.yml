@@ -61,8 +61,8 @@ jobs:
       - name: <Test> Check formatting
         run: PYTHONUTF8=1 poetry run ruff format --check
 
-      # - name: <Test> Check typing
-      #   run: mypy .
+      - name: <Test> Check typing
+        run: poetry run mypy .
 
       - name: <Test> Test codes and coverage
         run: poetry run coverage run --omit=test/* -m pytest

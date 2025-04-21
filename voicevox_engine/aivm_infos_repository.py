@@ -15,6 +15,7 @@ from aivmlib.schemas.aivm_manifest import ModelArchitecture
 from pydantic import TypeAdapter
 from semver.version import Version
 
+from voicevox_engine.library.model import LibrarySpeaker
 from voicevox_engine.logging import logger
 from voicevox_engine.metas.Metas import (
     Speaker,
@@ -24,7 +25,7 @@ from voicevox_engine.metas.Metas import (
     StyleId,
     StyleInfo,
 )
-from voicevox_engine.model import AivmInfo, LibrarySpeaker
+from voicevox_engine.model import AivmInfo
 from voicevox_engine.utility.path_utility import get_save_dir
 from voicevox_engine.utility.user_agent_utility import generate_user_agent
 
@@ -80,7 +81,7 @@ class AivmInfosRepository:
         result = self._load_from_cache()
         if result is True:
             # キャッシュ情報が存在する際は、バックグラウンドでスキャンを開始
-            def update_repository_in_background():
+            def update_repository_in_background() -> None:
                 # E2E テスト実行時に毎回スキャンするとあまりに時間がかかりすぎるため無効化
                 if self._is_pytest:
                     return
@@ -258,9 +259,9 @@ class AivmInfosRepository:
 
         # 各 AIVMX ファイルごとに
         aivm_infos: dict[str, AivmInfo] = {}
-        for aivm_file_path in aivm_file_paths:
+        for aivm_file_path_str in aivm_file_paths:
             # 最低限のパスのバリデーション
-            aivm_file_path = Path(aivm_file_path)
+            aivm_file_path = Path(aivm_file_path_str)
             if not aivm_file_path.exists():
                 logger.warning(f"{aivm_file_path}: File not found. Skipping...")
                 continue

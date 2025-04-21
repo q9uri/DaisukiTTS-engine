@@ -2,6 +2,7 @@
 serve = "python run.py"
 lint = "ruff check --fix ."
 format = "ruff format ."
+mypy = "mypy ."
 typos = "typos"
 test = "pytest"
 update-snapshots = "pytest --snapshot-update"
@@ -44,7 +45,8 @@ strict = true
 plugins = "numpy.typing.mypy_plugin,pydantic.mypy"
 python_version = "3.11"
 ignore_missing_imports = true
-warn_unreachable = true
+warn_unreachable = false
+warn_unused_ignores = false
 
 [tool.pytest.ini_options]
 filterwarnings = ["ignore::pydantic.warnings.PydanticDeprecatedSince20"]

@@ -19,6 +19,7 @@ Consonant = Literal[
     "d",
     "dy",
     "f",
+    "fy",
     "g",
     "gw",
     "gy",
