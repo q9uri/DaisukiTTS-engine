@@ -31,7 +31,8 @@ if sys.platform == 'win32':
 
 block_cipher = None
 
-# ライブラリの噛み合わせが悪いのかなぜか標準ライブラリの dataclasses に __version__ 変数が存在しないと PyInstaller ビルドに失敗する
+# ライブラリの噛み合わせが悪いのか、なぜか標準ライブラリの dataclasses に
+# __version__ 変数が存在しないと PyInstaller ビルドに失敗する
 # 大昔 dataclasses が標準ライブラリで存在しなかった頃の名残なのか…？
 # これをどうにか回避するため、苦肉の策ではあるがビルド時だけ dataclasses.py の場所を探して追記する
 base_prefix = getattr(sys, 'base_prefix', sys.prefix)
@@ -54,6 +55,16 @@ a = Analysis(
     hiddenimports=[
         # ref: https://github.com/pypa/setuptools/issues/4374
         'pkg_resources.extern',
+        # NumPy 2.x で生成した Pickle を含む .npy/.npz ファイルを NumPy 1.x で読み込むために必要
+        # numpy._core 以下のダミーモジュールを明示的に hiddenimports に追加しないと ModuleNotFoundError が発生する
+        # ref: https://github.com/numpy/numpy/issues/24844
+        'numpy._core',
+        'numpy._core._dtype_ctypes',
+        'numpy._core._dtype',
+        'numpy._core._internal',
+        'numpy._core._multiarray_umath',
+        'numpy._core.multiarray',
+        'numpy._core.umath',
     ],
     hookspath=[],
     hooksconfig={},
@@ -64,7 +75,7 @@ a = Analysis(
     cipher=block_cipher,
     noarchive=False,
     module_collection_mode={
-        # Style-Bert-VITS2 内部で使われている TorchScript (@torch.jit) による問題を回避するのに必要
+        # Style-Bert-VITS2 内部で使われている TorchScript (@torch.jit) による問題を回避するために必要
         'style_bert_vits2': 'pyz+py',
     },
 )
