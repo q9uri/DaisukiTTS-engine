@@ -1,4 +1,6 @@
 '''
+"""ライブラリ管理の単体テスト。"""
+
 import copy
 import glob
 import json
@@ -48,7 +50,7 @@ def append_any_as_manifest_to_vvlib(obj: Any, vvlib_path: str) -> None:
         zf.writestr(VVLIB_MANIFEST_NAME, obj_str)
 
 
-class TestLibraryManager(TestCase):
+class _TestLibraryManager(TestCase):
     def setUp(self) -> None:
         super().setUp()
         self.tmp_dir = TemporaryDirectory()
@@ -119,7 +121,6 @@ class TestLibraryManager(TestCase):
 
     def test_install_broken_manifest_library(self) -> None:
         """不正な形式の vvlib_manifest.json をもつ ZIP ファイルは音声ライブラリとしてインストールできない。"""
-
         # Inputs
         invalid_vvlib_name = "test/invalid.vvlib"
         invalid_vvlib_manifest = "test"
@@ -137,7 +138,6 @@ class TestLibraryManager(TestCase):
 
     def test_install_invalid_type_manifest_library(self) -> None:
         """不正な形式の vvlib_manifest.json をもつ ZIP ファイルは音声ライブラリとしてインストールできない。"""
-
         # Inputs
         invalid_vvlib_name = "test/invalid.vvlib"
         invalid_vvlib_manifest = create_vvlib_manifest(

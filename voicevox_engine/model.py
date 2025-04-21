@@ -9,9 +9,7 @@ from voicevox_engine.tts_pipeline.model import AccentPhrase
 
 
 class AudioQuery(BaseModel):
-    """
-    音声合成用のクエリ
-    """
+    """音声合成用のクエリ。"""
 
     accent_phrases: list[AccentPhrase] = Field(title="アクセント句のリスト")
     speedScale: float = Field(
@@ -85,6 +83,8 @@ class AudioQuery(BaseModel):
     )
 
     def __hash__(self) -> int:
+        """内容に対して一意なハッシュ値を返す。"""
+        # NOTE: lru_cache がユースケースのひとつ
         items = [
             (k, tuple(v)) if isinstance(v, list) else (k, v)
             for k, v in self.__dict__.items()
@@ -94,10 +94,11 @@ class AudioQuery(BaseModel):
 
 class AivmInfo(BaseModel):
     """
-    AIVM (Aivis Voice Model) 仕様に準拠した音声合成モデルのメタデータ情報
-    AIVM マニフェストには、音声合成モデルに関連する全てのメタデータが含まれる
-    speakers フィールド内の話者情報は、VOICEVOX ENGINE との API 互換性のために
-    AIVM マニフェストを元に Speaker / SpeakerStyle / SpeakerInfo / StyleInfo モデルに変換したもの
+    AIVM (Aivis Voice Model) 仕様に準拠した音声合成モデルのメタデータ情報。
+
+    AIVM マニフェストには、音声合成モデルに関連する全てのメタデータが含まれる。
+    speakers フィールド内の話者情報は、VOICEVOX ENGINE との API 互換性のために、
+    AIVM マニフェストを基に Speaker / SpeakerStyle / SpeakerInfo / StyleInfo モデルに変換したもの。
     """
 
     is_loaded: bool = Field(title="この音声合成モデルがロードされているかどうか")

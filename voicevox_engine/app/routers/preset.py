@@ -31,10 +31,10 @@ def generate_preset_router(
         """
         try:
             presets = preset_manager.load_presets()
-        except PresetInputError as err:
-            raise HTTPException(status_code=422, detail=str(err))
-        except PresetInternalError as err:
-            raise HTTPException(status_code=500, detail=str(err))
+        except PresetInputError as e:
+            raise HTTPException(status_code=422, detail=str(e)) from e
+        except PresetInternalError as e:
+            raise HTTPException(status_code=500, detail=str(e)) from e
         return presets
 
     @router.post(
@@ -56,10 +56,10 @@ def generate_preset_router(
         """
         try:
             id = preset_manager.add_preset(preset)
-        except PresetInputError as err:
-            raise HTTPException(status_code=422, detail=str(err))
-        except PresetInternalError as err:
-            raise HTTPException(status_code=500, detail=str(err))
+        except PresetInputError as e:
+            raise HTTPException(status_code=422, detail=str(e)) from e
+        except PresetInternalError as e:
+            raise HTTPException(status_code=500, detail=str(e)) from e
         return id
 
     @router.post(
@@ -81,10 +81,10 @@ def generate_preset_router(
         """
         try:
             id = preset_manager.update_preset(preset)
-        except PresetInputError as err:
-            raise HTTPException(status_code=422, detail=str(err))
-        except PresetInternalError as err:
-            raise HTTPException(status_code=500, detail=str(err))
+        except PresetInputError as e:
+            raise HTTPException(status_code=422, detail=str(e)) from e
+        except PresetInternalError as e:
+            raise HTTPException(status_code=500, detail=str(e)) from e
         return id
 
     @router.post(
@@ -101,9 +101,9 @@ def generate_preset_router(
         """
         try:
             preset_manager.delete_preset(id)
-        except PresetInputError as err:
-            raise HTTPException(status_code=422, detail=str(err))
-        except PresetInternalError as err:
-            raise HTTPException(status_code=500, detail=str(err))
+        except PresetInputError as e:
+            raise HTTPException(status_code=422, detail=str(e)) from e
+        except PresetInternalError as e:
+            raise HTTPException(status_code=500, detail=str(e)) from e
 
     return router

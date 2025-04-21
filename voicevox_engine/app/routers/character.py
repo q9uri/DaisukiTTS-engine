@@ -150,13 +150,11 @@ def generate_character_router(
     # リソースはAPIとしてアクセスするものではないことを表明するためOpenAPIスキーマーから除外する
     @router.get(f"/{RESOURCE_ENDPOINT}/{{resource_hash}}", include_in_schema=False)
     async def resources(resource_hash: str) -> FileResponse:
-        """
-        ResourceManagerから発行されたハッシュ値に対応するリソースファイルを返す
-        """
+        """ResourceManagerから発行されたハッシュ値に対応するリソースファイルを返す。"""
         try:
             resource_path = resource_manager.resource_path(resource_hash)
-        except ResourceManagerError:
-            raise HTTPException(status_code=404)
+        except ResourceManagerError as e:
+            raise HTTPException(status_code=404) from e
         return FileResponse(
             resource_path,
             headers={"Cache-Control": "max-age=2592000"},  # 30日

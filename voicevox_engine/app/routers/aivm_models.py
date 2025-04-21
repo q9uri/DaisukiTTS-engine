@@ -107,7 +107,7 @@ def generate_aivm_models_router(
         aivm_info = aivm_manager.get_aivm_info(aivm_uuid)
 
         # StyleBertVITS2TTSEngine を取得し、音声合成モデルをロード
-        engine = tts_engines.get_engine(LATEST_VERSION)
+        engine = tts_engines.get_tts_engine(LATEST_VERSION)
         assert isinstance(engine, StyleBertVITS2TTSEngine)
         engine.load_model(str(aivm_info.manifest.uuid))
 
@@ -128,7 +128,7 @@ def generate_aivm_models_router(
         aivm_info = aivm_manager.get_aivm_info(aivm_uuid)
 
         # StyleBertVITS2TTSEngine を取得し、音声合成モデルをアンロード
-        engine = tts_engines.get_engine(LATEST_VERSION)
+        engine = tts_engines.get_tts_engine(LATEST_VERSION)
         assert isinstance(engine, StyleBertVITS2TTSEngine)
         engine.unload_model(str(aivm_info.manifest.uuid))
 
@@ -172,7 +172,7 @@ def generate_aivm_models_router(
         # StyleBertVITS2TTSEngine を取得し、音声合成モデルをアンロード
         # アンインストール前にアンロードしておかないと、既にロードされている場合に
         # プロセス終了までモデルがアンロードされなくなってしまう
-        engine = tts_engines.get_engine(LATEST_VERSION)
+        engine = tts_engines.get_tts_engine(LATEST_VERSION)
         assert isinstance(engine, StyleBertVITS2TTSEngine)
         engine.unload_model(str(aivm_info.manifest.uuid))
 

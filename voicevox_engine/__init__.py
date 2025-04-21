@@ -1,4 +1,4 @@
-# flake8: noqa
+"""AivisSpeech Engine"""
 
 import os
 

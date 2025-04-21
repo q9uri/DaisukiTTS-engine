@@ -1,3 +1,5 @@
+"""WordTypes オブジェクトの単体テスト。"""
+
 from voicevox_engine.user_dict.constants import PART_OF_SPEECH_DATA, WordTypes
 
 

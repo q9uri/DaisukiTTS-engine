@@ -1,3 +1,5 @@
+"""E2E テスト共通の pytest 用 fixtures。"""
+
 import json
 import shutil
 from pathlib import Path
@@ -15,6 +17,7 @@ from voicevox_engine.engine_manifest import load_manifest
 from voicevox_engine.library.library_manager import LibraryManager
 from voicevox_engine.preset.preset_manager import PresetManager
 from voicevox_engine.setting.setting_manager import SettingHandler
+from voicevox_engine.tts_pipeline.song_engine import make_song_engines_from_cores
 from voicevox_engine.tts_pipeline.style_bert_vits2_tts_engine import (
     StyleBertVITS2TTSEngine,
 )
@@ -35,6 +38,7 @@ def _copy_under_dir(file_path: Path, dir_path: Path) -> Path:
 
 @pytest.fixture()
 def app_params(tmp_path: Path) -> dict[str, Any]:
+    """`generate_app` の全ての引数を生成する。"""
     aivm_manager = AivmManager(get_save_dir() / "Models")
     core_manager = initialize_cores(use_gpu=False, enable_mock=True)
     tts_engines = TTSEngineManager()
@@ -42,6 +46,7 @@ def app_params(tmp_path: Path) -> dict[str, Any]:
         StyleBertVITS2TTSEngine(aivm_manager, False, False),
         MOCK_VER,
     )
+    song_engines = make_song_engines_from_cores(core_manager)
     setting_loader = SettingHandler(tmp_path / "not_exist.yaml")
 
     # テスト用に隔離されたプリセットを生成する
@@ -69,6 +74,7 @@ def app_params(tmp_path: Path) -> dict[str, Any]:
 
     return {
         "tts_engines": tts_engines,
+        "song_engines": song_engines,
         "aivm_manager": aivm_manager,
         "core_manager": core_manager,
         "setting_loader": setting_loader,
@@ -80,12 +86,14 @@ def app_params(tmp_path: Path) -> dict[str, Any]:
 
 
 @pytest.fixture()
-def app(app_params: dict) -> FastAPI:
+def app(app_params: dict[str, Any]) -> FastAPI:
+    """app インスタンスを生成する。"""
     return generate_app(**app_params)
 
 
 @pytest.fixture()
 def client(app: FastAPI) -> TestClient:
+    """HTTP リクエストを VOICEVOX ENGINE へ送信するクライアントを生成する。"""
     return TestClient(app)
 
 

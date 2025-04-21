@@ -40,10 +40,10 @@ from ..dev.core.mock import MockCoreWrapper
 from ..logging import logger
 from ..metas.Metas import StyleId
 from ..model import AudioQuery
+from ..tts_pipeline.audio_postprocessing import raw_wave_to_output_wave
 from ..tts_pipeline.model import AccentPhrase, Mora
 from ..tts_pipeline.tts_engine import (
     TTSEngine,
-    raw_wave_to_output_wave,
     to_flatten_moras,
 )
 from ..utility.path_utility import get_save_dir

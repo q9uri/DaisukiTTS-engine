@@ -37,6 +37,7 @@ from voicevox_engine.logging import LOGGING_CONFIG, logger
 from voicevox_engine.preset.preset_manager import PresetManager
 from voicevox_engine.setting.model import CorsPolicyMode
 from voicevox_engine.setting.setting_manager import USER_SETTING_PATH, SettingHandler
+from voicevox_engine.tts_pipeline.song_engine import make_song_engines_from_cores
 from voicevox_engine.tts_pipeline.tts_engine import TTSEngineManager
 from voicevox_engine.user_dict.user_dict_manager import UserDictionary
 from voicevox_engine.utility.path_utility import (
@@ -98,7 +99,6 @@ def set_output_log_utf8() -> None:
     # NOTE: for 文で回せないため関数内関数で実装している
     def _prepare_utf8_stdio(stdio: TextIO) -> TextIO:
         """UTF-8 ベースの標準入出力インターフェイスを用意する"""
-
         CODEC = "utf-8"  # locale に依存せず UTF-8 コーデックを用いる
         ERR = "backslashreplace"  # 不正な形式のデータをバックスラッシュ付きのエスケープシーケンスに置換する
 
@@ -153,7 +153,7 @@ def select_first_not_none_or_none(candidates: list[S | None]) -> S | None:
 
 
 @dataclass(frozen=True)
-class CLIArgs:
+class _CLIArgs:
     host: str
     port: int
     use_gpu: bool
@@ -176,10 +176,11 @@ class CLIArgs:
     cpu_num_threads: int | None = 4  # 常に 4
 
 
-_cli_args_adapter = TypeAdapter(CLIArgs)
+_cli_args_adapter = TypeAdapter(_CLIArgs)
 
 
-def read_cli_arguments(envs: Envs) -> CLIArgs:
+def read_cli_arguments(envs: Envs) -> _CLIArgs:
+    """コマンドライン引数を読み込む。"""
     parser = argparse.ArgumentParser(
         description="AivisSpeech Engine: AI Voice Imitation System - Text to Speech Engine"
     )
@@ -339,7 +340,6 @@ def read_cli_arguments(envs: Envs) -> CLIArgs:
 
 def main() -> None:
     """AivisSpeech Engine を実行する"""
-
     try:
         multiprocessing.freeze_support()
 
@@ -381,6 +381,22 @@ def main() -> None:
         logger.info(f"Engine root directory: {engine_root()}")
         logger.info(f"User data directory: {get_save_dir()}")
 
+        # AivmManager を初期化
+        aivm_manager = AivmManager(get_save_dir() / "Models")
+
+        # ごく稀に style_bert_vits2_tts_engine.py (が依存する onnxruntime) のインポート自体に失敗し
+        # 例外が発生する環境があるようなので、例外をキャッチしてエラーログに出力できるよう、敢えてルーター初期化時にインポートする
+        from voicevox_engine.tts_pipeline.style_bert_vits2_tts_engine import (
+            StyleBertVITS2TTSEngine,
+        )
+
+        # AivisSpeech Engine 独自の StyleBertVITS2TTSEngine を通常の TTSEngine の代わりに利用
+        tts_engines = TTSEngineManager()
+        tts_engines.register_engine(
+            StyleBertVITS2TTSEngine(aivm_manager, args.use_gpu, args.load_all_models),
+            MOCK_VER,
+        )
+
         core_manager = initialize_cores(
             use_gpu=args.use_gpu,
             voicelib_dirs=args.voicelib_dirs,
@@ -391,23 +407,9 @@ def main() -> None:
             load_all_models=args.load_all_models,
         )
         # tts_engines = make_tts_engines_from_cores(core_manager)
+        song_engines = make_song_engines_from_cores(core_manager)
         # assert len(tts_engines.versions()) != 0, "音声合成エンジンがありません。"
-
-        # AivmManager を初期化
-        aivm_manager = AivmManager(get_save_dir() / "Models")
-
-        # ごく稀に style_bert_vits2_tts_engine.py (が依存する onnxruntime) のインポート自体に失敗し
-        # 例外が発生する環境があるようなので、例外をキャッチしてエラーログに出力できるよう、敢えてルーター初期化時にインポートする
-        from voicevox_engine.tts_pipeline.style_bert_vits2_tts_engine import (
-            StyleBertVITS2TTSEngine,
-        )
-
-        # StyleBertVITS2TTSEngine を通常の TTSEngine の代わりに利用
-        tts_engines = TTSEngineManager()
-        tts_engines.register_engine(
-            StyleBertVITS2TTSEngine(aivm_manager, args.use_gpu, args.load_all_models),
-            MOCK_VER,
-        )
+        assert len(song_engines.versions()) != 0, "音声合成エンジンがありません。"
 
         cancellable_engine: CancellableEngine | None = None
         if args.enable_cancellable_synthesis:
@@ -475,6 +477,7 @@ def main() -> None:
         # ASGI に準拠した AivisSpeech Engine アプリケーションを生成する
         app = generate_app(
             tts_engines,
+            song_engines,
             aivm_manager,
             core_manager,
             setting_loader,

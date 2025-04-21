@@ -2,7 +2,7 @@
   "components": {
     "schemas": {
       "AccentPhrase": {
-        "description": "アクセント句ごとの情報",
+        "description": "アクセント句ごとの情報。",
         "properties": {
           "accent": {
             "description": "アクセント箇所",
@@ -302,7 +302,7 @@
         "type": "object"
       },
       "AudioQuery": {
-        "description": "音声合成用のクエリ",
+        "description": "音声合成用のクエリ。",
         "properties": {
           "accent_phrases": {
             "items": {
@@ -480,7 +480,7 @@
         "type": "string"
       },
       "EngineManifest": {
-        "description": "エンジン自体に関する情報",
+        "description": "エンジン自体に関する情報。",
         "properties": {
           "brand_name": {
             "description": "ブランド名",
@@ -571,7 +571,7 @@
         "type": "object"
       },
       "FrameAudioQuery": {
-        "description": "フレームごとの音声合成用のクエリ",
+        "description": "フレームごとの音声合成用のクエリ。",
         "properties": {
           "f0": {
             "description": "フレームごとの基本周波数",
@@ -625,7 +625,7 @@
         "type": "object"
       },
       "FramePhoneme": {
-        "description": "音素の情報",
+        "description": "音素の情報。",
         "properties": {
           "frame_length": {
             "description": "音素のフレーム長",
@@ -671,7 +671,7 @@
         "type": "object"
       },
       "LibrarySpeaker": {
-        "description": "音声ライブラリに含まれるキャラクターの情報",
+        "description": "音声ライブラリに含まれるキャラクターの情報。",
         "properties": {
           "speaker": {
             "$ref": "#/components/schemas/Speaker"
@@ -688,7 +688,7 @@
         "type": "object"
       },
       "LicenseInfo": {
-        "description": "依存ライブラリのライセンス情報",
+        "description": "依存ライブラリのライセンス情報。",
         "properties": {
           "license": {
             "description": "依存ライブラリのライセンス名",
@@ -735,7 +735,7 @@
         "type": "string"
       },
       "Mora": {
-        "description": "モーラ（子音＋母音）ごとの情報",
+        "description": "モーラ（子音＋母音）ごとの情報。",
         "properties": {
           "consonant": {
             "title": "子音の音素",
@@ -776,6 +776,7 @@
         "type": "object"
       },
       "MorphableTargetInfo": {
+        "description": "モーフィング相手としての情報。",
         "properties": {
           "is_morphable": {
             "description": "指定したキャラクターに対してモーフィングの可否",
@@ -790,7 +791,7 @@
         "type": "object"
       },
       "Note": {
-        "description": "音符ごとの情報",
+        "description": "音符ごとの情報。",
         "properties": {
           "frame_length": {
             "description": "音符のフレーム長",
@@ -828,6 +829,7 @@
         "type": "object"
       },
       "ParseKanaBadRequest": {
+        "description": "読み仮名のパースに失敗した。",
         "properties": {
           "error_args": {
             "additionalProperties": {
@@ -857,7 +859,7 @@
         "type": "object"
       },
       "Preset": {
-        "description": "プリセット情報",
+        "description": "プリセット情報。",
         "properties": {
           "id": {
             "title": "プリセット ID",
@@ -937,7 +939,7 @@
         "type": "object"
       },
       "Score": {
-        "description": "楽譜情報",
+        "description": "楽譜情報。",
         "properties": {
           "notes": {
             "description": "音符のリスト",
@@ -1120,7 +1122,7 @@
         "type": "object"
       },
       "SupportedDevicesInfo": {
-        "description": "対応しているデバイスの情報",
+        "description": "対応しているデバイスの情報。",
         "properties": {
           "cpu": {
             "description": "CPU に対応しているか",
@@ -1147,7 +1149,7 @@
         "type": "object"
       },
       "SupportedFeatures": {
-        "description": "エンジンが持つ機能の一覧",
+        "description": "エンジンが持つ機能の一覧。",
         "properties": {
           "adjust_intonation_scale": {
             "description": "全体の抑揚の調整",
@@ -1224,7 +1226,7 @@
         "type": "object"
       },
       "UpdateInfo": {
-        "description": "エンジンのアップデート情報",
+        "description": "エンジンのアップデート情報。",
         "properties": {
           "contributors": {
             "description": "貢献者名",

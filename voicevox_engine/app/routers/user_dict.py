@@ -68,7 +68,7 @@ def generate_user_dict_router(
         except Exception:
             raise HTTPException(
                 status_code=500, detail="辞書の読み込みに失敗しました。"
-            )
+            ) from e
 
     # TODO: CsvSafeStrを使う
     @router.post(
@@ -139,7 +139,7 @@ def generate_user_dict_router(
         except Exception:
             raise HTTPException(
                 status_code=500, detail="ユーザー辞書への追加に失敗しました。"
-            )
+            ) from e
 
     @router.put(
         "/user_dict_word/{word_uuid}",
@@ -210,7 +210,7 @@ def generate_user_dict_router(
         except Exception:
             raise HTTPException(
                 status_code=500, detail="ユーザー辞書の更新に失敗しました。"
-            )
+            ) from e
 
     @router.delete(
         "/user_dict_word/{word_uuid}",
@@ -226,12 +226,12 @@ def generate_user_dict_router(
         """
         try:
             user_dict.delete_word(word_uuid=word_uuid)
-        except UserDictInputError as err:
-            raise HTTPException(status_code=422, detail=str(err))
-        except Exception:
+        except UserDictInputError as e:
+            raise HTTPException(status_code=422, detail=str(e)) from e
+        except Exception as e:
             raise HTTPException(
                 status_code=500, detail="ユーザー辞書の更新に失敗しました。"
-            )
+            ) from e
 
     @router.post(
         "/import_user_dict",
@@ -271,6 +271,6 @@ def generate_user_dict_router(
         except Exception:
             raise HTTPException(
                 status_code=500, detail="ユーザー辞書のインポートに失敗しました。"
-            )
+            ) from e
 
     return router

@@ -9,7 +9,7 @@ from voicevox_engine.tts_pipeline.kana_converter import parse_kana
 from voicevox_engine.user_dict.model import UserDictWord
 
 
-class UserDictWordInputs(TypedDict):
+class _UserDictWordInputs(TypedDict):
     surface: str
     priority: int
     part_of_speech: str
@@ -25,7 +25,7 @@ class UserDictWordInputs(TypedDict):
     accent_associative_rule: str
 
 
-def generate_model() -> UserDictWordInputs:
+def generate_model() -> _UserDictWordInputs:
     """テスト用に UserDictWord の要素を生成する。"""
     return {
         "surface": "テスト",
