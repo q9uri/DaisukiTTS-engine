@@ -19,6 +19,7 @@ __user_agent_cache: str | None = None
 def generate_user_agent(inference_type: Literal["CPU", "GPU"] = "CPU") -> str:
     """
     ユーザーエージェント文字列を生成する。
+
     エラーが発生した場合でも、最低限の情報を含むユーザーエージェント文字列を返す。
     """
     global __user_agent_cache
@@ -27,10 +28,7 @@ def generate_user_agent(inference_type: Literal["CPU", "GPU"] = "CPU") -> str:
         return __user_agent_cache
 
     def get_os_version() -> str:
-        """
-        OS バージョンを取得する。
-        エラー時は 'Unknown' を返す。
-        """
+        """OS バージョンを取得する。エラー時は 'Unknown' を返す。"""
         try:
             os_name = platform.system()
             if os_name == "Windows":
@@ -69,10 +67,7 @@ def generate_user_agent(inference_type: Literal["CPU", "GPU"] = "CPU") -> str:
             return "OS/Unknown"
 
     def get_architecture() -> str:
-        """
-        アーキテクチャ情報を取得する。
-        エラー時は 'Unknown' を返す。
-        """
+        """アーキテクチャ情報を取得する。エラー時は 'Unknown' を返す。"""
         try:
             return platform.machine()
         except Exception as ex:
@@ -80,10 +75,7 @@ def generate_user_agent(inference_type: Literal["CPU", "GPU"] = "CPU") -> str:
             return "Unknown"
 
     def get_cpu_name() -> str:
-        """
-        CPU 名を取得する。
-        エラー時は 'Unknown' を返す。
-        """
+        """CPU 名を取得する。エラー時は 'Unknown' を返す。"""
         try:
             cpu_info = get_cpu_info()
             return cast(str, cpu_info.get("brand_raw", "Unknown"))
@@ -92,11 +84,7 @@ def generate_user_agent(inference_type: Literal["CPU", "GPU"] = "CPU") -> str:
             return "Unknown"
 
     def get_gpu_names() -> list[str]:
-        """
-        GPU 名を取得する。
-        複数の GPU がある場合、すべての名前をリストで返す。
-        エラー時は ['Unknown'] を返す。
-        """
+        """GPU 名を取得する。複数の GPU がある場合、すべての名前をリストで返す。エラー時は ['Unknown'] を返す。"""
         try:
             os_name = platform.system()
             if os_name == "Windows":
@@ -126,10 +114,7 @@ def generate_user_agent(inference_type: Literal["CPU", "GPU"] = "CPU") -> str:
             return ["Unknown"]
 
     def get_memory_info() -> tuple[float | None, float | None]:
-        """
-        メモリ情報 (全体のメモリ量と使用可能なメモリ量) を取得する。
-        エラー時は None, None を返す。
-        """
+        """メモリ情報 (全体のメモリ量と使用可能なメモリ量) を取得する。エラー時は None, None を返す。"""
         try:
             vm = psutil.virtual_memory()
             total_gb = round(vm.total / (1024**3), 1)
@@ -140,10 +125,7 @@ def generate_user_agent(inference_type: Literal["CPU", "GPU"] = "CPU") -> str:
             return None, None
 
     def is_docker() -> bool:
-        """
-        Docker コンテナ内で実行されているかを判定する。
-        エラー時は False を返す。
-        """
+        """Docker コンテナ内で実行されているかを判定する。エラー時は False を返す。"""
         try:
             if os.path.exists("/.dockerenv"):
                 return True

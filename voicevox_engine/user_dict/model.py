@@ -80,8 +80,9 @@ CsvSafeStr = Annotated[
 
 class UserDictWord(BaseModel):
     """
-    ユーザー辞書のビルドに必要な単語情報
-    単語登録・変更リクエストで受け取った単語情報のバリデーションと JSON への保存に用いる
+    ユーザー辞書のビルドに必要な単語情報。
+
+    単語登録・変更リクエストで受け取った単語情報のバリデーションと JSON への保存に用いる。
     """
 
     model_config = ConfigDict(validate_assignment=True)
@@ -268,9 +269,10 @@ class UserDictWord(BaseModel):
 
 class UserDictWordForCompat(BaseModel):
     """
-    UserDictWord とほとんど同じだが、ユーザー辞書関連 API の後方互換性を保つための互換レイヤー
-    stem, yomi, pronunciation, accent_type, mora_count はリストではなく文字列/数値で表す
-    既に UserDictWord にバリデーションが実装されていることから、重複するバリデーション定義は削られている
+    UserDictWord とほとんど同じだが、ユーザー辞書関連 API の後方互換性を保つための互換レイヤー。
+
+    stem, yomi, pronunciation, accent_type, mora_count はリストではなく文字列/数値で表す。
+    既に UserDictWord にバリデーションが実装されていることから、重複するバリデーション定義は削られている。
     """
 
     model_config = ConfigDict(validate_assignment=True)

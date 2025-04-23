@@ -44,17 +44,28 @@ class UserDictionaryRepository:
 
     def __init__(self, user_dict_path: Path) -> None:
         """
+        UserDictionaryRepository のコンストラクタ。
+
         Parameters
         ----------
         user_dict_path : Path
             ユーザー辞書保存ファイルのパス
         """
+
         self.user_dict_path = user_dict_path
         self._user_dict_adapter = TypeAdapter(dict[str, UserDictWord])
         self._lock = threading.Lock()
 
     def load(self) -> dict[str, UserDictWord]:
-        """ユーザー辞書データを SSoT からロードする。"""
+        """
+        ユーザー辞書データを SSoT からロードする。
+
+        Returns
+        -------
+        dict[str, UserDictWord]
+            ユーザー辞書データ
+        """
+
         with self._lock:
             if not self.user_dict_path.exists():
                 return {}
@@ -148,13 +159,21 @@ class UserDictionaryRepository:
                 return migrated_data
 
     def save(self, data: dict[str, UserDictWord]) -> None:
-        """ユーザー辞書データを SSoT へ保存する。"""
+        """
+        ユーザー辞書データを SSoT へ保存する。
+
+        Parameters
+        ----------
+        data : dict[str, UserDictWord]
+            保存するユーザー辞書データ
+        """
+
         with self._lock, open(self.user_dict_path, mode="w", encoding="utf-8") as f:
             f.write(self._user_dict_adapter.dump_json(data, indent=4).decode("utf-8"))
 
 
 class UserDictionary:
-    """ユーザー辞書を管理するクラス"""
+    """ユーザー辞書を管理するクラス。"""
 
     def __init__(
         self,
@@ -162,6 +181,8 @@ class UserDictionary:
         user_dict_path: Path = _USER_DICT_PATH,
     ) -> None:
         """
+        UserDictionary のコンストラクタ。
+
         Parameters
         ----------
         default_dict_dir_path : Path
@@ -169,6 +190,7 @@ class UserDictionary:
         user_dict_path : Path
             ユーザー辞書保存ファイルのパス
         """
+
         self._default_dict_dir_path = default_dict_dir_path
         self._user_dict_path = user_dict_path
         self._repository = UserDictionaryRepository(user_dict_path)
@@ -216,11 +238,32 @@ class UserDictionary:
         self.apply_jtalk_dictionary()
 
     def get_all_words(self) -> dict[str, UserDictWord]:
-        """ユーザー辞書に登録されているすべての単語を取得する。"""
+        """
+        ユーザー辞書に登録されているすべての単語を取得する。
+
+        Returns
+        -------
+        dict[str, UserDictWord]
+            ユーザー辞書に登録されているすべての単語の情報
+        """
+
         return self._repository.load()
 
     def add_word(self, word_property: WordProperty) -> str:
-        """新規単語をユーザー辞書に追加し、その単語に割り当てられた UUID を返す。"""
+        """
+        新規単語をユーザー辞書に追加し、その単語に割り当てられた UUID を返す。
+
+        Parameters
+        ----------
+        word_property : WordProperty
+            追加する単語の情報
+
+        Returns
+        -------
+        str
+            追加した単語の UUID
+        """
+
         # 新規単語の追加による辞書データの更新
         user_dict = self._repository.load()
         word_uuid = str(uuid4())
@@ -234,7 +277,17 @@ class UserDictionary:
         return word_uuid
 
     def update_word(self, word_uuid: str, word_property: WordProperty) -> None:
-        """単語 UUID で指定された単語をユーザー辞書内で上書き更新する。"""
+        """
+        単語 UUID で指定された単語をユーザー辞書内で上書き更新する。
+
+        Parameters
+        ----------
+        word_uuid : str
+            更新する単語の UUID
+        word_property : WordProperty
+            更新する単語の情報
+        """
+
         # 既存単語の上書きによる辞書データの更新
         user_dict = self._repository.load()
         if word_uuid not in user_dict:
@@ -246,7 +299,15 @@ class UserDictionary:
         self.apply_jtalk_dictionary()
 
     def delete_word(self, word_uuid: str) -> None:
-        """単語 UUID で指定された単語をユーザー辞書から削除する。"""
+        """
+        単語 UUID で指定された単語をユーザー辞書から削除する。
+
+        Parameters
+        ----------
+        word_uuid : str
+            削除する単語の UUID
+        """
+
         # 既存単語の削除による辞書データの更新
         user_dict = self._repository.load()
         if word_uuid not in user_dict:
@@ -270,6 +331,7 @@ class UserDictionary:
         override : bool
             重複したエントリがあった場合、上書きするかどうか
         """
+
         # インポートする辞書データのバリデーション
         for word_uuid, word in dict_data.items():
             UUID(word_uuid)
@@ -316,6 +378,7 @@ class UserDictionary:
         現在 UserDictionaryRepository に保持されているユーザー辞書データを OpenJTalk (MeCab) 用の辞書データに変換し、
         現在のプロセスで実行される全ての pyopenjtalk 呼び出しに、設定したユーザー辞書データを反映させる。
         """
+
         default_dict_dir_path = self._default_dict_dir_path
         user_dict_path = self._user_dict_path
 
@@ -434,7 +497,13 @@ def _delete_file_on_close(file_path: Path) -> None:
     `FILE_SHARE_DELETE` を付けて開かれているファイルのハンドルが全て閉じた時に削除されるようにする。
 
     Windows 以外では即座にファイルを削除する。
+
+    Parameters
+    ----------
+    file_path : Path
+        削除するファイルのパス
     """
+
     if sys.platform == "win32":
         import ctypes
         from ctypes.wintypes import DWORD, HANDLE, LPCWSTR

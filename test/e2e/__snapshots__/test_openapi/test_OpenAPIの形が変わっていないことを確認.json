@@ -1258,7 +1258,7 @@
         "type": "object"
       },
       "UserDictWord": {
-        "description": "ユーザー辞書のビルドに必要な単語情報\n単語登録・変更リクエストで受け取った単語情報のバリデーションと JSON への保存に用いる",
+        "description": "ユーザー辞書のビルドに必要な単語情報。\n\n単語登録・変更リクエストで受け取った単語情報のバリデーションと JSON への保存に用いる。",
         "properties": {
           "accent_associative_rule": {
             "description": "アクセント結合規則",
@@ -1379,7 +1379,7 @@
         "type": "object"
       },
       "UserDictWordForCompat": {
-        "description": "UserDictWord とほとんど同じだが、ユーザー辞書関連 API の後方互換性を保つための互換レイヤー\nstem, yomi, pronunciation, accent_type, mora_count はリストではなく文字列/数値で表す\n既に UserDictWord にバリデーションが実装されていることから、重複するバリデーション定義は削られている",
+        "description": "UserDictWord とほとんど同じだが、ユーザー辞書関連 API の後方互換性を保つための互換レイヤー。\n\nstem, yomi, pronunciation, accent_type, mora_count はリストではなく文字列/数値で表す。\n既に UserDictWord にバリデーションが実装されていることから、重複するバリデーション定義は削られている。",
         "properties": {
           "accent_associative_rule": {
             "description": "アクセント結合規則",
@@ -1512,7 +1512,7 @@
         "type": "object"
       },
       "WordTypes": {
-        "description": "品詞を表す列挙型",
+        "description": "品詞を表す列挙型。",
         "enum": [
           "PROPER_NOUN",
           "LOCATION_NAME",

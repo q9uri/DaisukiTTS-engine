@@ -7,7 +7,7 @@ import numpy as np
 
 
 class WordTypes(str, Enum):
-    """品詞を表す列挙型"""
+    """品詞を表す列挙型。"""
 
     PROPER_NOUN = "PROPER_NOUN"  # 固有名詞
     LOCATION_NAME = "LOCATION_NAME"  # 地名
@@ -23,7 +23,7 @@ class WordTypes(str, Enum):
 
 @dataclass
 class WordProperty:
-    """UserDictWord の生成に必要な、ユーザー辞書に登録する単語情報"""
+    """UserDictWord の生成に必要な、ユーザー辞書に登録する単語情報。"""
 
     surface: list[str]  # 表層形 (アクセント句ごとに1つずつ)
     pronunciation: list[str]  # 発音 (アクセント句ごとに1つずつ)
@@ -34,7 +34,7 @@ class WordProperty:
 
 @dataclass(frozen=True)
 class _PartOfSpeechDetail:
-    """品詞ごとの情報"""
+    """品詞ごとの情報。"""
 
     part_of_speech: str  # 品詞名
     part_of_speech_detail_1: str  # 品詞細分類1
@@ -167,7 +167,7 @@ def _search_cost_candidates(context_id: int) -> list[int]:
 
 
 def cost2priority(context_id: int, cost: int) -> int:
-    """生起コストから辞書の優先度を計算する"""
+    """生起コストから辞書の優先度を計算する。"""
     assert -32768 <= cost <= 32767
     cost_candidates = _search_cost_candidates(context_id)
     # cost_candidatesの中にある値で最も近い値を元にpriorityを返す
@@ -180,7 +180,7 @@ def cost2priority(context_id: int, cost: int) -> int:
 
 
 def priority2cost(context_id: int, priority: int) -> int:
-    """辞書の優先度から生起コストを計算する"""
+    """辞書の優先度から生起コストを計算する。"""
     assert USER_DICT_MIN_PRIORITY <= priority <= USER_DICT_MAX_PRIORITY
     cost_candidates = _search_cost_candidates(context_id)
     return cost_candidates[USER_DICT_MAX_PRIORITY - priority]
