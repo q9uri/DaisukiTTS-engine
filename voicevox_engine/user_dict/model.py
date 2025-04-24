@@ -11,6 +11,7 @@ from typing import Annotated, Self
 
 from pydantic import AfterValidator, BaseModel, ConfigDict, Field, model_validator
 from pydantic.json_schema import SkipJsonSchema
+from style_bert_vits2.nlp.japanese.normalizer import normalize_text
 
 from voicevox_engine.user_dict.constants import (
     PART_OF_SPEECH_DATA,
@@ -214,11 +215,14 @@ class UserDictWord(BaseModel):
         # WordTypes に対応する品詞情報を取得
         pos_detail = PART_OF_SPEECH_DATA[word_property.word_type]
 
+        # 「表層形」は一つの文字列に結合した上で、Style-Bert-VITS2 側の正規化処理を適用する
+        # 辞書を引くためのキーが表層形なので、正規化しておかないと単語によっては辞書登録しても引っかからないケースがある
+        normalized_surface = normalize_text("".join(word_property.surface))
+
         # ユーザー辞書のビルドに必要な単語情報を生成し、同時にバリデーションも行う
         # バリデーション処理は Pydantic によって行われる
         return UserDictWord(
-            # 「表層形」はここで1つの文字列に結合する
-            surface="".join(word_property.surface),
+            surface=normalized_surface,
             # 「左・右文脈 ID」は PART_OF_SPEECH_DATA から WordTypes に対応する定数を取得して設定
             context_id=pos_detail.context_id,
             # 「優先度」はユーザー辞書の優先度をそのまま設定
