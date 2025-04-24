@@ -98,7 +98,7 @@ sudachipy = "0.6.8"
 # aivmlib は AIVMX ファイルのメタデータ読み取りに必要
 aivmlib = "^1.1.0"
 # AivisSpeech-Engine にはカスタマイズされた Style-Bert-VITS2 が必要
-style-bert-vits2 = { git = "https://github.com/tsukumijima/Style-Bert-VITS2", rev = "43a3bfe510602cf7f09f9b06866b81ffd9b75ded" }
+style-bert-vits2 = { git = "https://github.com/tsukumijima/Style-Bert-VITS2", rev = "4c0ba593d88e8d53f1403776e9621a6bc00933f8" }
 # OS に応じて適切な ONNX Runtime プラグインをインストール
 ## Windows では若干速度は落ちるが onnxruntime-directml で代用できるのとファイルサイズがデカいので、
 ## 当面 onnxruntime-gpu はインストールしない
