@@ -9,6 +9,7 @@ from __future__ import annotations
 from re import findall, fullmatch
 from typing import Annotated, Self
 
+from jaconv import jaconv
 from pydantic import AfterValidator, BaseModel, ConfigDict, Field, model_validator
 from pydantic.json_schema import SkipJsonSchema
 from style_bert_vits2.nlp.japanese.normalizer import normalize_text
@@ -215,9 +216,16 @@ class UserDictWord(BaseModel):
         # WordTypes に対応する品詞情報を取得
         pos_detail = PART_OF_SPEECH_DATA[word_property.word_type]
 
-        # 「表層形」は一つの文字列に結合した上で、Style-Bert-VITS2 側の正規化処理を適用する
+        # 「表層形」は一つの文字列に結合した上で、Style-Bert-VITS2 側の正規化処理を適用する（内部で自動的に半角化される）
         # 辞書を引くためのキーが表層形なので、正規化しておかないと単語によっては辞書登録しても引っかからないケースがある
-        normalized_surface = normalize_text("".join(word_property.surface))
+        # 正規化後は基本英単語はカタカナ語に変換されるはずだが、英字が残っていた時のため、再度全角英数記号に戻す
+        # (OpenJTalk の辞書は表層形が全角英数記号でないと引っかからない仕様)
+        normalized_surface = jaconv.h2z(
+            normalize_text("".join(word_property.surface)),
+            kana=False,
+            ascii=True,
+            digit=True,
+        )
 
         # ユーザー辞書のビルドに必要な単語情報を生成し、同時にバリデーションも行う
         # バリデーション処理は Pydantic によって行われる
