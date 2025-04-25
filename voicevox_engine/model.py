@@ -114,6 +114,9 @@ class AivmInfo(BaseModel):
     is_update_available: bool = Field(
         title="この音声合成モデルの新しいバージョンが AivisHub で公開されているかどうか"
     )
+    is_private_model: bool = Field(
+        title="AivisHub で公開されておらず、ユーザーがローカルからインストールしたモデルの場合は True (ネットワークエラーなどで AivisHub から情報を取得できなかった場合も True を返す)",
+    )
     latest_version: str = Field(
         title="この音声合成モデルの AivisHub で公開されている最新バージョン (AivisHub で公開されていない場合は AIVM マニフェスト記載のバージョン)"
     )

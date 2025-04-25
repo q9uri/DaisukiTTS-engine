@@ -329,8 +329,12 @@ class AivmInfosRepository:
             # 仮の AivmInfo モデルを作成
             aivm_info = AivmInfo(
                 is_loaded=False,
+                # 初期値として False を設定 (AivisHub から情報を取得できるまではアップデートなし扱い)
                 is_update_available=False,
-                latest_version=aivm_manifest.version,  # 初期値として AIVM マニフェスト記載のバージョンを設定
+                # 初期値として True を設定 (AivisHub にモデルが公開されているか確認できるまでは Private 扱い)
+                is_private_model=True,
+                # 初期値として AIVM マニフェスト記載のバージョンを設定
+                latest_version=aivm_manifest.version,
                 # AIVMX ファイルのインストール先パス
                 file_path=aivm_file_path,
                 # AIVMX ファイルのインストールサイズ (バイト単位)
@@ -502,6 +506,9 @@ class AivmInfosRepository:
                         current_version = Version.parse(aivm_info.manifest.version)
                         latest_version = Version.parse(aivm_info.latest_version)
                         aivm_info.is_update_available = latest_version > current_version
+
+                        # AivisHub に情報が存在するため、プライベートモデルではない
+                        aivm_info.is_private_model = False
 
             except httpx.TimeoutException:
                 logger.warning(

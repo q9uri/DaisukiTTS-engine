@@ -52,6 +52,10 @@
             "title": "この音声合成モデルがロードされているかどうか",
             "type": "boolean"
           },
+          "is_private_model": {
+            "title": "AivisHub で公開されておらず、ユーザーがローカルからインストールしたモデルの場合は True (ネットワークエラーなどで AivisHub から情報を取得できなかった場合も True を返す)",
+            "type": "boolean"
+          },
           "is_update_available": {
             "title": "この音声合成モデルの新しいバージョンが AivisHub で公開されているかどうか",
             "type": "boolean"
@@ -75,6 +79,7 @@
         "required": [
           "is_loaded",
           "is_update_available",
+          "is_private_model",
           "latest_version",
           "file_path",
           "file_size",
