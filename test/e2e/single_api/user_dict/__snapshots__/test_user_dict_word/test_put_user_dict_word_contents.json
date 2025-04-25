@@ -13,7 +13,7 @@
     "priority": 1,
     "pronunciation": "テスト",
     "stem": "ｔｅｓｔ",
-    "surface": "ｔｅｓｔ",
+    "surface": "テスト",
     "yomi": "テスト"
   },
   "c89596ad-caa8-4f4e-8eb3-3d2261c798fd": {
@@ -29,8 +29,8 @@
     "part_of_speech_detail_3": "*",
     "priority": 5,
     "pronunciation": "テストニ",
-    "stem": "ｔｅｓｔ２",
-    "surface": "ｔｅｓｔ２",
+    "stem": "テスト２",
+    "surface": "テスト２",
     "yomi": "テストニ"
   }
 }

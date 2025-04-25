@@ -124,7 +124,7 @@ def _generate_user_dict(dir_path: Path) -> Path:
     """指定されたディレクトリ下にユーザー辞書ファイルを生成し、生成されたファイルのパスを返す。"""
     contents = {
         "a89596ad-caa8-4f4e-8eb3-3d2261c798fd": {
-            "surface": "ｔｅｓｔ１",
+            "surface": "テスト１",
             "context_id": 1348,
             "priority": 5,
             "part_of_speech": "名詞",
@@ -140,7 +140,7 @@ def _generate_user_dict(dir_path: Path) -> Path:
             "accent_associative_rule": "*",
         },
         "c89596ad-caa8-4f4e-8eb3-3d2261c798fd": {
-            "surface": "ｔｅｓｔ２",
+            "surface": "テスト２",
             "context_id": 1348,
             "priority": 5,
             "part_of_speech": "名詞",

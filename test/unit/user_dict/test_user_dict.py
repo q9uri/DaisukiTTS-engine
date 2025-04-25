@@ -20,7 +20,7 @@ from voicevox_engine.user_dict.user_dict_manager import UserDictionary
 # jsonとして保存される正しい形式の辞書データ
 valid_dict_dict_json = {
     "aab7dda2-0d97-43c8-8cb7-3f440dab9b4e": {
-        "surface": "ｔｅｓｔ",
+        "surface": "テスト",
         "priority": 5,
         "part_of_speech": "名詞",
         "part_of_speech_detail_1": "固有名詞",
@@ -28,7 +28,7 @@ valid_dict_dict_json = {
         "part_of_speech_detail_3": "*",
         "inflectional_type": "*",
         "inflectional_form": "*",
-        "stem": ["ｔｅｓｔ"],
+        "stem": ["テスト"],
         "yomi": ["テスト"],
         "pronunciation": ["テスト"],
         "accent_type": [1],
@@ -41,7 +41,7 @@ valid_dict_dict_api = deepcopy(valid_dict_dict_json)
 valid_dict_dict_api["aab7dda2-0d97-43c8-8cb7-3f440dab9b4e"]["priority"] = 5
 
 import_word = UserDictWord(
-    surface="ｔｅｓｔ２",
+    surface="テスト２",
     priority=5,
     part_of_speech="名詞",
     part_of_speech_detail_1="固有名詞",
@@ -49,7 +49,7 @@ import_word = UserDictWord(
     part_of_speech_detail_3="*",
     inflectional_type="*",
     inflectional_form="*",
-    stem=["ｔｅｓｔ２"],
+    stem=["テストツー"],
     yomi=["テストツー"],
     pronunciation=["テストツー"],
     accent_type=[1],
@@ -84,7 +84,7 @@ def test_create_word() -> None:
             priority=5,
         )
     ) == UserDictWord(
-        surface="ｔｅｓｔ",
+        surface="テスト",
         priority=5,
         part_of_speech="名詞",
         part_of_speech_detail_1="固有名詞",
@@ -120,7 +120,7 @@ def test_apply_word_without_json(tmp_path: Path) -> None:
         new_word.surface,
         new_word.pronunciation,
         new_word.accent_type,
-    ) == ("ｔｅｓｔ", ["テスト"], [1])
+    ) == ("テスト", ["テスト"], [1])
 
 
 def test_apply_word_with_json(tmp_path: Path) -> None:
@@ -145,7 +145,7 @@ def test_apply_word_with_json(tmp_path: Path) -> None:
         new_word.surface,
         new_word.pronunciation,
         new_word.accent_type,
-    ) == ("ｔｅｓｔ２", ["テストツー"], [3])
+    ) == ("テストツー", ["テストツー"], [3])
 
 
 def test_rewrite_word_invalid_id(tmp_path: Path) -> None:
@@ -185,7 +185,7 @@ def test_rewrite_word_valid_id(tmp_path: Path) -> None:
     )
     new_word = user_dict.get_all_words()["aab7dda2-0d97-43c8-8cb7-3f440dab9b4e"]
     assert (new_word.surface, new_word.pronunciation, new_word.accent_type) == (
-        "ｔｅｓｔ２",
+        "テストツー",
         ["テストツー"],
         [2],
     )
