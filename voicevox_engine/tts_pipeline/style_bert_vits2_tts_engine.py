@@ -658,8 +658,8 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         ## ref: https://github.com/litagin02/Style-Bert-VITS2/blob/2.4.1/server_editor.py#L314
         length = 1 / max(0.1, query.speedScale)
 
-        # スタイルの強さ
-        ## VOICEVOX では「抑揚」の比率だが、AivisSpeech では声のテンポの緩急を指定する値としている
+        # 感情表現の強さ
+        ## VOICEVOX では「抑揚」の比率だが、AivisSpeech では声の感情表現の強さを指定する値としている
         ## intonationScale の基準は 1.0 (0 ~ 2) なので、DEFAULT_STYLE_WEIGHT を基準とした 0 ~ 10 の範囲に変換する
         if 0.0 <= query.intonationScale <= 1.0:
             style_weight = query.intonationScale * DEFAULT_STYLE_WEIGHT
