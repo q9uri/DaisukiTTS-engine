@@ -373,7 +373,9 @@ class AivmManager:
         last_exception: httpx.HTTPError | None = None
         while retry_count < max_retries:
             try:
-                logger.info(f"Downloading AIVMX file from {url} (Attempt {retry_count + 1}/{max_retries})...")
+                logger.info(
+                    f"Downloading AIVMX file from {url} (Attempt {retry_count + 1}/{max_retries})..."
+                )
                 response = httpx.get(
                     url,
                     headers={"User-Agent": generate_user_agent()},
@@ -391,15 +393,24 @@ class AivmManager:
                 last_exception = ex_status
                 # 403 Forbidden や 404 Not Found の場合はリトライしない
                 if ex_status.response.status_code in [403, 404]:
-                    logger.error(f"Failed to download AIVMX file from {url} (HTTP Error {ex_status.response.status_code}). No retry.", exc_info=ex_status)
+                    logger.error(
+                        f"Failed to download AIVMX file from {url} (HTTP Error {ex_status.response.status_code}). No retry.",
+                        exc_info=ex_status,
+                    )
                     raise HTTPException(
-                        status_code=500, # 4xx 系エラーでもサーバー側の問題として 500 を返す
+                        status_code=500,  # 4xx 系エラーでもサーバー側の問題として 500 を返す
                         detail=f"AIVMX ファイルのダウンロードに失敗しました。({ex_status})",
                     ) from ex_status
-                logger.warning(f"Failed to download AIVMX file from {url} (Attempt {retry_count + 1}/{max_retries}). Retrying...", exc_info=ex_status)
+                logger.warning(
+                    f"Failed to download AIVMX file from {url} (Attempt {retry_count + 1}/{max_retries}). Retrying...",
+                    exc_info=ex_status,
+                )
             except httpx.HTTPError as ex:
                 last_exception = ex
-                logger.warning(f"Failed to download AIVMX file from {url} (Attempt {retry_count + 1}/{max_retries}). Retrying...", exc_info=ex)
+                logger.warning(
+                    f"Failed to download AIVMX file from {url} (Attempt {retry_count + 1}/{max_retries}). Retrying...",
+                    exc_info=ex,
+                )
 
             retry_count += 1
             if retry_count < max_retries:
@@ -407,7 +418,10 @@ class AivmManager:
                 time.sleep(1)
 
         # リトライ上限に達しても成功しなかった場合
-        logger.error(f"Failed to download AIVMX file from {url} after {max_retries} attempts.", exc_info=last_exception)
+        logger.error(
+            f"Failed to download AIVMX file from {url} after {max_retries} attempts.",
+            exc_info=last_exception,
+        )
         raise HTTPException(
             status_code=500,
             detail=f"AIVMX ファイルのダウンロードに失敗しました。({last_exception})",
