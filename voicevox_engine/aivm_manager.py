@@ -1,6 +1,7 @@
 """AIVM (Aivis Voice Model) 仕様に準拠した音声合成モデルと AIVM マニフェストを管理するクラス"""
 
 import re
+import time
 from io import BytesIO
 from pathlib import Path
 from typing import BinaryIO, Final
@@ -367,25 +368,50 @@ class AivmManager:
             )
 
         # URL から AIVMX ファイルをダウンロード
-        try:
-            logger.info(f"Downloading AIVMX file from {url}...")
-            response = httpx.get(
-                url,
-                headers={"User-Agent": generate_user_agent()},
-                # リダイレクトを追跡する
-                follow_redirects=True,
-            )
-            response.raise_for_status()
-            logger.info(f"Downloaded AIVMX file from {url}.")
-        except httpx.HTTPError as ex:
-            logger.error(f"Failed to download AIVMX file from {url}:", exc_info=ex)
-            raise HTTPException(
-                status_code=500,
-                detail=f"AIVMX ファイルのダウンロードに失敗しました。({ex})",
-            ) from ex
+        max_retries = 3
+        retry_count = 0
+        last_exception: httpx.HTTPError | None = None
+        while retry_count < max_retries:
+            try:
+                logger.info(f"Downloading AIVMX file from {url} (Attempt {retry_count + 1}/{max_retries})...")
+                response = httpx.get(
+                    url,
+                    headers={"User-Agent": generate_user_agent()},
+                    # リダイレクトを追跡する
+                    follow_redirects=True,
+                    # 接続タイムアウト10秒 / 読み取りタイムアウト300秒
+                    timeout=httpx.Timeout(10.0, read=300.0),
+                )
+                response.raise_for_status()
+                logger.info(f"Downloaded AIVMX file from {url}.")
+                # ダウンロードした AIVMX ファイルをインストール
+                self.install_model(BytesIO(response.content))
+                return
+            except httpx.HTTPStatusError as ex_status:
+                last_exception = ex_status
+                # 403 Forbidden や 404 Not Found の場合はリトライしない
+                if ex_status.response.status_code in [403, 404]:
+                    logger.error(f"Failed to download AIVMX file from {url} (HTTP Error {ex_status.response.status_code}). No retry.", exc_info=ex_status)
+                    raise HTTPException(
+                        status_code=500, # 4xx 系エラーでもサーバー側の問題として 500 を返す
+                        detail=f"AIVMX ファイルのダウンロードに失敗しました。({ex_status})",
+                    ) from ex_status
+                logger.warning(f"Failed to download AIVMX file from {url} (Attempt {retry_count + 1}/{max_retries}). Retrying...", exc_info=ex_status)
+            except httpx.HTTPError as ex:
+                last_exception = ex
+                logger.warning(f"Failed to download AIVMX file from {url} (Attempt {retry_count + 1}/{max_retries}). Retrying...", exc_info=ex)
 
-        # ダウンロードした AIVMX ファイルをインストール
-        self.install_model(BytesIO(response.content))
+            retry_count += 1
+            if retry_count < max_retries:
+                # リトライ前に1秒待機
+                time.sleep(1)
+
+        # リトライ上限に達しても成功しなかった場合
+        logger.error(f"Failed to download AIVMX file from {url} after {max_retries} attempts.", exc_info=last_exception)
+        raise HTTPException(
+            status_code=500,
+            detail=f"AIVMX ファイルのダウンロードに失敗しました。({last_exception})",
+        ) from last_exception
 
     def update_model(self, aivm_uuid: str) -> None:
         """
