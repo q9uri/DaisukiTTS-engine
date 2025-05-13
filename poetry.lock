@@ -2729,7 +2729,6 @@ nltk = "<=3.8.1"
 num2words = "*"
 numba = "*"
 numpy = "<2"
-onnxruntime = "*"
 pydantic = ">=2.0"
 pyopenjtalk-plus = "*"
 pypinyin = "*"
@@ -2738,13 +2737,14 @@ safetensors = "*"
 transformers = "*"
 
 [package.extras]
+onnxruntime = ["onnxruntime", "onnxruntime-directml", "onnxruntime-gpu"]
 torch = ["accelerate", "torch (>=2.1)"]
 
 [package.source]
 type = "git"
 url = "https://github.com/tsukumijima/Style-Bert-VITS2"
-reference = "4c0ba593d88e8d53f1403776e9621a6bc00933f8"
-resolved_reference = "4c0ba593d88e8d53f1403776e9621a6bc00933f8"
+reference = "e7b22dc799bb2cbee1bd6ab4a3c7a9e8b2353ee9"
+resolved_reference = "e7b22dc799bb2cbee1bd6ab4a3c7a9e8b2353ee9"
 
 [[package]]
 name = "sudachidict-core"
@@ -3239,4 +3239,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.0"
 python-versions = "~3.11"
-content-hash = "4d4fc234d3986c6ee3656fb38f281badd6187911ec2d037c525275681e256668"
+content-hash = "480598fe20bb3527f45ae108cd37bc0424bc2ffefdafde70a801c02b73fad2da"
