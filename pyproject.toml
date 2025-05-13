@@ -76,7 +76,7 @@ uvicorn = "^0.34.0"
 soundfile = "^0.13.1"
 pyyaml = "^6.0.1"
 pyworld-prebuilt = "^0.3.5.post1"
-pyopenjtalk-plus = "^0.4.1.post2"
+pyopenjtalk-plus = "^0.4.1.post3"
 semver = "^3.0.0"
 platformdirs = "^4.2.0"
 soxr = "^0.5.0"
@@ -93,17 +93,16 @@ sentry-sdk = {version = "^2.19.2", extras = ["fastapi"]}
 ## ref: https://github.com/psf/requests/issues/2966
 ## ref: https://truststore.readthedocs.io/en/latest/
 truststore = "^0.10.0"
-# sudachipy 0.6.9 は Linux arm64 でのビルドに失敗するため、当面 0.6.8 に固定する
-sudachipy = "0.6.8"
 # aivmlib は AIVMX ファイルのメタデータ読み取りに必要
 aivmlib = "^1.1.0"
 # AivisSpeech-Engine にはカスタマイズされた Style-Bert-VITS2 が必要
 style-bert-vits2 = { git = "https://github.com/tsukumijima/Style-Bert-VITS2", rev = "4c0ba593d88e8d53f1403776e9621a6bc00933f8" }
 # OS に応じて適切な ONNX Runtime プラグインをインストール
-## Windows では若干速度は落ちるが onnxruntime-directml で代用できるのとファイルサイズがデカいので、
-## 当面 onnxruntime-gpu はインストールしない
-onnxruntime = "^1.21.0"
-onnxruntime-directml = { version = "^1.21.0", markers = "sys_platform == 'win32' and (platform_machine == 'x86_64' or platform_machine == 'AMD64')" }
+# onnxruntime (CPU): onnxruntime-directml / onnxruntime-gpu 非対応の環境すべて
+onnxruntime = { version = "^1.21.0", markers = "(sys_platform != 'linux' or platform_machine != 'x86_64') and sys_platform != 'win32'" }
+# onnxruntime (DirectML): Windows のみ
+onnxruntime-directml = { version = "^1.21.0", markers = "sys_platform == 'win32'" }
+# onnxruntime (GPU): Linux x64 のみ
 onnxruntime-gpu = { version = "^1.21.0", markers = "sys_platform == 'linux' and platform_machine == 'x86_64'" }
 
 [tool.poetry.group.dev.dependencies]
