@@ -389,21 +389,21 @@ class AivmManager:
                 # ダウンロードした AIVMX ファイルをインストール
                 self.install_model(BytesIO(response.content))
                 return
-            except httpx.HTTPStatusError as ex_status:
-                last_exception = ex_status
+            except httpx.HTTPStatusError as ex:
+                last_exception = ex
                 # 403 Forbidden や 404 Not Found の場合はリトライしない
-                if ex_status.response.status_code in [403, 404]:
+                if ex.response.status_code in [403, 404]:
                     logger.error(
-                        f"Failed to download AIVMX file from {url} (HTTP Error {ex_status.response.status_code}). No retry.",
-                        exc_info=ex_status,
+                        f"Failed to download AIVMX file from {url} (HTTP Error {ex.response.status_code}). No retry.",
+                        exc_info=ex,
                     )
                     raise HTTPException(
                         status_code=500,  # 4xx 系エラーでもサーバー側の問題として 500 を返す
-                        detail=f"AIVMX ファイルのダウンロードに失敗しました。({ex_status})",
-                    ) from ex_status
+                        detail=f"AIVMX ファイルのダウンロードに失敗しました。({ex})",
+                    ) from ex
                 logger.warning(
                     f"Failed to download AIVMX file from {url} (Attempt {retry_count + 1}/{max_retries}). Retrying...",
-                    exc_info=ex_status,
+                    exc_info=ex,
                 )
             except httpx.HTTPError as ex:
                 last_exception = ex
