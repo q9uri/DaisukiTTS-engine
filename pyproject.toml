@@ -94,7 +94,7 @@ sentry-sdk = {version = "^2.19.2", extras = ["fastapi"]}
 ## ref: https://truststore.readthedocs.io/en/latest/
 truststore = "^0.10.0"
 # aivmlib は AIVMX ファイルのメタデータ読み取りに必要
-aivmlib = "^1.1.0"
+aivmlib = "^1.2.1"
 # AivisSpeech-Engine にはカスタマイズされた Style-Bert-VITS2 が必要
 style-bert-vits2 = { git = "https://github.com/tsukumijima/Style-Bert-VITS2", rev = "4657f60ece2c8ceb274f2970c9e857693e79e495" }
 # OS に応じて適切な ONNX Runtime プラグインをインストール
