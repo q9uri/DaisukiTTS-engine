@@ -173,7 +173,7 @@ Docker であればホスト OS の環境に関わらず動作しますので、
 
 ### Linux + Docker
 
-**Docker コンテナを実行する際は、常に `~/.local/share/AivisSpeech-Engine` をコンテナ内の `/home/user/.local/share/AivisSpeech-Engine-Dev` にマウントしてください。**  
+**Docker コンテナを実行する際は、常にホスト側の `~/.local/share/AivisSpeech-Engine` をコンテナ内の `/home/user/.local/share/AivisSpeech-Engine-Dev` にマウントしてください。**  
 こうすることで、コンテナを停止・再起動した後でも、インストールした音声合成モデルや BERT モデルキャッシュ (約 650MB) を維持できます。
 
 Docker 環境の AivisSpeech Engine に音声合成モデルを追加するには、ホスト環境の `~/.local/share/AivisSpeech-Engine/Models` 以下にモデルファイル (.aivmx) を配置してください。
@@ -181,6 +181,11 @@ Docker 環境の AivisSpeech Engine に音声合成モデルを追加するに�
 > [!IMPORTANT]
 > 必ず `/home/user/.local/share/AivisSpeech-Engine-Dev` に対してマウントしてください。  
 > Docker イメージ上の AivisSpeech Engine は PyInstaller でビルドされていないため、データフォルダ名には `-Dev` の Suffix が付与され `AivisSpeech-Engine-Dev` となります。
+
+> [!IMPORTANT]
+> Docker コンテナ上の AivisSpeech Engine は、セキュリティのため一般ユーザー権限で動作します。  
+> そのため、コンテナを実行する前に、あらかじめホスト側に `~/.local/share/AivisSpeech-Engine` ディレクトリを作成し、所有ユーザーを実行ユーザー（通常は `uid=1000`）に設定しておく必要があります。  
+> 現在のユーザー ID は `id` コマンドで確認できます。
 
 #### CPU で実行する
 
