@@ -56,7 +56,7 @@ jobs:
         id: vars
         run: |
           echo "release_url=${{ env.REPO_URL }}/releases/download/${{ env.VERSION }}" >> "$GITHUB_OUTPUT"
-          echo "package_name=AivisSpeech-Engine-${{ matrix.target }}-${{ env.VERSION }}" >> "$GITHUB_OUTPUT"
+          echo "package_name=DaisukiTTS-Engine-${{ matrix.target }}-${{ env.VERSION }}" >> "$GITHUB_OUTPUT"
 
       - name: <Setup> Check out the repository
         uses: actions/checkout@v4

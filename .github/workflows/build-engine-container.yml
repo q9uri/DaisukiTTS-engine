@@ -14,7 +14,7 @@ on:
 
 env:
   PYTHON_VERSION: "3.11.9"
-  IMAGE_NAME: ghcr.io/aivis-project/aivisspeech-engine
+  IMAGE_NAME: ghcr.io/q9uri/daisuki-tts-engine
 
 defaults:
   run:

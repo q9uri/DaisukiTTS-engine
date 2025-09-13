@@ -1,10 +1,10 @@
 {
     "manifest_version": "0.13.1",
-    "name": "AivisSpeech Engine",
-    "brand_name": "AivisSpeech",
+    "name": "DaisukiTTS Engine",
+    "brand_name": "DaisukiTTS",
     "uuid": "1b4a5014-d9fd-11ee-b97d-83c170a68ed3",
     "version": "999.999.999",
-    "url": "https://github.com/Aivis-Project/AivisSpeech-Engine",
+    "url": "https://github.com/q9uri/DaisukiTTS",
     "command": "run",
     "port": 10101,
     "icon": "resources/engine_manifest_assets/icon.png",

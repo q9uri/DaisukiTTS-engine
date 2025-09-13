@@ -18,7 +18,7 @@ on:
 
 env:
   PYTHON_VERSION: "3.11.9"
-  IMAGE_NAME: ghcr.io/aivis-project/aivisspeech-engine
+  IMAGE_NAME: ghcr.io/q9uri/daisuki-tts-engine
   VERSION: |- # version指定時はversionを、それ以外はタグ名を使用
     ${{ (github.event.inputs || inputs).version }}
 
@@ -57,7 +57,7 @@ jobs:
       - name: <Setup> Cache Engine Data
         uses: actions/cache@v4
         with:
-          path: ~/.local/share/AivisSpeech-Engine
+          path: ~/.local/share/DaisukiTTS-Engine
           key: ${{ runner.os }}-${{ runner.arch }}-engine-data
 
       - name: <Setup> Install Python dependencies

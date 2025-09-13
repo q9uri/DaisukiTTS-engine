@@ -80,7 +80,7 @@ jobs:
     steps:
       - name: <Setup> Declare variables
         id: vars
-        run: echo "package_name=AivisSpeech-Engine-${{ matrix.target }}-${{ needs.config.outputs.version }}" >> "$GITHUB_OUTPUT"
+        run: echo "package_name=DaisukiTTS-Engine-${{ matrix.target }}-${{ needs.config.outputs.version }}" >> "$GITHUB_OUTPUT"
 
       - name: <Setup> Check out the repository
         uses: actions/checkout@v4
@@ -124,7 +124,7 @@ jobs:
       - name: <Build> Generate licenses.json
         run: poetry run task update-licenses
 
-      - name: <Build> Build AivisSpeech Engine run.py
+      - name: <Build> Build DaisukiTTS Engine run.py
         run: |
           set -eux
 

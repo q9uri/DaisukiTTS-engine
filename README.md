@@ -1,19 +1,22 @@
 
-# AivisSpeech Engine
+# DaisukiTTS Engine
 
-[![Releases](https://img.shields.io/github/v/release/Aivis-Project/AivisSpeech-Engine?label=Release)](https://github.com/Aivis-Project/AivisSpeech-Engine/releases)
 [![License: LGPL-3.0](https://img.shields.io/badge/License-LGPL3-blue.svg)](LICENSE)
-[![CI: Build](https://github.com/Aivis-Project/AivisSpeech-Engine/actions/workflows/build-engine-package.yml/badge.svg)](https://github.com/Aivis-Project/AivisSpeech-Engine/actions/workflows/build-engine-package.yml)
-[![CI: Test](https://github.com/Aivis-Project/AivisSpeech-Engine/actions/workflows/test.yml/badge.svg)](https://github.com/Aivis-Project/AivisSpeech-Engine/actions/workflows/test.yml)
-
-💠 **AivisSpeech Engine:** **AI** **V**oice **I**mitation **S**ystem - Text to **Speech** **Engine**
 
 -----
 
-**AivisSpeech Engine は、[VOICEVOX ENGINE](https://github.com/VOICEVOX/voicevox_engine) をベースにした、日本語音声合成エンジンです。**  
-日本語音声合成ソフトウェアの [AivisSpeech](https://github.com/Aivis-Project/AivisSpeech) に組み込まれており、かんたんに感情豊かな音声を生成できます。
+Daisuki / DaisukiTTS Engine は、多くの素晴らしいオープンソースソフトウェアとその貢献に深く支えられています。  
+オープンソースソフトウェアを開発してくださった全ての方々、コミュニティの皆様の貢献とサポートに、心より感謝いたします。
 
-#### [💠 AivisSpeech をダウンロード](https://aivis-project.com/speech/) ／ [💠 AivisSpeech Engine をダウンロード](https://github.com/Aivis-Project/AivisSpeech-Engine/releases)
+- [@litagin02](https://github.com/litagin02)
+- [@Stardust-minus](https://github.com/Stardust-minus)
+- [@tuna2134](https://github.com/tuna2134)
+- [@googlefan256](https://github.com/googlefan256)
+- [@WariHima aka. q9uri](https://github.com/Wq9uri)
+- [VOICEVOX](https://github.com/VOICEVOX/voicevox) Contributors
+- [VOICEVOX ENGINE](https://github.com/VOICEVOX/voicevox_engine) Contributors
+- Everyone in [AI声づくり技術研究会](https://zenn.dev/p/aivoicelab)
+- [aivis-project](https://github.com/aivis-project)
 
 -----
 
@@ -31,12 +34,12 @@
     - [NVIDIA GPU (CUDA) で実行する](#nvidia-gpu-cuda-で実行する)
 - [音声合成 API を使う](#音声合成-api-を使う)
 - [VOICEVOX API との互換性について](#voicevox-api-との互換性について)
-  - [AivisSpeech Engine におけるスタイル ID](#aivisspeech-engine-におけるスタイル-id)
+  - [DaisukiTTS Engine におけるスタイル ID](#DaisukiTTS-engine-におけるスタイル-id)
   - [`AudioQuery` 型の仕様変更](#audioquery-型の仕様変更)
   - [`Mora` 型の仕様変更](#mora-型の仕様変更)
   - [`Preset` 型の仕様変更](#preset-型の仕様変更)
-  - [AivisSpeech Engine ではサポートされていない API エンドポイント](#aivisspeech-engine-ではサポートされていない-api-エンドポイント)
-  - [AivisSpeech Engine ではサポートされていない API パラメータ](#aivisspeech-engine-ではサポートされていない-api-パラメータ)
+  - [DaisukiTTS Engine ではサポートされていない API エンドポイント](#DaisukiTTS-engine-ではサポートされていない-api-エンドポイント)
+  - [DaisukiTTS Engine ではサポートされていない API パラメータ](#DaisukiTTS-engine-ではサポートされていない-api-パラメータ)
 - [よくある質問 / Q&A](#よくある質問--qa)
 - [開発方針](#開発方針)
 - [開発環境の構築](#開発環境の構築)
@@ -45,27 +48,26 @@
 
 ## ユーザーの方へ
 
-**AivisSpeech の使い方をお探しの方は、[AivisSpeech 公式サイト](https://aivis-project.com/speech/) をご覧ください。**
 
 このページでは、主に開発者向けの情報を掲載しています。  
 以下はユーザーの方向けのドキュメントです。
 
-- **[使い方](https://github.com/Aivis-Project/AivisSpeech/blob/master/public/howtouse.md)**
-- **[よくある質問 / Q&A](https://github.com/Aivis-Project/AivisSpeech/blob/master/public/qAndA.md)**
-- **[お問い合わせ](https://github.com/Aivis-Project/AivisSpeech/blob/master/public/contact.md)**
+- **[使い方](https://github.com/q9uri/DaisukiTTS/blob/master/public/howtouse.md)**
+- **[よくある質問 / Q&A](https://github.com/q9uri/DaisukiTTS/blob/master/public/qAndA.md)**
+- **[お問い合わせ](https://github.com/q9uri/DaisukiTTS/blob/master/public/contact.md)**
 
 ## 動作環境
 
 Windows・macOS・Linux 搭載の PC に対応しています。  
-AivisSpeech Engine を起動するには、PC に 1.5GB 以上の空きメモリ (RAM) が必要です。
+DaisukiTTS Engine を起動するには、PC に 1.5GB 以上の空きメモリ (RAM) が必要です。
 
 - **Windows:** Windows 10 (22H2 以降)・Windows 11  
 - **macOS:** macOS 13 Ventura 以降
 - **Linux:** Ubuntu 20.04 以降
 
 > [!TIP]
-> デスクトップアプリである AivisSpeech は、Windows・macOS のみサポート対象としています。  
-> 一方、音声合成 API サーバーである AivisSpeech Engine は、Ubuntu / Debian 系の Linux でも利用できます。
+> デスクトップアプリである DaisukiTTS は、Windows・macOS のみサポート対象としています。  
+> 一方、音声合成 API サーバーである DaisukiTTS Engine は、Ubuntu / Debian 系の Linux でも利用できます。
 
 > [!NOTE]
 > Intel CPU 搭載 Mac での動作は積極的に検証していません。  
@@ -78,11 +80,11 @@ AivisSpeech Engine を起動するには、PC に 1.5GB 以上の空きメモリ
 
 ## サポートされている音声合成モデル
 
-**AivisSpeech Engine は、[AIVMX (**Ai**vis **V**oice **M**odel for ONN**X**)](https://github.com/Aivis-Project/aivmlib#aivmx-file-format-specification) (拡張子 `.aivmx`) フォーマットの音声合成モデルファイルをサポートしています。**
+**DaisukiTTS Engine は、[AIVMX (**Ai**vis **V**oice **M**odel for ONN**X**)](https://github.com/Aivis-Project/aivmlib#aivmx-file-format-specification) (拡張子 `.aivmx`) フォーマットの音声合成モデルファイルをサポートしています。**
 
 **AIVM** (**Ai**vis **V**oice **M**odel) / **AIVMX** (**Ai**vis **V**oice **M**odel for ONN**X**) は、**学習済みモデル・ハイパーパラメータ・スタイルベクトル・話者メタデータ（名前・概要・ライセンス・アイコン・ボイスサンプル など）を 1 つのファイルにギュッとまとめた、AI 音声合成モデル用オープンファイルフォーマット**です。  
 
-AIVM 仕様や AIVM / AIVMX ファイルについての詳細は、Aivis Project にて策定した **[AIVM 仕様](https://github.com/Aivis-Project/aivmlib#aivm-specification)** をご参照ください。
+AIVM 仕様や AIVM / AIVMX ファイルについての詳細は、Aivis Project が策定した **[AIVM 仕様](https://github.com/Aivis-Project/aivmlib#aivm-specification)** をご参照ください。
 
 > [!NOTE]  
 > **「AIVM」は、AIVM / AIVMX 両方のフォーマット仕様・メタデータ仕様の総称でもあります。**  
@@ -90,7 +92,7 @@ AIVM 仕様や AIVM / AIVMX ファイルについての詳細は、Aivis Project
 > 「AIVM メタデータ」とは、AIVM 仕様に定義されている、学習済みモデルに紐づく各種メタデータのことをいいます。
 
 > [!IMPORTANT]  
-> **AivisSpeech Engine は AIVM 仕様のリファレンス実装でもありますが、敢えて AIVMX ファイルのみをサポートする設計としています。**  
+> **DaisukiTTS Engine は AIVM 仕様のリファレンス実装でもありますが、敢えて AIVMX ファイルのみをサポートする設計としています。**  
 > これにより、PyTorch への依存を排除してインストールサイズを削減し、ONNX Runtime による高速な CPU 推論を実現しています。
 
 > [!TIP]  
@@ -104,7 +106,7 @@ AIVM 仕様や AIVM / AIVMX ファイルについての詳細は、Aivis Project
 - `Style-Bert-VITS2 (JP-Extra)`
 
 > [!NOTE]
-> AIVM メタデータの仕様上は多言語対応の話者を定義できますが、AivisSpeech Engine は VOICEVOX ENGINE と同様に、日本語音声合成のみに対応しています。  
+> AIVM メタデータの仕様上は多言語対応の話者を定義できますが、DaisukiTTS Engine は VOICEVOX ENGINE と同様に、日本語音声合成のみに対応しています。  
 > そのため、英語や中国語に対応した音声合成モデルであっても、日本語以外の音声合成はできません。
 
 ### モデルファイルの配置場所
@@ -115,10 +117,10 @@ AIVMX ファイルは、OS ごとに以下のフォルダに配置してくだ�
 - **macOS:** `~/Library/Application Support/AivisSpeech-Engine/Models`
 - **Linux:** `~/.local/share/AivisSpeech-Engine/Models`
 
-実際のフォルダパスは、AivisSpeech Engine の起動直後のログに `Models directory:` として表示されます。
+実際のフォルダパスは、DaisukiTTS Engine の起動直後のログに `Models directory:` として表示されます。
 
 > [!TIP]  
-> **AivisSpeech 利用時は、AivisSpeech の UI 画面から簡単に音声合成モデルを追加できます！**  
+> **DaisukiTTS 利用時は、DaisukiTTS の UI 画面から簡単に音声合成モデルを追加できます！**  
 > エンドユーザーの方は、基本的にこちらの方法で音声合成モデルを追加することをおすすめします。
 
 > [!IMPORTANT]
@@ -126,10 +128,10 @@ AIVMX ファイルは、OS ごとに以下のフォルダに配置してくだ�
 
 ## 導入方法
  
-**AivisSpeech Engine では、以下のような便利なコマンドラインオプションが利用できます！**
+**DaisukiTTS Engine では、以下のような便利なコマンドラインオプションが利用できます！**
 - `--host 0.0.0.0` を指定すると、同一ネットワーク内の他の端末からも AivisSpeech Engine へアクセスできるようになります。
 - `--cors_policy_mode all` を指定すると、すべてのドメインからの [CORS](https://developer.mozilla.org/ja/docs/Web/HTTP/CORS) リクエストを許可します。
-- `--load_all_models` を指定すると、AivisSpeech Engine の起動時に、インストールされているすべての音声合成モデルを事前にロードします。
+- `--load_all_models` を指定すると、DaisukiTTS Engine の起動時に、インストールされているすべての音声合成モデルを事前にロードします。
 - `--help` を指定すると、利用可能なすべてのオプションの一覧と説明を表示します。
 
 その他にも多くのオプションが用意されています。詳細は `--help` オプションでご確認ください。
@@ -140,77 +142,40 @@ AIVMX ファイルは、OS ごとに以下のフォルダに配置してくだ�
 > 詳細は [よくある質問](#q-gpu-モード---use_gpu-に切り替えたのに音声生成が-cpu-モードよりも遅いです) を参照してください。 
 
 > [!NOTE]
-> AivisSpeech Engine は、デフォルトではポート番号 `10101` で動作します。  
+> DaisukiTTS Engine は、デフォルトではポート番号 `10101` で動作します。  
 > 他のアプリケーションと競合する場合は、`--port` オプションで任意のポート番号に変更できます。
 
 > [!WARNING]
-> VOICEVOX ENGINE と異なり、一部のオプションは AivisSpeech Engine では未実装です。
+> VOICEVOX ENGINE と異なり、一部のオプションは DaisukiTTS Engine では未実装です。
 
 ### Windows / macOS
 
-**Windows / macOS では、AivisSpeech Engine を単独でインストールすることもできますが、[AivisSpeech](https://github.com/Aivis-Project/AivisSpeech/releases) 本体に付属する AivisSpeech Engine を単独で起動させた方がより簡単です。**  
+DaisukiTTS に同梱されている DaisukiTTS Engine の実行ファイル (`run.exe` / `run`) のパスは以下のとおりです。 
 
-AivisSpeech に同梱されている AivisSpeech Engine の実行ファイル (`run.exe` / `run`) のパスは以下のとおりです。 
-
-- **Windows:** `C:\Program Files\AivisSpeech\AivisSpeech-Engine\run.exe`
-  - ユーザー権限でインストールされている場合、`C:\Users\(ユーザー名)\AppData\Local\Programs\AivisSpeech\AivisSpeech-Engine\run.exe` となります。
-- **macOS:** `/Applications/AivisSpeech.app/Contents/Resources/AivisSpeech-Engine/run`
-  - ユーザー権限でインストールされている場合、`~/Applications/AivisSpeech.app/Contents/Resources/AivisSpeech-Engine/run` となります。
+- **Windows:** `C:\Program Files\DaisukiTTS\DaisukiTTS-Engine\run.exe`
+  - ユーザー権限でインストールされている場合、`C:\Users\(ユーザー名)\AppData\Local\Programs\DaisukiTTS\DaisukiTTS-Engine\run.exe` となります。
+- **macOS:** `/Applications/DaisukiTTS.app/Contents/Resources/DaisukiTTS-Engine/run`
+  - ユーザー権限でインストールされている場合、`~/Applications/DaisukiTTS.app/Contents/Resources/DaisukiTTS-Engine/run` となります。
 
 > [!NOTE]
 > 初回起動時はデフォルトモデル (約 250MB) と推論時に必要な [BERT モデル](https://huggingface.co/tsukumijima/deberta-v2-large-japanese-char-wwm-onnx) (約 650MB) が自動的にダウンロードされる関係で、起動完了まで最大数分ほどかかります。  
 > 起動完了までしばらくお待ちください。
 
-AivisSpeech Engine に音声合成モデルを追加するには、[モデルファイルの配置場所](#モデルファイルの配置場所) をご覧ください。  
-AivisSpeech 内の「設定」→「音声合成モデルの管理」から追加することも可能です。
+DaisukiTTS Engine に音声合成モデルを追加するには、[モデルファイルの配置場所](#モデルファイルの配置場所) をご覧ください。  
+DaisukiTTS 内の「設定」→「音声合成モデルの管理」から追加することも可能です。
 
 ### Linux
 
 Linux + NVIDIA GPU 環境で実行する際は、ONNX Runtime が対応する CUDA / cuDNN バージョンとホスト環境の CUDA / cuDNN バージョンが一致している必要があり、動作条件が厳しめです。  
-具体的には、AivisSpeech Engine で利用している ONNX Runtime は CUDA 12.x / cuDNN 9.x 以上を要求します。
+具体的には、DaisukiTTS Engine で利用している ONNX Runtime は CUDA 12.x / cuDNN 9.x 以上を要求します。
 
-Docker であればホスト OS の環境に関わらず動作しますので、Docker での導入をおすすめします。
-
-### Linux + Docker
-
-**Docker コンテナを実行する際は、常にホスト側の `~/.local/share/AivisSpeech-Engine` をコンテナ内の `/home/user/.local/share/AivisSpeech-Engine-Dev` にマウントしてください。**  
-こうすることで、コンテナを停止・再起動した後でも、インストールした音声合成モデルや BERT モデルキャッシュ (約 650MB) を維持できます。
-
-Docker 環境の AivisSpeech Engine に音声合成モデルを追加するには、ホスト環境の `~/.local/share/AivisSpeech-Engine/Models` 以下にモデルファイル (.aivmx) を配置してください。
-
-> [!IMPORTANT]
-> 必ず `/home/user/.local/share/AivisSpeech-Engine-Dev` に対してマウントしてください。  
-> Docker イメージ上の AivisSpeech Engine は PyInstaller でビルドされていないため、データフォルダ名には `-Dev` の Suffix が付与され `AivisSpeech-Engine-Dev` となります。
-
-> [!IMPORTANT]
-> Docker コンテナ上の AivisSpeech Engine は、セキュリティのため一般ユーザー権限で動作します。  
-> そのため、コンテナを実行する前に、あらかじめホスト側に `~/.local/share/AivisSpeech-Engine` ディレクトリを作成し、所有ユーザーを実行ユーザー（通常は `uid=1000`）に設定しておく必要があります。  
-> 現在のユーザー ID は `id` コマンドで確認できます。
-
-#### CPU で実行する
-
-```bash
-docker pull ghcr.io/aivis-project/aivisspeech-engine:cpu-latest
-docker run --rm -p '10101:10101' \
-  -v ~/.local/share/AivisSpeech-Engine:/home/user/.local/share/AivisSpeech-Engine-Dev \
-  ghcr.io/aivis-project/aivisspeech-engine:cpu-latest
-```
-
-#### NVIDIA GPU (CUDA) で実行する
-
-```bash
-docker pull ghcr.io/aivis-project/aivisspeech-engine:nvidia-latest
-docker run --rm --gpus all -p '10101:10101' \
-  -v ~/.local/share/AivisSpeech-Engine:/home/user/.local/share/AivisSpeech-Engine-Dev \
-  ghcr.io/aivis-project/aivisspeech-engine:nvidia-latest
-```
 
 ## 音声合成 API を使う
 
 Bash で以下のワンライナーを実行すると、`audio.wav` に音声合成した WAV ファイルが出力されます。
 
 > [!IMPORTANT]  
-> **事前に AivisSpeech Engine が起動していて、かつログに表示される `Models directory:` 以下のディレクトリに、スタイル ID に対応する音声合成モデル (.aivmx) が格納されていることが前提です。**
+> **事前に DaisukiTTS Engine が起動していて、かつログに表示される `Models directory:` 以下のディレクトリに、スタイル ID に対応する音声合成モデル (.aivmx) が格納されていることが前提です。**
 
 ```bash
 # STYLE_ID は音声合成対象のスタイル ID 、別途 /speakers API から取得が必要
@@ -222,22 +187,22 @@ rm text.txt query.json
 ```
 
 > [!TIP]
-> **詳しい API リクエスト・レスポンス仕様は [API ドキュメント](https://aivis-project.github.io/AivisSpeech-Engine/api/) や [VOICEVOX API との互換性について](#voicevox-api-との互換性について) をご参照ください。API ドキュメントでは、最新の開発版での変更を随時反映しています。**
+> **詳しい API リクエスト・レスポンス仕様は [AivisSpeechAPI ドキュメント](https://aivis-project.github.io/AivisSpeech-Engine/api/) や [VOICEVOX API との互換性について](#voicevox-api-との互換性について) をご参照ください。API ドキュメントでは、最新の開発版での変更を随時反映しています。**
 > 
-> 起動中の AivisSpeech Engine の API ドキュメント (Swagger UI) は、AivisSpeech Engine もしくは AivisSpeech エディタを起動した状態で、http://127.0.0.1:10101/docs にアクセスすると確認できます。
+> 起動中の DaisukiTTS Engine の API ドキュメント (Swagger UI) DaisukiTTS Engine もしくは DaisukiTTS エディタを起動した状態で、http://127.0.0.1:10101/docs にアクセスすると確認できます。
 
 ## VOICEVOX API との互換性について
 
-AivisSpeech Engine は、概ね VOICEVOX ENGINE の HTTP API と互換性があります。
+DaisukiTTS Engine は、概ね VOICEVOX ENGINE の HTTP API と互換性があります。
 
-**VOICEVOX ENGINE の HTTP API に対応したソフトウェアであれば、API URL を `http://127.0.0.1:10101` に差し替えるだけで、AivisSpeech Engine に対応できるはずです。**
+**VOICEVOX ENGINE の HTTP API に対応したソフトウェアであれば、API URL を `http://127.0.0.1:10101` に差し替えるだけで、DaisukiTTS Engine に対応できるはずです。**
 
 > [!IMPORTANT]  
 > **ただし、API クライアント側で `/audio_query` API から取得した `AudioQuery` の内容を編集してから `/synthesis` API に渡している場合は、仕様差異により正常に音声合成できない場合があります (後述) 。**
 > 
-> この関係で、**AivisSpeech エディタは AivisSpeech Engine と VOICEVOX ENGINE の両方を利用できますが（マルチエンジン機能利用時）、VOICEVOX エディタから AivisSpeech Engine を利用することはできません。**  
-> VOICEVOX エディタで AivisSpeech Engine を利用すると、エディタの実装上の制限により音声合成の品質が著しく低下します。AivisSpeech Engine 独自のパラメータも活用できなくなるほか、非対応機能の呼び出しでエラーが発生する可能性もあります。  
-> より良い音声合成結果を得るため、AivisSpeech エディタでの利用を強くおすすめします。
+> この関係で、**DaisukiTTS エディタは DaisukiTTS Engine と VOICEVOX ENGINE の両方を利用できますが（マルチエンジン機能利用時）、VOICEVOX エディタから DaisukiTTS Engine を利用することはできません。**  
+> VOICEVOX エディタで DaisukiTTS Engine を利用すると、エディタの実装上の制限により音声合成の品質が著しく低下します。DaisukiTTS Engine 独自のパラメータも活用できなくなるほか、非対応機能の呼び出しでエラーが発生する可能性もあります。  
+> より良い音声合成結果を得るため、DaisukiTTS エディタでの利用を強くおすすめします。
 
 > [!NOTE]  
 > 一般的な API ユースケースにおいては概ね互換性があるはずですが、**根本的に異なるモデルアーキテクチャの音声合成システムを強引に同一の API 仕様に収めている関係で、下記以外にも互換性のない API があるかもしれません。**  
@@ -245,7 +210,7 @@ AivisSpeech Engine は、概ね VOICEVOX ENGINE の HTTP API と互換性があ�
 
 VOICEVOX ENGINE からの API 仕様の変更点は次のとおりです。
 
-### AivisSpeech Engine におけるスタイル ID
+### DaisukiTTS Engine におけるスタイル ID
 
 AIVMX ファイルに含まれる AIVM マニフェスト内の話者スタイルのローカル ID は、話者ごとに 0 から始まる連番で管理されています。  
 Style-Bert-VITS2 アーキテクチャの音声合成モデルでは、この値はモデルのハイパーパラメータ `data.style2id` の値と一致します。
@@ -253,11 +218,11 @@ Style-Bert-VITS2 アーキテクチャの音声合成モデルでは、この値
 一方、VOICEVOX ENGINE の API では、歴史的経緯からか「話者 UUID」(`speaker_uuid`) を指定せず、「スタイル ID」(`style_id`) のみを音声合成 API に渡す仕様となっています。  
 VOICEVOX ENGINE では搭載されている話者やスタイルは固定のため、開発側で「スタイル ID」を一意に管理できていました。
 
-一方、AivisSpeech Engine では、ユーザーが自由に音声合成モデルを追加できる仕様となっています。  
+一方、DaisukiTTS Engine では、ユーザーが自由に音声合成モデルを追加できる仕様となっています。  
 そのため、VOICEVOX API 互換の「スタイル ID」は、どのような音声合成モデルが追加されても一意な値である必要があります。  
 これは、一意な値でない場合、新しい音声合成モデルを追加した際に既存のモデルに含まれる話者スタイルとスタイル ID が重複してしまう可能性があるためです。
 
-そこで AivisSpeech Engine では、**AIVM マニフェスト上の話者 UUID とスタイル ID を組み合わせて、VOICEVOX API 互換のグローバルに一意な「スタイル ID」を生成しています。**  
+そこで DaisukiTTS Engine では、**AIVM マニフェスト上の話者 UUID とスタイル ID を組み合わせて、VOICEVOX API 互換のグローバルに一意な「スタイル ID」を生成しています。**  
 具体的な生成方法は以下のとおりです。
 
 1. 話者 UUID を MD5 ハッシュ値に変換する
@@ -272,8 +237,8 @@ VOICEVOX ENGINE では搭載されている話者やスタイルは固定のた�
 > 現時点でスタイル ID が重複した際の回避策はありませんが、現実的にはほとんどのケースで問題にならないと考えられます。
 
 > [!TIP]  
-> **AivisSpeech Engine によって自動生成された VOICEVOX API 互換の「スタイル ID」は、`/speakers` API から取得できます。**  
-> この API は、AivisSpeech Engine にインストールされている話者情報の一覧を返します。
+> **DaisukiTTS Engine によって自動生成された VOICEVOX API 互換の「スタイル ID」は、`/speakers` API から取得できます。**  
+> この API は、DaisukiTTS Engine にインストールされている話者情報の一覧を返します。
 
 ### `AudioQuery` 型の仕様変更
 
@@ -282,20 +247,20 @@ VOICEVOX ENGINE では搭載されている話者やスタイルは固定のた�
 VOICEVOX ENGINE の `AudioQuery` 型からの主な変更点は以下のとおりです。
 
 - **`intonationScale` フィールドの意味が異なります。**
-  - VOICEVOX ENGINE では「全体の抑揚」を表すパラメータでしたが、AivisSpeech Engine では「話者スタイルの感情表現の強さ」を表すパラメータとなっています。
+  - VOICEVOX ENGINE では「全体の抑揚」を表すパラメータでしたが、DaisukiTTS Engine では「話者スタイルの感情表現の強さ」を表すパラメータとなっています。
   - 選択した話者スタイルの感情表現の強弱を 0.0 ~ 2.0 の範囲で指定します (デフォルト: 1.0) 。
   - 数値が大きいほど、選択した話者スタイルに近い感情表現が込められた声になります。
     - 例えば話者スタイルが「上機嫌」なら、数値が大きいほどより嬉しそうな明るい話し方になります。
     - 一方で、話者やスタイルによっては、数値を上げすぎると発声がおかしくなったり、棒読みで不自然な声になる場合もあります。
     - 正しく発声できる上限値は話者やスタイルごとに異なります。必要に応じて最適な値を見つけて調整してみてください。
   - 全スタイルの平均であるノーマルスタイルでは自動で適切な感情表現が選択されるため、この値を指定しても無視されます。
-  - Style-Bert-VITS2 における「スタイルの強さ」パラメータは、AivisSpeech Engine の `intonationScale` に変換される際に以下のように変換されます。
+  - Style-Bert-VITS2 における「スタイルの強さ」パラメータは、DaisukiTTS Engine の `intonationScale` に変換される際に以下のように変換されます。
     - `intonationScale` が 0.0 ~ 1.0 の場合、Style-Bert-VITS2 では 0.0 ~ 1.0 の範囲に相当します。
     - `intonationScale` が 1.0 ~ 2.0 の場合、Style-Bert-VITS2 では 1.0 ~ 10.0 の範囲に相当します。
 - **`tempoDynamicsScale` フィールドが独自に追加されました。**
-  - AivisSpeech Engine 固有のパラメータです。話す速さの緩急の強弱を 0.0 ~ 2.0 の範囲で指定できます（デフォルト: 1.0）。
+  - DaisukiTTS Engine 固有のパラメータです。話す速さの緩急の強弱を 0.0 ~ 2.0 の範囲で指定できます（デフォルト: 1.0）。
   - 値が大きいほど、より早口で生っぽい抑揚がついた声になります。
-  - Style-Bert-VITS2 における「テンポの緩急」パラメータは、AivisSpeech Engine の `tempoDynamicsScale` に変換される際に以下のように変換されます。
+  - Style-Bert-VITS2 における「テンポの緩急」パラメータは、DaisukiTTS Engine の `tempoDynamicsScale` に変換される際に以下のように変換されます。
     - `tempoDynamicsScale` が 0.0 ~ 1.0 の場合、Style-Bert-VITS2 では 0.0 ~ 0.2 の範囲に相当します。
     - `tempoDynamicsScale` が 1.0 ~ 2.0 の場合、Style-Bert-VITS2 では 0.2 ~ 1.0 の範囲に相当します。
 - **`pitchScale` フィールドの仕様が異なります。**
@@ -303,7 +268,7 @@ VOICEVOX ENGINE の `AudioQuery` 型からの主な変更点は以下のとお�
 - **`pauseLength` および `pauseLengthScale` フィールドはサポートされていません。**
   - 互換性のためフィールドとして存在はしますが、常に無視されます。
 - **`kana` フィールドの仕様が異なります。**
-  - VOICEVOX ENGINE では AquesTalk 風記法テキストが入る読み取り専用フィールドでしたが、AivisSpeech Engine では通常の読み上げテキストを指定するフィールドとして利用しています。
+  - VOICEVOX ENGINE では AquesTalk 風記法テキストが入る読み取り専用フィールドでしたが、DaisukiTTS Engine では通常の読み上げテキストを指定するフィールドとして利用しています。
   - null や空文字列が指定された場合は、アクセント句から自動生成されたひらがな文字列が読み上げテキストとなりますが、不自然なイントネーションになる可能性があります。
   - より自然な音声合成結果を得るため、可能な限り通常の読み上げテキストを指定することを推奨します。
 
@@ -320,13 +285,13 @@ VOICEVOX ENGINE の `AudioQuery` 型からの主な変更点は以下のとお�
 VOICEVOX ENGINE の `Mora` 型からの主な変更点は以下のとおりです。
 
 - **記号もモーラとして扱われます。**
-  - VOICEVOX ENGINE では感嘆符・句読点などの記号は `pause_mora` として扱われていましたが、AivisSpeech Engine では通常のモーラとして扱われます。
+  - VOICEVOX ENGINE では感嘆符・句読点などの記号は `pause_mora` として扱われていましたが、DaisukiTTS Engine では通常のモーラとして扱われます。
   - 記号モーラの場合、`text` には記号がそのまま、`vowel` には "pau" が設定されます。
 - **`consonant` / `vowel` フィールドは読み取り専用です。**
   - 音声合成時のテキストの読みには、常に `text` フィールドの値が利用されます。
   - これらのフィールドの値を変更しても、音声合成結果には影響しません。
 - **`consonant_length` / `vowel_length` / `pitch` フィールドはサポートされていません。**
-  - AivisSpeech Engine の実装上、これらの値を算出することができないため、常にダミー値として 0.0 が返されます。
+  - DaisukiTTS Engine の実装上、これらの値を算出することができないため、常にダミー値として 0.0 が返されます。
   - 互換性のためフィールドとして存在はしますが、常に無視されます。
 
 変更点の詳細は、[tts_pipeline/model.py](./voicevox_engine/tts_pipeline/model.py) を参照してください。
@@ -339,7 +304,7 @@ VOICEVOX ENGINE の `Mora` 型からの主な変更点は以下のとおりで�
 
 変更点の詳細は、[preset/model.py](./voicevox_engine/preset/model.py) を参照してください。
 
-### AivisSpeech Engine ではサポートされていない API エンドポイント
+### DaisukiTTS Engine ではサポートされていない API エンドポイント
 
 > [!WARNING]  
 > **歌声合成系 API と、キャンセル可能な音声合成 API はサポートされていません。**  
@@ -370,20 +335,20 @@ VOICEVOX ENGINE の `Mora` 型からの主な変更点は以下のとおりで�
 
 - **`core_version` パラメータ**
   - VOICEVOX CORE のバージョンを指定するパラメータです。
-  - AivisSpeech Engine では VOICEVOX CORE に対応するコンポーネントがないため、常に無視されます。
+  - DaisukiTTS Engine では VOICEVOX CORE に対応するコンポーネントがないため、常に無視されます。
 - **`enable_interrogative_upspeak` パラメータ**
   - 疑問系のテキストが与えられたら語尾を自動調整するかのパラメータです。
-  - AivisSpeech Engine では、常に「！」「？」「…」「〜」などのテキストに含まれる記号に対応した、自然な抑揚で読み上げられます。
+  - DaisukiTTS Engine では、常に「！」「？」「…」「〜」などのテキストに含まれる記号に対応した、自然な抑揚で読み上げられます。
   - したがって、`どうですか…？` のように読み上げテキストの末尾に「？」を付与するだけで、疑問系の抑揚で読み上げることができます。
 
 ## よくある質問 / Q&A
 
 > [!TIP]  
-> **AivisSpeech エディタの [よくある質問 / Q&A](https://github.com/Aivis-Project/AivisSpeech/blob/master/public/qAndA.md) もあわせてご覧ください。**
+> **DaisukiTTS エディタの [よくある質問 / Q&A](https://github.com/q9uri/DaisukiTTS/blob/master/public/qAndA.md) もあわせてご覧ください。**
 
 ### Q. 「感情表現の強さ」(`intonationScale`) の値を上げると発声がおかしくなります。
 
-AivisSpeech Engine で対応している、Style-Bert-VITS2 モデルアーキテクチャの現時点での仕様になります。  
+DaisukiTTS Engine で対応している、Style-Bert-VITS2 モデルアーキテクチャの現時点での仕様になります。  
 話者やスタイルにもよりますが、`intonationScale` の値を上げすぎると発声がおかしくなったり、棒読みで不自然な声になる場合もあります。  
 
 正しく発声できる `intonationScale` の上限値は、話者やスタイルごとに異なります。  
@@ -391,19 +356,19 @@ AivisSpeech Engine で対応している、Style-Bert-VITS2 モデルアーキ�
 
 ### Q. 読み方が想定と異なります。
 
-AivisSpeech Engine ではなるべく一発で正しい読み・正しいアクセントになるよう処理を工夫していますが、どうしても間違った読み・アクセントになる場合もあります。  
+DaisukiTTS Engine ではなるべく一発で正しい読み・正しいアクセントになるよう処理を工夫していますが、どうしても間違った読み・アクセントになる場合もあります。  
 あまり使われない固有名詞や人名（特にキラキラネーム）など、内蔵辞書に登録されていない単語は、正しい読みにならないことが多いです。  
 
-こうした単語の読み方は辞書登録で変更できます。AivisSpeech エディタまたは API から単語を登録してみてください。  
+こうした単語の読み方は辞書登録で変更できます。DaisukiTTS エディタまたは API から単語を登録してみてください。  
 なお、複合語や英単語に関しては、単語の優先度にかかわらず、辞書への登録内容が反映されないことがあります。これは現時点での仕様になります。
 
 ### Q. 長い文章を一度に音声合成 API に送ると、音声が不自然になったりメモリリークが発生します。
 
-AivisSpeech Engine は、一文や意味のまとまりなど、比較的短い文の単位で音声合成することを想定して設計されています。  
+DaisukiTTS Engine は、一文や意味のまとまりなど、比較的短い文の単位で音声合成することを想定して設計されています。  
 そのため、1000 文字を超えるような長い文章を一度に `/synthesis` API に送ると、以下のような問題が発生する可能性があります。
 
 - メモリ使用量が急激に増加し、PC の動作が遅くなる
-- メモリリークが発生し、AivisSpeech Engine がクラッシュする
+- メモリリークが発生し、DaisukiTTS Engine がクラッシュする
 - 音声の抑揚が不自然になり、棒読みのような声になる
 
 **長い文章を音声合成する場合は、以下のような位置で文章を区切って、それぞれ音声合成 API に送信することをおすすめします。**  
@@ -420,15 +385,15 @@ AivisSpeech Engine は、一文や意味のまとまりなど、比較的短い�
 
 ### Q. オフラインの PC でも利用できますか？
 
-AivisSpeech をはじめて起動するときのみ、モデルデータのダウンロードのため、インターネットアクセスが必要になります。  
+DaisukiTTS をはじめて起動するときのみ、モデルデータのダウンロードのため、インターネットアクセスが必要になります。  
 2回目以降の起動では、PC がオフラインでもお使いいただけます。
 
 ### Q. 辞書をインポート／エクスポートしたいです。
 
-起動中の AivisSpeech Engine の設定画面で行えます。
+起動中の DaisukiTTS Engine の設定画面で行えます。
 
-AivisSpeech Engine 起動中にブラウザから `http://127.0.0.1:[AivisSpeech Engine のポート番号]/setting` にアクセスすると、AivisSpeech Engine の設定画面が開きます。  
-AivisSpeech Engine のポート番号のデフォルトは `10101` です。
+DaisukiTTS Engine 起動中にブラウザから `http://127.0.0.1:[DaisukiTTS Engine のポート番号]/setting` にアクセスすると、DaisukiTTS Engine の設定画面が開きます。  
+DaisukiTTS Engine のポート番号のデフォルトは `10101` です。
 
 ### Q. GPU モード (`--use_gpu`) に切り替えたのに音声生成が CPU モードよりも遅いです。
 
@@ -454,13 +419,13 @@ Intel 第 12 世代以降の CPU では、Windows 11 の設定画面からの「
 
 ### Q. クレジット表記は必要ですか？
 
-AivisSpeech は、利用用途を束縛されない、自由な AI 音声合成ソフトウェアを目指しています。  
+DaisukiTTS は、利用用途を束縛されない、自由な AI 音声合成ソフトウェアを目指しています。  
 （成果物で使った音声合成モデルのライセンス次第ではありますが）少なくともソフトウェア本体はクレジット表記不要で、個人・法人・商用・非商用を問わず、自由にお使いいただけます。
 
-…とはいえ、より多くの方に AivisSpeech のことを知っていただきたい気持ちもあります。  
-もしよければ、成果物のどこかに AivisSpeech のことをクレジットしていただけると嬉しいです。（クレジットの表記フォーマットはお任せします。）
+…とはいえ、より多くの方に DaisukiTTS のことを知っていただきたい気持ちもあります。  
+もしよければ、成果物のどこかに DaisukiTTS のことをクレジットしていただけると嬉しいです。（クレジットの表記フォーマットはお任せします。）
 
-### Q. AivisSpeech Engine のエラーログはどこで確認できますか？
+### Q. DaisukiTTS Engine のエラーログはどこで確認できますか？
 
 以下のフォルダに保存されています。
 
@@ -473,19 +438,14 @@ AivisSpeech は、利用用途を束縛されない、自由な AI 音声合成�
 不具合を見つけられた方は、以下のいずれかの方法でご報告ください。
 
 1. **GitHub Issue (推奨)**  
-   GitHub アカウントをお持ちの方は、[GitHub の Issue](https://github.com/Aivis-Project/AivisSpeech-Engine/issues) からご報告いただけますと、早期の対応が可能です。
+   GitHub アカウントをお持ちの方は、[GitHub の Issue](https://github.com/q9uri/DaisukiTTS-Engine/issues) からご報告いただけますと、早期の対応が可能です。
 
-2. **Twitter (X)**  
-   [Aivis Project 公式アカウント](https://x.com/aivis_project) へのリプライや DM、またはハッシュタグ [#AivisSpeech](https://x.com/search?q=%23AivisSpeech&src=typed_query) を付けたツイートでご報告いただけます。
-
-3. **お問い合わせフォーム**  
-   [Aivis Project お問い合わせフォーム](https://docs.google.com/forms/d/e/1FAIpQLSd1gi8lMW1mpdrkCHbM090pWmWhKgz4tR1Obc9G9hOuWpZPsA/viewform) からもご報告いただけます。
 
 なるべく以下の情報を添えてご報告いただけますと、より迅速な対応が可能です。
 
 - 不具合の内容
 - 再現手順（動画や写真があれば添付してください）
-- OS の種類・AivisSpeech のバージョン
+- OS の種類・DaisukiTTS のバージョン
 - 解決のために試されたこと
 - ウイルス対策ソフトなどの有無（関係がありそうであれば）
 - 表示されたエラーメッセージ
@@ -494,26 +454,26 @@ AivisSpeech は、利用用途を束縛されない、自由な AI 音声合成�
 ## 開発方針
 
 [VOICEVOX](https://github.com/VOICEVOX) は非常に巨大なソフトウェアであり、現在も活発に開発が続けられています。  
-そのため、AivisSpeech Engine では VOICEVOX ENGINE の最新版をベースに、以下の方針で開発を行っています。
+そのため、DaisukiTTS Engine では VOICEVOX ENGINE の最新版をベースに、以下の方針で開発を行っています。
 
 - VOICEVOX 最新版への追従を容易にするため、できるだけ改変を必要最小限に留める
-  - VOICEVOX ENGINE から AivisSpeech Engine へのリブランディングは必要な箇所のみ行う
+  - VOICEVOX ENGINE から DaisukiTTS Engine へのリブランディングは必要な箇所のみ行う
   - `voicevox_engine` ディレクトリをリネームすると import 文の変更差分が膨大になるため、あえてリブランディングを行わない
 - リファクタリングを行わない
   - VOICEVOX ENGINE とのコンフリクトが発生することが容易に予想される上、コード全体に精通しているわけではないため
-- AivisSpeech で利用しない機能 (歌声合成機能など) であっても、コードの削除は行わない
+- DaisukiTTS で利用しない機能 (歌声合成機能など) であっても、コードの削除は行わない
   - これもコンフリクトを回避するため
   - 利用しないコードの無効化は削除ではなく、コメントアウトで行う
     - VOICEVOX ENGINE との差分を最小限に抑えるため、大量にコメントアウトが必要な場合は、# ではなく """ """ を使う
   - ただし、Dockerfile や GitHub Actions などの構成ファイルやビルドツール類はこの限りではない
-    - 元々 AivisSpeech Engine での改変量が大きい部分につき、コメントアウトでは非常に雑多なコードになるため
+    - 元々 DaisukiTTS Engine での改変量が大きい部分につき、コメントアウトでは非常に雑多なコードになるため
 - 保守や追従が困難なため、ドキュメントの更新は行わない
-  - このため各ドキュメントは一切更新されておらず、AivisSpeech Engine での変更を反映していない
-- AivisSpeech Engine 向けの改変にともないテストコードの維持が困難なため、テストコードの追加は行わない
+  - このため各ドキュメントは一切更新されておらず、DaisukiTTS Engine での変更を反映していない
+- DaisukiTTS Engine 向けの改変にともないテストコードの維持が困難なため、テストコードの追加は行わない
   - 既存のテストコードのみ、テストが通るように一部箇所の修正やコメントアウトを行い、消極的に維持する
-    - AivisSpeech Engine での改変により、テスト結果のスナップショットは VOICEVOX ENGINE と異なる
-    - AivisSpeech Engine での改変により動かなくなったテストの修正は行わず、コメントアウトで対応する
-  - AivisSpeech Engine 向けに新規開発した箇所は、保守コストを鑑みテストコードを追加しない
+    - DaisukiTTS Engine での改変により、テスト結果のスナップショットは VOICEVOX ENGINE と異なる
+    - DaisukiTTS Engine での改変により動かなくなったテストの修正は行わず、コメントアウトで対応する
+  - DaisukiTTS Engine 向けに新規開発した箇所は、保守コストを鑑みテストコードを追加しない
 
 ## 開発環境の構築
 
@@ -536,10 +496,10 @@ poetry install
 手順はオリジナルの VOICEVOX ENGINE と大幅に異なります。
 
 ```bash
-# 開発環境で AivisSpeech Engine を起動
+# 開発環境で DaisukiTTS Engine を起動
 poetry run task serve
 
-# AivisSpeech Engine のヘルプを表示
+# DaisukiTTS Engine のヘルプを表示
 poetry run task serve --help
 
 # コードフォーマットを自動修正
@@ -560,7 +520,7 @@ poetry run task update-snapshots
 # ライセンス情報を更新
 poetry run task update-licenses
 
-# AivisSpeech Engine をビルド
+# DaisukiTTS Engine をビルド
 poetry run task build
 ```
 
@@ -568,22 +528,9 @@ poetry run task build
 
 ベースである VOICEVOX ENGINE のデュアルライセンスのうち、[LGPL-3.0](LICENSE) のみを単独で継承します。
 
-下記ならびに [docs/](docs/) 以下のドキュメントは、[VOICEVOX ENGINE](https://github.com/VOICEVOX/voicevox_engine) 本家のドキュメントを改変なしでそのまま引き継いでいます。これらのドキュメントの内容が AivisSpeech Engine にも通用するかは保証されません。
+下記ならびに [docs/](docs/) 以下のドキュメントは、[VOICEVOX ENGINE](https://github.com/VOICEVOX/voicevox_engine) 本家のドキュメントを改変なしでそのまま引き継いでいます。これらのドキュメントの内容が DaisukiTTS Engine にも通用するかは保証されません。
 
-## Special Thanks
-
-AivisSpeech Engine は、多くの素晴らしいオープンソースソフトウェアとその貢献に深く支えられています。  
-オープンソースソフトウェアを開発してくださった全ての方々、コミュニティの皆様の貢献とサポートに、心より感謝いたします。
-
-- [@litagin02](https://github.com/litagin02)
-- [@Stardust-minus](https://github.com/Stardust-minus)
-- [@tuna2134](https://github.com/tuna2134)
-- [@googlefan256](https://github.com/googlefan256)
-- [@WariHima](https://github.com/WariHima)
-- [VOICEVOX ENGINE](https://github.com/VOICEVOX/voicevox_engine) Contributors
-- Everyone in [AI声づくり技術研究会](https://zenn.dev/p/aivoicelab)
-
------
+---
 
 # VOICEVOX ENGINE
 

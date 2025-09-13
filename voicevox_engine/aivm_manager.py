@@ -36,7 +36,8 @@ class AivmManager:
 
     # デフォルトでインストールされる音声合成モデルの UUID
     DEFAULT_MODEL_UUIDS: Final[list[str]] = [
-        "a59cb814-0083-4369-8542-f51a29e72af7",
+        "296f6648-3d0c-47e4-8a3b-b90275b194e9",
+        "a310e3e5-9689-4bad-8803-b06542e0a8a9"
     ]
 
     def __init__(self, installed_models_dir: Path):
@@ -63,7 +64,13 @@ class AivmManager:
         # メタデータの読み取りに失敗したなどで情報を取得できなかったモデルはインストールされていないとみなす
         current_installed_aivm_infos = self._repository.get_installed_aivm_infos()
         if len(current_installed_aivm_infos) == 0:
-            logger.warning("No models are installed.")
+            for aivm_uuid in self.DEFAULT_MODEL_UUIDS:
+                logger.warning("No models are installed.") 
+                url = f"https://hub.every1koe.pj.ymhk.jp/assets/models/{aivm_uuid}/model.aivmx"
+                logger.info(f"Installing default model from {url}...")
+                self.install_model_from_url(url)
+
+            
         else:
             logger.info("Installed models:")
             for aivm_info in current_installed_aivm_infos.values():
@@ -342,8 +349,85 @@ class AivmManager:
         url : str
             AIVMX ファイルの URL
         """
+        # AivisHub の音声合成モデル詳細ページの URL が渡された場合、特別に AivisHub API を使い AIVMX ファイルをダウンロードする
+        if url.startswith("https://hub.aivis-project.com/aivm-models/"):
+            # URL から AIVM の UUID を抽出
+            uuid_match = re.search(
+                r"/assets/models/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})",
+                url.lower(),
+            )
+            if not uuid_match:
+                raise HTTPException(
+                    status_code=422,
+                    detail="Invalid AivisHub URL.",
+                )
+            # group(0) は一致した文字列全体なので、group(1) で UUID 部分のみを取得
+            aivm_uuid = uuid_match.group(1)
+            # AIVMX ダウンロード用の API の URL に置き換え
+            url = f"{self._repository.AIVISHUB_API_BASE_URL}/aivm-models/{aivm_uuid}/download?model_type=AIVMX"
+            logger.info(
+                f"Detected AivisHub model page URL. Using download API URL: {url}"
+            )
 
-        print("not supported")
+        # URL から AIVMX ファイルをダウンロード
+        max_retries = 3
+        retry_count = 0
+        last_exception: httpx.HTTPError | None = None
+        while retry_count < max_retries:
+            try:
+                logger.info(
+                    f"Downloading AIVMX file from {url} (Attempt {retry_count + 1}/{max_retries})..."
+                )
+                response = httpx.get(
+                    url,
+                    headers={"User-Agent": generate_user_agent()},
+                    # リダイレクトを追跡する
+                    follow_redirects=True,
+                    # 接続タイムアウト10秒 / 読み取りタイムアウト300秒
+                    timeout=httpx.Timeout(10.0, read=300.0),
+                )
+                response.raise_for_status()
+                logger.info(f"Downloaded AIVMX file from {url}.")
+                # ダウンロードした AIVMX ファイルをインストール
+                self.install_model(BytesIO(response.content))
+                return
+            except httpx.HTTPStatusError as ex:
+                last_exception = ex
+                # 403 Forbidden や 404 Not Found の場合はリトライしない
+                if ex.response.status_code in [403, 404]:
+                    logger.error(
+                        f"Failed to download AIVMX file from {url} (HTTP Error {ex.response.status_code}). No retry.",
+                        exc_info=ex,
+                    )
+                    raise HTTPException(
+                        status_code=500,  # 4xx 系エラーでもサーバー側の問題として 500 を返す
+                        detail=f"AIVMX ファイルのダウンロードに失敗しました。({ex})",
+                    ) from ex
+                logger.warning(
+                    f"Failed to download AIVMX file from {url} (Attempt {retry_count + 1}/{max_retries}). Retrying...",
+                    exc_info=ex,
+                )
+            except httpx.HTTPError as ex:
+                last_exception = ex
+                logger.warning(
+                    f"Failed to download AIVMX file from {url} (Attempt {retry_count + 1}/{max_retries}). Retrying...",
+                    exc_info=ex,
+                )
+
+            retry_count += 1
+            if retry_count < max_retries:
+                # リトライ前に1秒待機
+                time.sleep(1)
+
+        # リトライ上限に達しても成功しなかった場合
+        logger.error(
+            f"Failed to download AIVMX file from {url} after {max_retries} attempts.",
+            exc_info=last_exception,
+        )
+        raise HTTPException(
+            status_code=500,
+            detail=f"AIVMX ファイルのダウンロードに失敗しました。({last_exception})",
+        ) from last_exception
 
     def update_model(self, aivm_uuid: str) -> None:
         """
