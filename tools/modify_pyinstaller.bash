@@ -8,7 +8,7 @@
 
 set -eux
 
-pyinstaller_version=$(poetry run pyinstaller -v)
+pyinstaller_version=$(uv run pyinstaller -v)
 tempdir=$(mktemp -dt modify_pyinstaller.XXXXXXXX)
 trap 'rm -rf "$tempdir"' EXIT
 git clone https://github.com/pyinstaller/pyinstaller.git "$tempdir" -b "v$pyinstaller_version" --depth 1
@@ -23,13 +23,6 @@ __declspec(dllexport) DWORD NvOptimusEnablement = 0x00000001;
 __declspec(dllexport) DWORD AmdPowerXpressRequestHighPerformance = 0x00000001;
 #endif
 EOF
-
-# Poetry の仮想環境内の Python パスを取得
-if [ "$(uname)" = "Windows_NT" ]; then
-    venv_python=$(poetry run which python)
-else
-    venv_python=$(poetry run which python)
-fi
 
 # bootloader のビルド
 (cd "$tempdir/bootloader" && "$venv_python" ./waf all --msvc_targets="x64")
