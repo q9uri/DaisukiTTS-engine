@@ -27,7 +27,31 @@ csv_list = (
         _csv_dir / "jtalkdic-ud-sudachidict-noacc-02.csv"),
 
     ('https://github.com/q9uri/jtalkdic-ud-sudachidict/raw/refs/heads/main/build/jtalkdic-ud-sudachidict-noacc-03.csv',
-        _csv_dir / "jtalkdic-ud-sudachidict-noacc-03.csv")
+        _csv_dir / "jtalkdic-ud-sudachidict-noacc-03.csv"),
+
+     ('https://github.com/q9uri/jtalkdic-ud-jawiki/raw/refs/heads/main/build/jtalkdic-ud-jawiki-noacc-00.csv',
+        _csv_dir / "jtalkdic-ud-jawiki-noacc-00.csv"),
+
+    ('https://github.com/q9uri/jtalkdic-ud-jawiki/raw/refs/heads/main/build/jtalkdic-ud-jawiki-noacc-01.csv',
+    _csv_dir / "jtalkdic-ud-jawiki-noacc-01.csv"),
+
+    ('https://github.com/q9uri/jtalkdic-ud-jawiki/raw/refs/heads/main/build/jtalkdic-ud-jawiki-noacc-02.csv',
+        _csv_dir / "jtalkdic-ud-jawiki-noacc-02.csv"),
+
+    ('https://github.com/q9uri/jtalkdic-ud-jawiki/raw/refs/heads/main/build/jtalkdic-ud-jawiki-noacc-03.csv',
+        _csv_dir / "jtalkdic-ud-jawiki-noacc-03.csv"),
+
+    ('https://github.com/q9uri/jtalkdic-ud-alt-cannadic/raw/refs/heads/main/build/jtalkdic-ud-alt-cannadic-noacc.csv',
+        _csv_dir / "jtalkdic-ud-alt-cannadic-noacc.csv"),
+
+    ('https://github.com/q9uri/jtalkdic-ud-skk-jisyo/raw/refs/heads/main/build/jtalkdic-ud-skk-jisyo-noacc.csv',
+        _csv_dir / "jtalkdic-ud-skk-jisyo-noacc.csv"),
+
+    ('https://github.com/q9uri/jtalkdic-ud-personal-names/raw/refs/heads/main/build/jtalkdic-ud-personal-names-noacc.csv',
+        _csv_dir / "jtalkdic-ud-personal-names-noacc.csv"),
+
+    ('https://github.com/q9uri/jtalkdic-ud-place-names/raw/refs/heads/main/build/jtalkdic-ud-place-names-noacc.csv',
+        _csv_dir / "jtalkdic-ud-place-names-noacc.csv")
 )
     
 licence_list = (
@@ -35,7 +59,23 @@ licence_list = (
         _csv_dir / "license_jtalkud-edict2.txt"),
 
     ('https://github.com/q9uri/jtalkdic-ud-sudachidict/raw/refs/heads/main/LICENSE',
-        _csv_dir / "license_jtalkud-sudachidict.txt")
+        _csv_dir / "license_jtalkud-sudachidict.txt"),
+
+    ('https://github.com/q9uri/jtalkdic-ud-jawiki/raw/refs/heads/main/LICENSE',
+        _csv_dir / "license_jtalkud-jawiki.txt"),
+
+    ('https://github.com/q9uri/jtalkdic-ud-alt-cannadic/raw/refs/heads/main/LICENSE',
+        _csv_dir / "license_jtalkud-alt-cannadic.txt"),
+
+    ('https://github.com/q9uri/jtalkdic-ud-skk-jisyo/raw/refs/heads/main/LICENSE',
+        _csv_dir / "license_jtalkud-skk-jisyo.txt"),
+
+    ('https://github.com/q9uri/jtalkdic-ud-personal-names/raw/refs/heads/main/LICENSE',
+        _csv_dir / "license_jtalkud-personal-names.txt"),
+
+    ('https://github.com/q9uri/jtalkdic-ud-place-names/raw/refs/heads/main/LICENSE',
+        _csv_dir / "license_jtalkud-place-names.txt"),
+
 )
 
 def download_dictionary():

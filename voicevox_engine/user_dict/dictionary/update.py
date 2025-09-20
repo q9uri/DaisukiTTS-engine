@@ -25,9 +25,20 @@ def update_dictionary(tmp_csv_path):
 
     while "" in out:
         out.remove("")
-    
-    out_text = "\n".join(out)
-    Path(tmp_csv_path).write_text(out_text, encoding = "utf-8")
 
-if __name__ == "__main__":
-    update_dictionary()
+    new_out = []
+    for line in out:
+        split_line = line.split(",")
+        
+        if line == "土、日,1345,1345,8000,名詞,一般,*,*,*,*,土、日,ド、ニチ,ド、ニチ,*/*,*":
+            new_out.append("土、日,1345,1345,8000,名詞,一般,*,*,*,*,土、日,ドニチ,ドニチ,*/*,*")
+        
+        else:
+            if len(split_line) == 15:
+                new_out.append(line)
+            else:
+                continue
+
+    
+    out_text = "\n".join(new_out)
+    Path(tmp_csv_path).write_text(out_text, encoding = "utf-8")

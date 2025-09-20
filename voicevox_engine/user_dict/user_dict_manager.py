@@ -383,8 +383,6 @@ class UserDictionary:
         現在 UserDictionaryRepository に保持されているユーザー辞書データを OpenJTalk (MeCab) 用の辞書データに変換し、
         現在のプロセスで実行される全ての pyopenjtalk 呼び出しに、設定したユーザー辞書データを反映させる。
         """
-
-        default_dict_dir_path = self._default_dict_dir_path
         user_dict_path = self._user_dict_path
 
         # pytest 実行時かつ Windows ではなぜか辞書更新時に MeCab の初期化に失敗するので、辞書更新自体を無効化する
@@ -393,7 +391,7 @@ class UserDictionary:
 
         # 一時保存ファイルのパスを生成
         random_string = uuid4()
-        tmp_csv_path = user_dict_path.with_name(f"user.dict_csv-{random_string}.tmp")
+        tmp_csv_path = user_dict_path.with_name(f"user.dict_csv-{random_string}.csv")
         tmp_compiled_path = user_dict_path.with_name(
             f"user.dict_compiled-{random_string}.bin"
         )
