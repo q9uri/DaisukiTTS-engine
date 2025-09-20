@@ -60,6 +60,11 @@ jobs:
     permissions:
       contents: write
 
+    env:
+      # GNUコマンド
+      sed: ${{ startsWith(matrix.os, 'macos-') && 'gsed' || 'sed' }}
+      split: ${{ startsWith(matrix.os, 'macos-') && 'gsplit' || 'split' }}
+
     steps:
       - name: <Setup> Declare variables
         id: vars
