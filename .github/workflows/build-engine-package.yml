@@ -55,12 +55,6 @@ jobs:
           # Windows x64
           - os: windows-2022
             target: Windows-x64
-          # macOS x64 (Intel Mac)
-          - os: macos-13
-            target: macOS-x64
-          # macOS arm64 (Apple Silicon Mac)
-          - os: macos-14
-            target: macOS-arm64
           # Linux x64
           - os: ubuntu-22.04
             target: Linux-x64
@@ -72,11 +66,6 @@ jobs:
     permissions:
       contents: write
 
-    env:
-      # GNUコマンド
-      sed: ${{ startsWith(matrix.os, 'macos-') && 'gsed' || 'sed' }}
-      split: ${{ startsWith(matrix.os, 'macos-') && 'gsplit' || 'split' }}
-
     steps:
       - name: <Setup> Declare variables
         id: vars
@@ -85,12 +74,8 @@ jobs:
       - name: <Setup> Check out the repository
         uses: actions/checkout@v4
 
-      # NOTE: The default 'sed' and 'split' of macOS is BSD 'sed' and 'split'.
       #       There is a difference in specification between BSD 'sed' and 'split' and GNU 'sed' and 'split',
       #       so you need to install GNU 'sed' and 'split'.
-      - name: <Setup> Install dependencies (macOS)
-        if: runner.os == 'macOS'
-        run: brew install gnu-sed coreutils
 
       - name: <Setup> Set up MSVC
         if: runner.os == 'Windows'
