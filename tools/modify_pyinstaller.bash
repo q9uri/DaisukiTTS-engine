@@ -33,4 +33,4 @@ fi
 
 # bootloader のビルド
 (cd "$tempdir/bootloader" && "$venv_python" ./waf all --msvc_targets="x64")
-poetry run pip install -U "$tempdir"
+uv run pip install -U "$tempdir"
