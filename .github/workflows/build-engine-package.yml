@@ -55,12 +55,6 @@ jobs:
           # Windows x64
           - os: windows-2022
             target: Windows-x64
-          # Linux x64
-          - os: ubuntu-22.04
-            target: Linux-x64
-          # Linux arm64
-          - os: ubuntu-22.04-arm
-            target: Linux-arm64
 
     runs-on: ${{ matrix.os }}
     permissions:
