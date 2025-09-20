@@ -1,19 +1,20 @@
 # -*- mode: python ; coding: utf-8 -*-
 # このファイルは元々 PyInstaller によって自動生成されたもので、それをカスタマイズして使用しています。
-from PyInstaller.utils.hooks import collect_data_files, collect_dynamic_libs
+import sys; sys.setrecursionlimit(sys.getrecursionlimit() * 10)
+
+from PyInstaller.utils.hooks import collect_data_files, collect_dynamic_libs, collect_submodules
 from pathlib import Path
 import re
 import sys
 
-datas = [
-    ('resources/dictionaries/*.dic', 'resources/dictionaries'),
-    ('resources/engine_manifest_assets', 'resources/engine_manifest_assets'),
-    ('resources/setting_ui_template.html', 'resources'),
-    ('engine_manifest.json', '.'),
-]
+datas = []
 datas += collect_data_files('e2k')
-datas += collect_data_files('pyopenjtalk')
+datas += collect_data_files('unidic_lite')
+datas += collect_data_files('yomikata')
+datas += collect_data_files('kabosu_core')
 datas += collect_data_files('style_bert_vits2')
+
+
 
 # functorch のバイナリを収集
 # ONNX に移行したため不要なはずだが、念のため
@@ -47,25 +48,29 @@ try:
 except Exception as e:
     print(f'Error while writing to dataclasses.py: {e}')
 
+hiddenimports=[
+    # ref: https://github.com/pypa/setuptools/issues/4374
+    'pkg_resources.extern',
+    # NumPy 2.x で生成した Pickle を含む .npy/.npz ファイルを NumPy 1.x で読み込むために必要
+    # numpy._core 以下のダミーモジュールを明示的に hiddenimports に追加しないと ModuleNotFoundError が発生する
+    # ref: https://github.com/numpy/numpy/issues/24844
+    'numpy._core',
+    'numpy._core._dtype_ctypes',
+    'numpy._core._dtype',
+    'numpy._core._internal',
+    'numpy._core._multiarray_umath',
+    'numpy._core.multiarray',
+    'numpy._core.umath',
+]
+#強制的にtransformersをすべて含める
+hiddenimports += collect_submodules("transformers")
+
 a = Analysis(
     ['run.py'],
     pathex=[],
     binaries=binaries,
     datas=datas,
-    hiddenimports=[
-        # ref: https://github.com/pypa/setuptools/issues/4374
-        'pkg_resources.extern',
-        # NumPy 2.x で生成した Pickle を含む .npy/.npz ファイルを NumPy 1.x で読み込むために必要
-        # numpy._core 以下のダミーモジュールを明示的に hiddenimports に追加しないと ModuleNotFoundError が発生する
-        # ref: https://github.com/numpy/numpy/issues/24844
-        'numpy._core',
-        'numpy._core._dtype_ctypes',
-        'numpy._core._dtype',
-        'numpy._core._internal',
-        'numpy._core._multiarray_umath',
-        'numpy._core.multiarray',
-        'numpy._core.umath',
-    ],
+    hiddenimports=hiddenimports,
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],

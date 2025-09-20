@@ -22,7 +22,6 @@ from io import TextIOWrapper
 from pathlib import Path
 from typing import TextIO, TypeVar
 
-import sentry_sdk
 import uvicorn
 from pydantic import TypeAdapter
 
@@ -354,23 +353,6 @@ def main() -> None:
         if args.output_log_utf8:
             set_output_log_utf8()
 
-        # Sentry によるエラートラッキングを開始 (production 環境のみ有効)
-        # ref: https://docs.sentry.io/platforms/python/integrations/fastapi/
-        if not args.disable_sentry and __version__ != "latest":
-            sentry_sdk.init(
-                dsn="https://ebdf5cc288b3ab31a262186329ff3a95@o4508551725383680.ingest.us.sentry.io/4508555159470080",
-                release=f"AivisSpeech-Engine@{__version__}",
-                environment="production",
-                # Set traces_sample_rate to 1.0 to capture 100%
-                # of transactions for tracing.
-                traces_sample_rate=1.0,
-                _experiments={
-                    # Set continuous_profiling_auto_start to True
-                    # to automatically start the profiler on when
-                    # possible.
-                    "continuous_profiling_auto_start": True,
-                },
-            )
 
         # 起動時の可能な限り早い段階で実行結果をキャッシュしておくのが重要
         generate_user_agent("GPU" if args.use_gpu is True else "CPU")

@@ -6,7 +6,7 @@ from copy import deepcopy
 from pathlib import Path
 
 import pytest
-from pyopenjtalk import g2p, unset_user_dict
+from kabosu_core import g2p, unset_user_dict
 
 from voicevox_engine.user_dict.constants import (
     PART_OF_SPEECH_DATA,
@@ -331,7 +331,7 @@ if sys.platform != "win32":
         assert g2p(text=test_text, kana=True) == success_pronunciation
 
         # 疑似的にエンジンを再起動する
-        unset_user_dict()
+        
         user_dict.apply_jtalk_dictionary()
 
         assert g2p(text=test_text, kana=True) == success_pronunciation

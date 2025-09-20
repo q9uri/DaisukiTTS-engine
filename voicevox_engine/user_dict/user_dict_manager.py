@@ -10,7 +10,9 @@ from pathlib import Path
 from typing import Any
 from uuid import UUID, uuid4
 
-import pyopenjtalk
+import kabosu_core
+import jpreprocess
+
 from pydantic import TypeAdapter, ValidationError
 
 from voicevox_engine.logging import logger
@@ -22,6 +24,9 @@ from voicevox_engine.user_dict.constants import (
     priority2cost,
 )
 from voicevox_engine.user_dict.model import UserDictInputError, UserDictWord
+from voicevox_engine.user_dict.dictionary.download import download_dictionary
+from voicevox_engine.user_dict.dictionary.update import update_dictionary
+
 from voicevox_engine.utility.path_utility import get_save_dir, resource_root
 
 # リソースディレクトリと保存ディレクトリのパス
@@ -204,7 +209,7 @@ class UserDictionary:
             # 一時ファイルのパターンに一致するファイルを取得
             parent_dir = self._user_dict_path.parent
             # バイナリ辞書と CSV の両方のパターンを処理
-            tmp_patterns = ["user.dict_compiled-*.tmp", "user.dict_csv-*.tmp"]
+            tmp_patterns = ["user.dict_compiled-*.bin", "user.dict_csv-*.tmp"]
             for pattern in tmp_patterns:
                 tmp_files = parent_dir.glob(pattern)
                 for tmp_file in tmp_files:
@@ -390,7 +395,7 @@ class UserDictionary:
         random_string = uuid4()
         tmp_csv_path = user_dict_path.with_name(f"user.dict_csv-{random_string}.tmp")
         tmp_compiled_path = user_dict_path.with_name(
-            f"user.dict_compiled-{random_string}.tmp"
+            f"user.dict_compiled-{random_string}.bin"
         )
 
         # 排他制御を行う
@@ -446,26 +451,16 @@ class UserDictionary:
 
                 # 辞書データを辞書.csv へ一時保存
                 tmp_csv_path.write_text(csv_text, encoding="utf-8")
+                download_dictionary()
+                update_dictionary(tmp_csv_path)
 
                 # 辞書.csv を OpenJTalk 用にビルド
-                pyopenjtalk.mecab_dict_index(str(tmp_csv_path), str(tmp_compiled_path))
+                jpreprocess.build_dictionary(str(tmp_csv_path), str(tmp_compiled_path), user=True)
                 if not tmp_compiled_path.is_file():
                     raise RuntimeError("辞書のビルド時にエラーが発生しました。")
 
                 # ユーザー辞書の適用を解除
-                pyopenjtalk.unset_user_dict()
-
-                # デフォルトユーザー辞書ディレクトリにある *.dic ファイルを名前順に取得
-                dict_files = sorted(list(default_dict_dir_path.glob("**/*.dic")))
-                # 先ほどビルドしたユーザー辞書ファイルのパスを追加
-                dict_files.append(tmp_compiled_path)
-
-                # ユーザー辞書を pyopenjtalk に適用
-                # デフォルトのユーザー辞書ファイルと、先ほどビルドしたユーザー辞書ファイルの両方を指定する
-                # NOTE: resolve() によりコンパイル実行時でも相対パスを正しく認識できる
-                dict_paths = [str(p.resolve(strict=True)) for p in dict_files]
-                if dict_paths:  # 辞書ファイルが1つ以上存在する場合のみ実行
-                    pyopenjtalk.update_global_jtalk_with_user_dict(dict_paths)
+                kabosu_core.update_global_jtalk_with_user_dict(user_dictionary=str(tmp_compiled_path))
 
                 logger.info(
                     f"User dictionary applied. ({time.time() - start_time:.2f}s)"

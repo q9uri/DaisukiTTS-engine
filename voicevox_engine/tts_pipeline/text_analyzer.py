@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from itertools import chain
 from typing import Any, Final, Literal, Self, TypeGuard
 
-import pyopenjtalk
+import kabosu_core
 
 from .model import AccentPhrase, Mora
 from .mora_mapping import mora_phonemes_to_mora_kana
@@ -403,7 +403,7 @@ def _utterance_to_accent_phrases(utterance: UtteranceLabel) -> list[AccentPhrase
 
 def text_to_accent_phrases(
     text: str,
-    text_to_features: Callable[[str], list[str]] = pyopenjtalk.extract_fullcontext,
+    text_to_features: Callable[[str], list[str]] = kabosu_core.extract_fullcontext,
 ) -> list[AccentPhrase]:
     """日本語文からアクセント句系列を生成する"""
     if len(text.strip()) == 0:

@@ -99,6 +99,16 @@ def _update_licenses(pip_licenses: list[_PipLicense]) -> list[_License]:
         "safetensors": "https://raw.githubusercontent.com/huggingface/safetensors/v0.4.3/LICENSE",
         "sudachipy": "https://raw.githubusercontent.com/WorksApplications/sudachi.rs/v0.6.8/LICENSE",
         "tokenizers": "https://raw.githubusercontent.com/huggingface/tokenizers/v0.19.1/LICENSE",
+        "flake8-pyproject": "https://raw.githubusercontent.com/john-hen/Flake8-pyproject/refs/heads/main/license.txt",
+        "antlr4-python3-runtime": "https://raw.githubusercontent.com/antlr/antlr4/refs/heads/dev/LICENSE.txt",
+        "cloudpickle": "https://raw.githubusercontent.com/cloudpipe/cloudpickle/refs/heads/master/LICENSE",
+        "hydra-colorlog": "https://raw.githubusercontent.com/facebookresearch/hydra/refs/heads/main/LICENSE",
+        "jpreprocess": "https://raw.githubusercontent.com/jpreprocess/jpreprocess/refs/heads/main/LICENSE",
+        "sentencepiece": "https://raw.githubusercontent.com/google/sentencepiece/refs/heads/master/LICENSE",
+        "speach": "https://raw.githubusercontent.com/neocl/speach/refs/heads/main/LICENSE",
+        "streamlit": "https://raw.githubusercontent.com/streamlit/streamlit/refs/heads/develop/LICENSE",
+        "types-pyyaml": "https://raw.githubusercontent.com/python/typeshed/refs/heads/main/LICENSE",
+        "webencodings": "https://raw.githubusercontent.com/gsnedders/python-webencodings/refs/heads/master/LICENSE",
     }
 
     updated_licenses = []
@@ -114,6 +124,8 @@ def _update_licenses(pip_licenses: list[_PipLicense]) -> list[_License]:
             "pyinstaller",
             "pyinstaller-hooks-contrib",
             "typos",
+            #ローカルのをいれるので無視
+            'nvidia-ml-py',
         ]:
             continue
 
@@ -159,6 +171,14 @@ def _add_licenses_manually(licenses: list[_License]) -> None:
             package_version="1.11",
             license_name="Modified BSD license",
             license_text="tools/licenses/open_jtalk/COPYING",
+            license_text_type="local_address",
+        ),
+        #https://github.com/wookayin/nvidia-ml-py
+        _License(
+            package_name="nvidia-ml-py",
+            package_version="None",
+            license_name="BSD license",
+            license_text="tools/licenses/nvidia-ml-py/LICENCE.txt",
             license_text_type="local_address",
         ),
         _License(

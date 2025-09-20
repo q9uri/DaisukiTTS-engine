@@ -8,6 +8,7 @@ test = "pytest"
 update-snapshots = "pytest --snapshot-update"
 update-licenses = "bash tools/create_venv_and_generate_licenses.bash"
 build = "task update-licenses && pyinstaller --noconfirm run.spec"
+copy = "cp -r ./resources ./dist/run && cp ./engine_manifest.json ./dist/run"
 
 [tool.ruff]
 target-version = "py311"
@@ -63,66 +64,74 @@ extend-exclude = [
   "README.md",
 ]
 
-[tool.poetry]
-package-mode = false
-
-[tool.poetry.dependencies]
-python = "~3.11"
-numpy = "^1.26.4"
-fastapi-slim = "^0.115.5"
-jinja2 = "^3.1.6" # NOTE: required by fastapi.templating.Jinja2Templates (fastapi-slim's unmanaged dependency)
-python-multipart = "^0.0.20" # NOTE: required by fastapi.Form (fastapi-slim's unmanaged dependency)
-uvicorn = "^0.34.0"
-soundfile = "^0.13.1"
-pyyaml = "^6.0.1"
-pyworld-prebuilt = "^0.3.5.post1"
-pyopenjtalk-plus = "^0.4.1.post3"
-semver = "^3.0.0"
-platformdirs = "^4.2.0"
-soxr = "^0.5.0"
-pydantic = "^2.7.3"
-starlette = "^0.45.3"
-jaconv = "^0.3.4"
-httpx = "^0.28.1"
-gputil = "^1.4.0"
-psutil = "^6.1.1"
-py-cpuinfo = "^9.0.0"
-wmi = {version = "^1.5.1", platform = "win32"}
-sentry-sdk = {version = "^2.19.2", extras = ["fastapi"]}
+[project]
+name = "DaisukiTTS_Engine"
+version = "0.2.0" # TODO: できればversionを自動管理する
+requires-python = "==3.11.9"
+dependencies = [
+  "yomikata",
+  "kabosu-core",
+  "style-bert-vits2",
+  "numpy==1.26.4",
+  "fastapi-slim==0.116.2",
+  "jinja2==3.1.6", # NOTE: required by fastapi.templating.Jinja2Templates (fastapi-slim's unmanaged dependency)
+  "python-multipart==0.0.20", # NOTE: required by fastapi.Form (fastapi-slim's unmanaged dependency)
+  "uvicorn==0.34.0",
+  "soundfile==0.13.1",
+  "pyyaml==6.0.1",
+  "pyworld-prebuilt==0.3.5.post1",
+  "semver==3.0.0",
+  "platformdirs==4.2.0",
+  "soxr==0.5.0",
+  "pydantic==2.7.3",
+  "starlette==0.45.3",
+  "jaconv==0.4.0",
+  "httpx==0.28.1",
+  "gputil==1.4.0",
+  "psutil==6.1.1",
+  "py-cpuinfo==9.0.0",
+  "truststore==0.10.0",
+  "aivmlib==1.2.1",
+  "onnxruntime==1.22.1",
+  "onnxruntime-directml==1.22.0 ; sys_platform == 'win32'",
+  "onnxruntime-gpu==1.22.0 ; platform_machine == 'x86_64' and sys_platform == 'linux'",
+  "wmi==1.5.1 ; sys_platform == 'win32'",
+]
 # truststore は HTTPS 通信時にシステムにインストールされた証明書ストアを使うために必要
 ## ref: https://github.com/psf/requests/issues/2966
 ## ref: https://truststore.readthedocs.io/en/latest/
-truststore = "^0.10.0"
+
 # aivmlib は AIVMX ファイルのメタデータ読み取りに必要
-aivmlib = "^1.2.1"
-# AivisSpeech-Engine にはカスタマイズされた Style-Bert-VITS2 が必要
-style-bert-vits2 = { git = "https://github.com/tsukumijima/Style-Bert-VITS2", rev = "5072484a82f379217c193cb47edee00f30aa7686" }
+
+
+[dependency-groups]
+dev = [
+  "mypy==1.10.0",
+  "pytest==8.2.0",
+  "coveralls==4.0.1",
+  "httpx==0.28.1", # NOTE: required by fastapi.testclient.TestClient (fastapi-slim's unmanaged dependency)
+  "syrupy==4.6.1",
+  "types-pyyaml==6.0.12",
+  "pip-licenses==5.0.0", # NOTE: must be specified exactly (c.f. #1281)
+  "pre-commit==4.0.1",
+  "pip-audit==2.7.3",
+  "ruff==0.11.1",
+  "typos==1.31.1",
+]
+
+build = ["pyinstaller>=6",
+          "pip-licenses==5.0.0", # NOTE: must be specified exactly (c.f. #1281)
+          "taskipy==1.14.1"
+]
+
+[tool.uv.sources]
+yomikata = { git = "https://github.com/q9uri/yomikata", rev = "e0d23496dd17b1b97a2a91bef08a41f77d3932d8" }
+kabosu-core = { git = "https://github.com/q9uri/kabosu-core", rev = "bf95fc6f227cabbb0e38220f32dc9da7fffdd38c" }
+style-bert-vits2 = { git = "https://github.com/q9uri/Daisuki-Bert-VITS2", rev = "978049f1260d1b6389a03bf98175c0511f52deb0" }
 # OS に応じて適切な ONNX Runtime プラグインをインストール
+
 # onnxruntime (CPU): onnxruntime-directml / onnxruntime-gpu 非対応の環境すべて
-onnxruntime = { version = "^1.21.0", markers = "(sys_platform != 'linux' or platform_machine != 'x86_64') and sys_platform != 'win32'" }
 # onnxruntime (DirectML): Windows のみ
-onnxruntime-directml = { version = "^1.21.0", markers = "sys_platform == 'win32'" }
 # onnxruntime (GPU): Linux x64 のみ
-onnxruntime-gpu = { version = "^1.21.0", markers = "sys_platform == 'linux' and platform_machine == 'x86_64'" }
 
-[tool.poetry.group.dev.dependencies]
-mypy = "^1.10.0"
-pytest = "^8.2.0"
-coveralls = "^4.0.1"
-httpx = "^0.28.1" # NOTE: required by fastapi.testclient.TestClient (fastapi-slim's unmanaged dependency)
-syrupy = "^4.6.1"
-types-pyyaml = "^6.0.12"
-pip-licenses = "5.0.0" # NOTE: must be specified exactly (c.f. #1281)
-pre-commit = "^4.0.1"
-pip-audit = "^2.7.3"
-ruff = "^0.11.1"
-typos = "^1.31.1"
 
-[tool.poetry.group.build.dependencies]
-pyinstaller = "^5.13"
-pip-licenses = "5.0.0" # NOTE: must be specified exactly (c.f. #1281)
-taskipy = "^1.12.2"
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
