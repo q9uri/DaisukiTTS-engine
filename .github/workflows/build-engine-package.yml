@@ -111,7 +111,7 @@ jobs:
           key: ${{ runner.os }}-${{ runner.arch }}-poetry-${{ hashFiles('**/poetry.lock') }}
 
       - name: <Setup> Install Python dependencies
-        run: uv install --group build
+        run: uv sync --group build
 
       - name: <Setup> Prepare custom PyInstaller
         if: runner.os == 'Windows'
