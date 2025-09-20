@@ -25,5 +25,5 @@ __declspec(dllexport) DWORD AmdPowerXpressRequestHighPerformance = 0x00000001;
 EOF
 
 # bootloader のビルド
-(cd "$tempdir/bootloader" && "$venv_python" ./waf all --msvc_targets="x64")
+(cd "$tempdir/bootloader" && python  ./waf all --msvc_targets="x64")
 uv run pip install -U "$tempdir"
