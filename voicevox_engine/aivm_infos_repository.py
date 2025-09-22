@@ -7,8 +7,9 @@ import sys
 import threading
 import time
 from pathlib import Path
-from typing import Final
+from typing import Final, Literal
 
+import binascii
 import aivmlib
 import httpx
 from aivmlib.schemas.aivm_manifest import ModelArchitecture
@@ -366,41 +367,59 @@ class AivmInfosRepository:
                 style_infos: list[StyleInfo] = []
                 for style_manifest in speaker_manifest.styles:
                     # AIVM マニフェスト内の話者スタイル ID を VOICEVOX ENGINE 互換の StyleId に変換
-                    style_id = cls.local_style_id_to_style_id(style_manifest.local_id, speaker_uuid)  # fmt: skip
+                    style_id_list = cls.local_style_id_to_style_id(style_manifest.local_id, speaker_uuid)  # fmt: skip
 
                     # SpeakerStyle の作成
-                    speaker_style = SpeakerStyle(
-                        # VOICEVOX ENGINE 互換のスタイル ID
-                        id=style_id,
-                        # スタイル名
-                        name=style_manifest.name,
-                        # AivisSpeech は歌唱音声合成に対応しないので talk で固定
-                        type="talk",
-                    )
-                    speaker_styles.append(speaker_style)
+                    style_name = style_manifest.name
+                    for style_id in style_id_list:
+                        styleid_bytes = style_id.to_bytes(4, "big", signed=True) #8byte
+                        local_style_id = styleid_bytes[3]
 
-                    # StyleInfo の作成
-                    style_info = StyleInfo(
-                        # VOICEVOX ENGINE 互換のスタイル ID
-                        id=style_id,
-                        # アイコン画像
-                        ## 未指定時は話者のアイコン画像がスタイルのアイコン画像として使われる
-                        icon=cls.extract_base64_from_data_url(style_manifest.icon) if style_manifest.icon else speaker_icon,
-                        # 立ち絵を省略
-                        ## VOICEVOX ENGINE 本家では portrait に立ち絵が入るが、AivisSpeech Engine では敢えてアイコン画像のみを設定する
-                        portrait=None,
-                        # ボイスサンプル
-                        voice_samples=[
-                            cls.extract_base64_from_data_url(sample.audio)
-                            for sample in style_manifest.voice_samples
-                        ],
-                        # 書き起こしテキスト
-                        voice_sample_transcripts=[
-                            sample.transcript
-                            for sample in style_manifest.voice_samples
-                        ],
-                    )  # fmt: skip
-                    style_infos.append(style_info)
+                        if 16 > local_style_id >= 0:
+                            new_style_name = style_name
+
+                        if 32 > local_style_id > 15:
+                            new_style_name = f"{style_name} (エコー)"
+
+                        elif 47 > local_style_id > 31:
+                            new_style_name = f"{style_name} (リバーブ)"
+
+                        else:
+                            new_style_name = style_name
+
+
+                        speaker_style = SpeakerStyle(
+                            # VOICEVOX ENGINE 互換のスタイル ID
+                            id=style_id,
+                            # スタイル名
+                            name=new_style_name,
+                            # AivisSpeech は歌唱音声合成に対応しないので talk で固定
+                            type="talk",
+                        )
+                        speaker_styles.append(speaker_style)
+
+                        # StyleInfo の作成
+                        style_info = StyleInfo(
+                            # VOICEVOX ENGINE 互換のスタイル ID
+                            id=style_id,
+                            # アイコン画像
+                            ## 未指定時は話者のアイコン画像がスタイルのアイコン画像として使われる
+                            icon=cls.extract_base64_from_data_url(style_manifest.icon) if style_manifest.icon else speaker_icon,
+                            # 立ち絵を省略
+                            ## VOICEVOX ENGINE 本家では portrait に立ち絵が入るが、AivisSpeech Engine では敢えてアイコン画像のみを設定する
+                            portrait=None,
+                            # ボイスサンプル
+                            voice_samples=[
+                                cls.extract_base64_from_data_url(sample.audio)
+                                for sample in style_manifest.voice_samples
+                            ],
+                            # 書き起こしテキスト
+                            voice_sample_transcripts=[
+                                sample.transcript
+                                for sample in style_manifest.voice_samples
+                            ],
+                        )  # fmt: skip
+                        style_infos.append(style_info)
 
                 # LibrarySpeaker の作成
                 ## 事前に取得・生成した SpeakerStyle / StyleInfo をそれぞれ Speaker / SpeakerInfo に設定する
@@ -579,7 +598,7 @@ class AivmInfosRepository:
         return base64_part
 
     @staticmethod
-    def local_style_id_to_style_id(local_style_id: int, speaker_uuid: str) -> StyleId:
+    def local_style_id_to_style_id(local_style_id: int, speaker_uuid: str) -> list[StyleId]:
         """
         AIVM マニフェスト内のローカルなスタイル ID を VOICEVOX ENGINE 互換のグローバルに一意な StyleId に変換する
 
@@ -596,36 +615,35 @@ class AivmInfosRepository:
             VOICEVOX ENGINE 互換のグローバルに一意なスタイル ID
         """
 
-        # AIVM マニフェスト内のスタイル ID は、話者ごとにローカルな 0 から始まる連番になっている
-        # この値は config.json に記述されているハイパーパラメータの data.style2id の値と一致する
-        # 一方 VOICEVOX ENGINE は互換性問題？による歴史的経緯でスタイル ID のみを音声合成 API に渡す形となっており、
-        # スタイル ID がグローバルに一意になっていなければならない
-        # そこで、話者の UUID とローカルなスタイル ID を組み合わせて、
-        # グローバルに一意なスタイル ID (符号付き 32bit 整数) に変換する
-
-        MAX_UUID_BITS = 27  # UUID のハッシュ値の bit 数
-        UUID_BIT_MASK = (1 << MAX_UUID_BITS) - 1  # 27bit のマスク
-        LOCAL_STYLE_ID_BITS = 5  # ローカルスタイル ID の bit 数
-        LOCAL_STYLE_ID_MASK = (1 << LOCAL_STYLE_ID_BITS) - 1  # 5bit のマスク
-        SIGN_BIT = 1 << 31  # 32bit 目の符号 bit
-
         if not speaker_uuid:
             raise ValueError("speaker_uuid must be a non-empty string")
-        if not (0 <= local_style_id <= 31):
+        if not (0 <= local_style_id <= 15):
             raise ValueError("local_style_id must be an integer between 0 and 31")
 
-        # UUID をハッシュ化し、27bit 整数に収める
-        uuid_hash = int(hashlib.md5(speaker_uuid.encode(), usedforsecurity=False).hexdigest(), 16) & UUID_BIT_MASK  # fmt: skip
-        # ローカルスタイル ID を 0 から 31 の範囲に収める
-        local_style_id_masked = local_style_id & LOCAL_STYLE_ID_MASK
-        # UUID のハッシュ値の下位 27bit とローカルスタイル ID の 5bit を組み合わせる
-        combined_id = (uuid_hash << LOCAL_STYLE_ID_BITS) | local_style_id_masked
-        # 32bit 符号付き整数として解釈するために、32bit 目が 1 の場合は正の値として扱う
-        # 負の値にすると誤作動を引き起こす可能性があるため、符号ビットを反転させる
-        if combined_id & SIGN_BIT:
-            combined_id &= ~SIGN_BIT
 
-        return StyleId(combined_id)
+        # UUID をハッシュ化する
+        uuid_hash = binascii.crc32(speaker_uuid.encode(), 0)
+        uuid_bytes = uuid_hash.to_bytes(4, "big", signed=False) #4byte
+
+        
+        
+        effect_id = [
+            0, # effect == "native"
+            16, #effect == "echo"
+            32 #effect == "reverb"
+        ]
+            
+
+        out = []
+
+        for i in effect_id:
+            new_style_id = local_style_id + i
+            new_style_id_bytes = new_style_id.to_bytes(1, "big", signed=False) #1byte
+            voicevox_styleid_bytes = b"\x00" + uuid_bytes[:2] + new_style_id_bytes
+            styleid = StyleId(int.from_bytes(voicevox_styleid_bytes, "big", signed=True)) #int32符号付きにしないと動かない
+            out.append(styleid)
+
+        return out
 
     @staticmethod
     def style_id_to_local_style_id(style_id: StyleId) -> int:
@@ -643,5 +661,15 @@ class AivmInfosRepository:
             AIVM マニフェスト内のローカルなスタイル ID
         """
 
-        # スタイル ID の下位 5 bit からローカルなスタイル ID を取り出す
-        return style_id & 0x1F
+ 
+        styleid_bytes = style_id.to_bytes(4, "big", signed=True) #8byte
+        local_style_id = styleid_bytes[3]
+
+        if 32 > local_style_id > 15:
+            local_style_id -= 16
+
+        elif 47 > local_style_id > 31:
+            local_style_id -= 32
+
+        return local_style_id
+

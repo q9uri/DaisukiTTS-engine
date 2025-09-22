@@ -9,6 +9,9 @@ from io import BytesIO
 from pathlib import Path
 from typing import Any, Final, cast
 
+import soundfile as sf
+import natsumikan
+
 import aivmlib
 import jaconv
 import numpy as np
@@ -46,8 +49,10 @@ from ..tts_pipeline.tts_engine import (
     TTSEngine,
     to_flatten_moras,
 )
-from ..utility.path_utility import get_save_dir
+from ..utility.path_utility import get_save_dir, engine_root
 
+_engine_dir = engine_root()
+TEMP_WAVE_PATH = _engine_dir / "temp.wav"
 
 class StyleBertVITS2TTSEngine(TTSEngine):
     """
@@ -628,6 +633,8 @@ class StyleBertVITS2TTSEngine(TTSEngine):
             given_phone_list = []
             given_tone_list = []
 
+
+
         # スタイル ID に対応する AivmManifest, AivmManifestSpeaker, AivmManifestSpeakerStyle を取得
         result = self.aivm_manager.get_aivm_manifest_from_style_id(style_id)
         aivm_manifest = result[0]
@@ -638,6 +645,20 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         model = self.load_model(str(aivm_manifest.uuid))
         logger.info(f"Model: {aivm_manifest.name} / Version {aivm_manifest.version}")  # fmt: skip
         logger.info(f"Speaker: {aivm_manifest_speaker.name} / Style: {aivm_manifest_speaker_style.name}")  # fmt: skip
+        
+        style_id_bytes = style_id.to_bytes(8, "big", signed=False) #8byte
+
+        echo = False
+        reverb = False
+        styleid_bytes = style_id.to_bytes(4, "big", signed=True) #8byte
+        local_style_id = styleid_bytes[3]
+
+        if 32 > local_style_id > 15:
+            echo = True
+
+        elif 47 > local_style_id > 31:
+            reverb = True
+            
 
         # ローカルな話者 ID・スタイル ID を取得
         ## 現在の Style-Bert-VITS2 の API ではスタイル ID ではなくスタイル名を指定する必要があるため、
@@ -749,6 +770,20 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         silence_wave_post = np.zeros(post_silence_length, dtype=np.float32)
         raw_wave = np.concatenate((silence_wave_pre, raw_wave, silence_wave_post))
 
+        
+
+        if echo:
+            sf.write(TEMP_WAVE_PATH, data=raw_wave, samplerate=raw_sample_rate)
+            natsumikan.convert_to_echo(TEMP_WAVE_PATH, TEMP_WAVE_PATH)
+            raw_wave, raw_sample_rate = sf.read(TEMP_WAVE_PATH)
+            raw_wave = raw_wave.astype(np.float32)
+
+        if reverb:
+            sf.write(TEMP_WAVE_PATH, data=raw_wave, samplerate=raw_sample_rate)
+            natsumikan.convert_to_reverb(TEMP_WAVE_PATH, TEMP_WAVE_PATH)
+            raw_wave, raw_sample_rate = sf.read(TEMP_WAVE_PATH)
+            raw_wave = raw_wave.astype(np.float32)
+ 
         # 生成した音声の音量調整/サンプルレート変更/ステレオ化を行ってから返す
         wave = raw_wave_to_output_wave(query, raw_wave, raw_sample_rate)
         return wave
