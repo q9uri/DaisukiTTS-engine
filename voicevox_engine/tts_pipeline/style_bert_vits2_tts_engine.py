@@ -646,7 +646,6 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         logger.info(f"Model: {aivm_manifest.name} / Version {aivm_manifest.version}")  # fmt: skip
         logger.info(f"Speaker: {aivm_manifest_speaker.name} / Style: {aivm_manifest_speaker_style.name}")  # fmt: skip
         
-        style_id_bytes = style_id.to_bytes(8, "big", signed=False) #8byte
 
         echo = False
         reverb = False
