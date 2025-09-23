@@ -349,6 +349,12 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         list[AccentPhrase]
             アクセント句系列
         """
+        styleid_bytes = style_id.to_bytes(4, "big", signed=True) #byte
+        effect_style_id = styleid_bytes[0]
+        keihan = False
+        if effect_style_id in (6, 7, 8, 9, 10, 11):
+            keihan = True
+        
 
         # 入力テキストを Style-Bert-VITS2 の基準で正規化
         ## Style-Bert-VITS2 では「〜」などの伸ばす棒も長音記号として扱うため、normalize_text() でそれらを統一する
@@ -360,7 +366,7 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         ## VOICEVOX ENGINE 側のアクセント句系列生成処理は微妙に互換性がないため使っていない
         ## VOICEVOX ENGINE では「ん」の音素を「N」としているため、use_jp_extra (True のとき「ん」の音素を「N」とする) は常に True に設定している
         ## JP-Extra モデルと通常のモデルの音素差の吸収は synthesize_wave() で行う
-        phones, tones, _, _, _, sep_kata_with_joshi = g2p(normalized_text, use_jp_extra=True, raise_yomi_error=False)  # fmt: skip
+        phones, tones, _, _, _, sep_kata_with_joshi = g2p(normalized_text, use_jp_extra=True, raise_yomi_error=False, keihan=keihan)  # fmt: skip
         mora_tone_list = _phone_tone2mora_tone(list(zip(phones, tones, strict=False)))
 
         # sep_kata_with_joshi のカタカナを音素 (子音と母音のタプル) に変換
@@ -557,6 +563,32 @@ class StyleBertVITS2TTSEngine(TTSEngine):
             生成された音声波形 (float32 型)
         """
 
+        echo = False
+        reverb = False
+        robot = False
+        slow = False
+        white_noise = False
+        
+        styleid_bytes = style_id.to_bytes(4, "big", signed=True) #8byte
+        effect_style_id = styleid_bytes[0]
+
+
+        if effect_style_id in (1, 7):
+            echo = True
+
+        elif effect_style_id in (2, 8):
+            reverb = True
+
+        elif effect_style_id in (3, 9):
+            robot = True            
+
+        elif effect_style_id in (4, 10):
+            slow = True
+
+        elif effect_style_id in (5, 11):
+            white_noise = True
+
+
         # モーフィング時などに同一参照の AudioQuery で複数回呼ばれる可能性があるので、元の引数の AudioQuery に破壊的変更を行わない
         query = copy.deepcopy(query)
 
@@ -647,30 +679,7 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         logger.info(f"Speaker: {aivm_manifest_speaker.name} / Style: {aivm_manifest_speaker_style.name}")  # fmt: skip
         
 
-        echo = False
-        reverb = False
-        robot = False
-        slow = False
-        white_noise = False
-        styleid_bytes = style_id.to_bytes(4, "big", signed=True) #8byte
-        effect_style_id = styleid_bytes[0]
 
-
-        if effect_style_id == 1:
-            echo = True
-
-        elif effect_style_id == 2:
-            reverb = True
-
-        elif effect_style_id == 3:
-            robot = True            
-
-        elif effect_style_id == 4:
-            slow = True
-
-        elif effect_style_id == 5:
-            white_noise = True
-            
 
         # ローカルな話者 ID・スタイル ID を取得
         ## 現在の Style-Bert-VITS2 の API ではスタイル ID ではなくスタイル名を指定する必要があるため、

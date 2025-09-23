@@ -383,26 +383,50 @@ class AivmInfosRepository:
                         b"\x03", #effect == "robot"
                         b"\x04", #effect == "slow"   
                         b"\x05", #effect == "white_noise"
+                        b"\x06", # effect == "kansai_native"
+                        b"\x07", #effect == "kansai_echo"
+                        b"\x08", #effect == "kansai_reverb"
+                        b"\x09", #effect == "kansai_robot"
+                        b"\x0a", #effect == "kansai_slow"   int 10
+                        b"\x0b", #effect == "kansai_white_noise"  int 11
                         """       
-
+                        
                         if effect_style_id == 0:
                             new_style_name = style_name
 
                         if effect_style_id == 1:
-                            new_style_name = f"{style_name} (エコー)"
+                            new_style_name = f"{style_name} :(エコー)"
 
-                        if effect_style_id == 2:
-                            new_style_name = f"{style_name} (リバーブ)"
+                        elif effect_style_id == 2:
+                            new_style_name = f"{style_name} :(リバーブ)"
 
-                        if effect_style_id == 3:
-                            new_style_name = f"{style_name} (ロボット)"
+                        elif effect_style_id == 3:
+                            new_style_name = f"{style_name} :(ロボット)"
 
-                        if effect_style_id == 4:
-                            new_style_name = f"{style_name} (スロウモーション)"
+                        elif effect_style_id == 4:
+                            new_style_name = f"{style_name} :(スロウモーション)"
 
-                        if effect_style_id == 5:
-                            new_style_name = f"{style_name} (ホワイトノイズ)"
+                        elif effect_style_id == 5:
+                            new_style_name = f"{style_name} :(ホワイトノイズ)"
 
+                        elif effect_style_id == 6:
+                            new_style_name = f"{style_name} [関西弁風]"
+
+                        elif effect_style_id == 7:
+                            new_style_name = f"{style_name} [関西弁風] :(エコー)"
+
+                        elif effect_style_id == 8:
+                            new_style_name = f"{style_name}[関西弁風] :(リバーブ)"
+
+                        elif effect_style_id == 9:
+                            new_style_name = f"{style_name} [関西弁風] :(ロボット)"
+
+                        elif effect_style_id == 10:
+                            new_style_name = f"{style_name} [関西弁風] :(スロウモーション)"
+
+                        elif effect_style_id == 11:
+                            new_style_name = f"{style_name} [関西弁風] :(ホワイトノイズ)"
+                
                         speaker_style = SpeakerStyle(
                             # VOICEVOX ENGINE 互換のスタイル ID
                             id=style_id,
@@ -648,7 +672,13 @@ class AivmInfosRepository:
             b"\x02", #effect == "reverb"
             b"\x03", #effect == "robot"
             b"\x04", #effect == "slow"   
-            b"\x05", #effect == "white_noise"       
+            b"\x05", #effect == "white_noise"   
+            b"\x06", # effect == "kansai_native"
+            b"\x07", #effect == "kansai_echo"
+            b"\x08", #effect == "kansai_reverb"
+            b"\x09", #effect == "kansai_robot"
+            b"\x0a", #effect == "kansai_slow"   
+            b"\x0b", #effect == "kansai_white_noise"    
         ]
             
 

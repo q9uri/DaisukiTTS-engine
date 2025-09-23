@@ -11,7 +11,7 @@ import kabosu_core
 from .model import AccentPhrase, Mora
 from .mora_mapping import mora_phonemes_to_mora_kana
 from .phoneme import Consonant, Sil, Vowel
-
+from ..metas.Metas import StyleId
 
 class NonOjtPhonemeError(Exception):
     """OpenJTalk で想定されていない音素が検出された。"""
@@ -403,12 +403,12 @@ def _utterance_to_accent_phrases(utterance: UtteranceLabel) -> list[AccentPhrase
 
 def text_to_accent_phrases(
     text: str,
+    style_id: StyleId,
     text_to_features: Callable[[str], list[str]] = kabosu_core.extract_fullcontext,
 ) -> list[AccentPhrase]:
     """日本語文からアクセント句系列を生成する"""
     if len(text.strip()) == 0:
         return []
-
     # 日本語文からUtteranceLabelを抽出する
     features = text_to_features(text)
     utterance = UtteranceLabel.from_labels(list(map(Label.from_feature, features)))
