@@ -488,7 +488,7 @@ wheels = [
 
 [[package]]
 name = "daisukitts-engine"
-version = "0.2.0"
+version = "0.3.0"
 source = { virtual = "." }
 dependencies = [
     { name = "aivmlib" },
@@ -550,7 +550,7 @@ requires-dist = [
     { name = "jaconv", specifier = "==0.4.0" },
     { name = "jinja2", specifier = "==3.1.6" },
     { name = "kabosu-core", git = "https://github.com/q9uri/kabosu-core?rev=bf95fc6f227cabbb0e38220f32dc9da7fffdd38c" },
-    { name = "natsumikan", git = "https://github.com/q9uri/natsumikan?rev=30c602801bc8a0ebaad700d57d10b974e2e38c19" },
+    { name = "natsumikan", git = "https://github.com/q9uri/natsumikan?rev=5bda00f065c3757ea3d957b451cb9045e85776f1" },
     { name = "numpy", specifier = "==1.26.4" },
     { name = "onnxruntime", specifier = "==1.22.1" },
     { name = "onnxruntime-directml", marker = "sys_platform == 'win32'", specifier = "==1.22.0" },
@@ -1568,12 +1568,13 @@ wheels = [
 
 [[package]]
 name = "natsumikan"
-version = "0.1.0"
-source = { git = "https://github.com/q9uri/natsumikan?rev=30c602801bc8a0ebaad700d57d10b974e2e38c19#30c602801bc8a0ebaad700d57d10b974e2e38c19" }
+version = "0.2.0"
+source = { git = "https://github.com/q9uri/natsumikan?rev=5bda00f065c3757ea3d957b451cb9045e85776f1#5bda00f065c3757ea3d957b451cb9045e85776f1" }
 dependencies = [
     { name = "librosa" },
     { name = "numpy" },
     { name = "pydub" },
+    { name = "pyworld-prebuilt" },
     { name = "soundfile" },
 ]
 

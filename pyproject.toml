@@ -129,7 +129,7 @@ build = ["pyinstaller>=6",
 yomikata = { git = "https://github.com/q9uri/yomikata", rev = "e0d23496dd17b1b97a2a91bef08a41f77d3932d8" }
 kabosu-core = { git = "https://github.com/q9uri/kabosu-core", rev = "bf95fc6f227cabbb0e38220f32dc9da7fffdd38c" }
 style-bert-vits2 = { git = "https://github.com/q9uri/Daisuki-Bert-VITS2", rev = "978049f1260d1b6389a03bf98175c0511f52deb0" }
-natsumikan = { git = "https://github.com/q9uri/natsumikan", rev = "30c602801bc8a0ebaad700d57d10b974e2e38c19" }
+natsumikan = { git = "https://github.com/q9uri/natsumikan", rev = "5bda00f065c3757ea3d957b451cb9045e85776f1" }
 
 # OS に応じて適切な ONNX Runtime プラグインをインストール
 

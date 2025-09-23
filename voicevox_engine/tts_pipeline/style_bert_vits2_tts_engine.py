@@ -649,14 +649,27 @@ class StyleBertVITS2TTSEngine(TTSEngine):
 
         echo = False
         reverb = False
+        robot = False
+        slow = False
+        white_noise = False
         styleid_bytes = style_id.to_bytes(4, "big", signed=True) #8byte
-        local_style_id = styleid_bytes[3]
+        effect_style_id = styleid_bytes[0]
 
-        if 32 > local_style_id > 15:
+
+        if effect_style_id == 1:
             echo = True
 
-        elif 47 > local_style_id > 31:
+        elif effect_style_id == 2:
             reverb = True
+
+        elif effect_style_id == 3:
+            robot = True            
+
+        elif effect_style_id == 4:
+            slow = True
+
+        elif effect_style_id == 5:
+            white_noise = True
             
 
         # ローカルな話者 ID・スタイル ID を取得
@@ -780,6 +793,24 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         if reverb:
             sf.write(TEMP_WAVE_PATH, data=raw_wave, samplerate=raw_sample_rate)
             natsumikan.convert_to_reverb(TEMP_WAVE_PATH, TEMP_WAVE_PATH)
+            raw_wave, raw_sample_rate = sf.read(TEMP_WAVE_PATH)
+            raw_wave = raw_wave.astype(np.float32)
+
+        if robot:
+            sf.write(TEMP_WAVE_PATH, data=raw_wave, samplerate=raw_sample_rate)
+            natsumikan.voicecanger_robot(TEMP_WAVE_PATH, TEMP_WAVE_PATH)
+            raw_wave, raw_sample_rate = sf.read(TEMP_WAVE_PATH)
+            raw_wave = raw_wave.astype(np.float32)
+
+        if slow:
+            sf.write(TEMP_WAVE_PATH, data=raw_wave, samplerate=raw_sample_rate)
+            natsumikan.cahnge_speed(TEMP_WAVE_PATH, TEMP_WAVE_PATH, speed=0.5)
+            raw_wave, raw_sample_rate = sf.read(TEMP_WAVE_PATH)
+            raw_wave = raw_wave.astype(np.float32)
+
+        if white_noise:
+            sf.write(TEMP_WAVE_PATH, data=raw_wave, samplerate=raw_sample_rate)
+            natsumikan.add_white_noise(TEMP_WAVE_PATH, TEMP_WAVE_PATH)
             raw_wave, raw_sample_rate = sf.read(TEMP_WAVE_PATH)
             raw_wave = raw_wave.astype(np.float32)
  

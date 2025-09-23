@@ -372,21 +372,36 @@ class AivmInfosRepository:
                     # SpeakerStyle の作成
                     style_name = style_manifest.name
                     for style_id in style_id_list:
-                        styleid_bytes = style_id.to_bytes(4, "big", signed=True) #8byte
-                        local_style_id = styleid_bytes[3]
+                        styleid_bytes = style_id.to_bytes(4, "big", signed=True) #4byte
+                        effect_style_id = styleid_bytes[0]
+                        new_style_name = style_name
 
-                        if 16 > local_style_id >= 0:
+                        """
+                        b"\x00", # effect == "native"
+                        b"\x01", #effect == "echo"
+                        b"\x02", #effect == "reverb"
+                        b"\x03", #effect == "robot"
+                        b"\x04", #effect == "slow"   
+                        b"\x05", #effect == "white_noise"
+                        """       
+
+                        if effect_style_id == 0:
                             new_style_name = style_name
 
-                        if 32 > local_style_id > 15:
+                        if effect_style_id == 1:
                             new_style_name = f"{style_name} (エコー)"
 
-                        elif 47 > local_style_id > 31:
+                        if effect_style_id == 2:
                             new_style_name = f"{style_name} (リバーブ)"
 
-                        else:
-                            new_style_name = style_name
+                        if effect_style_id == 3:
+                            new_style_name = f"{style_name} (ロボット)"
 
+                        if effect_style_id == 4:
+                            new_style_name = f"{style_name} (スロウモーション)"
+
+                        if effect_style_id == 5:
+                            new_style_name = f"{style_name} (ホワイトノイズ)"
 
                         speaker_style = SpeakerStyle(
                             # VOICEVOX ENGINE 互換のスタイル ID
@@ -628,18 +643,20 @@ class AivmInfosRepository:
         
         
         effect_id = [
-            0, # effect == "native"
-            16, #effect == "echo"
-            32 #effect == "reverb"
+            b"\x00", # effect == "native"
+            b"\x01", #effect == "echo"
+            b"\x02", #effect == "reverb"
+            b"\x03", #effect == "robot"
+            b"\x04", #effect == "slow"   
+            b"\x05", #effect == "white_noise"       
         ]
             
 
         out = []
 
-        for i in effect_id:
-            new_style_id = local_style_id + i
-            new_style_id_bytes = new_style_id.to_bytes(1, "big", signed=False) #1byte
-            voicevox_styleid_bytes = b"\x00" + uuid_bytes[:2] + new_style_id_bytes
+        for id in effect_id:
+            new_style_id_bytes = local_style_id.to_bytes(1, "big", signed=False) #1byte
+            voicevox_styleid_bytes = id + uuid_bytes[:2] + new_style_id_bytes
             styleid = StyleId(int.from_bytes(voicevox_styleid_bytes, "big", signed=True)) #int32符号付きにしないと動かない
             out.append(styleid)
 
@@ -664,12 +681,6 @@ class AivmInfosRepository:
  
         styleid_bytes = style_id.to_bytes(4, "big", signed=True) #8byte
         local_style_id = styleid_bytes[3]
-
-        if 32 > local_style_id > 15:
-            local_style_id -= 16
-
-        elif 47 > local_style_id > 31:
-            local_style_id -= 32
 
         return local_style_id
 
