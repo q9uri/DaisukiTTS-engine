@@ -448,6 +448,115 @@ class AivmInfosRepository:
                         b"\x39", #effect == "robot_kansai_babytalk_reverb" int57
                         b"\x3a", #effect == "robot_kansai_babytalk_kansai_slow" int58  
                         b"\x3b", #effect == "robot_kansai_babytalk_white_noise" int59    
+
+                        b"\x3c", # effect == "vcdown" int60  
+                        b"\x3d", #effect == "vcdown_echo" int61  
+                        b"\x3e", #effect == "vcdown_reverb" int62  
+                        b"\x3f", #effect == "vcdown_slow" int63  
+                        b"\x40", #effect == "vcdown_white_noise" int64   
+
+                        b"\x41", #effect == "vcdown_dakuten" int65    
+                        b"\x42", #effect == "vcdown_dakuten_echo" int66 
+                        b"\x43", #effect == "vcdown_dakuten_reverb" int67
+                        b"\x44", #effect == "vcdown_dakuten_slow" int68   
+                        b"\x45", #effect == "vcdown_dakuten_white_noise" int69 
+
+                        b"\x46", # effect == "vcdown_babytalk" int 70
+                        b"\x47", #effect == "vcdown_babytalk_echo" int 71
+                        b"\x48", #effect == "vcdown_babytalk_reverb" int 72
+                        b"\x49", #effect == "vcdown_babytalk_slow" int 73
+                        b"\x4a", #effect == "vcdown_babytalk_white_noise" int 74
+
+                        b"\x4b", #effect == "vcdown_kansai" int 75
+                        b"\x4c", #effect == "vcdown_kansai_echo" int 76
+                        b"\x4d", #effect == "vcdown_kansai_reverb" int 77
+                        b"\x4e", #effect == "vcdown_kansai_slow" int 78
+                        b"\x4f", #effect == "vcdown_kansai_white_noise" int79
+                            
+                        b"\x50", # effect == "vcdown_kansai_dakuten" int80
+                        b"\x51", #effect == "vcdown_kansai_dakuten_echo" int81
+                        b"\x52", #effect == "vcdown_kansai_dakuten_reverb" int82
+                        b"\x53", #effect == "vcdown_kansai_dakuten_slow" int83
+                        b"\x54", #effect == "vcdown_kansai_dakuten_white_noise" int84
+
+                        b"\x55", #effect == "vcdown_kansai_babytalk" int85
+                        b"\x56", #effect == "vcdown_kansai_babytalk_echo" int86
+                        b"\x57", #effect == "vcdown_kansai_babytalk_reverb" int87
+                        b"\x58", #effect == "vcdown_kansai_babytalk_kansai_slow" int88  
+                        b"\x59", #effect == "vcdown_kansai_babytalk_white_noise" int89  
+
+                        
+                        b"\x3c", # effect == "vcdown" int60  
+                        b"\x3d", #effect == "vcdown_echo" int61  
+                        b"\x3e", #effect == "vcdown_reverb" int62  
+                        b"\x3f", #effect == "vcdown_slow" int63  
+                        b"\x40", #effect == "vcdown_white_noise" int64   
+
+                        b"\x41", #effect == "vcdown_dakuten" int65    
+                        b"\x42", #effect == "vcdown_dakuten_echo" int66 
+                        b"\x43", #effect == "vcdown_dakuten_reverb" int67
+                        b"\x44", #effect == "vcdown_dakuten_slow" int68   
+                        b"\x45", #effect == "vcdown_dakuten_white_noise" int69 
+
+                        b"\x46", # effect == "vcdown_babytalk" int 70
+                        b"\x47", #effect == "vcdown_babytalk_echo" int 71
+                        b"\x48", #effect == "vcdown_babytalk_reverb" int 72
+                        b"\x49", #effect == "vcdown_babytalk_slow" int 73
+                        b"\x4a", #effect == "vcdown_babytalk_white_noise" int 74
+
+                        b"\x4b", #effect == "vcdown_kansai" int 75
+                        b"\x4c", #effect == "vcdown_kansai_echo" int 76
+                        b"\x4d", #effect == "vcdown_kansai_reverb" int 77
+                        b"\x4e", #effect == "vcdown_kansai_slow" int 78
+                        b"\x4f", #effect == "vcdown_kansai_white_noise" int79
+                            
+                        b"\x50", # effect == "vcdown_kansai_dakuten" int80
+                        b"\x51", #effect == "vcdown_kansai_dakuten_echo" int81
+                        b"\x52", #effect == "vcdown_kansai_dakuten_reverb" int82
+                        b"\x53", #effect == "vcdown_kansai_dakuten_slow" int83
+                        b"\x54", #effect == "vcdown_kansai_dakuten_white_noise" int84
+
+                        b"\x55", #effect == "vcdown_kansai_babytalk" int85
+                        b"\x56", #effect == "vcdown_kansai_babytalk_echo" int86
+                        b"\x57", #effect == "vcdown_kansai_babytalk_reverb" int87
+                        b"\x58", #effect == "vcdown_kansai_babytalk_kansai_slow" int88  
+                        b"\x59", #effect == "vcdown_kansai_babytalk_white_noise" int89  
+
+                        b"\x5a", # effect == "vcup" int90  
+                        b"\x5b", #effect == "vcup_echo" int91  
+                        b"\x5c", #effect == "vcup_reverb" int92  
+                        b"\x5d", #effect == "vcup_slow" int93  
+                        b"\x5e", #effect == "vcup_white_noise" int94   
+
+                        b"\x5f", #effect == "vcup_dakuten" int95    
+                        b"\x60", #effect == "vcup_dakuten_echo" int96 
+                        b"\x61", #effect == "vcup_dakuten_reverb" int97
+                        b"\x62", #effect == "vcup_dakuten_slow" int98   
+                        b"\x63", #effect == "vcup_dakuten_white_noise" int99 
+
+                        b"\x64", # effect == "vcup_babytalk" int 100
+                        b"\x65", #effect == "vcup_babytalk_echo" int 101
+                        b"\x66", #effect == "vcup_babytalk_reverb" int 102
+                        b"\x67", #effect == "vcup_babytalk_slow" int 103
+                        b"\x68", #effect == "vcup_babytalk_white_noise" int 104
+
+                        b"\x69", #effect == "vcup_kansai" int 105
+                        b"\x6a", #effect == "vcup_kansai_echo" int 106
+                        b"\x6b", #effect == "vcup_kansai_reverb" int 107
+                        b"\x6c", #effect == "vcup_kansai_slow" int 108
+                        b"\x6d", #effect == "vcup_kansai_white_noise" int109
+                            
+                        b"\x6e", # effect == "vcup_kansai_dakuten" int110
+                        b"\x6f", #effect == "vcup_kansai_dakuten_echo" int111
+                        b"\x70", #effect == "vcup_kansai_dakuten_reverb" int112
+                        b"\x71", #effect == "vcup_kansai_dakuten_slow" int113
+                        b"\x72", #effect == "vcup_kansai_dakuten_white_noise" int114
+
+                        b"\x73", #effect == "vcup_kansai_babytalk" int115
+                        b"\x74", #effect == "vcup_kansai_babytalk_echo" int116
+                        b"\x75", #effect == "vcup_kansai_babytalk_reverb" int117
+                        b"\x76", #effect == "vcup_kansai_babytalk_kansai_slow" int118 
+                        b"\x77", #effect == "vcup_kansai_babytalk_white_noise" int119  
                         """       
                         
                         if effect_style_id == 0:
@@ -629,6 +738,186 @@ class AivmInfosRepository:
 
                         elif effect_style_id == 59:
                             new_style_name = f"{style_name} (ロボ声, 関西弁, 赤ちゃん言葉, ホワイトノイズ)"
+
+                        elif effect_style_id == 60:
+                            new_style_name = f"{style_name} (低音ボイチェン)"
+
+                        elif effect_style_id == 61:
+                            new_style_name = f"{style_name} (低音ボイチェン, エコー)"
+
+                        elif effect_style_id == 62:
+                            new_style_name = f"{style_name} (低音ボイチェン, リバーブ)"
+
+                        elif effect_style_id == 63:
+                            new_style_name = f"{style_name} (低音ボイチェン, スロウモーション)"
+
+                        elif effect_style_id == 64:
+                            new_style_name = f"{style_name} (低音ボイチェン, ホワイトノイズ)"
+
+                        elif effect_style_id == 65:
+                            new_style_name = f"{style_name} (低音ボイチェン, 濁音)"
+
+                        elif effect_style_id == 66:
+                            new_style_name = f"{style_name} (低音ボイチェン, 濁音, エコー)"
+
+                        elif effect_style_id == 67:
+                            new_style_name = f"{style_name} (低音ボイチェン, 濁音, リバーブ)"
+
+                        elif effect_style_id == 68:
+                            new_style_name = f"{style_name} (低音ボイチェン, 濁音, スロウモーション)"
+
+                        elif effect_style_id == 69:
+                            new_style_name = f"{style_name} (低音ボイチェン, 濁音, ホワイトノイズ)"
+
+                        elif effect_style_id == 70:
+                            new_style_name = f"{style_name} (低音ボイチェン, 赤ちゃん言葉)"
+
+                        elif effect_style_id == 71:
+                            new_style_name = f"{style_name} (低音ボイチェン, 赤ちゃん言葉, エコー)"
+
+                        elif effect_style_id == 72:
+                            new_style_name = f"{style_name} (低音ボイチェン, 赤ちゃん言葉, リバーブ)"
+
+                        elif effect_style_id == 73:
+                            new_style_name = f"{style_name} (低音ボイチェン, 赤ちゃん言葉, スロウモーション)"
+
+                        elif effect_style_id == 74:
+                            new_style_name = f"{style_name} (低音ボイチェン, 赤ちゃん言葉, ホワイトノイズ)"
+
+                        elif effect_style_id == 75:
+                            new_style_name = f"{style_name} (低音ボイチェン, 関西弁)"
+
+                        elif effect_style_id == 76:
+                            new_style_name = f"{style_name} (低音ボイチェン, 関西弁, エコー)"
+
+                        elif effect_style_id == 77:
+                            new_style_name = f"{style_name} (低音ボイチェン, 関西弁, リバーブ)"
+
+                        elif effect_style_id == 78:
+                            new_style_name = f"{style_name} (低音ボイチェン, 関西弁, スロウモーション)"
+
+                        elif effect_style_id == 79:
+                            new_style_name = f"{style_name} (低音ボイチェン, 関西弁, ホワイトノイズ)"
+
+                        elif effect_style_id == 80:
+                            new_style_name = f"{style_name} (低音ボイチェン, 関西弁, 濁音)"
+
+                        elif effect_style_id == 81:
+                            new_style_name = f"{style_name} (低音ボイチェン, 関西弁, 濁音, エコー)"
+
+                        elif effect_style_id == 82:
+                            new_style_name = f"{style_name} (低音ボイチェン, 関西弁, 濁音, リバーブ)"
+
+                        elif effect_style_id == 83:
+                            new_style_name = f"{style_name} (低音ボイチェン, 関西弁, 濁音, スロウモーション)"
+
+                        elif effect_style_id == 84:
+                            new_style_name = f"{style_name} (低音ボイチェン, 関西弁, 濁音, ホワイトノイズ)"
+
+                        elif effect_style_id == 85:
+                            new_style_name = f"{style_name} (低音ボイチェン, 関西弁, 赤ちゃん言葉)"
+
+                        elif effect_style_id == 86:
+                            new_style_name = f"{style_name} (低音ボイチェン, 関西弁, 赤ちゃん言葉, エコー)"
+
+                        elif effect_style_id == 87:
+                            new_style_name = f"{style_name} (低音ボイチェン, 関西弁, 赤ちゃん言葉, リバーブ)"
+
+                        elif effect_style_id == 88:
+                            new_style_name = f"{style_name} (低音ボイチェン, 関西弁, 赤ちゃん言葉, スロウモーション)"
+
+                        elif effect_style_id == 89:
+                            new_style_name = f"{style_name} (低音ボイチェン, 関西弁, 赤ちゃん言葉, ホワイトノイズ)"
+
+                        elif effect_style_id == 90:
+                            new_style_name = f"{style_name} (高音ボイチェン)"
+
+                        elif effect_style_id == 91:
+                            new_style_name = f"{style_name} (高音ボイチェン, エコー)"
+
+                        elif effect_style_id == 92:
+                            new_style_name = f"{style_name} (高音ボイチェン, リバーブ)"
+
+                        elif effect_style_id == 93:
+                            new_style_name = f"{style_name} (高音ボイチェン, スロウモーション)"
+
+                        elif effect_style_id == 94:
+                            new_style_name = f"{style_name} (高音ボイチェン, ホワイトノイズ)"
+
+                        elif effect_style_id == 95:
+                            new_style_name = f"{style_name} (高音ボイチェン, 濁音)"
+
+                        elif effect_style_id == 96:
+                            new_style_name = f"{style_name} (高音ボイチェン, 濁音, エコー)"
+
+                        elif effect_style_id == 97:
+                            new_style_name = f"{style_name} (高音ボイチェン, 濁音, リバーブ)"
+
+                        elif effect_style_id == 98:
+                            new_style_name = f"{style_name} (高音ボイチェン, 濁音, スロウモーション)"
+
+                        elif effect_style_id == 99:
+                            new_style_name = f"{style_name} (高音ボイチェン, 濁音, ホワイトノイズ)"
+
+                        elif effect_style_id == 100:
+                            new_style_name = f"{style_name} (高音ボイチェン, 赤ちゃん言葉)"
+
+                        elif effect_style_id == 101:
+                            new_style_name = f"{style_name} (高音ボイチェン, 赤ちゃん言葉, エコー)"
+
+                        elif effect_style_id == 102:
+                            new_style_name = f"{style_name} (高音ボイチェン, 赤ちゃん言葉, リバーブ)"
+
+                        elif effect_style_id == 103:
+                            new_style_name = f"{style_name} (高音ボイチェン, 赤ちゃん言葉, スロウモーション)"
+
+                        elif effect_style_id == 104:
+                            new_style_name = f"{style_name} (高音ボイチェン, 赤ちゃん言葉, ホワイトノイズ)"
+
+                        elif effect_style_id == 105:
+                            new_style_name = f"{style_name} (高音ボイチェン, 関西弁)"
+
+                        elif effect_style_id == 106:
+                            new_style_name = f"{style_name} (高音ボイチェン, 関西弁, エコー)"
+
+                        elif effect_style_id == 107:
+                            new_style_name = f"{style_name} (高音ボイチェン, 関西弁, リバーブ)"
+
+                        elif effect_style_id == 108:
+                            new_style_name = f"{style_name} (高音ボイチェン, 関西弁, スロウモーション)"
+
+                        elif effect_style_id == 109:
+                            new_style_name = f"{style_name} (高音ボイチェン, 関西弁, ホワイトノイズ)"
+
+                        elif effect_style_id == 110:
+                            new_style_name = f"{style_name} (高音ボイチェン, 関西弁, 濁音)"
+
+                        elif effect_style_id == 111:
+                            new_style_name = f"{style_name} (高音ボイチェン, 関西弁, 濁音, エコー)"
+
+                        elif effect_style_id == 112:
+                            new_style_name = f"{style_name} (高音ボイチェン, 関西弁, 濁音, リバーブ)"
+
+                        elif effect_style_id == 113:
+                            new_style_name = f"{style_name} (高音ボイチェン, 関西弁, 濁音, スロウモーション)"
+
+                        elif effect_style_id == 114:
+                            new_style_name = f"{style_name} (高音ボイチェン, 関西弁, 濁音, ホワイトノイズ)"
+
+                        elif effect_style_id == 115:
+                            new_style_name = f"{style_name} (高音ボイチェン, 関西弁, 赤ちゃん言葉)"
+
+                        elif effect_style_id == 116:
+                            new_style_name = f"{style_name} (高音ボイチェン, 関西弁, 赤ちゃん言葉, エコー)"
+
+                        elif effect_style_id == 117:
+                            new_style_name = f"{style_name} (高音ボイチェン, 関西弁, 赤ちゃん言葉, リバーブ)"
+
+                        elif effect_style_id == 118:
+                            new_style_name = f"{style_name} (高音ボイチェン, 関西弁, 赤ちゃん言葉, スロウモーション)"
+
+                        elif effect_style_id == 119:
+                            new_style_name = f"{style_name} (高音ボイチェン, 関西弁, 赤ちゃん言葉, ホワイトノイズ)"
 
                         speaker_style = SpeakerStyle(
                             # VOICEVOX ENGINE 互換のスタイル ID
@@ -941,6 +1230,78 @@ class AivmInfosRepository:
                         b"\x39", #effect == "robot_kansai_babytalk_reverb" int57
                         b"\x3a", #effect == "robot_kansai_babytalk_kansai_slow" int58  
                         b"\x3b", #effect == "robot_kansai_babytalk_white_noise" int59  
+
+                        b"\x3c", # effect == "vcdown" int60  
+                        b"\x3d", #effect == "vcdown_echo" int61  
+                        b"\x3e", #effect == "vcdown_reverb" int62  
+                        b"\x3f", #effect == "vcdown_slow" int63  
+                        b"\x40", #effect == "vcdown_white_noise" int64   
+
+                        b"\x41", #effect == "vcdown_dakuten" int65    
+                        b"\x42", #effect == "vcdown_dakuten_echo" int66 
+                        b"\x43", #effect == "vcdown_dakuten_reverb" int67
+                        b"\x44", #effect == "vcdown_dakuten_slow" int68   
+                        b"\x45", #effect == "vcdown_dakuten_white_noise" int69 
+
+                        b"\x46", # effect == "vcdown_babytalk" int 70
+                        b"\x47", #effect == "vcdown_babytalk_echo" int 71
+                        b"\x48", #effect == "vcdown_babytalk_reverb" int 72
+                        b"\x49", #effect == "vcdown_babytalk_slow" int 73
+                        b"\x4a", #effect == "vcdown_babytalk_white_noise" int 74
+
+                        b"\x4b", #effect == "vcdown_kansai" int 75
+                        b"\x4c", #effect == "vcdown_kansai_echo" int 76
+                        b"\x4d", #effect == "vcdown_kansai_reverb" int 77
+                        b"\x4e", #effect == "vcdown_kansai_slow" int 78
+                        b"\x4f", #effect == "vcdown_kansai_white_noise" int79
+                            
+                        b"\x50", # effect == "vcdown_kansai_dakuten" int80
+                        b"\x51", #effect == "vcdown_kansai_dakuten_echo" int81
+                        b"\x52", #effect == "vcdown_kansai_dakuten_reverb" int82
+                        b"\x53", #effect == "vcdown_kansai_dakuten_slow" int83
+                        b"\x54", #effect == "vcdown_kansai_dakuten_white_noise" int84
+
+                        b"\x55", #effect == "vcdown_kansai_babytalk" int85
+                        b"\x56", #effect == "vcdown_kansai_babytalk_echo" int86
+                        b"\x57", #effect == "vcdown_kansai_babytalk_reverb" int87
+                        b"\x58", #effect == "vcdown_kansai_babytalk_kansai_slow" int88  
+                        b"\x59", #effect == "vcdown_kansai_babytalk_white_noise" int89  
+
+                        b"\x5a", # effect == "vcup" int90  
+                        b"\x5b", #effect == "vcup_echo" int91  
+                        b"\x5c", #effect == "vcup_reverb" int92  
+                        b"\x5d", #effect == "vcup_slow" int93  
+                        b"\x5e", #effect == "vcup_white_noise" int94   
+
+                        b"\x5f", #effect == "vcup_dakuten" int95    
+                        b"\x60", #effect == "vcup_dakuten_echo" int96 
+                        b"\x61", #effect == "vcup_dakuten_reverb" int97
+                        b"\x62", #effect == "vcup_dakuten_slow" int98   
+                        b"\x63", #effect == "vcup_dakuten_white_noise" int99 
+
+                        b"\x64", # effect == "vcup_babytalk" int 100
+                        b"\x65", #effect == "vcup_babytalk_echo" int 101
+                        b"\x66", #effect == "vcup_babytalk_reverb" int 102
+                        b"\x67", #effect == "vcup_babytalk_slow" int 103
+                        b"\x68", #effect == "vcup_babytalk_white_noise" int 104
+
+                        b"\x69", #effect == "vcup_kansai" int 105
+                        b"\x6a", #effect == "vcup_kansai_echo" int 106
+                        b"\x6b", #effect == "vcup_kansai_reverb" int 107
+                        b"\x6c", #effect == "vcup_kansai_slow" int 108
+                        b"\x6d", #effect == "vcup_kansai_white_noise" int109
+                            
+                        b"\x6e", # effect == "vcup_kansai_dakuten" int110
+                        b"\x6f", #effect == "vcup_kansai_dakuten_echo" int111
+                        b"\x70", #effect == "vcup_kansai_dakuten_reverb" int112
+                        b"\x71", #effect == "vcup_kansai_dakuten_slow" int113
+                        b"\x72", #effect == "vcup_kansai_dakuten_white_noise" int114
+
+                        b"\x73", #effect == "vcup_kansai_babytalk" int115
+                        b"\x74", #effect == "vcup_kansai_babytalk_echo" int116
+                        b"\x75", #effect == "vcup_kansai_babytalk_reverb" int117
+                        b"\x76", #effect == "vcup_kansai_babytalk_kansai_slow" int118 
+                        b"\x77", #effect == "vcup_kansai_babytalk_white_noise" int119  
         ]
             
 

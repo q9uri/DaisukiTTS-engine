@@ -356,7 +356,14 @@ class StyleBertVITS2TTSEngine(TTSEngine):
                       25, 26, 27, 28, 29,
                       45, 46, 47, 48, 49,
                       50, 51, 52, 53, 54,
-                      55, 56, 57, 58, 59)
+                      55, 56, 57, 58, 59,
+                      75, 76, 77, 78, 79,
+                      80, 81, 82, 83, 84,
+                      85, 86, 87, 88, 89,
+                      105, 106, 107, 108, 109,
+                      110, 111, 112, 113, 114,
+                      115, 116, 117, 118, 119
+                      )
         keihan = False
         if effect_style_id in KEIHAN_IDS:
             keihan = True
@@ -366,12 +373,20 @@ class StyleBertVITS2TTSEngine(TTSEngine):
             20, 21, 22, 23, 24,
             35, 36, 37, 38, 39,
             50, 51, 52, 53, 54, 
+            65, 66, 67, 68, 69,
+            80, 81, 81, 83, 84,
+            95, 96, 97, 98 ,99,
+            110, 111, 112, 113, 114
             )
         BABYTALK_IDS = (
             10, 11, 12, 13, 14,
             25, 26, 27, 28, 29,
             40, 41, 42, 43, 44,
-            55, 56, 57, 58, 59
+            55, 56, 57, 58, 59,
+            70, 71, 72, 73, 74,
+            85, 86, 87, 88, 89,
+            100, 101, 102, 103, 104,
+            115, 116, 117, 118, 119
             )
         dakuten = False
         if effect_style_id in DAKUON_IDS:
@@ -590,24 +605,27 @@ class StyleBertVITS2TTSEngine(TTSEngine):
 
         echo = False
         reverb = False
-        robot = False
         slow = False
         white_noise = False
+
+        robot = False
+        vcdown = False
+        vcup = False
         
         styleid_bytes = style_id.to_bytes(4, "big", signed=True) #8byte
         effect_style_id = styleid_bytes[0]
 
 
-        if effect_style_id in (1, 6, 11, 16, 21, 26, 31, 36, 41, 46, 51, 56):
+        if effect_style_id in (1, 6, 11, 16, 21, 26, 31, 36, 41, 46, 51, 56, 61, 66, 71, 76, 81, 86, 91, 96, 101, 106, 111, 116):
             echo = True
 
-        elif effect_style_id in (2, 7, 12, 17, 22, 27, 32, 37, 42, 47, 52, 57):
+        elif effect_style_id in (2, 7, 12, 17, 22, 27, 32, 37, 42, 47, 52, 57, 62, 67, 72, 77, 81, 86, 93, 98, 103, 108, 113, 118):
             reverb = True
 
-        elif effect_style_id in (3, 8, 13, 18, 23, 28, 33, 38, 43, 48, 53, 58):        
+        elif effect_style_id in (3, 8, 13, 18, 23, 28, 33, 38, 43, 48, 53, 58, 63, 68, 73, 78, 83, 88, 93, 98, 103, 108, 113, 118):        
             slow = True
 
-        elif effect_style_id in (4, 9, 14, 19, 24, 29, 34, 39, 44, 49, 54, 59):
+        elif effect_style_id in (4, 9, 14, 19, 24, 29, 34, 39, 44, 49, 54, 59, 64, 69, 74, 79, 84, 89, 94, 99, 104, 109, 114, 119):
             white_noise = True
         
         ROBOT_IDS = (30, 31, 32, 33, 34,
@@ -616,9 +634,30 @@ class StyleBertVITS2TTSEngine(TTSEngine):
                     45, 46, 47, 48, 49,
                     50, 51, 52, 53, 54,
                     55, 56, 57, 58, 59)
-
+        
+        VCDOWN_IDS = (60, 61, 62, 63, 64,
+                    65, 66, 67, 68, 69,
+                    70, 71, 72, 73, 74,
+                    75, 76, 77, 78, 79,
+                    80, 81, 82, 83, 84,
+                    85, 86, 87, 88, 89)
+        
+        VCUP_IDS = (90, 91, 92, 93, 94,
+                    95, 96, 97, 98, 99,
+                    100, 101, 102, 103, 104,
+                    105, 106, 107, 108, 109,
+                    110, 111, 112, 113, 114,
+                    115, 116, 117, 118, 119)
+        
         if effect_style_id in ROBOT_IDS:
             robot = True
+
+        if effect_style_id in VCDOWN_IDS:
+            vcdown = True
+
+        if effect_style_id in VCUP_IDS:
+            vcup = True
+
         # モーフィング時などに同一参照の AudioQuery で複数回呼ばれる可能性があるので、元の引数の AudioQuery に破壊的変更を行わない
         query = copy.deepcopy(query)
 
@@ -828,6 +867,18 @@ class StyleBertVITS2TTSEngine(TTSEngine):
             raw_wave, raw_sample_rate = sf.read(TEMP_WAVE_PATH)
             raw_wave = raw_wave.astype(np.float32)
 
+        elif vcup:
+            sf.write(TEMP_WAVE_PATH, data=raw_wave, samplerate=raw_sample_rate)
+            natsumikan.wav_pitch_change(TEMP_WAVE_PATH, TEMP_WAVE_PATH, 12)
+            raw_wave, raw_sample_rate = sf.read(TEMP_WAVE_PATH)
+            raw_wave = raw_wave.astype(np.float32)
+
+        elif vcdown:
+            sf.write(TEMP_WAVE_PATH, data=raw_wave, samplerate=raw_sample_rate)
+            natsumikan.wav_pitch_change(TEMP_WAVE_PATH, TEMP_WAVE_PATH, -12)
+            raw_wave, raw_sample_rate = sf.read(TEMP_WAVE_PATH)
+            raw_wave = raw_wave.astype(np.float32)
+
 
         if echo:
             sf.write(TEMP_WAVE_PATH, data=raw_wave, samplerate=raw_sample_rate)
@@ -835,19 +886,19 @@ class StyleBertVITS2TTSEngine(TTSEngine):
             raw_wave, raw_sample_rate = sf.read(TEMP_WAVE_PATH)
             raw_wave = raw_wave.astype(np.float32)
 
-        if reverb:
+        elif reverb:
             sf.write(TEMP_WAVE_PATH, data=raw_wave, samplerate=raw_sample_rate)
             natsumikan.convert_to_reverb(TEMP_WAVE_PATH, TEMP_WAVE_PATH)
             raw_wave, raw_sample_rate = sf.read(TEMP_WAVE_PATH)
             raw_wave = raw_wave.astype(np.float32)
 
-        if slow:
+        elif slow:
             sf.write(TEMP_WAVE_PATH, data=raw_wave, samplerate=raw_sample_rate)
             natsumikan.cahnge_speed(TEMP_WAVE_PATH, TEMP_WAVE_PATH, speed=0.5)
             raw_wave, raw_sample_rate = sf.read(TEMP_WAVE_PATH)
             raw_wave = raw_wave.astype(np.float32)
 
-        if white_noise:
+        elif white_noise:
             sf.write(TEMP_WAVE_PATH, data=raw_wave, samplerate=raw_sample_rate)
             natsumikan.add_white_noise(TEMP_WAVE_PATH, TEMP_WAVE_PATH)
             raw_wave, raw_sample_rate = sf.read(TEMP_WAVE_PATH)
