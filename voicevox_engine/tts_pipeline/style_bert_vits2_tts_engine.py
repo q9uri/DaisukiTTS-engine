@@ -351,10 +351,35 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         """
         styleid_bytes = style_id.to_bytes(4, "big", signed=True) #byte
         effect_style_id = styleid_bytes[0]
+        KEIHAN_IDS = (15, 16, 17, 18, 19,
+                      20, 21, 22, 23, 24,
+                      25, 26, 27, 28, 29,
+                      45, 46, 47, 48, 49,
+                      50, 51, 52, 53, 54,
+                      55, 56, 57, 58, 59)
         keihan = False
-        if effect_style_id in (6, 7, 8, 9, 10, 11):
+        if effect_style_id in KEIHAN_IDS:
             keihan = True
-        
+
+        DAKUON_IDS = (
+            5, 6, 7, 8, 9,
+            20, 21, 22, 23, 24,
+            35, 36, 37, 38, 39,
+            50, 51, 52, 53, 54, 
+            )
+        BABYTALK_IDS = (
+            10, 11, 12, 13, 14,
+            25, 26, 27, 28, 29,
+            40, 41, 42, 43, 44,
+            55, 56, 57, 58, 59
+            )
+        dakuten = False
+        if effect_style_id in DAKUON_IDS:
+            dakuten = True
+
+        babytalk = False
+        if effect_style_id in BABYTALK_IDS:
+            babytalk = True
 
         # 入力テキストを Style-Bert-VITS2 の基準で正規化
         ## Style-Bert-VITS2 では「〜」などの伸ばす棒も長音記号として扱うため、normalize_text() でそれらを統一する
@@ -366,7 +391,7 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         ## VOICEVOX ENGINE 側のアクセント句系列生成処理は微妙に互換性がないため使っていない
         ## VOICEVOX ENGINE では「ん」の音素を「N」としているため、use_jp_extra (True のとき「ん」の音素を「N」とする) は常に True に設定している
         ## JP-Extra モデルと通常のモデルの音素差の吸収は synthesize_wave() で行う
-        phones, tones, _, _, _, sep_kata_with_joshi = g2p(normalized_text, use_jp_extra=True, raise_yomi_error=False, keihan=keihan)  # fmt: skip
+        phones, tones, _, _, _, sep_kata_with_joshi = g2p(normalized_text, use_jp_extra=True, raise_yomi_error=False, keihan=keihan, dakuten=dakuten, babytalk=babytalk)  # fmt: skip
         mora_tone_list = _phone_tone2mora_tone(list(zip(phones, tones, strict=False)))
 
         # sep_kata_with_joshi のカタカナを音素 (子音と母音のタプル) に変換
@@ -573,22 +598,27 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         effect_style_id = styleid_bytes[0]
 
 
-        if effect_style_id in (1, 7):
+        if effect_style_id in (1, 6, 11, 16, 21, 26, 31, 36, 41, 46, 51, 56):
             echo = True
 
-        elif effect_style_id in (2, 8):
+        elif effect_style_id in (2, 7, 12, 17, 22, 27, 32, 37, 42, 47, 52, 57):
             reverb = True
 
-        elif effect_style_id in (3, 9):
-            robot = True            
-
-        elif effect_style_id in (4, 10):
+        elif effect_style_id in (3, 8, 13, 18, 23, 28, 33, 38, 43, 48, 53, 58):        
             slow = True
 
-        elif effect_style_id in (5, 11):
+        elif effect_style_id in (4, 9, 14, 19, 24, 29, 34, 39, 44, 49, 54, 59):
             white_noise = True
+        
+        ROBOT_IDS = (30, 31, 32, 33, 34,
+                    35, 36, 37, 38, 39,
+                    40, 41, 42, 43, 44,
+                    45, 46, 47, 48, 49,
+                    50, 51, 52, 53, 54,
+                    55, 56, 57, 58, 59)
 
-
+        if effect_style_id in ROBOT_IDS:
+            robot = True
         # モーフィング時などに同一参照の AudioQuery で複数回呼ばれる可能性があるので、元の引数の AudioQuery に破壊的変更を行わない
         query = copy.deepcopy(query)
 
@@ -791,7 +821,13 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         silence_wave_post = np.zeros(post_silence_length, dtype=np.float32)
         raw_wave = np.concatenate((silence_wave_pre, raw_wave, silence_wave_post))
 
-        
+        #重ね掛けするので、ロボ声は一番最初に
+        if robot:
+            sf.write(TEMP_WAVE_PATH, data=raw_wave, samplerate=raw_sample_rate)
+            natsumikan.voicecanger_robot(TEMP_WAVE_PATH, TEMP_WAVE_PATH)
+            raw_wave, raw_sample_rate = sf.read(TEMP_WAVE_PATH)
+            raw_wave = raw_wave.astype(np.float32)
+
 
         if echo:
             sf.write(TEMP_WAVE_PATH, data=raw_wave, samplerate=raw_sample_rate)
@@ -802,12 +838,6 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         if reverb:
             sf.write(TEMP_WAVE_PATH, data=raw_wave, samplerate=raw_sample_rate)
             natsumikan.convert_to_reverb(TEMP_WAVE_PATH, TEMP_WAVE_PATH)
-            raw_wave, raw_sample_rate = sf.read(TEMP_WAVE_PATH)
-            raw_wave = raw_wave.astype(np.float32)
-
-        if robot:
-            sf.write(TEMP_WAVE_PATH, data=raw_wave, samplerate=raw_sample_rate)
-            natsumikan.voicecanger_robot(TEMP_WAVE_PATH, TEMP_WAVE_PATH)
             raw_wave, raw_sample_rate = sf.read(TEMP_WAVE_PATH)
             raw_wave = raw_wave.astype(np.float32)
 

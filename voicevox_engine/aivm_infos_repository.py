@@ -378,55 +378,258 @@ class AivmInfosRepository:
 
                         """
                         b"\x00", # effect == "native"
-                        b"\x01", #effect == "echo"
-                        b"\x02", #effect == "reverb"
-                        b"\x03", #effect == "robot"
-                        b"\x04", #effect == "slow"   
-                        b"\x05", #effect == "white_noise"
-                        b"\x06", # effect == "kansai_native"
-                        b"\x07", #effect == "kansai_echo"
-                        b"\x08", #effect == "kansai_reverb"
-                        b"\x09", #effect == "kansai_robot"
-                        b"\x0a", #effect == "kansai_slow"   int 10
-                        b"\x0b", #effect == "kansai_white_noise"  int 11
+                        b"\x01", #effect == "native_echo"
+                        b"\x02", #effect == "native_reverb"
+                        b"\x03", #effect == "native_slow"
+                        b"\x04", #effect == "native_white_noise"   
+
+                        b"\x05", #effect == "native_dakuten"    
+                        b"\x06", #effect == "native_dakuten_echo" 
+                        b"\x07", #effect == "native_dakuten_reverb" 
+                        b"\x08", #effect == "native_dakuten_slow"    
+                        b"\x09", #effect == "native_dakuten_white_noise" 
+
+                        b"\x0a", # effect == "native_babytalk" int 10
+                        b"\x0b", #effect == "native_babytalk_echo" int 11
+                        b"\x0c", #effect == "native_babytalk_reverb" int 12
+                        b"\x0d", #effect == "native_babytalk_slow" int 13
+                        b"\x0e", #effect == "native_babytalk_white_noise" int 14
+
+                        b"\x0f", #effect == "kansai" int 15
+                        b"\x10", #effect == "native_kansai_echo" int 16
+                        b"\x11", #effect == "native_kansai_reverb" int 17
+                        b"\x12", #effect == "native_kansai_slow" int 18
+                        b"\x13", #effect == "native_kansai_white_noise" int19
+                            
+                        b"\x14", # effect == "native_kansai_dakuten" int20
+                        b"\x15", #effect == "native_kansai_dakuten_echo" int21
+                        b"\x16", #effect == "native_kansai_dakuten_reverb" int22
+                        b"\x17", #effect == "native_kansai_dakuten_slow" int23
+                        b"\x18", #effect == "native_kansai_dakuten_white_noise" int24
+
+                        b"\x19", #effect == "native_kansai_babytalk" int25
+                        b"\x1a", #effect == "native_kansai_babytalk_echo" int26
+                        b"\x1b", #effect == "native_kansai_babytalk_reverb" int27
+                        b"\x1c", #effect == "native_kansai_babytalk_kansai_slow" int28  
+                        b"\x1d", #effect == "native_kansai_babytalk_white_noise" int29  
+
+                        b"\x1e", # effect == "robot" int30  
+                        b"\x1f", #effect == "robot_echo" int31  
+                        b"\x20", #effect == "robot_reverb" int32  
+                        b"\x21", #effect == "robot_slow" int33  
+                        b"\x22", #effect == "robot_white_noise" int34   
+
+                        b"\x23", #effect == "robot_dakuten" int35    
+                        b"\x24", #effect == "robot_dakuten_echo" int36 
+                        b"\x25", #effect == "robot_dakuten_reverb" int37
+                        b"\x26", #effect == "robot_dakuten_slow" int38   
+                        b"\x27", #effect == "robot_dakuten_white_noise" int39 
+
+                        b"\x28", # effect == "robot_babytalk" int 40
+                        b"\x29", #effect == "robot_babytalk_echo" int 41
+                        b"\x2a", #effect == "robot_babytalk_reverb" int 42
+                        b"\x2b", #effect == "robot_babytalk_slow" int 43
+                        b"\x2d", #effect == "robot_babytalk_white_noise" int 44
+
+                        b"\x2c", #effect == "robot_kansai" int 45
+                        b"\x2e", #effect == "robot_kansai_echo" int 46
+                        b"\x2f", #effect == "robot_kansai_reverb" int 47
+                        b"\x30", #effect == "robot_kansai_slow" int 48
+                        b"\x31", #effect == "robot_kansai_white_noise" int49
+                            
+                        b"\x32", # effect == "robot_kansai_dakuten" int50
+                        b"\x33", #effect == "robot_kansai_dakuten_echo" int51
+                        b"\x34", #effect == "robot_kansai_dakuten_reverb" int52
+                        b"\x35", #effect == "robot_kansai_dakuten_slow" int53
+                        b"\x36", #effect == "robot_kansai_dakuten_white_noise" int54
+
+                        b"\x37", #effect == "robot_kansai_babytalk" int55
+                        b"\x38", #effect == "robot_kansai_babytalk_echo" int56
+                        b"\x39", #effect == "robot_kansai_babytalk_reverb" int57
+                        b"\x3a", #effect == "robot_kansai_babytalk_kansai_slow" int58  
+                        b"\x3b", #effect == "robot_kansai_babytalk_white_noise" int59    
                         """       
                         
                         if effect_style_id == 0:
                             new_style_name = style_name
 
-                        if effect_style_id == 1:
-                            new_style_name = f"{style_name} :(エコー)"
+                        elif effect_style_id == 1:
+                            new_style_name = f"{style_name} (エコー)"
 
                         elif effect_style_id == 2:
-                            new_style_name = f"{style_name} :(リバーブ)"
+                            new_style_name = f"{style_name} (リバーブ)"
 
                         elif effect_style_id == 3:
-                            new_style_name = f"{style_name} :(ロボット)"
+                            new_style_name = f"{style_name} (スロウモーション)"
 
                         elif effect_style_id == 4:
-                            new_style_name = f"{style_name} :(スロウモーション)"
+                            new_style_name = f"{style_name} (ホワイトノイズ)"
 
                         elif effect_style_id == 5:
-                            new_style_name = f"{style_name} :(ホワイトノイズ)"
+                            new_style_name = f"{style_name} (濁音)"
 
                         elif effect_style_id == 6:
-                            new_style_name = f"{style_name} [関西弁風]"
+                            new_style_name = f"{style_name} (濁音, エコー)"
 
                         elif effect_style_id == 7:
-                            new_style_name = f"{style_name} [関西弁風] :(エコー)"
+                            new_style_name = f"{style_name} (濁音, リバーブ)"
 
                         elif effect_style_id == 8:
-                            new_style_name = f"{style_name}[関西弁風] :(リバーブ)"
+                            new_style_name = f"{style_name} (濁音, スロウモーション)"
 
                         elif effect_style_id == 9:
-                            new_style_name = f"{style_name} [関西弁風] :(ロボット)"
+                            new_style_name = f"{style_name} (濁音, ホワイトノイズ)"
 
                         elif effect_style_id == 10:
-                            new_style_name = f"{style_name} [関西弁風] :(スロウモーション)"
+                            new_style_name = f"{style_name} (赤ちゃん言葉)"
 
                         elif effect_style_id == 11:
-                            new_style_name = f"{style_name} [関西弁風] :(ホワイトノイズ)"
-                
+                            new_style_name = f"{style_name} (赤ちゃん言葉, エコー)"
+
+                        elif effect_style_id == 12:
+                            new_style_name = f"{style_name} (赤ちゃん言葉, リバーブ)"
+
+                        elif effect_style_id == 13:
+                            new_style_name = f"{style_name} (赤ちゃん言葉, スロウモーション)"
+
+                        elif effect_style_id == 14:
+                            new_style_name = f"{style_name} (赤ちゃん言葉, ホワイトノイズ)"
+
+                        elif effect_style_id == 15:
+                            new_style_name = f"{style_name} (関西弁)"
+
+                        elif effect_style_id == 16:
+                            new_style_name = f"{style_name} (関西弁, エコー)"
+
+                        elif effect_style_id == 17:
+                            new_style_name = f"{style_name} (関西弁, リバーブ)"
+
+                        elif effect_style_id == 18:
+                            new_style_name = f"{style_name} (関西弁, スロウモーション)"
+
+                        elif effect_style_id == 19:
+                            new_style_name = f"{style_name} (関西弁, ホワイトノイズ)"
+
+                        elif effect_style_id == 20:
+                            new_style_name = f"{style_name} (関西弁, 濁音)"
+
+                        elif effect_style_id == 21:
+                            new_style_name = f"{style_name} (関西弁, 濁音, エコー)"
+
+                        elif effect_style_id == 22:
+                            new_style_name = f"{style_name} (関西弁, 濁音, リバーブ)"
+
+                        elif effect_style_id == 23:
+                            new_style_name = f"{style_name} (関西弁, 濁音, スロウモーション)"
+
+                        elif effect_style_id == 24:
+                            new_style_name = f"{style_name} (関西弁, 濁音, ホワイトノイズ)"
+
+                        elif effect_style_id == 25:
+                            new_style_name = f"{style_name} (関西弁, 赤ちゃん言葉)"
+
+                        elif effect_style_id == 26:
+                            new_style_name = f"{style_name} (関西弁, 赤ちゃん言葉, エコー)"
+
+                        elif effect_style_id == 27:
+                            new_style_name = f"{style_name} (関西弁, 赤ちゃん言葉, リバーブ)"
+
+                        elif effect_style_id == 28:
+                            new_style_name = f"{style_name} (関西弁, 赤ちゃん言葉, スロウモーション)"
+
+                        elif effect_style_id == 29:
+                            new_style_name = f"{style_name} (関西弁, 赤ちゃん言葉, ホワイトノイズ)"
+
+                        elif effect_style_id == 30:
+                            new_style_name = f"{style_name} (ロボ声)"
+
+                        elif effect_style_id == 31:
+                            new_style_name = f"{style_name} (ロボ声, エコー)"
+
+                        elif effect_style_id == 32:
+                            new_style_name = f"{style_name} (ロボ声, リバーブ)"
+
+                        elif effect_style_id == 33:
+                            new_style_name = f"{style_name} (ロボ声, スロウモーション)"
+
+                        elif effect_style_id == 34:
+                            new_style_name = f"{style_name} (ロボ声, ホワイトノイズ)"
+
+                        elif effect_style_id == 35:
+                            new_style_name = f"{style_name} (ロボ声, 濁音)"
+
+                        elif effect_style_id == 36:
+                            new_style_name = f"{style_name} (ロボ声, 濁音, エコー)"
+
+                        elif effect_style_id == 37:
+                            new_style_name = f"{style_name} (ロボ声, 濁音, リバーブ)"
+
+                        elif effect_style_id == 38:
+                            new_style_name = f"{style_name} (ロボ声, 濁音, スロウモーション)"
+
+                        elif effect_style_id == 39:
+                            new_style_name = f"{style_name} (ロボ声, 濁音, ホワイトノイズ)"
+
+                        elif effect_style_id == 40:
+                            new_style_name = f"{style_name} (ロボ声, 赤ちゃん言葉)"
+
+                        elif effect_style_id == 41:
+                            new_style_name = f"{style_name} (ロボ声, 赤ちゃん言葉, エコー)"
+
+                        elif effect_style_id == 42:
+                            new_style_name = f"{style_name} (ロボ声, 赤ちゃん言葉, リバーブ)"
+
+                        elif effect_style_id == 43:
+                            new_style_name = f"{style_name} (ロボ声, 赤ちゃん言葉, スロウモーション)"
+
+                        elif effect_style_id == 44:
+                            new_style_name = f"{style_name} (ロボ声, 赤ちゃん言葉, ホワイトノイズ)"
+
+                        elif effect_style_id == 45:
+                            new_style_name = f"{style_name} (ロボ声, 関西弁)"
+
+                        elif effect_style_id == 46:
+                            new_style_name = f"{style_name} (ロボ声, 関西弁, エコー)"
+
+                        elif effect_style_id == 47:
+                            new_style_name = f"{style_name} (ロボ声, 関西弁, リバーブ)"
+
+                        elif effect_style_id == 48:
+                            new_style_name = f"{style_name} (ロボ声, 関西弁, スロウモーション)"
+
+                        elif effect_style_id == 49:
+                            new_style_name = f"{style_name} (ロボ声, 関西弁, ホワイトノイズ)"
+
+                        elif effect_style_id == 50:
+                            new_style_name = f"{style_name} (ロボ声, 関西弁, 濁音)"
+
+                        elif effect_style_id == 51:
+                            new_style_name = f"{style_name} (ロボ声, 関西弁, 濁音, エコー)"
+
+                        elif effect_style_id == 52:
+                            new_style_name = f"{style_name} (ロボ声, 関西弁, 濁音, リバーブ)"
+
+                        elif effect_style_id == 53:
+                            new_style_name = f"{style_name} (ロボ声, 関西弁, 濁音, スロウモーション)"
+
+                        elif effect_style_id == 54:
+                            new_style_name = f"{style_name} (ロボ声, 関西弁, 濁音, ホワイトノイズ)"
+
+                        elif effect_style_id == 55:
+                            new_style_name = f"{style_name} (ロボ声, 関西弁, 赤ちゃん言葉)"
+
+                        elif effect_style_id == 56:
+                            new_style_name = f"{style_name} (ロボ声, 関西弁, 赤ちゃん言葉, エコー)"
+
+                        elif effect_style_id == 57:
+                            new_style_name = f"{style_name} (ロボ声, 関西弁, 赤ちゃん言葉, リバーブ)"
+
+                        elif effect_style_id == 58:
+                            new_style_name = f"{style_name} (ロボ声, 関西弁, 赤ちゃん言葉, スロウモーション)"
+
+                        elif effect_style_id == 59:
+                            new_style_name = f"{style_name} (ロボ声, 関西弁, 赤ちゃん言葉, ホワイトノイズ)"
+
                         speaker_style = SpeakerStyle(
                             # VOICEVOX ENGINE 互換のスタイル ID
                             id=style_id,
@@ -667,18 +870,77 @@ class AivmInfosRepository:
         
         
         effect_id = [
-            b"\x00", # effect == "native"
-            b"\x01", #effect == "echo"
-            b"\x02", #effect == "reverb"
-            b"\x03", #effect == "robot"
-            b"\x04", #effect == "slow"   
-            b"\x05", #effect == "white_noise"   
-            b"\x06", # effect == "kansai_native"
-            b"\x07", #effect == "kansai_echo"
-            b"\x08", #effect == "kansai_reverb"
-            b"\x09", #effect == "kansai_robot"
-            b"\x0a", #effect == "kansai_slow"   
-            b"\x0b", #effect == "kansai_white_noise"    
+                        b"\x00", # effect == "native"
+                        b"\x01", #effect == "native_echo"
+                        b"\x02", #effect == "native_reverb"
+                        b"\x03", #effect == "native_slow"
+                        b"\x04", #effect == "native_white_noise"   
+
+                        b"\x05", #effect == "native_dakuten"    
+                        b"\x06", #effect == "native_dakuten_echo" 
+                        b"\x07", #effect == "native_dakuten_reverb" 
+                        b"\x08", #effect == "native_dakuten_slow"    
+                        b"\x09", #effect == "native_dakuten_white_noise" 
+
+                        b"\x0a", # effect == "native_babytalk" int 10
+                        b"\x0b", #effect == "native_babytalk_echo" int 11
+                        b"\x0c", #effect == "native_babytalk_reverb" int 12
+                        b"\x0d", #effect == "native_babytalk_slow" int 13
+                        b"\x0e", #effect == "native_babytalk_white_noise" int 14
+
+                        b"\x0f", #effect == "kansai" int 15
+                        b"\x10", #effect == "native_kansai_echo" int 16
+                        b"\x11", #effect == "native_kansai_reverb" int 17
+                        b"\x12", #effect == "native_kansai_slow" int 18
+                        b"\x13", #effect == "native_kansai_white_noise" int19
+                            
+                        b"\x14", # effect == "native_kansai_dakuten" int20
+                        b"\x15", #effect == "native_kansai_dakuten_echo" int21
+                        b"\x16", #effect == "native_kansai_dakuten_reverb" int22
+                        b"\x17", #effect == "native_kansai_dakuten_slow" int23
+                        b"\x18", #effect == "native_kansai_dakuten_white_noise" int24
+
+                        b"\x19", #effect == "native_kansai_babytalk" int25
+                        b"\x1a", #effect == "native_kansai_babytalk_echo" int26
+                        b"\x1b", #effect == "native_kansai_babytalk_reverb" int27
+                        b"\x1c", #effect == "native_kansai_babytalk_slow" int28  
+                        b"\x1d", #effect == "native_kansai_babytalk_white_noise" int29  
+
+                        b"\x1e", # effect == "robot" int30  
+                        b"\x1f", #effect == "robot_echo" int31  
+                        b"\x20", #effect == "robot_reverb" int32  
+                        b"\x21", #effect == "robot_slow" int33  
+                        b"\x22", #effect == "robot_white_noise" int34   
+
+                        b"\x23", #effect == "robot_dakuten" int35    
+                        b"\x24", #effect == "robot_dakuten_echo" int36 
+                        b"\x25", #effect == "robot_dakuten_reverb" int37
+                        b"\x26", #effect == "robot_dakuten_slow" int38   
+                        b"\x27", #effect == "robot_dakuten_white_noise" int39 
+
+                        b"\x28", # effect == "robot_babytalk" int 40
+                        b"\x29", #effect == "robot_babytalk_echo" int 41
+                        b"\x2a", #effect == "robot_babytalk_reverb" int 42
+                        b"\x2b", #effect == "robot_babytalk_slow" int 43
+                        b"\x2d", #effect == "robot_babytalk_white_noise" int 44
+
+                        b"\x2c", #effect == "robot_kansai" int 45
+                        b"\x2e", #effect == "robot_kansai_echo" int 46
+                        b"\x2f", #effect == "robot_kansai_reverb" int 47
+                        b"\x30", #effect == "robot_kansai_slow" int 48
+                        b"\x31", #effect == "robot_kansai_white_noise" int49
+                            
+                        b"\x32", # effect == "robot_kansai_dakuten" int50
+                        b"\x33", #effect == "robot_kansai_dakuten_echo" int51
+                        b"\x34", #effect == "robot_kansai_dakuten_reverb" int52
+                        b"\x35", #effect == "robot_kansai_dakuten_slow" int53
+                        b"\x36", #effect == "robot_kansai_dakuten_white_noise" int54
+
+                        b"\x37", #effect == "robot_kansai_babytalk" int55
+                        b"\x38", #effect == "robot_kansai_babytalk_echo" int56
+                        b"\x39", #effect == "robot_kansai_babytalk_reverb" int57
+                        b"\x3a", #effect == "robot_kansai_babytalk_kansai_slow" int58  
+                        b"\x3b", #effect == "robot_kansai_babytalk_white_noise" int59  
         ]
             
 

@@ -549,7 +549,7 @@ requires-dist = [
     { name = "httpx", specifier = "==0.28.1" },
     { name = "jaconv", specifier = "==0.4.0" },
     { name = "jinja2", specifier = "==3.1.6" },
-    { name = "kabosu-plus", git = "https://github.com/q9uri/kabosu-plus?rev=0876a6f684be0648266f58b4bff5679edede0218" },
+    { name = "kabosu-plus", git = "https://github.com/q9uri/kabosu-plus?rev=5f62cecb9f2b636f261a05857cfbd666961d27f4" },
     { name = "natsumikan", git = "https://github.com/q9uri/natsumikan?rev=5bda00f065c3757ea3d957b451cb9045e85776f1" },
     { name = "numpy", specifier = "==1.26.4" },
     { name = "onnxruntime", specifier = "==1.22.1" },
@@ -566,7 +566,7 @@ requires-dist = [
     { name = "soundfile", specifier = "==0.13.1" },
     { name = "soxr", specifier = "==0.5.0" },
     { name = "starlette", specifier = "==0.45.3" },
-    { name = "style-bert-vits2", git = "https://github.com/q9uri/Daisuki-Bert-VITS2?rev=52e211a663c7880000ff19de962cae398f0ebce7" },
+    { name = "style-bert-vits2", git = "https://github.com/q9uri/Daisuki-Bert-VITS2?rev=c9d5d42cda3e1bf0983d2c87a47d41da9c166274" },
     { name = "truststore", specifier = "==0.10.0" },
     { name = "uvicorn", specifier = "==0.34.0" },
     { name = "wmi", marker = "sys_platform == 'win32'", specifier = "==1.5.1" },
@@ -1179,7 +1179,7 @@ sdist = { url = "https://files.pythonhosted.org/packages/f1/2a/f64a28c236e3e8687
 [[package]]
 name = "kabosu-core"
 version = "0.3.0"
-source = { git = "https://github.com/q9uri/kabosu-core?rev=ff92910b69da16f523f9cb6bda1c4ba67ea96660#ff92910b69da16f523f9cb6bda1c4ba67ea96660" }
+source = { git = "https://github.com/q9uri/kabosu-core?rev=f66e09f5ac7c8f7fa47f2861396410746370f9bc#f66e09f5ac7c8f7fa47f2861396410746370f9bc" }
 dependencies = [
     { name = "jaconv" },
     { name = "jpreprocess" },
@@ -1194,8 +1194,8 @@ dependencies = [
 
 [[package]]
 name = "kabosu-plus"
-version = "0.1.0"
-source = { git = "https://github.com/q9uri/kabosu-plus?rev=0876a6f684be0648266f58b4bff5679edede0218#0876a6f684be0648266f58b4bff5679edede0218" }
+version = "0.3.1"
+source = { git = "https://github.com/q9uri/kabosu-plus?rev=5f62cecb9f2b636f261a05857cfbd666961d27f4#5f62cecb9f2b636f261a05857cfbd666961d27f4" }
 dependencies = [
     { name = "e2k" },
     { name = "jaconv" },
@@ -3115,7 +3115,7 @@ wheels = [
 [[package]]
 name = "style-bert-vits2"
 version = "2.7.0"
-source = { git = "https://github.com/q9uri/Daisuki-Bert-VITS2?rev=52e211a663c7880000ff19de962cae398f0ebce7#52e211a663c7880000ff19de962cae398f0ebce7" }
+source = { git = "https://github.com/q9uri/Daisuki-Bert-VITS2?rev=c9d5d42cda3e1bf0983d2c87a47d41da9c166274#c9d5d42cda3e1bf0983d2c87a47d41da9c166274" }
 dependencies = [
     { name = "aivmlib" },
     { name = "cmudict" },
