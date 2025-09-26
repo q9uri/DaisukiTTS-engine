@@ -69,8 +69,6 @@ name = "DaisukiTTS_Engine"
 version = "0.3.0" # TODO: できればversionを自動管理する
 requires-python = "==3.11.9"
 dependencies = [
-  "yomikata",
-  "kabosu-plus",
   "natsumikan",
   "style-bert-vits2",
   "numpy==1.26.4",
@@ -126,9 +124,7 @@ build = ["pyinstaller>=6",
 ]
 
 [tool.uv.sources]
-yomikata = { git = "https://github.com/q9uri/yomikata", rev = "e0d23496dd17b1b97a2a91bef08a41f77d3932d8" }
-kabosu-plus = { git = "https://github.com/q9uri/kabosu-plus", rev = "5f62cecb9f2b636f261a05857cfbd666961d27f4" }
-style-bert-vits2 = { git = "https://github.com/q9uri/Daisuki-Bert-VITS2", rev = "c9d5d42cda3e1bf0983d2c87a47d41da9c166274" }
+style-bert-vits2 = { git = "https://github.com/q9uri/Daisuki-Bert-VITS2", rev = "a6d8e2494acd23e0f1dccf5375bdc6cfa7add436" }
 natsumikan = { git = "https://github.com/q9uri/natsumikan", rev = "150572bafeb56a45c645518dd8ddf339b89893c3" }
 
 # OS に応じて適切な ONNX Runtime プラグインをインストール

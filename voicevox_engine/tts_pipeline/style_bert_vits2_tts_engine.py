@@ -23,18 +23,20 @@ from style_bert_vits2.constants import (
     DEFAULT_STYLE_WEIGHT,
     Languages,
 )
+
+from kabosu_plus.sbv2.nlp import languge_selector
+
 from style_bert_vits2.logging import logger as style_bert_vits2_logger
 from style_bert_vits2.models.hyper_parameters import HyperParameters
-from style_bert_vits2.nlp import onnx_bert_models
-from style_bert_vits2.nlp.japanese.g2p import g2p
-from style_bert_vits2.nlp.japanese.g2p_utils import g2kata_tone, kata_tone2phone_tone
-from style_bert_vits2.nlp.japanese.mora_list import (
+from kabosu_plus.sbv2.nlp import onnx_bert_models
+from kabosu_plus.sbv2.nlp.japanese import g2p as g2p_ja
+from kabosu_plus.sbv2.nlp.japanese.g2p_utils import g2kata_tone, kata_tone2phone_tone
+from kabosu_plus.sbv2.nlp.japanese.mora_list import (
     CONSONANTS,
     MORA_KATA_TO_MORA_PHONEMES,
     MORA_PHONEMES_TO_MORA_KATA,
 )
-from style_bert_vits2.nlp.japanese.normalizer import normalize_text
-from style_bert_vits2.nlp.symbols import PUNCTUATIONS
+from kabosu_plus.sbv2.nlp.symbols import PUNCTUATIONS
 from style_bert_vits2.tts_model import TTSModel
 
 from ..aivm_manager import AivmManager
@@ -53,6 +55,7 @@ from ..utility.path_utility import get_save_dir, engine_root
 
 _engine_dir = engine_root()
 TEMP_WAVE_PATH = _engine_dir / "temp.wav"
+
 
 class StyleBertVITS2TTSEngine(TTSEngine):
     """
@@ -162,7 +165,47 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         ## リビジョンを指定しない場合毎回 Hugging Face への通信が発生し、オフライン環境では 60 秒でタイムアウトするまで待たされるので、
         ## 明示的にコミットハッシュでリビジョンを指定している (こうすることで、オンライン環境でもロード時間が短縮されるメリットもある)
         start_time = time.time()
-        logger.info("Loading BERT model and tokenizer...")
+        logger.info("Loading chinese model and tokenizer...")
+        onnx_bert_models.load_model(
+            language=Languages.ZH,
+            pretrained_model_name_or_path="tsukumijima/chinese-roberta-wwm-ext-large-onnx",
+            onnx_providers=self.onnx_providers,
+            cache_dir=str(self.BERT_MODEL_CACHE_DIR),
+            revision="d5bda299f34531204d510c3e0752b92635e9ee12",
+        )
+        onnx_bert_models.load_tokenizer(
+            language=Languages.ZH,
+            pretrained_model_name_or_path="tsukumijima/chinese-roberta-wwm-ext-large-onnx",
+            cache_dir=str(self.BERT_MODEL_CACHE_DIR),
+            revision="d5bda299f34531204d510c3e0752b92635e9ee12",
+        )
+        logger.info(
+            f"chinese BERT model and tokenizer loaded. ({time.time() - start_time:.2f}s)"
+        )
+        # load english bert model
+        start_time = time.time()
+        logger.info("Loading english BERT model and tokenizer...")
+        onnx_bert_models.load_model(
+            language=Languages.EN,
+            pretrained_model_name_or_path="tsukumijima/deberta-v3-large-onnx",
+            onnx_providers=self.onnx_providers,
+            cache_dir=str(self.BERT_MODEL_CACHE_DIR),
+            revision="6ae8206c31b4305707346f5ca8d036b558dafe87",
+        )
+
+        onnx_bert_models.load_tokenizer(
+            language=Languages.EN,
+            pretrained_model_name_or_path="tsukumijima/deberta-v3-large-onnx",
+            cache_dir=str(self.BERT_MODEL_CACHE_DIR),
+            revision="6ae8206c31b4305707346f5ca8d036b558dafe87",
+        )
+        logger.info(
+            f"english BERT model and tokenizer loaded. ({time.time() - start_time:.2f}s)"
+        )
+
+        # load japanese bert model
+        start_time = time.time()
+        logger.info("Loading japanese BERT model and tokenizer...")
         onnx_bert_models.load_model(
             language=Languages.JP,
             pretrained_model_name_or_path="tsukumijima/deberta-v2-large-japanese-char-wwm-onnx",
@@ -177,8 +220,9 @@ class StyleBertVITS2TTSEngine(TTSEngine):
             revision="d701ec67708287b20d2063270f6b535e6eed09ab",
         )
         logger.info(
-            f"BERT model and tokenizer loaded. ({time.time() - start_time:.2f}s)"
+            f"japanese BERT model and tokenizer loaded. ({time.time() - start_time:.2f}s)"
         )
+
 
         # load_all_models が True の場合は全ての音声合成モデルをロードしておく
         if load_all_models is True:
@@ -349,6 +393,14 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         list[AccentPhrase]
             アクセント句系列
         """
+        result = self.aivm_manager.get_aivm_manifest_from_style_id(style_id)
+        aivm_manifest_speaker = result[1]
+
+        lang = Languages.JP
+        keihan = False
+        dakuten = False
+        babytalk = False
+
         styleid_bytes = style_id.to_bytes(4, "big", signed=True) #byte
         effect_style_id = styleid_bytes[0]
         KEIHAN_IDS = (15, 16, 17, 18, 19,
@@ -364,9 +416,6 @@ class StyleBertVITS2TTSEngine(TTSEngine):
                       110, 111, 112, 113, 114,
                       115, 116, 117, 118, 119
                       )
-        keihan = False
-        if effect_style_id in KEIHAN_IDS:
-            keihan = True
 
         DAKUON_IDS = (
             5, 6, 7, 8, 9,
@@ -388,25 +437,39 @@ class StyleBertVITS2TTSEngine(TTSEngine):
             100, 101, 102, 103, 104,
             115, 116, 117, 118, 119
             )
-        dakuten = False
-        if effect_style_id in DAKUON_IDS:
-            dakuten = True
 
-        babytalk = False
-        if effect_style_id in BABYTALK_IDS:
-            babytalk = True
 
-        # 入力テキストを Style-Bert-VITS2 の基準で正規化
-        ## Style-Bert-VITS2 では「〜」などの伸ばす棒も長音記号として扱うため、normalize_text() でそれらを統一する
-        normalized_text = normalize_text(text.strip())  # 前後の空白を削除してから実行
+        supported_language = [Languages.JP]
+        for cur_lng in aivm_manifest_speaker.supported_languages:
+            if cur_lng == "zh-CN":
+                supported_language.append(Languages.ZH)
 
+            if cur_lng == "en-US":
+                supported_language.append(Languages.EN)
+                
+        lang = languge_selector(text, supported_language)
+
+        if lang == "JP":
+            if effect_style_id in KEIHAN_IDS:
+                keihan = True
+
+            if effect_style_id in DAKUON_IDS:
+                dakuten = True
+            
+            elif effect_style_id in BABYTALK_IDS:
+                babytalk = True
+
+        normalized_text = text.strip()
+        
         # g2p 処理を行い、テキストからモーラ情報と音高 (0 or 1) のリストを取得
         ## Style-Bert-VITS2 側では、pyopenjtalk_g2p_prosody() から取得したアクセント情報が含まれるモーラのリストを
         ## モーラ情報と音高のリストに変換し (句読点や記号は失われている) 、後付けで失われた句読点や記号のモーラを適切な位置に追加する形で実装されている
         ## VOICEVOX ENGINE 側のアクセント句系列生成処理は微妙に互換性がないため使っていない
         ## VOICEVOX ENGINE では「ん」の音素を「N」としているため、use_jp_extra (True のとき「ん」の音素を「N」とする) は常に True に設定している
         ## JP-Extra モデルと通常のモデルの音素差の吸収は synthesize_wave() で行う
-        phones, tones, _, _, _, sep_kata_with_joshi = g2p(normalized_text, use_jp_extra=True, raise_yomi_error=False, keihan=keihan, dakuten=dakuten, babytalk=babytalk)  # fmt: skip
+        phones, tones, _, _, _, sep_kata_with_joshi = g2p_ja.g2p(normalized_text, use_jp_extra=True, raise_yomi_error=False, keihan=keihan, dakuten=dakuten, babytalk=babytalk)  # fmt: skip
+        
+        
         mora_tone_list = _phone_tone2mora_tone(list(zip(phones, tones, strict=False)))
 
         # sep_kata_with_joshi のカタカナを音素 (子音と母音のタプル) に変換
@@ -478,7 +541,7 @@ class StyleBertVITS2TTSEngine(TTSEngine):
                 # 音高が 前: 1, 現在: 0, 次: 1
                 # または 前: 0, 現在: 0, 次: 1 の場合、前と現在の間で区切る
                 elif ((previous_tone == 1) and (tone == 0) and (next_tone == 1)) or \
-                     ((previous_tone == 0) and (tone == 0) and (next_tone == 1)):  # fmt: skip
+                    ((previous_tone == 0) and (tone == 0) and (next_tone == 1)):  # fmt: skip
                     # アクセント句の区切り処理を許可するかどうかのフラグが True のときだけ実行
                     # 今回単語の途中のため区切り処理を実行できない場合は、次回のループで確実にアクセント句が区切られるようフラグを立てる
                     if is_accent_phrase_boundary_allowed is True:
@@ -602,7 +665,13 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         NDArray[np.float32]
             生成された音声波形 (float32 型)
         """
-
+        # スタイル ID に対応する AivmManifest, AivmManifestSpeaker, AivmManifestSpeakerStyle を取得
+        result = self.aivm_manager.get_aivm_manifest_from_style_id(style_id)
+        aivm_manifest = result[0]
+        aivm_manifest_speaker = result[1]
+        aivm_manifest_speaker_style = result[2]
+                
+            
         echo = False
         reverb = False
         slow = False
@@ -611,7 +680,19 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         robot = False
         vcdown = False
         vcup = False
-        
+        lang = Languages.JP
+
+        text = query.kana.strip()  # 事前に前後の空白を削除
+
+        supported_language = [Languages.JP]
+        for cur_lng in aivm_manifest_speaker.supported_languages:
+            if cur_lng == "zh-CN":
+                supported_language.append(Languages.ZH)
+            if cur_lng == "en-US":
+                supported_language.append(Languages.EN)
+
+        lang = languge_selector(text, supported_language)
+
         styleid_bytes = style_id.to_bytes(4, "big", signed=True) #8byte
         effect_style_id = styleid_bytes[0]
 
@@ -661,13 +742,14 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         # モーフィング時などに同一参照の AudioQuery で複数回呼ばれる可能性があるので、元の引数の AudioQuery に破壊的変更を行わない
         query = copy.deepcopy(query)
 
+
+        
         # もし AudioQuery.kana に漢字混じりの通常の文章が指定されている場合はそれを使う (AivisSpeech 独自仕様)
         ## VOICEVOX ENGINE では AudioQuery.kana は読み取り専用パラメータだが、AivisSpeech Engine では
         ## 音声合成 API にアクセント句だけでなく通常の読み上げテキストを直接渡すためのパラメータとして利用している
         ## 通常の読み上げテキストの方が遥かに抑揚が自然になるため、読み仮名のみの読み上げテキストよりも優先される
-        ## VOICEVOX ENGINE との互換性維持のための苦肉の策で、基本可能な限り AudioQuery.kana に読み上げテキストを指定すべき
-        if query.kana is not None and query.kana != "":
-            text = query.kana.strip()  # 事前に前後の空白を削除
+        ## VOICEVOX ENGINE との互換性維持のための苦肉の策で、基本可能な限り AudioQuery.kana に読み上げテキストを指定すべき 
+        if text is not None and text != "":
 
             # アクセント辞書でのプレビュー時のエラーを回避するための処理
             ## もし AudioQuery に含まれる最後のモーラの text が "ガ" だったら、テキストの末尾に "ガ" を追加する
@@ -682,7 +764,7 @@ class StyleBertVITS2TTSEngine(TTSEngine):
                 last_mora = query.accent_phrases[-1].moras[-1]
                 if last_mora.text == "ガ":
                     # Style-Bert-VITS2 側の g2p 処理を呼び、カタカナ化されたモーラのリストを取得
-                    kata_mora_list = g2kata_tone(normalize_text(text))
+                    kata_mora_list = g2kata_tone(text)
                     # kata_mora_list の最後のモーラが "ガ" でない場合は "ガ" を追加
                     if len(kata_mora_list) > 0 and kata_mora_list[-1][0] != "ガ":
                         text += "ガ"
@@ -734,13 +816,6 @@ class StyleBertVITS2TTSEngine(TTSEngine):
             given_phone_list = []
             given_tone_list = []
 
-
-
-        # スタイル ID に対応する AivmManifest, AivmManifestSpeaker, AivmManifestSpeakerStyle を取得
-        result = self.aivm_manager.get_aivm_manifest_from_style_id(style_id)
-        aivm_manifest = result[0]
-        aivm_manifest_speaker = result[1]
-        aivm_manifest_speaker_style = result[2]
 
         # 音声合成モデルをロード (初回のみ)
         model = self.load_model(str(aivm_manifest.uuid))
@@ -805,7 +880,8 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         ## 推論処理を大量に並列実行すると最悪プロセスごと ONNX Runtime がクラッシュするため、排他ロックを掛ける
         with self._inference_lock:
             logger.info("Running inference...")
-            logger.info(f"Text: {text}")
+            logger.info(f"       languge: {lang}")
+            logger.info(f"          Text: {text}")
             logger.info(f"         Speed: {length:.2f} (Input: {query.speedScale:.2f})")
             logger.info(f"  Style Weight: {style_weight:.2f} (Input: {query.intonationScale:.2f})")  # fmt: skip
             logger.info(f"Tempo Dynamics: {sdp_ratio:.2f} (Input: {query.tempoDynamicsScale:.2f})")  # fmt: skip
@@ -815,30 +891,54 @@ class StyleBertVITS2TTSEngine(TTSEngine):
             logger.info(f"  Post-Silence: {query.postPhonemeLength:.2f}")
 
             # テキストが空文字列ではなく、given_phone_list / given_tone_list が空でない場合のみ音声合成を実行
-            if text != "" and len(given_phone_list) > 0 and len(given_tone_list) > 0:
-                start_time = time.time()
-                raw_sample_rate, raw_wave = model.infer(
-                    text=text,
-                    given_phone=given_phone_list,
-                    given_tone=given_tone_list,
-                    language=Languages.JP,
-                    speaker_id=local_speaker_id,
-                    style=local_style_name,
-                    style_weight=style_weight,
-                    sdp_ratio=sdp_ratio,
-                    length=length,
-                    pitch_scale=pitch_scale,
-                    # AivisSpeech Engine ではテキストの改行ごとの分割生成を行わない (エディタ側の機能と競合するため)
-                    # line_split=True だと音素やアクセントの指定ができない
-                    line_split=False,
-                )
-                logger.info(f"Inference done. Elapsed time: {time.time() - start_time:.2f} sec.")  # fmt: skip
+            if text != "":
+                if lang == "JP":
+                    if len(given_phone_list) > 0 and len(given_tone_list) > 0:
+                        start_time = time.time()
+                        raw_sample_rate, raw_wave = model.infer(
+                            text=text,
+                            given_phone=given_phone_list,
+                            given_tone=given_tone_list,
+                            language=lang,
+                            speaker_id=local_speaker_id,
+                            style=local_style_name,
+                            style_weight=style_weight,
+                            sdp_ratio=sdp_ratio,
+                            length=length,
+                            pitch_scale=pitch_scale,
+                            # AivisSpeech Engine ではテキストの改行ごとの分割生成を行わない (エディタ側の機能と競合するため)
+                            # line_split=True だと音素やアクセントの指定ができない
+                            line_split=False,
+                        )
+                        logger.info(f"Inference done. Elapsed time: {time.time() - start_time:.2f} sec.")  # fmt: skip
+                
+                elif lang == "ZH" or lang == "EN":
+                    start_time = time.time()
+                    raw_sample_rate, raw_wave = model.infer(
+                        text=text,
+                        given_phone=None,
+                        given_tone=None,
+                        language=lang,
+                        speaker_id=local_speaker_id,
+                        style=local_style_name,
+                        style_weight=style_weight,
+                        sdp_ratio=sdp_ratio,
+                        length=length,
+                        pitch_scale=pitch_scale,
+                        # AivisSpeech Engine ではテキストの改行ごとの分割生成を行わない (エディタ側の機能と競合するため)
+                        # line_split=True だと音素やアクセントの指定ができない
+                        line_split=False,
+                    )
+                    logger.info(f"Inference done. Elapsed time: {time.time() - start_time:.2f} sec.")  # fmt: skip
 
             # 空文字列が入力された場合、0.5 秒の無音波形を後続の処理に渡す
             else:
                 logger.info("Text is empty. Returning 0.5 sec silence.")
                 raw_sample_rate = self.default_sampling_rate
                 raw_wave = np.zeros(int(self.default_sampling_rate * 0.5), dtype=np.float32)  # fmt: skip
+
+            
+
 
         # VOICEVOX CORE は float32 型の音声波形を返すため、int16 から float32 に変換して VOICEVOX CORE に合わせる
         ## float32 に変換する際に -1.0 ~ 1.0 の範囲に正規化する

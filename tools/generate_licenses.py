@@ -109,6 +109,7 @@ def _update_licenses(pip_licenses: list[_PipLicense]) -> list[_License]:
         "streamlit": "https://raw.githubusercontent.com/streamlit/streamlit/refs/heads/develop/LICENSE",
         "types-pyyaml": "https://raw.githubusercontent.com/python/typeshed/refs/heads/main/LICENSE",
         "webencodings": "https://raw.githubusercontent.com/gsnedders/python-webencodings/refs/heads/master/LICENSE",
+        "jamo": "https://raw.githubusercontent.com/JDongian/python-jamo/refs/heads/master/LICENSE",
     }
 
     updated_licenses = []
