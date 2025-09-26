@@ -124,7 +124,7 @@ build = ["pyinstaller>=6",
 ]
 
 [tool.uv.sources]
-style-bert-vits2 = { git = "https://github.com/q9uri/Daisuki-Bert-VITS2", rev = "a6d8e2494acd23e0f1dccf5375bdc6cfa7add436" }
+style-bert-vits2 = { git = "https://github.com/q9uri/Daisuki-Bert-VITS2", rev = "21146ff923db1771bac6d0f0f5327ca3e45aabaa" }
 natsumikan = { git = "https://github.com/q9uri/natsumikan", rev = "150572bafeb56a45c645518dd8ddf339b89893c3" }
 
 # OS に応じて適切な ONNX Runtime プラグインをインストール
