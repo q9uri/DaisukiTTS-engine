@@ -124,6 +124,7 @@ jobs:
 
           uv run python -m yomikata download
           uv run task build
+          uv run tools/download_bert.py
           uv run task copy
 
       - name: <Build> Code signing

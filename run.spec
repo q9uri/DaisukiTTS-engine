@@ -12,9 +12,8 @@ datas += collect_data_files('e2k')
 datas += collect_data_files('unidic_lite')
 datas += collect_data_files('yomikata')
 datas += collect_data_files('kabosu_core')
-datas += collect_data_files('style_bert_vits2')
-
-
+datas += collect_data_files('kabosu_plus')
+datas += collect_data_files('g2p_en')
 
 # functorch のバイナリを収集
 # ONNX に移行したため不要なはずだが、念のため
@@ -82,6 +81,7 @@ a = Analysis(
     module_collection_mode={
         # Style-Bert-VITS2 内部で使われている TorchScript (@torch.jit) による問題を回避するために必要
         'style_bert_vits2': 'pyz+py',
+        'inflect': 'pyz+py',
     },
 )
 

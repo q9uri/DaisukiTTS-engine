@@ -7,6 +7,7 @@ import time
 from collections.abc import Sequence
 from io import BytesIO
 from pathlib import Path
+import shutil
 from typing import Any, Final, cast
 
 import soundfile as sf
@@ -51,7 +52,7 @@ from ..tts_pipeline.tts_engine import (
     TTSEngine,
     to_flatten_moras,
 )
-from ..utility.path_utility import get_save_dir, engine_root
+from ..utility.path_utility import resource_root, engine_root, get_save_dir
 
 _engine_dir = engine_root()
 TEMP_WAVE_PATH = _engine_dir / "temp.wav"
@@ -65,7 +66,7 @@ class StyleBertVITS2TTSEngine(TTSEngine):
     """
 
     # BERT モデルのキャッシュディレクトリ
-    BERT_MODEL_CACHE_DIR: Final[Path] = get_save_dir() / "BertModelCaches"
+    BERT_MODEL_CACHE_DIR: Final[Path] = resource_root() / "BertModelCaches"
 
     # ONNX Runtime の推論処理を排他制御するためのロック
     _inference_lock: Final[threading.Lock] = threading.Lock()
@@ -146,17 +147,13 @@ class StyleBertVITS2TTSEngine(TTSEngine):
         # Style-Bert-VITS2 本体のロガーを抑制
         style_bert_vits2_logger.remove()
 
-        # BERT モデルの FP16 化に伴い、旧バージョンの BERT モデル (FP32, 1.3GB) をキャッシュから削除
-        ## これにより、BERT モデルのファイルサイズとメモリ使用量が半分に削減される
-        ## ref: https://huggingface.co/tsukumijima/deberta-v2-large-japanese-char-wwm-onnx
+        # BERT モデルの ポータブル 化に伴い、旧バージョンの BERT モデル (FP32, 1.3GB) をキャッシュから削除
         OLD_BERT_MODEL_CACHE_PATH = (
-            self.BERT_MODEL_CACHE_DIR
-            / "models--tsukumijima--deberta-v2-large-japanese-char-wwm-onnx"
-            / "blobs"
-            / "c5c880ef4bd0d3308ec6503a8728efae920bc5c5a984de4f76fc3d0ad518a2ec"
+            get_save_dir() 
+            / "BertModelCaches" 
         )
         if OLD_BERT_MODEL_CACHE_PATH.exists():
-            OLD_BERT_MODEL_CACHE_PATH.unlink(missing_ok=True)
+            shutil.rmtree(OLD_BERT_MODEL_CACHE_PATH)
             logger.info(f"Old BERT model cache removed. ({OLD_BERT_MODEL_CACHE_PATH})")
 
         # 音声合成に必要な BERT モデル・トークナイザーを読み込む
